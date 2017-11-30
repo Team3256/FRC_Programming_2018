@@ -1,7 +1,6 @@
 package frc.team3256.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.VictorSP;
 
 public class Robot extends IterativeRobot {
 

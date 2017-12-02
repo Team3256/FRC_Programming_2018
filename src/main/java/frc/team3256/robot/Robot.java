@@ -29,7 +29,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-        System.out.println("ENCODER: " + (int)(DriveTrain.getInstance().getLeftDistance()*1000));
+        System.out.println("L-ENC: " + DriveTrain.getInstance().getLeftDistance() + "\tR_ENC: " + DriveTrain.getInstance().getRightDistance());
     }
 
     @Override

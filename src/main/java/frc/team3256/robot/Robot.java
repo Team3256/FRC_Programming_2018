@@ -5,36 +5,44 @@ import frc.team3256.robot.subsystems.DriveTrain;
 
 public class Robot extends IterativeRobot {
 
-  @Override
-  public void robotInit() {}
+    @Override
+    public void robotInit() {
+    }
 
-  @Override
-  public void disabledInit() {}
+    @Override
+    public void disabledInit() {
+    }
 
-  @Override
-  public void autonomousInit() {}
+    @Override
+    public void autonomousInit() {
+    }
 
-  @Override
-  public void teleopInit() {}
+    @Override
+    public void teleopInit() {
+    }
 
-  @Override
-  public void testInit() {}
+    @Override
+    public void testInit() {
+    }
 
-  @Override
-  public void disabledPeriodic() {}
+    @Override
+    public void disabledPeriodic() {
+    }
 
-  @Override
-  public void autonomousPeriodic() {}
+    @Override
+    public void autonomousPeriodic() {
+    }
 
-  @Override
-  public void teleopPeriodic() {
-    System.out.println(
-        "L-ENC: "
-            + DriveTrain.getInstance().getLeftDistance()
-            + "\tR_ENC: "
-            + DriveTrain.getInstance().getRightDistance());
-  }
+    @Override
+    public void teleopPeriodic() {
+        System.out.println(
+                "L-ENC: "
+                        + DriveTrain.getInstance().getLeftDistance()
+                        + "\tR_ENC: "
+                        + DriveTrain.getInstance().getRightDistance());
+    }
 
-  @Override
-  public void testPeriodic() {}
+    @Override
+    public void testPeriodic() {
+    }
 }

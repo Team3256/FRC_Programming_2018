@@ -28,7 +28,7 @@ deploy {
 dependencies {
     compile wpilib()
     compile ctre()
-    compile navx()
+    //compile navx()
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')

@@ -16,7 +16,7 @@ public class ADXRS453_Calibrator implements Loop {
 
     @Override
     public void init(double timestamp) {
-        previousTime = Timer.getFPGATimestamp();
+        
     }
 
     @Override

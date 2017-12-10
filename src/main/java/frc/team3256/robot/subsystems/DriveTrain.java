@@ -35,15 +35,16 @@ public class DriveTrain {
         // setup encoders
         leftMaster.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative);
         if (leftMaster.isSensorPresent(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
-                == CANTalon.FeedbackDeviceStatus.FeedbackStatusPresent) {
+                != CANTalon.FeedbackDeviceStatus.FeedbackStatusPresent) {
             DriverStation.reportError("Mag Encoder on Left Master not detected!!!", false);
         }
         rightMaster.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative);
         if (rightMaster.isSensorPresent(CANTalon.FeedbackDevice.CtreMagEncoder_Relative)
-                == CANTalon.FeedbackDeviceStatus.FeedbackStatusPresent) {
+                != CANTalon.FeedbackDeviceStatus.FeedbackStatusPresent) {
             DriverStation.reportError("Mag Encoder on Right Master not detected!!!", false);
         }
 
+        /*
         // set feedback status frame rates
         // we want master Talons to give us fast feedback (our encoders are plugged into them)
         leftMaster.setStatusFrameRateMs(CANTalon.StatusFrameRate.Feedback, 5);
@@ -60,6 +61,14 @@ public class DriveTrain {
         rightSlave.setStatusFrameRateMs(CANTalon.StatusFrameRate.General, 1000);
         rightSlave.setStatusFrameRateMs(CANTalon.StatusFrameRate.AnalogTempVbat, 1000);
         rightSlave.setStatusFrameRateMs(CANTalon.StatusFrameRate.PulseWidth, 1000);
+        */
+
+        //leftMaster.reverseOutput(true);
+        //leftSlave.reverseOutput(true);
+        //rightMaster.reverseOutput(true);
+        //rightSlave.reverseOutput(true);
+
+
     }
 
     public double getLeftDistance() {
@@ -69,4 +78,16 @@ public class DriveTrain {
     public double getRightDistance() {
         return rightMaster.getPosition();
     }
+
+    public void setPower(double leftPower, double rightPower) {
+        if(leftMaster.getControlMode() != CANTalon.TalonControlMode.PercentVbus) {
+            leftMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+        }
+        if(rightMaster.getControlMode() != CANTalon.TalonControlMode.PercentVbus) {
+            rightMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+        }
+        leftMaster.set(leftPower);
+        rightMaster.set(rightPower);
+    }
+
 }

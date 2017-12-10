@@ -1,6 +1,7 @@
 package frc.team3256.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import frc.team3256.lib.control.TeleopDriveController;
 import frc.team3256.robot.subsystems.DriveTrain;
 
 public class Robot extends IterativeRobot {
@@ -40,6 +41,7 @@ public class Robot extends IterativeRobot {
                         + DriveTrain.getInstance().getLeftDistance()
                         + "\tR_ENC: "
                         + DriveTrain.getInstance().getRightDistance());
+        TeleopDriveController.tankDrive(-1.0*OI.getLeft(), OI.getRight());
     }
 
     @Override

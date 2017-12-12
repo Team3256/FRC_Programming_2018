@@ -15,7 +15,7 @@ public class TeleopDriveController {
             leftPower = Math.pow(leftPower, 3);
             rightPower = Math.pow(rightPower, 3);
         }
-        driveTrain.setPower(leftPower,rightPower);
+        driveTrain.setOpenLoop(leftPower,rightPower);
     }
 
     //Arcade Drive
@@ -25,7 +25,7 @@ public class TeleopDriveController {
             throttle = Math.pow(throttle, 3);
             turn = Math.pow(turn, 3);
         }
-        driveTrain.setPower(throttle+turn,throttle-turn);
+        driveTrain.setOpenLoop(throttle+turn,throttle-turn);
     }
 
 }

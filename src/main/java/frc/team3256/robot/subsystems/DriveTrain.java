@@ -1,7 +1,9 @@
 package frc.team3256.robot.subsystems;
 
 import com.ctre.CANTalon;
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.team3256.lib.hardware.TalonGenerator;
 import frc.team3256.robot.Constants;
 
 public class DriveTrain {
@@ -16,21 +18,10 @@ public class DriveTrain {
     private DriveTrain() {
         // create talon objects
         // master talons are set to a 5 period control frame rate
-        leftMaster = new CANTalon(Constants.kLeftDriveMaster, 5);
-        leftSlave = new CANTalon(Constants.kLeftDriveSlave);
-        rightMaster = new CANTalon(Constants.kRightDriveMaster, 5);
-        rightSlave = new CANTalon(Constants.kRightDriveSlave);
-
-        // Setup Talon control modes
-        // Master Talons are in open-loop voltage, Slave talons are set to follower
-        leftMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-        leftMaster.set(0);
-        leftSlave.changeControlMode(CANTalon.TalonControlMode.Follower);
-        leftSlave.set(Constants.kLeftDriveMaster);
-        rightMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-        rightMaster.set(0);
-        rightSlave.changeControlMode(CANTalon.TalonControlMode.Follower);
-        rightSlave.set(Constants.kRightDriveMaster);
+        leftMaster = TalonGenerator.generateMasterTalon(Constants.kLeftDriveMaster);
+        leftSlave = TalonGenerator.generateSlaveTalon(Constants.kLeftDriveSlave, Constants.kLeftDriveMaster);
+        rightMaster = TalonGenerator.generateMasterTalon(Constants.kRightDriveMaster);
+        rightSlave = TalonGenerator.generateSlaveTalon(Constants.kRightDriveSlave, Constants.kRightDriveMaster);
 
         // setup encoders
         leftMaster.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative);

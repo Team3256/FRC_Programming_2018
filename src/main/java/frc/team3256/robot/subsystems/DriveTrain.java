@@ -2,7 +2,6 @@ package frc.team3256.robot.subsystems;
 
 import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Talon;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.ADXRS453_Gyro;
 import frc.team3256.lib.hardware.TalonUtil;
@@ -14,6 +13,8 @@ public class DriveTrain implements Loop {
     private CANTalon leftMaster, rightMaster, leftSlave, rightSlave;
     private ADXRS453_Gyro gyro;
     private DriveControlMode controlMode;
+
+    private double angle, distance;
 
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
@@ -44,6 +45,7 @@ public class DriveTrain implements Loop {
                 updateTurnToAngle();
                 break;
             case DRIVE_TO_DISTANCE:
+                updateDriveToDistance();
                 break;
         }
     }
@@ -73,6 +75,24 @@ public class DriveTrain implements Loop {
         }
 
         gyro = new ADXRS453_Gyro();
+
+        leftMaster.setPID(Constants.kDriveMotionMagicP, Constants.kDriveMotionMagicI, Constants.kDriveMotionMagicD,
+                Constants.kDriveMotionMagicF, Constants.kDriveMotionMagicIZone, Constants.kDriveMotionMagicCloseLoopRampRate,
+                Constants.kDriveMotionMagicProfile);
+        rightMaster.setPID(Constants.kDriveMotionMagicP, Constants.kDriveMotionMagicI, Constants.kDriveMotionMagicD,
+                Constants.kDriveMotionMagicF, Constants.kDriveMotionMagicIZone, Constants.kDriveMotionMagicCloseLoopRampRate,
+                Constants.kDriveMotionMagicProfile);
+        leftMaster.setMotionMagicAcceleration(Constants.kDriveMotionMagicAcceleration);
+        rightMaster.setMotionMagicAcceleration((Constants.kDriveMotionMagicAcceleration));
+        leftMaster.setMotionMagicCruiseVelocity(Constants.kDriveMotionMagicCruiseVelocity);
+        rightMaster.setMotionMagicCruiseVelocity(Constants.kDriveMotionMagicCruiseVelocity);
+
+        leftMaster.setPID(Constants.kDriveVelocityP, Constants.kDriveVelocityI, Constants.kDriveVelocityD,
+                Constants.kDriveVelocityF, Constants.kDriveVelocityIZone, Constants.kDriveVelocityCloseLoopRampRate,
+                Constants.kDriveVelocityProfile);
+        rightMaster.setPID(Constants.kDriveVelocityP, Constants.kDriveVelocityI, Constants.kDriveVelocityD,
+                Constants.kDriveVelocityF, Constants.kDriveVelocityIZone, Constants.kDriveVelocityCloseLoopRampRate,
+                Constants.kDriveVelocityProfile);
     }
 
     public double getLeftDistance() {
@@ -99,26 +119,62 @@ public class DriveTrain implements Loop {
         rightMaster.changeControlMode(CANTalon.TalonControlMode.Speed);
     }
 
+    public void configureTalonsForDistance() {
+        if (controlMode != DriveControlMode.DRIVE_TO_DISTANCE)
+            controlMode = DriveControlMode.DRIVE_TO_DISTANCE;
+        leftMaster.changeControlMode(CANTalon.TalonControlMode.MotionMagic);
+        rightMaster.changeControlMode(CANTalon.TalonControlMode.MotionMagic);
+    }
+
+    public void configureTalonsForAngle() {
+        if (controlMode != DriveControlMode.TURN_TO_ANGLE)
+            controlMode = DriveControlMode.TURN_TO_ANGLE;
+        leftMaster.changeControlMode(CANTalon.TalonControlMode.MotionMagic);
+        rightMaster.changeControlMode(CANTalon.TalonControlMode.MotionMagic);
+    }
+
     public void setVelocitySetpoint(double setpoint){
         configureTalonsForVelocity();
         leftMaster.set(setpoint);
         rightMaster.set(setpoint);
     }
 
+    public void setAngleSetpoint(double angle) {
+        configureTalonsForAngle();
+        leftMaster.set(degreesToInches(angle));
+        rightMaster.set(degreesToInches(angle));
+        this.angle = angle;
+    }
+
+    public void setDistanceSetpoint(double distance) {
+        configureTalonsForDistance();
+        leftMaster.set(distance);
+        rightMaster.set(distance);
+        this.distance = distance;
+    }
+
     public void setOpenLoop(double leftPower, double rightPower) {
-        if(controlMode != DriveControlMode.OPEN_LOOP){
-            configureTalonsForOpenLoop();
-        }
+        configureTalonsForOpenLoop();
         //TALON reverseOutput doesn't work in PercentVBus (open loop)
         leftMaster.set(-1.0*leftPower);
         rightMaster.set(rightPower);
     }
 
     public void updateTurnToAngle() {
+        leftMaster.set(degreesToInches(angle));
+        rightMaster.set(degreesToInches(angle));
+    }
 
+    public void updateDriveToDistance() {
+        leftMaster.set(distance);
+        rightMaster.set(distance);
     }
 
     public ADXRS453_Gyro getGyro(){
         return gyro;
+    }
+
+    public static double degreesToInches(double degrees) {
+        return Constants.ROBOT_TRACK * Math.PI * degrees / 360;
     }
 }

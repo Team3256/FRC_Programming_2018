@@ -49,13 +49,10 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-        if (OI.presetOne()){
-            motorOne.set(Constants.kPresetOnePower);
-        } else motorOne.set(0);
 
-        if (OI.presetTwo()){
-            motorTwo.set(Constants.kPresetOnePower);
-        } else motorTwo.set(0);
+        motorOne.set(OI.axisOne());
+
+        motorTwo.set(OI.axisTwo());
 
         if (OI.presetThree()){
             motorThree.set(Constants.kPresetOnePower);

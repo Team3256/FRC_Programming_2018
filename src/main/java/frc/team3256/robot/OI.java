@@ -4,17 +4,15 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class OI {
-    static boolean leftTriggerPrevState = false;
+
     static XboxController xboxOne = new XboxController(Constants.kXboxPort);
 
-    public static boolean presetOne() {
-        if(Math.abs(xboxOne.getX(GenericHID.Hand.kRight)) > 0.2) return true;
-        else return false;
+    public static double axisOne() {
+        return xboxOne.getX(GenericHID.Hand.kRight);
     }
 
-    public static boolean presetTwo() {
-        if(Math.abs(xboxOne.getY(GenericHID.Hand.kRight)) > 0.2) return true;
-        else return false;
+    public static double axisTwo() {
+        return xboxOne.getY(GenericHID.Hand.kRight);
     }
 
     public static boolean presetThree() {

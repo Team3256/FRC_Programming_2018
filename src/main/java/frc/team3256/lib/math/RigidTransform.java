@@ -57,7 +57,7 @@ public class RigidTransform {
     /**
      * ethaneade.com/lie_groups.pdf
      * Exponential map for 2D rigid transformation
-     * Basically this converts a {@link Twist} ---(differential transform)---> transformation
+     * Basically this converts a {@link Twist} ---(exponential map)---> transformation
      * Kind of like an differential position ---(integral)---> position
      *
      * Twist: [[dx]

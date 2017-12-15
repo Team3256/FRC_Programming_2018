@@ -1,7 +1,5 @@
 package frc.team3256.lib.math;
 
-import java.awt.font.TransformAttribute;
-
 /**
  * Class representing a 2d Rigid-Body Homogeneous Transformation Matrix
  * Basically combines {@link Rotation} and {@link Translation}

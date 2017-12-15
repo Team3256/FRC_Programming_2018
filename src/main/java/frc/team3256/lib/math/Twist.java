@@ -1,6 +1,5 @@
 package frc.team3256.lib.math;
 
-import java.awt.*;
 import java.text.DecimalFormat;
 
 /**

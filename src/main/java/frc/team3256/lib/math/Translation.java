@@ -126,6 +126,24 @@ public class Translation {
         return new Rotation(x, y, true);
     }
 
+    /**
+     * Calculates the angle between this translation and another specified translation
+     *
+     * cos(theta) = (u dot v)/(||u||*||v||)
+     *
+     * @param other other translation to calculate the angle between
+     * @return angle between this translation and the other specified translation
+     */
+    public Rotation getAngle(Translation other){
+        if (this.norm() == 0 || other.norm() == 0){
+            return new Rotation();
+        }
+        double val = this.dot(other)/(this.norm()*other.norm());
+        //Make sure val is between 1 and -1, as arccos will throw an error outside that bound
+        return Rotation.fromRadians(Math.acos(Math.min(1.0, Math.max(val, 1.0))));
+    }
+
+
     @Override
     public String toString() {
         final DecimalFormat format = new DecimalFormat("#0.000");

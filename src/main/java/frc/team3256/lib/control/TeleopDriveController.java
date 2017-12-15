@@ -1,31 +1,33 @@
 package frc.team3256.lib.control;
 
-import frc.team3256.robot.subsystems.DriveTrain;
+import frc.team3256.lib.DrivePower;
 
 public class TeleopDriveController {
-
-    static DriveTrain driveTrain = DriveTrain.getInstance();
 
     private static boolean isCubed = false;
 
     //Tank Drive
-
-    public static void tankDrive(double leftPower, double rightPower) {
+    public static DrivePower tankDrive(double leftPower, double rightPower) {
         if(isCubed) {
             leftPower = Math.pow(leftPower, 3);
             rightPower = Math.pow(rightPower, 3);
         }
-        driveTrain.setOpenLoop(leftPower,rightPower);
+        return new DrivePower(leftPower, rightPower);
     }
 
     //Arcade Drive
-
-    public static void arcadeDrive(double throttle, double turn) {
+    public static DrivePower arcadeDrive(double throttle, double turn) {
         if(isCubed) {
             throttle = Math.pow(throttle, 3);
             turn = Math.pow(turn, 3);
         }
-        driveTrain.setOpenLoop(throttle+turn,throttle-turn);
+        double left = throttle + turn;
+        double right = throttle - turn;
+        return new DrivePower(left, right);
     }
 
+    //Curvature or Cheesy Drive
+    public static DrivePower curvatureDrive(double throttle, double turn, boolean turnInPlace){
+        return new DrivePower(0,0);
+    }
 }

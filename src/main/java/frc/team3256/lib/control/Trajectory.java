@@ -1,4 +1,4 @@
-package frc.team3256.lib;
+package frc.team3256.lib.control;
 
 public class Trajectory {
     public static class Segment {

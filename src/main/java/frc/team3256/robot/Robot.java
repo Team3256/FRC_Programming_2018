@@ -27,14 +27,20 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledInit() {
+        enabledLooper.stop();
+        disabledLooper.start();
     }
 
     @Override
     public void autonomousInit() {
+        disabledLooper.stop();
+        enabledLooper.start();
     }
 
     @Override
     public void teleopInit() {
+        disabledLooper.stop();
+        enabledLooper.start();
     }
 
     @Override
@@ -51,6 +57,9 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
+        double throttle = ControlsInterface.getThrottle();
+        double turn = ControlsInterface.getTurn();
+        TeleopDriveController.arcadeDrive(throttle, turn);
     }
 
     @Override

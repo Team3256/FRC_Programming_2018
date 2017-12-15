@@ -59,7 +59,7 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic() {
         double throttle = ControlsInterface.getThrottle();
         double turn = ControlsInterface.getTurn();
-        TeleopDriveController.arcadeDrive(throttle, turn);
+        driveTrain.setOpenLoop(TeleopDriveController.arcadeDrive(throttle, turn));
     }
 
     @Override

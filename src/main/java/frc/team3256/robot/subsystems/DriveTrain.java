@@ -2,6 +2,7 @@ package frc.team3256.robot.subsystems;
 
 import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.ADXRS453_Gyro;
 import frc.team3256.lib.hardware.TalonUtil;
@@ -158,6 +159,10 @@ public class DriveTrain implements Loop {
         //TALON reverseOutput doesn't work in PercentVBus (open loop)
         leftMaster.set(-1.0*leftPower);
         rightMaster.set(rightPower);
+    }
+
+    public void setOpenLoop(DrivePower power){
+        setOpenLoop(power.getLeft(), power.getRight());
     }
 
     public void updateTurnToAngle() {

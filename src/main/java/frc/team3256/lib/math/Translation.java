@@ -39,11 +39,11 @@ public class Translation {
         this(second.x - first.x, second.y - first.y);
     }
 
-    public double getX() {
+    public double x() {
         return x;
     }
 
-    public double getY() {
+    public double y() {
         return y;
     }
 
@@ -65,8 +65,8 @@ public class Translation {
      */
     public Translation rotate(Rotation rotation) {
         return new Translation(
-                rotation.getCos() * x - rotation.getSin() * y,
-                rotation.getSin() * x + rotation.getCos() * y);
+                rotation.cos() * x - rotation.sin() * y,
+                rotation.sin() * x + rotation.cos() * y);
     }
 
     /**

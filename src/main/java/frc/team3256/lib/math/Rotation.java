@@ -42,7 +42,7 @@ public class Rotation {
      * @param directionVector the translation vector to calculate the angle from
      */
     public Rotation(Translation directionVector) {
-        this(directionVector.getX(), directionVector.getY(), true);
+        this(directionVector.x(), directionVector.y(), true);
     }
 
     /**
@@ -67,27 +67,27 @@ public class Rotation {
         return fromRadians(Math.toRadians(degrees));
     }
 
-    public double getCos() {
+    public double cos() {
         return cos;
     }
 
-    public double getSin() {
+    public double sin() {
         return sin;
     }
 
-    public double getTan(){
+    public double tan(){
         if (Math.abs(this.cos) < kEpsilon){
             return this.sin >= 0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
         }
         return this.cos/this.sin;
     }
 
-    public double getRadians(){
+    public double radians(){
         return Math.atan2(sin, cos);
     }
 
-    public double getDegrees(){
-        return Math.toDegrees(getRadians());
+    public double degrees(){
+        return Math.toDegrees(radians());
     }
 
     /**
@@ -164,6 +164,6 @@ public class Rotation {
     @Override
     public String toString(){
         final DecimalFormat format = new DecimalFormat("#0.000");
-        return "(" + format.format(this.getDegrees()) + "deg)";
+        return "(" + format.format(this.degrees()) + "deg)";
     }
 }

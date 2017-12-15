@@ -9,7 +9,7 @@ package frc.team3256.lib.math;
  */
 public class RigidTransform {
 
-    private final double kEpsilon = 1E-9;
+    private static final double kEpsilon = 1E-9;
     private Translation translation;
     private Rotation rotation;
 
@@ -73,7 +73,7 @@ public class RigidTransform {
      * @param twist Input twist
      * @return Transformation based on the twist
      */
-    public RigidTransform exp(Twist twist){
+    public static RigidTransform exp(Twist twist){
         double dtheta = twist.dtheta();
         double cos = Math.cos(dtheta);
         double sin = Math.sin(dtheta);
@@ -90,7 +90,7 @@ public class RigidTransform {
             sin_theta_over_theta = sin/dtheta;
             one_minus_cos_theta_over_theta = (1.0-cos)/dtheta;
         }
-        translation = new Translation(sin_theta_over_theta*twist.dx(), one_minus_cos_theta_over_theta*twist.dx());
+        Translation translation = new Translation(sin_theta_over_theta*twist.dx(), one_minus_cos_theta_over_theta*twist.dx());
         return new RigidTransform(translation, rot);
     }
 

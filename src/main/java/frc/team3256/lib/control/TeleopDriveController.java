@@ -18,7 +18,29 @@ public class TeleopDriveController {
     }
 
     //Arcade Drive
-    public static DrivePower arcadeDrive(double throttle, double turn) { }
+    public static DrivePower arcadeDrive(double throttle, double turn) {
+        if(isCubed) {
+            throttle = Math.pow(throttle, 3);
+            turn = Math.pow(turn, 3);
+        }
+
+        double left = throttle + turn;
+        double right = throttle - turn;
+
+        /*if (left > right && left > 1){
+            skim = left - 1;
+            left = 1;
+            right += skim;
+        }
+
+        else if (right > left && right > 1){
+            skim = right - 1;
+            right = 1;
+            left += skim;
+        } */
+
+        return new DrivePower(left, right);
+    }
 
     //Curvature or Cheesy Drive
     public static DrivePower curvatureDrive(double throttle, double turn, boolean turnInPlace){

@@ -5,6 +5,8 @@ import frc.team3256.lib.DrivePower;
 public class TeleopDriveController {
 
     private static boolean isCubed = false;
+    private static final int turnScalar = 1;
+    private static double skim = 0;
 
     //Tank Drive
     public static DrivePower tankDrive(double leftPower, double rightPower) {
@@ -21,13 +23,36 @@ public class TeleopDriveController {
             throttle = Math.pow(throttle, 3);
             turn = Math.pow(turn, 3);
         }
+
         double left = throttle + turn;
         double right = throttle - turn;
+
+        /*if (left > right && left > 1){
+            skim = left - 1;
+            left = 1;
+            right += skim;
+        }
+
+        else if (right > left && right > 1){
+            skim = right - 1;
+            right = 1;
+            left += skim;
+        } */
+
         return new DrivePower(left, right);
     }
 
     //Curvature or Cheesy Drive
     public static DrivePower curvatureDrive(double throttle, double turn, boolean turnInPlace){
-        return new DrivePower(0,0);
+        if(isCubed) {
+            throttle = Math.pow(throttle, 3);
+            turn = Math.pow(turn, 3);
+        }
+        if (!turnInPlace){
+            turn = turn * turnScalar * Math.abs(throttle);
+        }
+        double left = throttle + turn;
+        double right = throttle - turn;
+        return new DrivePower(left, right);
     }
 }

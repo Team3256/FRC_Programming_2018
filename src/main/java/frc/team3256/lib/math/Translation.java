@@ -18,8 +18,8 @@ public class Translation {
      * @param y y value
      */
     public Translation(double x, double y) {
-        this.x = x < kEpsilon ? 0.0 : x;
-        this.y = y < kEpsilon ? 0.0 : y;
+        this.x = Math.abs(x) < kEpsilon ? 0.0 : x;
+        this.y = Math.abs(y) < kEpsilon ? 0.0 : y;
     }
 
     /**
@@ -75,7 +75,7 @@ public class Translation {
      * @return the inverse of this translation vector
      */
     public Translation inverse() {
-        return new Translation(-x, -y);
+        return new Translation((-1.0)*x, (-1.0)*y);
     }
 
     /**
@@ -121,6 +121,7 @@ public class Translation {
      * This calculates the angle of this translation with respect to the positive x axis.
      *
      * @return angle of this translation with respect to the positive x axis
+     *
      */
     public Rotation direction() {
         return new Rotation(x, y, true);
@@ -140,7 +141,7 @@ public class Translation {
         }
         double val = this.dot(other)/(this.norm()*other.norm());
         //Make sure val is between 1 and -1, as arccos will throw an error outside that bound
-        return Rotation.fromRadians(Math.acos(Math.min(1.0, Math.max(val, 1.0))));
+        return Rotation.fromRadians(Math.acos(Math.min(1.0, Math.max(val, -1.0))));
     }
 
 

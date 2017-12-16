@@ -19,10 +19,10 @@ public class Rotation {
      * @param normalize whether or not we should "normalize" this rotation {@link #normalize()}
      */
     public Rotation(double cos, double sin, boolean normalize) {
-        this.cos = cos < kEpsilon ? 0.0 : cos;
-        this.sin = sin < kEpsilon ? 0.0 : sin;
+        this.cos = Math.abs(cos) < kEpsilon ? 0.0 : cos;
+        this.sin = Math.abs(sin) < kEpsilon ? 0.0 : sin;
         if (normalize) normalize();
-    }
+}
 
     public Rotation(double cos, double sin){
         this(cos, sin, false);
@@ -79,9 +79,14 @@ public class Rotation {
         if (Math.abs(this.cos) < kEpsilon){
             return this.sin >= 0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
         }
-        return this.cos/this.sin;
+        return this.sin/this.cos;
     }
 
+
+    /**
+     * Returns between -pi and pi
+     * @return The angle in radians
+     */
     public double radians(){
         return Math.atan2(sin, cos);
     }

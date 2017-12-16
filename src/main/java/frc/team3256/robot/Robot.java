@@ -1,6 +1,7 @@
 package frc.team3256.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Looper;
 import frc.team3256.lib.control.TeleopDriveController;
 import frc.team3256.lib.hardware.ADXRS453_Calibrator;
@@ -41,6 +42,7 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         disabledLooper.stop();
         enabledLooper.start();
+        driveTrain.configureTalonsForVelocity();
     }
 
     @Override
@@ -57,9 +59,6 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-        double throttle = ControlsInterface.getThrottle();
-        double turn = ControlsInterface.getTurn();
-        driveTrain.setOpenLoop(TeleopDriveController.arcadeDrive(throttle, turn));
     }
 
     @Override

@@ -10,15 +10,29 @@ public class TeleopDriveController {
 
     //Tank Drive
     public static DrivePower tankDrive(double leftPower, double rightPower) {
+
         if(isCubed) {
             leftPower = Math.pow(leftPower, 3);
             rightPower = Math.pow(rightPower, 3);
+        }
+
+        if (Math.abs(leftPower) <= 0.25){
+            leftPower = 0;
+        }
+        if (Math.abs(rightPower) <= 0.25){
+            rightPower = 0;
         }
         return new DrivePower(leftPower, rightPower);
     }
 
     //Arcade Drive
     public static DrivePower arcadeDrive(double throttle, double turn) {
+        if (Math.abs(throttle) <= 0.3){
+            throttle = 0;
+        }
+        if (Math.abs(turn) <= 0.3){
+            turn = 0;
+        }
         if(isCubed) {
             throttle = Math.pow(throttle, 3);
             turn = Math.pow(turn, 3);

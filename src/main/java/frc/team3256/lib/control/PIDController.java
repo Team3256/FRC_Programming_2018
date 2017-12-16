@@ -83,6 +83,10 @@ public class PIDController {
         return output;
     }
 
+    public double getError(){
+        return error;
+    }
+
     /**
      * @param tolerance - How far the robot can be from target position
      */

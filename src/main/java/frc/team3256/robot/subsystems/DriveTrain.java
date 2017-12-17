@@ -23,7 +23,6 @@ public class DriveTrain implements Loop {
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
     }
-    PIDController pidController = new PIDController();
 
     public enum DriveControlMode {
         OPEN_LOOP,
@@ -34,6 +33,7 @@ public class DriveTrain implements Loop {
 
     @Override
     public void init(double timestamp) {
+        setOpenLoop(0, 0);
         leftMaster.setPosition(0);
         rightMaster.setPosition(0);
         gyro.reset();
@@ -48,23 +48,26 @@ public class DriveTrain implements Loop {
                 double left = ControlsInterface.getTankLeft();
                 double right = ControlsInterface.getTankRight();
                 DrivePower power = TeleopDriveController.tankDrive(left, right);
-                System.out.println("MOTOR OUTPUT" + leftMaster.getOutputVoltage()/leftMaster.getBusVoltage());
-                System.out.println("MOTOR SPEED " + leftMaster.getSpeed());
-                System.out.println("Error:" + pidController.getError());
-                setVelocitySetpoint(power.getLeft() * 175.0, power.getRight() * 175.0);
+                //System.out.println("MOTOR OUTPUT" + leftMaster.getOutputVoltage()/leftMaster.getBusVoltage());
+                //System.out.println("MOTOR SPEED " + leftMaster.getSpeed());
+                System.out.println("LEFT ERROR: " + getLeftVelocityError());
+                updateVelocitySetpoint(power.getLeft()*Constants.kMaxVelocityHighGearInPerSec
+                        , power.getRight()*Constants.kMaxVelocityHighGearInPerSec);
                 break;
+            /*
             case TURN_TO_ANGLE:
                 updateTurnToAngle();
                 break;
             case DRIVE_TO_DISTANCE:
-    updateDriveToDistance();
+                updateDriveToDistance();
                 break;
+            */
 }
     }
 
     @Override
     public void end(double timestamp) {
-
+        setOpenLoop(0, 0);
     }
 
     private DriveTrain() {
@@ -88,6 +91,8 @@ public class DriveTrain implements Loop {
 
         gyro = new ADXRS453_Gyro();
 
+        /*
+        We haven't tested this yet
         leftMaster.setPID(Constants.kDriveMotionMagicP, Constants.kDriveMotionMagicI, Constants.kDriveMotionMagicD,
                 Constants.kDriveMotionMagicF, Constants.kDriveMotionMagicIZone, Constants.kDriveMotionMagicCloseLoopRampRate,
                 Constants.kDriveMotionMagicProfile);
@@ -98,6 +103,7 @@ public class DriveTrain implements Loop {
         rightMaster.setMotionMagicAcceleration((Constants.kDriveMotionMagicAcceleration));
         leftMaster.setMotionMagicCruiseVelocity(Constants.kDriveMotionMagicCruiseVelocity);
         rightMaster.setMotionMagicCruiseVelocity(Constants.kDriveMotionMagicCruiseVelocity);
+        */
 
         leftMaster.setPID(Constants.kDriveVelocityP, Constants.kDriveVelocityI, Constants.kDriveVelocityD,
                 Constants.kDriveVelocityF, Constants.kDriveVelocityIZone, Constants.kDriveVelocityCloseLoopRampRate,
@@ -117,12 +123,37 @@ public class DriveTrain implements Loop {
         return rotToInches(rightMaster.getPosition());
     }
 
+    /**
+     * @return left velocity in in/sec
+     */
     public double getLeftVelocity(){
         return rpmToInchesPerSec(leftMaster.getSpeed());
     }
 
+    /**
+     * @return right velocity in in/sec
+     */
     public double getRightVelocity(){
         return rpmToInchesPerSec(rightMaster.getSpeed());
+    }
+
+    //TODO: test these methods
+    public double getLeftVelocityError(){
+        if (controlMode!=DriveControlMode.VELOCITY){
+            System.out.println("ERROR: WE ARE NOT IN VELOCITY CONTROL MODE");
+            return 0;
+        }
+        //Returns in in/sec
+        return rpmToInchesPerSec(leftMaster.getSetpoint())-getLeftVelocity();
+    }
+
+    public double getRightVelocityError(){
+        if (controlMode != DriveControlMode.VELOCITY){
+            System.out.println("ERROR: WE ARE NOT IN VELOCITY CONTROL MODE");
+            return 0;
+        }
+        //Returns in in/sec
+        return rpmToInchesPerSec(rightMaster.getSetpoint()-getRightVelocity());
     }
 
     public double rotToInches(double rot){
@@ -145,26 +176,20 @@ public class DriveTrain implements Loop {
         return (rpm*4096)/600;
     }
 
-
-
     public void configureTalonsForOpenLoop(){
-        if (controlMode != DriveControlMode.OPEN_LOOP){
-            controlMode = DriveControlMode.OPEN_LOOP;
-            leftMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-            rightMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-        }
+        leftMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+        rightMaster.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
     }
 
     public void configureTalonsForVelocity() {
-        if (controlMode != DriveControlMode.VELOCITY){
-            controlMode = DriveControlMode.VELOCITY;
-            leftMaster.changeControlMode(CANTalon.TalonControlMode.Speed);
-            leftMaster.setProfile(Constants.kDriveVelocityProfile);
-            rightMaster.changeControlMode(CANTalon.TalonControlMode.Speed);
-            rightMaster.setProfile(Constants.kDriveVelocityProfile);
-        }
+        leftMaster.changeControlMode(CANTalon.TalonControlMode.Speed);
+        leftMaster.setProfile(Constants.kDriveVelocityProfile);
+        rightMaster.changeControlMode(CANTalon.TalonControlMode.Speed);
+        rightMaster.setProfile(Constants.kDriveVelocityProfile);
     }
 
+    /*
+    We haven't started testing these yet
     public void configureTalonsForDistance() {
         if (controlMode != DriveControlMode.DRIVE_TO_DISTANCE)
             controlMode = DriveControlMode.DRIVE_TO_DISTANCE;
@@ -178,21 +203,41 @@ public class DriveTrain implements Loop {
         leftMaster.changeControlMode(CANTalon.TalonControlMode.MotionMagic);
         rightMaster.changeControlMode(CANTalon.TalonControlMode.MotionMagic);
     }
+    */
 
+    /**
+     * Changes the mode into Velocity mode, and sets the setpoints for the talons
+     * @param setpoint_left left velocity setpoint in inches/sec
+     * @param setpoint_right right velocity setpoint in inches/sec
+     */
     public void setVelocitySetpoint(double setpoint_left, double setpoint_right){
-        configureTalonsForVelocity();
-        leftMaster.set(inchesPerSecToRpm(setpoint_left));
-        rightMaster.set(inchesPerSecToRpm(setpoint_right));
+        if (controlMode != DriveControlMode.VELOCITY){
+            configureTalonsForVelocity();
+            controlMode = DriveControlMode.VELOCITY;
+        }
+        updateVelocitySetpoint(setpoint_left, setpoint_right);
     }
 
-    public double getLeftSetpoint(){
-        return leftMaster.getSetpoint();
+    /**
+     * Updates the Talons with a new velocity setpoint
+     * @param left_velocity left velocity setpoint in inches/sec
+     * @param right_velocity right velocity setpoint in inches/sec
+     */
+    public void updateVelocitySetpoint(double left_velocity, double right_velocity){
+        //if we aren't in the velocity control mode, then something is messed up, so set motors to 0 for safety
+        if (controlMode != DriveControlMode.VELOCITY){
+            System.out.println("ERROR: We should be in the velocity mode");
+            leftMaster.set(0);
+            rightMaster.set(0);
+            return;
+        }
+        //otherwise, update the talons with the new velocity setpoint
+        leftMaster.set(inchesPerSecToRpm(left_velocity));
+        rightMaster.set(inchesPerSecToRpm(right_velocity));
     }
 
-    public double getLeftClosedLoopError(){
-        return leftMaster.getClosedLoopError();
-    }
-
+    /*
+    We haven't started testing these yet
     public void setAngleSetpoint(double angle) {
         configureTalonsForAngle();
         leftMaster.set(degreesToInches(angle));
@@ -206,9 +251,17 @@ public class DriveTrain implements Loop {
         rightMaster.set(distance);
         this.distance = distance;
     }
+    */
 
+    /**
+     * Set the mode into open-loop mode (PercentVBus on the talons, and set the corresponding power
+     * @param leftPower
+     * @param rightPower
+     */
     public void setOpenLoop(double leftPower, double rightPower) {
-        configureTalonsForOpenLoop();
+        if (controlMode != DriveControlMode.OPEN_LOOP){
+            configureTalonsForOpenLoop();
+        }
         //TALON reverseOutput doesn't work in PercentVBus (open loop)
         leftMaster.set(-1.0*leftPower);
         rightMaster.set(rightPower);
@@ -218,21 +271,26 @@ public class DriveTrain implements Loop {
         setOpenLoop(power.getLeft(), power.getRight());
     }
 
+    /*
+    We haven't started testing these yet
     public void updateTurnToAngle() {
+        //TODO: Take in gyro heading and set a new setpoint based on the gyro heading. This accounts for wheels slipping.
         leftMaster.set(degreesToInches(angle));
         rightMaster.set(degreesToInches(angle));
     }
 
     public void updateDriveToDistance() {
+        //TODO: Take in gyro heading and adjust the left and right talon setpoints to make sure we are driving straight
         leftMaster.set(distance);
         rightMaster.set(distance);
     }
+    */
 
     public ADXRS453_Gyro getGyro(){
         return gyro;
     }
 
-    public static double degreesToInches(double degrees) {
+    public double degreesToInches(double degrees) {
         return Constants.ROBOT_TRACK * Math.PI * degrees / 360;
     }
 

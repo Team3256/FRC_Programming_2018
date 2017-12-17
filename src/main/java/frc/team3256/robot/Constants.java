@@ -9,6 +9,8 @@ public class Constants {
 
     public static final double ROBOT_TRACK = 25; //TBD
 
+    //Maximum free speed is 18 ft/sec, so we will go with 75 percent of that as our actual top speed
+    public static final double kMaxVelocityHighGearInPerSec = 18.0*12.0*0.75;
 
     // These are all for Motion Magic
     public static final double kDriveMotionMagicP = 0;

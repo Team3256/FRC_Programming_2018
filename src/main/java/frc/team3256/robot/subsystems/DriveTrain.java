@@ -41,6 +41,7 @@ public class DriveTrain implements Loop {
 
     @Override
     public void update(double timestamp) {
+        //System.out.println(getMode());
         switch (controlMode) {
             case OPEN_LOOP:
                 break;
@@ -50,7 +51,7 @@ public class DriveTrain implements Loop {
                 DrivePower power = TeleopDriveController.tankDrive(left, right);
                 //System.out.println("MOTOR OUTPUT" + leftMaster.getOutputVoltage()/leftMaster.getBusVoltage());
                 //System.out.println("MOTOR SPEED " + leftMaster.getSpeed());
-                System.out.println("LEFT ERROR: " + getLeftVelocityError());
+                //System.out.println("LEFT ERROR: " + getLeftVelocityError());
                 updateVelocitySetpoint(power.getLeft()*Constants.kMaxVelocityHighGearInPerSec
                         , power.getRight()*Constants.kMaxVelocityHighGearInPerSec);
                 break;
@@ -232,6 +233,7 @@ public class DriveTrain implements Loop {
             return;
         }
         //otherwise, update the talons with the new velocity setpoint
+        System.out.print(inchesPerSecToRpm(left_velocity)+" : "+leftMaster.getSpeed());
         leftMaster.set(inchesPerSecToRpm(left_velocity));
         rightMaster.set(inchesPerSecToRpm(right_velocity));
     }

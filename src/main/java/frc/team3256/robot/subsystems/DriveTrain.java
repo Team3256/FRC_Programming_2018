@@ -2,6 +2,7 @@ package frc.team3256.robot.subsystems;
 
 import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.control.PIDController;
@@ -41,9 +42,13 @@ public class DriveTrain implements Loop {
 
     @Override
     public void update(double timestamp) {
-        //System.out.println(getMode());
+        System.out.println(getMode());
         switch (controlMode) {
             case OPEN_LOOP:
+                double t = ControlsInterface.getTankLeft();
+                DrivePower p = TeleopDriveController.tankDrive(t, 0 );
+                setOpenLoop(p);
+                //System.out.println(leftMaster.getSpeed());
                 break;
             case VELOCITY:
                 double left = ControlsInterface.getTankLeft();
@@ -51,9 +56,10 @@ public class DriveTrain implements Loop {
                 DrivePower power = TeleopDriveController.tankDrive(left, right);
                 //System.out.println("MOTOR OUTPUT" + leftMaster.getOutputVoltage()/leftMaster.getBusVoltage());
                 //System.out.println("MOTOR SPEED " + leftMaster.getSpeed());
-                //System.out.println("LEFT ERROR: " + getLeftVelocityError());
+                System.out.println("LEFT ERROR: " + getLeftVelocityError());
+                SmartDashboard.putNumber("ERROR", getLeftVelocityError());
                 updateVelocitySetpoint(power.getLeft()*Constants.kMaxVelocityHighGearInPerSec
-                        , power.getRight()*Constants.kMaxVelocityHighGearInPerSec);
+                                , power.getRight()*Constants.kMaxVelocityHighGearInPerSec);
                 break;
             /*
             case TURN_TO_ANGLE:
@@ -233,7 +239,7 @@ public class DriveTrain implements Loop {
             return;
         }
         //otherwise, update the talons with the new velocity setpoint
-        System.out.print(inchesPerSecToRpm(left_velocity)+" : "+leftMaster.getSpeed());
+        System.out.println(inchesPerSecToRpm(left_velocity)+" : "+leftMaster.getSpeed());
         leftMaster.set(inchesPerSecToRpm(left_velocity));
         rightMaster.set(inchesPerSecToRpm(right_velocity));
     }
@@ -263,6 +269,7 @@ public class DriveTrain implements Loop {
     public void setOpenLoop(double leftPower, double rightPower) {
         if (controlMode != DriveControlMode.OPEN_LOOP){
             configureTalonsForOpenLoop();
+            controlMode = DriveControlMode.OPEN_LOOP;
         }
         //TALON reverseOutput doesn't work in PercentVBus (open loop)
         leftMaster.set(-1.0*leftPower);

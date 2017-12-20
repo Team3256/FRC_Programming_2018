@@ -16,12 +16,13 @@ public class TeleopDriveController {
             rightPower = Math.pow(rightPower, 3);
         }
 
-        if (Math.abs(leftPower) <= 0.25){
+        if (Math.abs(leftPower) <= 0.15){
             leftPower = 0;
         }
-        if (Math.abs(rightPower) <= 0.25){
-            rightPower = 0;
+        if (Math.abs(rightPower) <= 0.15){
+                rightPower = 0;
         }
+
         return new DrivePower(leftPower, rightPower);
     }
 

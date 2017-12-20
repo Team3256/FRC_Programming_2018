@@ -14,7 +14,7 @@ public class Looper {
     private Notifier notifier;
     private List<Loop> loops;
     private boolean started;
-    private double kPeriod = 1.0 / 100.0;
+    private double kPeriod = 1.0 / 200.0;
     private double measured_dt = 0.0;
     private double prev_timestamp = 0.0;
 

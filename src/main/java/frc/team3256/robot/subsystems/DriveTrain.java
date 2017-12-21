@@ -120,6 +120,7 @@ public class DriveTrain implements Loop {
                 Constants.kDriveVelocityProfile);
 
         leftMaster.reverseSensor(true);
+        rightMaster.reverseSensor(true);
     }
 
     public double getLeftDistance() {
@@ -239,7 +240,7 @@ public class DriveTrain implements Loop {
             return;
         }
         //otherwise, update the talons with the new velocity setpoint
-        System.out.println(inchesPerSecToRpm(left_velocity)+" : "+leftMaster.getSpeed());
+        System.out.println(inchesPerSecToRpm(right_velocity)+" : "+rightMaster.getSpeed());
         leftMaster.set(inchesPerSecToRpm(left_velocity));
         rightMaster.set(inchesPerSecToRpm(right_velocity));
     }

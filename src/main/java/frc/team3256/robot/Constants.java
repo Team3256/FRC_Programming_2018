@@ -25,11 +25,11 @@ public class Constants {
 
 
     // These are all for Velocity
-    public static final double kDriveVelocityP = 0.2;
-    public static final double kDriveVelocityI = 0;
-    public static final double kDriveVelocityD = 0;
+    public static final double kDriveVelocityP = 0.3;
+    public static final double kDriveVelocityI = 0.0003;
+    public static final double kDriveVelocityD = 6.0;
     public static final double kDriveVelocityF = 0.214;
-    public static final double kDriveVelocityCloseLoopRampRate = 0;
-    public static final int kDriveVelocityIZone = 0;
+    public static final double kDriveVelocityCloseLoopRampRate = 240.0; //240
+    public static final int kDriveVelocityIZone = 0;//72
     public static final int kDriveVelocityProfile = 1;
 }

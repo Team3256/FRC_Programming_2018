@@ -57,7 +57,9 @@ public class DriveTrain implements Loop {
                 //System.out.println("MOTOR OUTPUT" + leftMaster.getOutputVoltage()/leftMaster.getBusVoltage());
                 //System.out.println("MOTOR SPEED " + leftMaster.getSpeed());
                 System.out.println("LEFT ERROR: " + getLeftVelocityError());
-                SmartDashboard.putNumber("ERROR", getLeftVelocityError());
+                System.out.println("RIGHT ERROR" + getRightVelocityError());
+                SmartDashboard.putNumber("LEFT ERROR", getLeftVelocityError());
+                SmartDashboard.putNumber("RIGHT ERROR", getRightVelocityError());
                 updateVelocitySetpoint(power.getLeft()*Constants.kMaxVelocityHighGearInPerSec
                                 , power.getRight()*Constants.kMaxVelocityHighGearInPerSec);
                 break;
@@ -112,11 +114,11 @@ public class DriveTrain implements Loop {
         rightMaster.setMotionMagicCruiseVelocity(Constants.kDriveMotionMagicCruiseVelocity);
         */
 
-        leftMaster.setPID(Constants.kDriveVelocityP, Constants.kDriveVelocityI, Constants.kDriveVelocityD,
-                Constants.kDriveVelocityF, Constants.kDriveVelocityIZone, Constants.kDriveVelocityCloseLoopRampRate,
+        leftMaster.setPID(Constants.kLeftDriveVelocityP, Constants.kLeftDriveVelocityI, Constants.kLeftDriveVelocityD,
+                Constants.kLeftDriveVelocityF, Constants.kLeftDriveVelocityIZone, Constants.kLeftDriveVelocityCloseLoopRampRate,
                 Constants.kDriveVelocityProfile);
-        rightMaster.setPID(Constants.kDriveVelocityP, Constants.kDriveVelocityI, Constants.kDriveVelocityD,
-                Constants.kDriveVelocityF, Constants.kDriveVelocityIZone, Constants.kDriveVelocityCloseLoopRampRate,
+        rightMaster.setPID(Constants.kRightDriveVelocityP, Constants.kRightDriveVelocityI, Constants.kRightDriveVelocityD,
+                Constants.kRightDriveVelocityF, Constants.kRightDriveVelocityIZone, Constants.kRightDriveVelocityCloseLoopRampRate,
                 Constants.kDriveVelocityProfile);
 
         leftMaster.reverseSensor(true);
@@ -238,6 +240,12 @@ public class DriveTrain implements Loop {
             leftMaster.set(0);
             rightMaster.set(0);
             return;
+        }
+        if (Math.abs(left_velocity) <= 24){
+            left_velocity = 0;
+        }
+        else if (Math.abs(right_velocity) <= 24){
+            right_velocity = 0;
         }
         //otherwise, update the talons with the new velocity setpoint
         System.out.println(inchesPerSecToRpm(right_velocity)+" : "+rightMaster.getSpeed());

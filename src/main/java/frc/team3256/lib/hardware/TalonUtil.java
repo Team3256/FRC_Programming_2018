@@ -21,7 +21,7 @@ public class TalonUtil{
         talon.setStatusFrameRateMs(CANTalon.StatusFrameRate.AnalogTempVbat, 100);
         talon.setStatusFrameRateMs(CANTalon.StatusFrameRate.PulseWidth, 100);
         //disable brake mode on default
-        talon.enableBrakeMode(false);
+        talon.enableBrakeMode(true);
         //no default reverse
         talon.reverseSensor(false);
         talon.reverseOutput(false);

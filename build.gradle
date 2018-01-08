@@ -5,6 +5,17 @@ plugins {
     id "jaci.openrio.gradle.GradleRIO" version "2017.11.27"
 }
 
+repositories { jcenter() }
+
+sourceSets {
+    test {
+        java {
+            srcDir 'frc.team3256.lib'
+        }
+    }
+}
+
+
 def TEAM = 3256
 def ROBOT_CLASS = "frc.team3256.robot.Robot"
 
@@ -23,12 +34,18 @@ deploy {
     }
 }
 
+test {
+    testLogging.showStandardStreams = true
+}
+
 // Defining my dependencies. In this case, WPILib (+ friends), CTRE Toolsuite (Talon SRX)
 // and NavX.
 dependencies {
+    testCompile 'junit:junit:4.12'
+    compile 'junit:junit:4.12'
     compile wpilib()
     compile ctre()
-    compile navx()
+    //compile navx()
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')

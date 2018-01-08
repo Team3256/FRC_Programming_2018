@@ -45,10 +45,7 @@ public class DriveTrain implements Loop {
         System.out.println(getMode());
         switch (controlMode) {
             case OPEN_LOOP:
-                double t = ControlsInterface.getTankLeft();
-                DrivePower p = TeleopDriveController.tankDrive(t, 0 );
-                setOpenLoop(p);
-                //System.out.println(leftMaster.getSpeed());
+                //Fall through, all driver/manipulator input is handled in TeleopPeriodic
                 break;
             case VELOCITY:
                 double left = ControlsInterface.getTankLeft();

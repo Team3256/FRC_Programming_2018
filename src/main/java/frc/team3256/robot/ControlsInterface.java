@@ -21,4 +21,8 @@ public class ControlsInterface {
     public static double getTurn(){
         return driver.getX(GenericHID.Hand.kRight);
     }
+
+    public static boolean getQuickTurn(){
+        return driver.getBumper(GenericHID.Hand.kRight);
+    }
 }

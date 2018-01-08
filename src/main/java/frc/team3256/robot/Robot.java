@@ -42,7 +42,7 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         disabledLooper.stop();
         enabledLooper.start();
-        driveTrain.setVelocitySetpoint(0,0);
+        //driveTrain.setVelocitySetpoint(0,0);
     }
 
     @Override
@@ -59,6 +59,11 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
+        double throttle = ControlsInterface.getThrottle();
+        double turn = ControlsInterface.getTurn();
+        boolean quickTurn = ControlsInterface.getQuickTurn();
+        DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
+        driveTrain.setOpenLoop(power);
     }
 
     @Override

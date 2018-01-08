@@ -20,8 +20,8 @@ public class TalonUtil{
         talon.setStatusFrameRateMs(CANTalon.StatusFrameRate.QuadEncoder, 100);
         talon.setStatusFrameRateMs(CANTalon.StatusFrameRate.AnalogTempVbat, 100);
         talon.setStatusFrameRateMs(CANTalon.StatusFrameRate.PulseWidth, 100);
-        //enable brake mode on default
-        talon.enableBrakeMode(true);
+        //disable brake mode on default
+        talon.enableBrakeMode(false);
         //no default reverse
         talon.reverseSensor(false);
         talon.reverseOutput(false);

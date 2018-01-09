@@ -36,4 +36,18 @@ public class TwistTest extends TestCase {
         assertEquals(pose.getTranslation().y(), 0.0);
         assertEquals(pose.getRotation().radians(), 0.0);
     }
+
+    @Test
+    public void testLog(){
+        RigidTransform pose = new RigidTransform(new Translation(2.0, 2.0), Rotation.fromDegrees(90.0));
+        Twist twist = RigidTransform.log(pose);
+        assertEquals(twist.dx(), Math.PI, kEpsilon);
+        assertEquals(twist.dy(), 0.0, kEpsilon);
+        assertEquals(twist.dtheta(), Math.PI/2.0, kEpsilon);
+
+        pose = RigidTransform.exp(twist);
+        assertEquals(pose.getTranslation().x(), 2.0, kEpsilon);
+        assertEquals(pose.getTranslation().y(), 2.0, kEpsilon);
+        assertEquals(pose.getRotation().radians(), Math.PI/2.0, kEpsilon);
+    }
 }

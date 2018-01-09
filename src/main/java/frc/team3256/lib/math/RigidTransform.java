@@ -95,6 +95,29 @@ public class RigidTransform {
     }
 
     /**
+     * Inverse of above
+     */
+    public static Twist log(RigidTransform transform){
+        double dtheta = transform.getRotation().radians();
+        double half_dtheta = dtheta/2.0;
+        double cos_minus_one = transform.rotation.cos() - 1.0;
+        double halftheta_by_tan_of_halftheta;
+        if (Math.abs(cos_minus_one) < kEpsilon){
+            halftheta_by_tan_of_halftheta = 1.0-1.0/12.0*Math.pow(dtheta, 2);
+        }
+        else{
+            halftheta_by_tan_of_halftheta = -(half_dtheta * transform.getRotation().sin())/cos_minus_one;
+        }
+        Translation ret = transform.getTranslation().rotate(new Rotation(halftheta_by_tan_of_halftheta, -half_dtheta));
+        return new Twist(ret.x(), ret.y(), dtheta);
+    }
+
+    public boolean isColinear(RigidTransform other){
+        Twist twist = log(inverse().transform(other));
+        return Math.abs(twist.dy()) < kEpsilon && Math.abs(twist.dtheta()) < kEpsilon;
+    }
+
+    /**
      * Helper method to calculate intersection of two Transforms
      * @param a Transform a
      * @param b Transform b

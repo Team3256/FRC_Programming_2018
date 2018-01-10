@@ -1,6 +1,5 @@
 plugins {
     id "java"
-    id "eclipse"
     id "idea"
     id "jaci.openrio.gradle.GradleRIO" version "2018.01.07"
 }
@@ -48,7 +47,6 @@ dependencies {
     compile 'junit:junit:4.12'
     compile wpilib()
     compile ctre()
-    //compile navx()
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')

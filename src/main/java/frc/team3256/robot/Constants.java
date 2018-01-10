@@ -8,6 +8,7 @@ public class Constants {
     public static final int kRightDriveSlave = 4;
 
     public static final double ROBOT_TRACK = 25; //TBD
+    public static final double WHEEL_DIAMETER = 4.0;
 
     //Maximum free speed is 18 ft/sec, so we will go with 75 percent of that as our actual top speed
     public static final double kMaxVelocityHighGearInPerSec = 18.0*12.0*0.75;

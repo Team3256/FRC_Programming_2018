@@ -28,7 +28,7 @@ import java.nio.ByteOrder;
  * <p>Modified by Team 3256
  */
 @SuppressWarnings({"TypeName", "AbbreviationAsWordInName", "PMD.UnusedPrivateField"})
-public class ADXRS453_Gyro extends GyroBase implements Gyro, PIDSource, LiveWindowSendable {
+public class ADXRS453_Gyro extends GyroBase implements Gyro{
     private static final double kSamplePeriod = 0.001;
     public static final double kCalibrationSampleTime = 5.0;
     private static final double kDegreePerSecondPerLSB = 0.0125;

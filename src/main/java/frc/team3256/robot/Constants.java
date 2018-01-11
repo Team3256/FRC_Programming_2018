@@ -42,4 +42,9 @@ public class Constants {
 
     public static final double kRightDriveVelocityCloseLoopRampRate = 120.0; //240
     public static final int kRightDriveVelocityIZone = 0;//72
+
+    //Game Data
+    public static final int SWITCH_INDEX = 0;
+    public static final int SCALE_INDEX = 1;
+    public static final int OPPONENT_SWITCH_INDEX = 2;
 }

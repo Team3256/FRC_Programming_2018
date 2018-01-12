@@ -11,6 +11,7 @@ import frc.team3256.lib.Loop;
 import frc.team3256.lib.control.TeleopDriveController;
 import frc.team3256.lib.hardware.ADXRS453_Gyro;
 import frc.team3256.lib.hardware.TalonUtil;
+import frc.team3256.lib.math.Rotation;
 import frc.team3256.robot.Constants;
 import frc.team3256.robot.ControlsInterface;
 import org.opencv.core.Mat;
@@ -292,6 +293,10 @@ public class DriveTrain implements Loop {
 
     public ADXRS453_Gyro getGyro(){
         return gyro;
+    }
+
+    public Rotation getAngle(){
+        return Rotation.fromDegrees(gyro.getAngle());
     }
 
     public double degreesToInches(double degrees) {

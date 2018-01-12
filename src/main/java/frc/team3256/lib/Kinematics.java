@@ -2,11 +2,12 @@ package frc.team3256.lib;
 
 import frc.team3256.lib.math.RigidTransform;
 import frc.team3256.lib.math.Twist;
+import frc.team3256.robot.Constants;
 
 /**
  * Kinematic functions for a differential drive robot
  */
-public class Kinematics {
+    public class Kinematics {
 
     private static final double kEpsilon = 1E-9;
 
@@ -19,15 +20,24 @@ public class Kinematics {
      * @param deltaPos the change in (x, y, theta) of the robot over the past iteration
      * @return the new pose of the robot
      */
-    public static RigidTransform forwardKinematics(RigidTransform currentPose, Twist deltaPos){
+    public static RigidTransform integrateForwardKinematics(RigidTransform currentPose, Twist deltaPos){
         return currentPose.transform(RigidTransform.exp(deltaPos));
     }
 
-    public static RigidTransform forwardKinematics(RigidTransform currentPose, double left_delta, double right_delta, double theta_delta){
-        double dx = (left_delta + right_delta)/2.0;
-        //dy is 0, as differential drive robots don't move sideways
-        Twist twist = new Twist(dx, 0.0, theta_delta);
-        return forwardKinematics(currentPose, twist);
+    public static RigidTransform integrateForwardKinematics(RigidTransform currentPose, double leftDelta, double rightDelta, double thetaDelta){
+        Twist twist = forwardKinematics(leftDelta, rightDelta, thetaDelta);
+        return integrateForwardKinematics(currentPose, twist);
+    }
+
+    public static Twist forwardKinematics(double leftDelta, double rightDelta){
+        double deltaRot = (rightDelta - leftDelta)/Constants.ROBOT_TRACK;
+        return forwardKinematics(leftDelta, rightDelta, deltaRot);
+    }
+
+    public static Twist forwardKinematics(double leftDelta, double rightDelta, double rotationDelta){
+        double dx = (leftDelta + rightDelta)/2.0;
+        //dy is 0, because we don't move sideways
+        return new Twist(dx, 0.0, rotationDelta);
     }
 
     /**

@@ -11,6 +11,7 @@ import frc.team3256.robot.subsystems.DriveTrain;
 public class Robot extends IterativeRobot {
 
     DriveTrain driveTrain;
+    PoseEstimator poseEstimator;
     Looper disabledLooper;
     Looper enabledLooper;
     ADXRS453_Calibrator gyroCalibrator;
@@ -18,13 +19,16 @@ public class Robot extends IterativeRobot {
     @Override
     public void robotInit() {
         driveTrain = DriveTrain.getInstance();
+        poseEstimator = new PoseEstimator();
         gyroCalibrator = new ADXRS453_Calibrator(driveTrain.getGyro());
         //disabled looper -> recalibrate gyro
         disabledLooper = new Looper();
         disabledLooper.addLoop(gyroCalibrator);
+        disabledLooper.addLoop(poseEstimator);
         //enabled looper -> control loop for subsystems
         enabledLooper = new Looper();
         enabledLooper.addLoop(driveTrain);
+        enabledLooper.addLoop(poseEstimator);
     }
 
     @Override

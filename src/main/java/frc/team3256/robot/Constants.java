@@ -13,6 +13,9 @@ public class Constants {
     //Maximum free speed is 18 ft/sec, so we will go with 75 percent of that as our actual top speed
     public static final double kMaxVelocityHighGearInPerSec = 18.0*12.0*0.75;
 
+    public static final double kControlLoopPeriod = 1.0/200.0;
+    public static final double kSlowLoopPeriod = 1.0/50.0;
+
     // These are all for Motion Magic
     public static final double kDriveMotionMagicP = 0;
     public static final double kDriveMotionMagicI = 0;

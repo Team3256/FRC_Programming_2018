@@ -22,10 +22,10 @@ public class Robot extends IterativeRobot {
         poseEstimator = new PoseEstimator();
         gyroCalibrator = new ADXRS453_Calibrator(driveTrain.getGyro());
         //disabled looper -> recalibrate gyro
-        disabledLooper = new Looper();
+        disabledLooper = new Looper(Constants.kSlowLoopPeriod);
         disabledLooper.addLoop(gyroCalibrator);
         //enabled looper -> control loop for subsystems
-        enabledLooper = new Looper();
+        enabledLooper = new Looper(Constants.kControlLoopPeriod);
         enabledLooper.addLoop(driveTrain);
         enabledLooper.addLoop(poseEstimator);
     }

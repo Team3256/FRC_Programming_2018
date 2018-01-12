@@ -14,11 +14,12 @@ public class Looper {
     private Notifier notifier;
     private List<Loop> loops;
     private boolean started;
-    private double kPeriod = 1.0 / 200.0;
+    private double period;
     private double measured_dt = 0.0;
     private double prev_timestamp = 0.0;
 
-    public Looper() {
+    public Looper(double period) {
+        this.period = period;
         loops = new ArrayList<>();
         notifier =
                 new Notifier(
@@ -45,7 +46,7 @@ public class Looper {
             loop.init(prev_timestamp);
         }
         started = true;
-        notifier.startPeriodic(kPeriod);
+        notifier.startPeriodic(period);
     }
 
     /**

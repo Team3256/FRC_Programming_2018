@@ -24,7 +24,6 @@ public class Robot extends IterativeRobot {
         //disabled looper -> recalibrate gyro
         disabledLooper = new Looper();
         disabledLooper.addLoop(gyroCalibrator);
-        disabledLooper.addLoop(poseEstimator);
         //enabled looper -> control loop for subsystems
         enabledLooper = new Looper();
         enabledLooper.addLoop(driveTrain);

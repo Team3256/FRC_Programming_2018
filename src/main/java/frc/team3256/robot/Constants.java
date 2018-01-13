@@ -10,7 +10,7 @@ public class Constants {
     public static final int kPortSix = 6;
     public static final int kPortSeven = 7;
     public static final int kPortEight = 8;
-    public static final int kXboxPort = 9;
+    public static final int kXboxPort = 0;
 
 
     public static final double kPresetOnePower = 0.5;

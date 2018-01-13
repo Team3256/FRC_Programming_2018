@@ -50,7 +50,7 @@ public class TalonUtil{
     }
 
     public static TalonSRX generateSlaveTalon(int id, int masterId) {
-        TalonSRX  talon = new TalonSRX(id);
+        TalonSRX talon = new TalonSRX(id);
         talon.set(ControlMode.Follower, masterId);
         //we don't really need slaves to update fast, so update at 1hz
         talon.setControlFramePeriod(ControlFrame.Control_3_General, 1000);

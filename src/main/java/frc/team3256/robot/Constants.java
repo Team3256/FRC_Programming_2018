@@ -2,19 +2,24 @@ package frc.team3256.robot;
 
 public class Constants {
 
+    //Ports
+    public static final int leftIntakePort = 0;
+    public static final int rightIntakePort = 1;
+    public static final int pivotLeftForward = 3;
+    public static final int pivotLeftReverse = 4;
+    public static final int pivotRightForward = 5;
+    public static final int pivotRightReverse = 6;
+
+
     public static final int kLeftDriveMaster = 1;
     public static final int kLeftDriveSlave = 2;
     public static final int kRightDriveMaster = 3;
     public static final int kRightDriveSlave = 4;
 
     public static final double ROBOT_TRACK = 25; //TBD
-    public static final double WHEEL_DIAMETER = 4.0;
 
     //Maximum free speed is 18 ft/sec, so we will go with 75 percent of that as our actual top speed
     public static final double kMaxVelocityHighGearInPerSec = 18.0*12.0*0.75;
-
-    public static final double kControlLoopPeriod = 1.0/200.0;
-    public static final double kSlowLoopPeriod = 1.0/50.0;
 
     // These are all for Motion Magic
     public static final double kDriveMotionMagicP = 0;
@@ -46,8 +51,7 @@ public class Constants {
     public static final double kRightDriveVelocityCloseLoopRampRate = 120.0; //240
     public static final int kRightDriveVelocityIZone = 0;//72
 
-    //Game Data
-    public static final int SWITCH_INDEX = 0;
-    public static final int SCALE_INDEX = 1;
-    public static final int OPPONENT_SWITCH_INDEX = 2;
+    //Intake Class Motor Power
+    public static final double intakeMotorPower = 0;
+    public static final double outtakeMotorPower = -0;
 }

@@ -23,7 +23,7 @@ public class ControlsInterface {
         return driver.getRawAxis(2);
         }
 
-public static boolean getQuickTurn(){
+    public static boolean getQuickTurn(){
         return driver.getRawButton(6);
         }
 }

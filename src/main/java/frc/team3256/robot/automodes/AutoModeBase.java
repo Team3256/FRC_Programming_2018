@@ -15,7 +15,12 @@ public abstract class AutoModeBase {
         } catch (AutoModeEndedException e) {
             System.out.println("Auto mode ended early");
         }
+        done();
         System.out.println("Auto mode done");
+    }
+
+    public void done() {
+
     }
 
     public void stop() {

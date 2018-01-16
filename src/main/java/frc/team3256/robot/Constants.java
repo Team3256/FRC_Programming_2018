@@ -30,6 +30,9 @@ public class Constants {
     public static final int kElevatorMaster = 5;
     public static final int kElevatorSlave = 6;
 
+    public static final int kCarriageRollerLeft = 7;
+    public static final int kCarriageRollerRight = 8;
+
     //Maximum free speed is 18 ft/sec, so we will go with 75 percent of that as our actual top speed
     public static final double kMaxVelocityHighGearInPerSec = 18.0*12.0*0.75;
 

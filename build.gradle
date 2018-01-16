@@ -1,7 +1,7 @@
 plugins {
     id "java"
     id "idea"
-    id "jaci.openrio.gradle.GradleRIO" version "2018.01.07"
+    id "jaci.openrio.gradle.GradleRIO" version "2018.01.15"
 }
 
 repositories { jcenter() }
@@ -15,7 +15,7 @@ sourceSets {
 }
 
 wpi{
-    ctreVersion = "5.1.1.1"
+    ctreVersion = "5.2.1.1"
 }
 
 def TEAM = 3256

@@ -1,4 +1,4 @@
-package frc.team3256.lib.gamedata;
+package frc.team3256.robot.gamedata;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.team3256.robot.Constants;
@@ -18,15 +18,15 @@ public class GameDataAccessor {
     }
 
     public static Side getSwitchSide() {
-        return getSide(Constants.SWITCH_INDEX);
+        return getSide(Constants.kSwitchIndex);
     }
 
     public static Side getScaleSide() {
-        return getSide(Constants.SCALE_INDEX);
+        return getSide(Constants.kScaleIndex);
     }
 
     public static Side getOpponentSwitchSide() {
-        return getSide(Constants.OPPONENT_SWITCH_INDEX);
+        return getSide(Constants.kOpponentSwitchIndex);
     }
 
     public enum Side {

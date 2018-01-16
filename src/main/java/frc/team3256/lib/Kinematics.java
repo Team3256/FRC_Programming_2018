@@ -30,7 +30,7 @@ import frc.team3256.robot.Constants;
     }
 
     public static Twist forwardKinematics(double leftDelta, double rightDelta){
-        double deltaRot = (rightDelta - leftDelta)/Constants.ROBOT_TRACK;
+        double deltaRot = (rightDelta - leftDelta)/Constants.kRobotTrack;
         return forwardKinematics(leftDelta, rightDelta, deltaRot);
     }
 

@@ -156,7 +156,7 @@ public class DriveTrain implements Loop {
             return 0;
         }
         //Returns in in/sec
-        return Constants.WHEEL_DIAMETER*Math.PI/leftMaster.getClosedLoopError(0)*100;
+        return Constants.kWheelDiameter*Math.PI/leftMaster.getClosedLoopError(0)*100;
     }
 
     public double getRightVelocityError(){
@@ -165,7 +165,7 @@ public class DriveTrain implements Loop {
             return 0;
         }
         //Returns in in/sec
-        return Constants.WHEEL_DIAMETER*Math.PI/rightMaster.getClosedLoopError(0)*100;
+        return Constants.kWheelDiameter*Math.PI/rightMaster.getClosedLoopError(0)*100;
     }
 
     public double rotToInches(double rot){
@@ -300,7 +300,7 @@ public class DriveTrain implements Loop {
     }
 
     public double degreesToInches(double degrees) {
-        return Constants.ROBOT_TRACK * Math.PI * degrees / 360;
+        return Constants.kRobotTrack * Math.PI * degrees / 360;
     }
 
     public DriveControlMode getMode(){

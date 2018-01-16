@@ -1,4 +1,4 @@
-package frc.team3256.robot.automodes.actions;
+package frc.team3256.robot.auto.actions;
 
 import java.util.ArrayList;
 import java.util.List;

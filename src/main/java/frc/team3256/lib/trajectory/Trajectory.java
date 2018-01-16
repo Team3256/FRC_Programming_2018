@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class Trajectory {
 
-
     public static class Point {
         private double pos;
         private double vel;
@@ -34,6 +33,7 @@ public class Trajectory {
             return time;
         }
     }
+
     public ArrayList<Point> points;
 
     public Trajectory(int size){
@@ -47,9 +47,9 @@ public class Trajectory {
     @Override
     public String toString(){
         String rv = "";
-        rv += "Pos,Time\n";
+        rv += "Pos,Vel,Accel,Time\n";
         for(Point p : points){
-            rv += p.pos + "," + p.time + "\n";
+            rv += p.pos + "," + p.vel + "," + p.acc + "," + p.time + "\n";
         }
         return rv;
     }

@@ -50,19 +50,19 @@ public class DriveTrain implements Loop {
                 //Fall through, all driver/manipulator input is handled in TeleopPeriodic
                 break;
             case VELOCITY:
+                /*
                 double left = ControlsInterface.getTankLeft();
                 double right = ControlsInterface.getTankRight();
                 DrivePower power = TeleopDriveController.tankDrive(left, right);
                 //System.out.println("MOTOR OUTPUT" + leftMaster.getOutputVoltage()/leftMaster.getBusVoltage());
                 //System.out.println("MOTOR SPEED " + leftMaster.getSpeed());
-                /*
                 System.out.println("LEFT ERROR: " + getLeftVelocityError());
                 System.out.println("RIGHT ERROR" + getRightVelocityError());
                 SmartDashboard.putNumber("LEFT ERROR", getLeftVelocityError());
                 SmartDashboard.putNumber("RIGHT ERROR", getRightVelocityError());
-                   */
                 updateVelocitySetpoint(power.getLeft()*Constants.kMaxVelocityHighGearInPerSec
                                 , power.getRight()*Constants.kMaxVelocityHighGearInPerSec);
+                */
                 break;
             /*
             case TURN_TO_ANGLE:

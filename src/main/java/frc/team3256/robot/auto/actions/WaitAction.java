@@ -1,4 +1,4 @@
-package frc.team3256.robot.automodes.actions;
+package frc.team3256.robot.auto.actions;
 
 import edu.wpi.first.wpilibj.Timer;
 

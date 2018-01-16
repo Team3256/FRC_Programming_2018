@@ -1,6 +1,6 @@
-package frc.team3256.robot.automodes;
+package frc.team3256.robot.auto;
 
-import frc.team3256.robot.automodes.actions.Action;
+import frc.team3256.robot.auto.actions.Action;
 
 public abstract class AutoModeBase {
     protected double updateRate = 1.0/50.0;

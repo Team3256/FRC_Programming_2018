@@ -1,4 +1,4 @@
-package frc.team3256.robot.automodes.actions;
+package frc.team3256.robot.auto.actions;
 
 /**
  * Action that runs once (i.e. setting a variable)

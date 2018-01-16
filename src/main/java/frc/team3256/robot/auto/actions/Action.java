@@ -1,4 +1,4 @@
-package frc.team3256.robot.automodes.actions;
+package frc.team3256.robot.auto.actions;
 
 public interface Action {
     /**

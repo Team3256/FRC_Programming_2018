@@ -1,4 +1,4 @@
-package frc.team3256.robot.automodes;
+package frc.team3256.robot.auto;
 
 public class AutoModeExecuter {
     private AutoModeBase autoMode;

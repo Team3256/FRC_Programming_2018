@@ -10,10 +10,10 @@ public class Intake {
     private static Intake intake;
 
     private Intake(){
-        leftIntake = new VictorSP(Constants.leftIntakePort); //port to be determined
-        rightIntake = new VictorSP(Constants.rightIntakePort);
-        pivotLeft = new DoubleSolenoid(Constants.pivotLeftForward,Constants.pivotLeftReverse);
-        pivotRight = new DoubleSolenoid(Constants.pivotRightForward, Constants.pivotRightReverse);
+        leftIntake = new VictorSP(Constants.kLeftIntakePort); //port to be determined
+        rightIntake = new VictorSP(Constants.kRightIntakePort);
+        pivotLeft = new DoubleSolenoid(Constants.kPivotLeftForward,Constants.kPivotLeftReverse);
+        pivotRight = new DoubleSolenoid(Constants.kPivotRightForward, Constants.kPivotRightReverse);
     }
 
     public static Intake getInstance(){

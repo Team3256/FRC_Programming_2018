@@ -2,14 +2,22 @@ package frc.team3256.robot;
 
 public class Constants {
 
-    //Ports
-    public static final int leftIntakePort = 0;
-    public static final int rightIntakePort = 1;
-    public static final int pivotLeftForward = 3;
-    public static final int pivotLeftReverse = 4;
-    public static final int pivotRightForward = 5;
-    public static final int pivotRightReverse = 6;
+    //PWM ports
+    public static final int kLeftIntakePort = 0;
+    public static final int kRightIntakePort = 1;
 
+    //Solenoids ports
+    public static final int kPivotLeftForward = 3;
+    public static final int kPivotLeftReverse = 4;
+    public static final int kPivotRightForward = 5;
+    public static final int kPivotRightReverse = 6;
+
+    //Sensor ports
+    public static final int kHallEffectPort = 0;
+    public static final int kTopBumperPort = 1;
+    public static final int kBottomBumperPort = 2;
+
+    //TalonSRX ports
 
     public static final int kLeftDriveMaster = 1;
     public static final int kLeftDriveSlave = 2;
@@ -18,6 +26,9 @@ public class Constants {
 
     public static final double kRobotTrack = 25; //TBD
     public static final double kWheelDiameter = 4.0;
+
+    public static final int kElevatorMaster = 5;
+    public static final int kElevatorSlave = 6;
 
     //Maximum free speed is 18 ft/sec, so we will go with 75 percent of that as our actual top speed
     public static final double kMaxVelocityHighGearInPerSec = 18.0*12.0*0.75;

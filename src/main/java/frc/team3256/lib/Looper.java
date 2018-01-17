@@ -63,12 +63,14 @@ public class Looper {
     }
 
     /**
-     * Register a loop. {@link Loop}
+     * Register loops. {@link Loop}
      *
-     * @param loop Control loop to register
+     * @param loops Control loops to register
      */
-    public void addLoop(Loop loop) {
-        loops.add(loop);
+    public void addLoops(Loop ... loops) {
+        for(Loop l : loops){
+           this.loops.add(l);
+        }
     }
 
     /**
@@ -76,5 +78,12 @@ public class Looper {
      */
     public double getMeasuredPeriod() {
         return measured_dt;
+    }
+
+    /**
+     * Outputs the measured period to the dashboard
+     */
+    public void outputToDashboard(){
+        //TODO: implement later when dashboard is finished
     }
 }

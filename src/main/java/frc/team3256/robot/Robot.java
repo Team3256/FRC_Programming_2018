@@ -7,6 +7,7 @@ import frc.team3256.lib.Looper;
 import frc.team3256.lib.control.TeleopDriveController;
 import frc.team3256.lib.hardware.ADXRS453_Calibrator;
 import frc.team3256.robot.subsystems.DriveTrain;
+import frc.team3256.robot.subsystems.SubsystemManager;
 
 public class Robot extends IterativeRobot {
 
@@ -14,6 +15,7 @@ public class Robot extends IterativeRobot {
     PoseEstimator poseEstimator;
     Looper disabledLooper;
     Looper enabledLooper;
+    SubsystemManager subsystemManager;
     ADXRS453_Calibrator gyroCalibrator;
 
     @Override
@@ -23,11 +25,12 @@ public class Robot extends IterativeRobot {
         gyroCalibrator = new ADXRS453_Calibrator(driveTrain.getGyro());
         //disabled looper -> recalibrate gyro
         disabledLooper = new Looper(Constants.kSlowLoopPeriod);
-        disabledLooper.addLoop(gyroCalibrator);
+        disabledLooper.addLoops(gyroCalibrator);
         //enabled looper -> control loop for subsystems
         enabledLooper = new Looper(Constants.kControlLoopPeriod);
-        enabledLooper.addLoop(driveTrain);
-        enabledLooper.addLoop(poseEstimator);
+        enabledLooper.addLoops(driveTrain, poseEstimator);
+        subsystemManager = new SubsystemManager();
+        subsystemManager.addSubsystems(driveTrain);
     }
 
     @Override
@@ -72,5 +75,11 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void testPeriodic() {
+    }
+
+    public void allPeriodic(){
+        subsystemManager.outputToDashboard();
+        enabledLooper.outputToDashboard();
+        disabledLooper.outputToDashboard();
     }
 }

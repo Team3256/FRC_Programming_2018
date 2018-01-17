@@ -16,7 +16,7 @@ import frc.team3256.robot.Constants;
 import frc.team3256.robot.ControlsInterface;
 import org.opencv.core.Mat;
 
-public class DriveTrain implements Loop {
+public class DriveTrain extends SubsystemBase implements Loop {
 
     private static DriveTrain instance;
     private TalonSRX leftMaster, rightMaster, leftSlave, rightSlave;
@@ -25,6 +25,21 @@ public class DriveTrain implements Loop {
 
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
+    }
+
+    @Override
+    public void outputToDashboard() {
+
+    }
+
+    @Override
+    public void selfTest() {
+
+    }
+
+    @Override
+    public void zeroSensors() {
+
     }
 
     public enum DriveControlMode {

@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.robot.Constants;
 
-public class Elevator {
+public class Elevator extends SubsystemBase{
 
     private TalonSRX master, slave;
     private DigitalInput hallEffect, topBumper, bottomBumper;
@@ -53,4 +53,19 @@ public class Elevator {
     public boolean topBumperTriggered() { return topBumper.get(); }
 
     public boolean bottomBumperTriggered() { return bottomBumper.get(); }
+
+    @Override
+    public void outputToDashboard() {
+
+    }
+
+    @Override
+    public void selfTest() {
+
+    }
+
+    @Override
+    public void zeroSensors() {
+
+    }
 }

@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
 import frc.team3256.robot.Constants;
 
-public class Intake {
+public class Intake extends SubsystemBase{
     private VictorSP leftIntake, rightIntake;
     private DoubleSolenoid pivotLeft, pivotRight;
     private static Intake intake;
@@ -42,4 +42,18 @@ public class Intake {
         setMotorPower(Constants.outtakeMotorPower);
     }
 
+    @Override
+    public void outputToDashboard() {
+
+    }
+
+    @Override
+    public void selfTest() {
+
+    }
+
+    @Override
+    public void zeroSensors() {
+
+    }
 }

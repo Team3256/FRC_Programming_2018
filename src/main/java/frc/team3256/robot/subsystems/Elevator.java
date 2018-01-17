@@ -11,11 +11,12 @@ import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.robot.Constants;
 
 public class Elevator {
-    TalonSRX master, slave;
-    DigitalInput hallEffect, topBumper, bottomBumper;
+
+    private TalonSRX master, slave;
+    private DigitalInput hallEffect, topBumper, bottomBumper;
 
 
-    static Elevator instance;
+    private static Elevator instance;
     public static Elevator getInstance() {
          return instance == null ? instance = new Elevator() : instance;
     }
@@ -27,9 +28,7 @@ public class Elevator {
 
         master = TalonUtil.generateGenericTalon(Constants.kElevatorMaster);
         slave = TalonUtil.generateSlaveTalon(Constants.kElevatorSlave, Constants.kElevatorMaster);
-    }
 
-    public void init() {
         if (master.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0) != ErrorCode.OK){
             DriverStation.reportError("Mag Encoder on elevator not detected!!!", false);
         }

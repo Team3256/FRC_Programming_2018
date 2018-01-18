@@ -1,5 +1,6 @@
 package frc.team3256.robot;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.VictorSP;
 
@@ -14,6 +15,8 @@ public class Robot extends IterativeRobot {
              motorSeven,
              motorEight;
 
+    DoubleSolenoid solenoidOne;
+
     @Override
     public void robotInit() {
         motorOne = new VictorSP(Constants.kPortOne);
@@ -24,6 +27,7 @@ public class Robot extends IterativeRobot {
         motorSix = new VictorSP(Constants.kPortSix);
         motorSeven = new VictorSP(Constants.kPortSeven);
         motorEight = new VictorSP(Constants.kPortEight);
+        solenoidOne = new DoubleSolenoid(0,7);
     }
 
     @Override
@@ -45,11 +49,24 @@ public class Robot extends IterativeRobot {
     @Override
     public void autonomousPeriodic() { }
 
+    boolean squeeezing = false;
     @Override
     public void teleopPeriodic() {
-        double val = OI.getLeftY();
-        motorSeven.set(val);
-        motorEight.set(-val);
+        boolean A = OI.getA();
+        if (A){
+            squeeezing = !squeeezing;
+        }
+        solenoidOne.set(squeeezing ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
+        boolean intake = OI.rightTrigger();
+        boolean outtake = OI.leftTrigger();
+        double power = 0.5;
+        if (intake){
+            motorTwo.set(power);
+        }
+        else if (outtake){
+            motorTwo.set(-power);
+        }
+        else motorTwo.set(0);
     }
 
     @Override

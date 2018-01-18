@@ -10,4 +10,16 @@ public class OI {
     public static double getLeftY(){
         return xboxOne.getRawAxis(1);
     }
+
+    public static boolean getA(){
+        return xboxOne.getRawButton(1);
+    }
+
+    public static boolean rightTrigger(){
+        return xboxOne.getRawAxis(4) > 0.25;
+    }
+
+    public static boolean leftTrigger(){
+        return xboxOne.getRawAxis(3) > 0.25;
+    }
 }

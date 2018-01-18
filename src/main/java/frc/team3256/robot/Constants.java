@@ -12,10 +12,10 @@ public class Constants {
 
 
     //Solenoids
-    public static final int kPivotLeftForward = 3;
-    public static final int kPivotLeftReverse = 4;
-    public static final int kPivotRightForward = 5;
-    public static final int kPivotRightReverse = 6;
+    public static final int kIntakePivotForward = 3;
+    public static final int kIntakePivotReverse = 4;
+    public static final int kIntakeFlopForward = 5;
+    public static final int kIntakeFlopReverse = 6;
     public static final int kCarriageSqueezeForward = 7;
     public static final int kCarriageSqueezeReverse = 8;
 
@@ -31,6 +31,9 @@ public class Constants {
     public static final int kHallEffectPort = 0;
     public static final int kTopBumperPort = 1;
     public static final int kBottomBumperPort = 2;
+
+    //Analog Inputs
+    public static final int kIntakeSharpIR = 0;
 
     //Robot constants:
     //everything is in inches, seconds, or degrees
@@ -71,8 +74,13 @@ public class Constants {
     public static final int kDriveVelocityProfile = 1;
 
     //Presets:
-    public static final double intakeMotorPower = 0;
-    public static final double outtakeMotorPower = -0;
+    public static final double kIntakeSharpIRMaxVoltage = 12.0;
+    public static final double kIntakeSharpIRMinVoltage = 2.0;
+    public static final double kLeftIntakePower = 0;
+    public static final double kRightIntakePower = 0;
+    public static final double kIntakeExhaustPower = 0;
+    public static final double kUnjamMaxDuration = 100.0/1000.0;
+
     public static final double rollForwardMotorPower = 0;
     public static final double rollBackwardMotorPower = -0;
 

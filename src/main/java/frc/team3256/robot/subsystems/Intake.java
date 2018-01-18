@@ -2,72 +2,239 @@ package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
+import frc.team3256.lib.Loop;
+import frc.team3256.lib.hardware.SharpIR;
 import frc.team3256.robot.Constants;
 
-public class Intake extends SubsystemBase{
+public class Intake extends SubsystemBase implements Loop{
+
     private VictorSP leftIntake, rightIntake;
-    private DoubleSolenoid pivotLeft, pivotRight;
-    public CubeHandlerState cubeHandlerState;
-    private CubeHandlerState previousState;
-    private static Intake intake;
+    private DoubleSolenoid flopperActuator, pivotActuator;
+    private SharpIR ballDetector;
 
-    public enum CubeHandlerState{
-        INTAKING,
-        EXHAUSTING,
-        UNJAMMING,
-        OPEN_IDLE,
-        CLOSED_IDLE
+    private SystemState currentState;
+    private SystemState previousState;
+    private WantedState wantedState;
+    private boolean stateChanged;
+    private double unjamTimeStart;
+    private SystemState unjamPreviousState;
+
+    private double kLeftIntakePower = Constants.kLeftIntakePower;
+    private double kRightIntakePower = Constants.kRightIntakePower;
+    private double kIntakeExhaustPower = Constants.kIntakeExhaustPower;
+    private double kUnjamMaxDuration = Constants.kUnjamMaxDuration;
+
+    private static Intake instance;
+
+    public enum SystemState {
+        INTAKING, //running the intake
+        EXHAUSTING, //running the intake backwards
+        UNJAMMING, //momentarily stopping the intake to unjam the power cube
+        DEPLOYED_CLOSED, //intake is closed and idle
+        DEPLOYED_OPEN, //intake is open and idle
+        STOWED_CLOSED, //intake is stowed, idle, and closed
+        STOWED_OPEN //intake is stowed, idle, and open
     }
 
-    public void update() {
-        switch(cubeHandlerState) {
-            case INTAKING:
-                if (previousState != (cubeHandlerState.INTAKING)){
-                    previousState = cubeHandlerState.INTAKING;
-                    pivotLeft.set(DoubleSolenoid.Value.kReverse);
-                    pivotRight.set(DoubleSolenoid.Value.kReverse);
-                }
-                leftIntake.set(Constants.intakeMotorPower);
-                rightIntake.set(Constants.intakeMotorPower);
-                break;
-            case EXHAUSTING:
-                if (previousState != cubeHandlerState.EXHAUSTING){
-                    previousState = cubeHandlerState.EXHAUSTING;
-                    pivotLeft.set(DoubleSolenoid.Value.kReverse);
-                    pivotRight.set(DoubleSolenoid.Value.kReverse);
-                }
-                leftIntake.set(Constants.outtakeMotorPower);
-                rightIntake.set(Constants.outtakeMotorPower);
-                break;
-            case UNJAMMING:
-                leftIntake.set(0);
-                rightIntake.set(0);
-                break;
-            case OPEN_IDLE:
-                pivotLeft.set(DoubleSolenoid.Value.kForward);
-                pivotRight.set(DoubleSolenoid.Value.kForward);
-                break;
-            case CLOSED_IDLE:
-                pivotLeft.set(DoubleSolenoid.Value.kReverse);
-                pivotRight.set(DoubleSolenoid.Value.kReverse);
-                break;
-        }
-        previousState = cubeHandlerState;
+    public enum WantedState{
+        INTAKE,
+        EXHAUST,
+        UNJAM,
+        DEPLOY,
+        STOW,
+        OPEN
     }
+
 
     private Intake(){
         leftIntake = new VictorSP(Constants.kLeftIntakePort); //port to be determined
         rightIntake = new VictorSP(Constants.kRightIntakePort);
-        pivotLeft = new DoubleSolenoid(Constants.kPivotLeftForward,Constants.kPivotLeftReverse);
-        pivotRight = new DoubleSolenoid(Constants.kPivotRightForward, Constants.kPivotRightReverse);
+        flopperActuator = new DoubleSolenoid(Constants.kIntakeFlopForward, Constants.kIntakeFlopReverse);
+        pivotActuator = new DoubleSolenoid(Constants.kIntakePivotForward, Constants.kIntakePivotReverse);
+        ballDetector = new SharpIR(Constants.kIntakeSharpIR, Constants.kIntakeSharpIRMinVoltage, Constants.kIntakeSharpIRMaxVoltage);
     }
 
     public static Intake getInstance(){
-        return intake == null ? intake = new Intake(): intake;
+        return instance == null ? instance = new Intake(): instance;
     }
 
-    public void setState(CubeHandlerState wantedState){
-        cubeHandlerState = wantedState;
+    @Override
+    public void init(double timestamp) {
+        currentState = SystemState.STOWED_CLOSED;
+        previousState = SystemState.STOWED_CLOSED;
+        stateChanged = true;
+    }
+
+     @Override
+    public void update(double timestamp) {
+        SystemState newState;
+        switch(currentState) {
+            case INTAKING:
+                newState = handleIntake();
+                break;
+            case EXHAUSTING:
+                newState = handleExhaust();
+                break;
+            case UNJAMMING:
+                newState = handleUnjam(timestamp);
+                break;
+            case DEPLOYED_OPEN:
+                newState = handleDeployedOpen();
+                break;
+            case DEPLOYED_CLOSED:
+                newState = handleDeployedClosed();
+                break;
+            case STOWED_OPEN:
+                newState = handleStowedOpen();
+                break;
+            case STOWED_CLOSED: default:
+                newState = handleStowedClosed();
+                break;
+        }
+        //State transfer
+        if (newState != currentState){
+            System.out.println("\tPREV_STATE:" + previousState + "\tCURR_STATE:" + currentState + "\tNEW_STATE:" + newState);
+            previousState = currentState;
+            currentState = newState;
+            stateChanged = true;
+        }
+        else stateChanged = false;
+     }
+
+    @Override
+    public void end(double timestamp) {
+
+    }
+
+    private SystemState handleIntake(){
+        if (stateChanged){
+            deployIntake();
+            closeFlopper();
+        }
+        //If we have a cube, then we stop intaking, and set the state to DEPLOYED_CLOSED
+        if (hasCube()){
+            setIntake(0,0);
+            return SystemState.DEPLOYED_CLOSED;
+        }
+        else{
+            setIntake(kLeftIntakePower, kRightIntakePower);
+        }
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleExhaust(){
+        if (stateChanged){
+            deployIntake();
+            closeFlopper();
+        }
+        setIntake(kIntakeExhaustPower, kIntakeExhaustPower);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleUnjam(double timestamp){
+        if (stateChanged){
+            unjamTimeStart = timestamp;
+            unjamPreviousState = previousState;
+        }
+        //If we have been unjamming for over the max unjam duration needed
+        //Switch the system state to the state that we were at before unjamming
+        if (timestamp - unjamTimeStart > kUnjamMaxDuration){
+            return unjamPreviousState;
+        }
+        //Otherwise, we can still unjam, so stop the intake and continue unjamming
+        else {
+            setIntake(0,0);
+            return SystemState.UNJAMMING;
+        }
+    }
+
+    private SystemState handleDeployedClosed(){
+        if (stateChanged){
+            deployIntake();
+            closeFlopper();
+        }
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleDeployedOpen(){
+        if (stateChanged){
+            deployIntake();
+            openFlopper();
+        }
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleStowedClosed(){
+        if (stateChanged){
+            stowIntake();
+            closeFlopper();
+        }
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleStowedOpen(){
+        if (stateChanged){
+            stowIntake();
+            openFlopper();
+        }
+        return defaultStateTransfer();
+    }
+
+    private void closeFlopper(){
+        flopperActuator.set(DoubleSolenoid.Value.kReverse);
+    }
+
+    private void openFlopper(){
+        flopperActuator.set(DoubleSolenoid.Value.kForward);
+    }
+
+    private void deployIntake(){
+       pivotActuator.set(DoubleSolenoid.Value.kForward);
+    }
+
+    private void stowIntake(){
+       pivotActuator.set(DoubleSolenoid.Value.kReverse);
+    }
+
+    private void setIntake(double left, double right){
+       leftIntake.set(left);
+       rightIntake.set(-right);
+    }
+
+    private boolean hasCube(){
+        return ballDetector.isTriggered();
+    }
+
+    //default WantedState -> SystemState
+    private SystemState defaultStateTransfer(){
+        switch (wantedState){
+            case INTAKE:
+                return SystemState.INTAKING;
+            case EXHAUST:
+                return SystemState.EXHAUSTING;
+            case UNJAM:
+                return SystemState.UNJAMMING;
+            //Keep the Intake Closed at default when we DEPLOY/STOW, because that will be much more useful
+            case DEPLOY:
+                return SystemState.DEPLOYED_CLOSED;
+            case STOW:
+                return SystemState.STOWED_CLOSED;
+            //if we want to open the intake, we need to check which state we are currently in
+            case OPEN:
+                //if we are currently stowed, then set the state to STOWED_OPEN (we want to open the intake while stowed)
+                if (currentState == SystemState.STOWED_CLOSED || currentState == SystemState.STOWED_OPEN){
+                    return SystemState.STOWED_OPEN;
+                }
+                //otherwise, we are currently deployed, so set the state to DEPLOYED_OPEN
+                else return SystemState.DEPLOYED_OPEN;
+            //default: Safest position (Intake is stowed inside the robot)
+            default:
+                return SystemState.STOWED_CLOSED;
+        }
+    }
+
+    public void setWantedState(WantedState wantedState){
+        this.wantedState = wantedState;
     }
 
     @Override

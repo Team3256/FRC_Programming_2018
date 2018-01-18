@@ -5,8 +5,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import frc.team3256.robot.ControlsInterface;
-import jdk.net.SocketFlow;
 
 /**
  * Utility class to generate talon objects

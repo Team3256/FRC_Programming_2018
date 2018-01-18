@@ -9,11 +9,15 @@ public class Constants {
     public static final int kCarriageRollerLeft = 7;
     public static final int kCarriageRollerRight = 8;
 
+
+
     //Solenoids
     public static final int kPivotLeftForward = 3;
     public static final int kPivotLeftReverse = 4;
     public static final int kPivotRightForward = 5;
     public static final int kPivotRightReverse = 6;
+    public static final int kCarriageSqueezeForward = 7;
+    public static final int kCarriageSqueezeReverse = 8;
 
     //CAN
     public static final int kLeftDriveMaster = 1;
@@ -69,6 +73,8 @@ public class Constants {
     //Presets:
     public static final double intakeMotorPower = 0;
     public static final double outtakeMotorPower = -0;
+    public static final double rollForwardMotorPower = 0;
+    public static final double rollBackwardMotorPower = -0;
 
     //Game Data:
     public static final int kSwitchIndex = 0;

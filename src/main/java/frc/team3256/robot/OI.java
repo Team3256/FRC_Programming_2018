@@ -16,10 +16,10 @@ public class OI {
     }
 
     public static boolean rightTrigger(){
-        return xboxOne.getRawAxis(4) > 0.25;
+        return xboxOne.getRawAxis(3) > 0.25;
     }
 
     public static boolean leftTrigger(){
-        return xboxOne.getRawAxis(3) > 0.25;
+        return xboxOne.getRawAxis(2) > 0.25;
     }
 }

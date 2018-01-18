@@ -27,7 +27,7 @@ public class Robot extends IterativeRobot {
         motorSix = new VictorSP(Constants.kPortSix);
         motorSeven = new VictorSP(Constants.kPortSeven);
         motorEight = new VictorSP(Constants.kPortEight);
-        solenoidOne = new DoubleSolenoid(0,7);
+        solenoidOne = new DoubleSolenoid(1,7);
     }
 
     @Override
@@ -50,10 +50,11 @@ public class Robot extends IterativeRobot {
     public void autonomousPeriodic() { }
 
     boolean squeeezing = false;
+    boolean prevA = false;
     @Override
     public void teleopPeriodic() {
         boolean A = OI.getA();
-        if (A){
+        if (A && !prevA){
             squeeezing = !squeeezing;
         }
         solenoidOne.set(squeeezing ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
@@ -67,6 +68,7 @@ public class Robot extends IterativeRobot {
             motorTwo.set(-power);
         }
         else motorTwo.set(0);
+        prevA = A;
     }
 
     @Override

@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.VictorSP;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.SharpIR;
 import frc.team3256.robot.Constants;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 public class Intake extends SubsystemBase implements Loop{
 

@@ -44,7 +44,7 @@ public class Intake extends SubsystemBase implements Loop{
         WANTS_TO_EXHAUST,
         //Operator -> Unjam button
         WANTS_TO_UNJAM,
-        //Operator -> Whenever intake/exhaust/unjam buttons are released
+        //Operator -> Whenever no buttons are pressed
         IDLE,
         //Operator -> Deploy button
         WANTS_TO_DEPLOY,

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.VictorSP;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.SharpIR;
 import frc.team3256.robot.Constants;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 public class Intake extends SubsystemBase implements Loop{
 
@@ -37,12 +38,20 @@ public class Intake extends SubsystemBase implements Loop{
     }
 
     public enum WantedState{
-        INTAKE,
-        EXHAUST,
-        UNJAM,
-        DEPLOY,
-        STOW,
-        OPEN
+        //Operator -> Intake button
+        WANTS_TO_INTAKE,
+        //Operator -> Exhaust button
+        WANTS_TO_EXHAUST,
+        //Operator -> Unjam button
+        WANTS_TO_UNJAM,
+        //Operator -> Whenever intake/exhaust/unjam buttons are released
+        IDLE,
+        //Operator -> Deploy button
+        WANTS_TO_DEPLOY,
+        //Operator -> Stow button
+        WANTS_TO_STOW,
+        //Operator -> Open button
+        WANTS_TO_OPEN
     }
 
 
@@ -141,10 +150,10 @@ public class Intake extends SubsystemBase implements Loop{
         if (timestamp - unjamTimeStart > kUnjamMaxDuration){
             return unjamPreviousState;
         }
-        //Otherwise, we can still unjam, so stop the intake and continue unjamming
+        //Otherwise, we can still unjam, so stop the intake and check what the new wanted state is
         else {
             setIntake(0,0);
-            return SystemState.UNJAMMING;
+            return defaultStateTransfer();
         }
     }
 
@@ -208,25 +217,60 @@ public class Intake extends SubsystemBase implements Loop{
     //default WantedState -> SystemState
     private SystemState defaultStateTransfer(){
         switch (wantedState){
-            case INTAKE:
+            case WANTS_TO_INTAKE:
                 return SystemState.INTAKING;
-            case EXHAUST:
+
+            case WANTS_TO_EXHAUST:
                 return SystemState.EXHAUSTING;
-            case UNJAM:
+
+            case WANTS_TO_UNJAM:
                 return SystemState.UNJAMMING;
-            //Keep the Intake Closed at default when we DEPLOY/STOW, because that will be much more useful
-            case DEPLOY:
-                return SystemState.DEPLOYED_CLOSED;
-            case STOW:
-                return SystemState.STOWED_CLOSED;
+
+            case IDLE:
+                //if we are intaking, exhausting, unjaming, or already deployed and closed, the intake is closed,
+                //so we want the next state to be DEPLOYED_CLOSED
+                if (currentState == SystemState.EXHAUSTING || currentState == SystemState.INTAKING ||
+                        currentState == SystemState.UNJAMMING || currentState == SystemState.DEPLOYED_CLOSED){
+                    return SystemState.DEPLOYED_CLOSED;
+                }
+                //Otherwise, return the respective state that we are in
+                else if (currentState == SystemState.DEPLOYED_OPEN){
+                    return SystemState.DEPLOYED_OPEN;
+                }
+                else if (currentState == SystemState.STOWED_CLOSED){
+                    return SystemState.STOWED_CLOSED;
+                }
+                else if (currentState == SystemState.STOWED_OPEN){
+                    return SystemState.STOWED_OPEN;
+                }
+
+            //if we want to deploy, check if we are currently open or closed, then set the respective state
+            case WANTS_TO_DEPLOY:
+                //if we are currently open, return DEPLOYED_OPEN
+                if (currentState == SystemState.STOWED_OPEN || currentState == SystemState.DEPLOYED_OPEN){
+                    return SystemState.DEPLOYED_OPEN;
+                }
+                //otherwise, we are currently closed, so return DEPLOYED_CLOSED
+                else return SystemState.DEPLOYED_CLOSED;
+
+            //if we want to stow, check if we are currently open or closed, then set the respective state
+            case WANTS_TO_STOW:
+                //if we are currently open, return STOWED_OPEN
+                if (currentState == SystemState.DEPLOYED_OPEN || currentState == SystemState.STOWED_OPEN){
+                    return SystemState.STOWED_OPEN;
+                }
+                //otherwise, we are currently closed, so return STOWED_CLOSED
+                else return SystemState.STOWED_CLOSED;
+
             //if we want to open the intake, we need to check which state we are currently in
-            case OPEN:
+            case WANTS_TO_OPEN:
                 //if we are currently stowed, then set the state to STOWED_OPEN (we want to open the intake while stowed)
                 if (currentState == SystemState.STOWED_CLOSED || currentState == SystemState.STOWED_OPEN){
                     return SystemState.STOWED_OPEN;
                 }
                 //otherwise, we are currently deployed, so set the state to DEPLOYED_OPEN
                 else return SystemState.DEPLOYED_OPEN;
+
             //default: Safest position (Intake is stowed inside the robot)
             default:
                 return SystemState.STOWED_CLOSED;

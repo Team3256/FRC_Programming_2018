@@ -15,7 +15,16 @@ public class Arc extends Segment{
         center = new Translation(centerX, centerY);
         centerToStart = new Translation(center, start);
         centerToEnd = new Translation(center, end);
-        radius = centerToStart.norm();
+        if (centerToStart.norm() != centerToEnd.norm()){
+            /*
+            System.out.println("ERROR: THIS ARC IS NOT CONSTANT_CURVATURE");
+            System.out.println("START: " + start);
+            System.out.println("END: " + end);
+            System.out.println("CENTER: " + center + "\n");
+            */
+            radius = Double.NaN;
+        }
+        else radius = centerToStart.norm();
     }
 
     @Override
@@ -39,8 +48,24 @@ public class Arc extends Segment{
         return radius*centerToStart.getAngle(centerToEnd).radians();
     }
 
+    public double getRadius(){
+        return radius;
+    }
+
+    public Translation getCenter(){
+        return center;
+    }
+
+    public Translation getCenterToStart(){
+        return centerToStart;
+    }
+
+    public Translation getCenterToEnd(){
+        return centerToEnd;
+    }
+
     @Override
-    public Translation getClosestPointOnSegment(double pose) {
+    public Translation getClosestPointOnSegment(Translation position) {
         return null;
     }
 

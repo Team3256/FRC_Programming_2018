@@ -38,8 +38,17 @@ public class Line extends Segment{
     }
 
     @Override
-    public Translation getClosestPointOnSegment(double pose) {
-        return null;
+    public Translation getClosestPointOnSegment(Translation position) {
+        //Projection of the position onto the line
+        //Proj b a = (a dot b)/norm(b)^2 * b
+        Translation startToPosition = new Translation(start, position);
+        //Calculate interpolation parameter: (a dot b)/norm(b)^2
+        double dot = startToPosition.dot(slope);
+        double interpolationParameter = dot/Math.pow(slope.norm(), 2);
+        //Interpolate accordingly
+        if (interpolationParameter < 0) return start;
+        else if (interpolationParameter > 1) return end;
+        return start.translate(slope.scale(interpolationParameter));
     }
 
     @Override

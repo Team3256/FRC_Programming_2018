@@ -15,6 +15,8 @@ public class Arc extends Segment{
         center = new Translation(centerX, centerY);
         centerToStart = new Translation(center, start);
         centerToEnd = new Translation(center, end);
+        //This should not be possible. We are using ocnstant-curvature arcs.
+        //If this ever occurs, then one (or more) of the parameters were passed in incorrectly
         if (centerToStart.norm() != centerToEnd.norm()){
             /*
             System.out.println("ERROR: THIS ARC IS NOT CONSTANT_CURVATURE");

@@ -40,6 +40,14 @@ public class Trajectory {
         points = new ArrayList<Point>(size);
     }
 
+    public double getLength() {
+        return points.size();
+    }
+
+    public Point getCurrPoint(int index) {
+        return points.get(index);
+    }
+
     public void addPoint(int index, Point point){
         points.add(index, point);
     }

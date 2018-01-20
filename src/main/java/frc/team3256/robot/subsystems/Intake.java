@@ -209,7 +209,7 @@ public class Intake extends SubsystemBase implements Loop{
        rightIntake.set(-right);
     }
 
-    private boolean hasCube(){
+    public boolean hasCube(){
         return ballDetector.isTriggered();
     }
 

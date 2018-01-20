@@ -14,6 +14,7 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
     private WantedState wantedState;
     private boolean stateChanged;
 
+
     private static ElevatorCarriage elevatorCarriage;
 
     private ElevatorCarriage() {
@@ -21,24 +22,29 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
         rollerRight = new VictorSP(Constants.kCarriageRollerRight);
         squeezeSolenoid = new DoubleSolenoid(Constants.kCarriageSqueezeForward, Constants.kCarriageSqueezeReverse);
     }
-    
+
     public static ElevatorCarriage getInstance(){
         return elevatorCarriage == null ? elevatorCarriage = new ElevatorCarriage(): elevatorCarriage;
     }
 
     public enum SystemState {
-        RECEIVING_FROM_INTAKE,
-        SCORING_FORWARD,
-        SCORING_BACKWARD,
-        SQUEEZING_IDLE,
-        OPEN_IDLE
+        RECEIVING_FROM_INTAKE, //Self-explanatory
+        SCORING_FORWARD, //Run rollers forward
+        SCORING_BACKWARD, //Run rollers backward
+        SQUEEZING_IDLE, //Actuators squeeze cube in place
+        OPEN_IDLE //Actuators stay open
     }
 
     public enum WantedState {
+        //Operator -> Whenever no buttons are pressed
         WANTS_TO_RECEIVE,
+        //Operator -> Score forward button
         WANTS_TO_SCORE_FORWARD,
+        //Operator -> Score backward button
         WANTS_TO_SCORE_BACKWARD,
+        //Operator -> Whenever robot has cube
         WANTS_TO_SQUEEZE_IDLE,
+        //Operator -> Manual open
         WANTS_TO_OPEN
     }
 
@@ -69,6 +75,7 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
                 break;
 
         }
+        //State transfer
         if (newState != currentState){
             System.out.println("\tCURR_STATE:" + currentState + "\tNEW_STATE:" + newState);
             currentState = newState;
@@ -81,6 +88,11 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
     private SystemState handleReceiveFromIntake(){
         if (stateChanged){
             squeeze();
+        }
+        //If we have a cube, then we squee
+        if (hasCube()){
+            runMotors(0);
+            return SystemState.SQUEEZING_IDLE;
         }
         runMotors(Constants.kCarriageReceivePower);
         return defaultStateTransfer();
@@ -113,9 +125,10 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
         if (stateChanged){
             open();
         }
-        return  defaultStateTransfer();
+        return defaultStateTransfer();
     }
 
+    //default WantedState -> SystemState
     private SystemState defaultStateTransfer(){
         switch(wantedState){
             case WANTS_TO_RECEIVE:
@@ -156,52 +169,14 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
         rollerRight.set(power);
     }
 
+    public boolean hasCube(){
+        return Intake.getInstance().hasCube();
+    }
+
     @Override
     public void end(double timestamp) {
 
     }
-
-
-    /*public void update(){
-        switch(carriageState){
-            case ROLLING_FORWARD:
-                if (previousState != carriageState.ROLLING_FORWARD){
-                    previousState = carriageState.ROLLING_FORWARD;
-                }
-                rollerLeft.set(Constants.rollForwardMotorPower);
-                rollerRight.set(Constants.rollForwardMotorPower);
-                break;
-            case ROLLING_BACKWARD:
-                if (previousState != carriageState.ROLLING_BACKWARD){
-                    previousState = carriageState.ROLLING_BACKWARD;
-                }
-                rollerLeft.set(Constants.rollBackwardMotorPower);
-                rollerRight.set(Constants.rollBackwardMotorPower);
-                break;
-            case SQUEEZING_IDLE:
-                if (previousState != carriageState.SQUEEZING_IDLE){
-                    previousState = carriageState.SQUEEZING_IDLE;
-                }
-                rollerLeft.set(0);
-                rollerRight.set(0);
-                squeezeSolenoid.set(DoubleSolenoid.Value.kForward);
-                break;
-        }
-    }
-
-    private ElevatorCarriage() {
-        rollerLeft = new VictorSP(Constants.kCarriageRollerLeft);
-        rollerRight = new VictorSP(Constants.kCarriageRollerRight);
-        squeezeSolenoid = new DoubleSolenoid(Constants.kCarriageSqueezeForward, Constants.kCarriageSqueezeReverse);
-    }
-
-    public static ElevatorCarriage getInstance(){
-        return elevatorCarriage == null ? elevatorCarriage = new ElevatorCarriage(): elevatorCarriage;
-    }
-
-    public void setState(CarriageState wantedState){
-        carriageState = wantedState;
-    }*/
 
 
     @Override

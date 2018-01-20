@@ -11,6 +11,7 @@ public class Constants {
 
 
 
+
     //Solenoids
     public static final int kIntakePivotForward = 3;
     public static final int kIntakePivotReverse = 4;
@@ -80,6 +81,9 @@ public class Constants {
     public static final double kRightIntakePower = 0;
     public static final double kIntakeExhaustPower = 0;
     public static final double kUnjamMaxDuration = 100.0/1000.0;
+    public static final int kCarriageReceivePower = 0;
+    public static final int kCarriageScoreForwardPower = 0;
+    public static final int kCarriageScoreBackwardPower = -0;
 
     public static final double rollForwardMotorPower = 0;
     public static final double rollBackwardMotorPower = -0;

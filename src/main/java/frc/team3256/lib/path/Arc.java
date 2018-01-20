@@ -68,7 +68,25 @@ public class Arc extends Segment{
 
     @Override
     public Translation getClosestPointOnSegment(Translation position) {
-        return null;
+        //find vector from the center of the arc to the current position
+        Translation delta = new Translation(center, position);
+        //rescale the vector to end on the arc
+        delta = delta.scale(centerToStart.norm()/delta.norm());
+        //if only one of the cross products are negative, the point is within range of the arc
+        if (delta.cross(centerToStart)*delta.cross(centerToEnd) < 0){
+            //so just return the the point on the arc along the vector
+            return center.translate(delta);
+        }
+        //otherwise, the point is out of the range of the arc,
+        //so either return the start or end point accordingly
+        else{
+            Translation positionToStart = new Translation(position, start);
+            Translation positionToEnd = new Translation(position, end);
+            if (positionToStart.norm() < positionToEnd.norm()){
+                return start;
+            }
+            else return end;
+        }
     }
 
     @Override

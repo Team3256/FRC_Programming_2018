@@ -1,5 +1,6 @@
 package frc.team3256.lib.path;
 
+import frc.team3256.lib.math.Translation;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -78,5 +79,33 @@ public class ArcTest {
         assertEquals(arc.getCenterToEnd().x(), 10, kEpsilon);
         assertEquals(arc.getCenterToEnd().y(), 0, kEpsilon);
         assertEquals(arc.getCenterToEnd().norm(), 10.0, kEpsilon);
+    }
+
+    @Test
+    public void getClosestPointOnSegment(){
+        Arc arc = new Arc(0, 0, 10, 10, 0, 10);
+        Translation currPosition = new Translation(-1, -1);
+        assertEquals(arc.getClosestPointOnSegment(currPosition).x(), 0, kEpsilon);
+        assertEquals(arc.getClosestPointOnSegment(currPosition).y(), 0, kEpsilon);
+        currPosition = new Translation(11, 11);
+        assertEquals(arc.getClosestPointOnSegment(currPosition).x(), 10, kEpsilon);
+        assertEquals(arc.getClosestPointOnSegment(currPosition).y(), 10, kEpsilon);
+        currPosition = new Translation(5, 5);
+        assertEquals(arc.getClosestPointOnSegment(currPosition).x(), Math.sqrt(2)/2*10, kEpsilon);
+        assertEquals(arc.getClosestPointOnSegment(currPosition).y(), 10.0-Math.sqrt(2)/2*10, kEpsilon);
+        currPosition = new Translation(0, 0);
+        assertEquals(arc.getClosestPointOnSegment(currPosition).x(), 0, kEpsilon);
+        assertEquals(arc.getClosestPointOnSegment(currPosition).y(), 0, kEpsilon);
+
+        arc = new Arc(1, 1, 11, 11, 1, 11);
+        currPosition = new Translation(0, 0);
+        assertEquals(arc.getClosestPointOnSegment(currPosition).x(), 1.0, kEpsilon);
+        assertEquals(arc.getClosestPointOnSegment(currPosition).y(), 1.0, kEpsilon);
+        currPosition = new Translation(1000, 1000000);
+        assertEquals(arc.getClosestPointOnSegment(currPosition).x(), 11, kEpsilon);
+        assertEquals(arc.getClosestPointOnSegment(currPosition).y(), 11, kEpsilon);
+        currPosition = new Translation(6, 6);
+        assertEquals(arc.getClosestPointOnSegment(currPosition).x(), Math.sqrt(2)/2*10+1, kEpsilon);
+        assertEquals(arc.getClosestPointOnSegment(currPosition).y(), 10-Math.sqrt(2)/2*10+1, kEpsilon);
     }
 }

@@ -1,5 +1,41 @@
 body{
-	background: #999;
 	text-align: center;
-	font-family: Lucida Sans Unicode;
+	font-family: Helvetica;
+	padding: 10px;
+}
+
+.logo {
+    height: 35px;
+}
+
+div {
+    box-shadow: 2px 2px 8px grey;
+    width: 60%;
+    offset: center;
+    margin: auto;
+}
+
+table {
+    margin: auto;
+    width: 100%;
+}
+
+td > input, th {
+    width: 150px;
+    border-bottom: 1px solid #ddd;
+    padding: 7px;
+}
+
+th {
+    background-color: #4268f4;
+    color: white;
+    font-weight: normal;
+}
+
+.hoverable {
+    background: transparent;
+}
+
+input {
+    font-size: 12px;
 }

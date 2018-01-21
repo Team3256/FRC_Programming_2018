@@ -22,23 +22,23 @@ class Point {
 	}
 
 	norm() {
-		return Math.sqrt(Translation2d.dot(this, this));
+		return Math.sqrt(Point.dot(this, this));
 	}
 
 	scale(s) {
-		return new Translation2d(this.x * s, this.y * s);
+		return new Point(this.x * s, this.y * s);
 	}
 
 	translate(t) {
-		return new Translation2d(this.x + t.x, this.y + t.y);
+		return new Point(this.x + t.x, this.y + t.y);
 	}
 
 	invert() {
-		return new Translation2d(-this.x, -this.y);
+		return new Point(-this.x, -this.y);
 	}
 
 	perp() {
-		return new Translation2d(-this.y, this.x);
+		return new Point(-this.y, this.x);
 	}
 
     getX() {
@@ -67,7 +67,7 @@ class Point {
 
 
 	static diff(a, b) {
-		return new Translation2d(b.x - a.x, b.y - a.y);
+		return new Point(b.x - a.x, b.y - a.y);
 	}
 
 	static cross(a, b) {
@@ -79,7 +79,7 @@ class Point {
 	}
 
 	static angle(a, b) {
-		return Math.acos(Translation2d.dot(a,b) / (a.norm() * b.norm()));
+		return Math.acos(Point.dot(a,b) / (a.norm() * b.norm()));
 	}
 }
 
@@ -91,24 +91,43 @@ class Arc {
 
 }
 
+function deletePoint(index) {
+    $('tr')[index].remove();
+}
+
 function addPoint() {
     prevPoint = points[points.length-1];
 	$('tbody').append('<tr>'
-		+'<td><input class="x" value="'+(parseInt(prevPoint.x)+5)+'"></td>'
-		+'<td><input class="y" value="'+(parseInt(prevPoint.y)+5)+'"></td>'
-		+'<td><input class="vel" value="10"></td>'
-		+'<td><input class="desc" placeholder="Description"></td>'
+		+'<td class="hoverable"><input class="x" value="'+(parseInt(prevPoint.x)+5)+'"></td>'
+		+'<td class="hoverable"><input class="y" value="'+(parseInt(prevPoint.y)+5)+'"></td>'
+		+'<td class="hoverable"><input class="vel" value="10"></td>'
+		+'<td class="hoverable"><input class="desc" placeholder="Description"></td>'
 		+'<td><button class="delete">Delete</button></td>'
 		+'</tr>'
 		);
-	addChanger();
+	addEventListeners();
     update();
 }
 
-function addChanger() {
-    $($('tbody').children('tr')[points.length]).find('td').on('input', function(e) {
+function addEventListeners() {
+    row = $($('tbody').children('tr')[points.length]);
+    row.find('td').on('input', function() {
         update();
     });
+
+    row.find('.delete').on('click', function() {
+        $(this).closest('tr').remove();
+        update();
+    })
+
+    row.find('.hoverable').hover(
+        function() {
+            $($($(this).closest('tr')).find('.hoverable')).css("background-color", "#f5f5f5");
+        },
+        function() {
+            $($($(this).closest('tr')).find('.hoverable')).css("background-color", "white");
+        }
+    )
 }
 
 function update() {
@@ -126,7 +145,6 @@ function update() {
     for (var point in points) {
         points[point].draw("#f72c1c");
     }
-
 }
 
 function init() {
@@ -142,5 +160,5 @@ function init() {
         ctx.drawImage(image, 0, 0, width, height);
         update();
     }
-	addChanger();
+	addEventListeners();
 }

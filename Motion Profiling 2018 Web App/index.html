@@ -2,6 +2,9 @@
 <html>
 
 <head>
+	<img src="powerup_logo.jpg" class="logo">
+	<img src="first_logo.jpg" class="logo">
+    <img src="nvidia_logo.png" class="logo">
 	<title>Motion Profiling 2018</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<script type="text/javascript" src="script.js"></script>
@@ -9,26 +12,30 @@
 </head>
 
 <body onload="init()">
-	<b><h1>Welcome to the 2018 PowerUp Season Motion Profiling Tool for Team 3256!</h1></b><br>
+	<h1>Welcome to the 2018 PowerUp Season Motion Profiling Tool for Team 3256!</h1>
+	<br>
 	<canvas id="field"></canvas>
+	<br>
 	<button onclick="addPoint()">Add Point</button>
-	<table>
-		<thead>
-			<th>Point X</th>
-			<th>Point Y</th>
-			<th>Velocity</th>
-			<th>Description</th>
-			<th>Delete</th>
-		</thead>
-		<tbody>
-			<tr>
-				<td><input class="x" value="5"></td>
-				<td><input class="y" value="5"></td>
-				<td><span class="vel">0</span></td>
-				<td><input placeholder="Description" class="desc"></td>
-			</tr>
-		</tbody>
-	</table>
+	<div>
+		<table>
+			<thead>
+				<th>X</th>
+				<th>Y</th>
+				<th>Velocity</th>
+				<th>Description</th>
+				<th>Delete</th>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="hoverable"><input class="x" value="10"></td>
+					<td class="hoverable"><input class="y" value="5"></td>
+					<td class="hoverable"><span class="vel">0</span></td>
+					<td class="hoverable"><input placeholder="Description" class="desc"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 
 </body>
 </html>

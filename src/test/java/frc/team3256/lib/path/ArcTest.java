@@ -114,8 +114,11 @@ public class ArcTest {
         Arc arc = new Arc(2, 0, -2, 0, 0, 0);
         Translation currPos = new Translation(Math.sqrt(2)/2, Math.sqrt(2)/2);
         Translation closestPoint = arc.getClosestPointOnSegment(currPos);
+        assertEquals(closestPoint.x(), Math.sqrt(2)/2*2, kEpsilon);
+        assertEquals(closestPoint.y(), Math.sqrt(2)/2*2, kEpsilon);
+
         assertEquals(arc.getCurrDistanceTraveled(closestPoint), Math.PI/2, kEpsilon);
-        assertEquals(arc.getLookAheadPoint(2*15/180*Math.PI, closestPoint).x(), 1, kEpsilon);
-        assertEquals(arc.getLookAheadPoint(2*15/180*Math.PI, closestPoint).y(), Math.sqrt(3), kEpsilon);
+        assertEquals(arc.getLookAheadPoint(2.0*15.0/180.0*Math.PI, closestPoint).x(), 1.0, kEpsilon);
+        assertEquals(arc.getLookAheadPoint(2.0*15.0/180.0*Math.PI, closestPoint).y(), Math.sqrt(3), kEpsilon);
     }
 }

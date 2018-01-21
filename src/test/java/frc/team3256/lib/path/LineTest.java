@@ -74,12 +74,22 @@ public class LineTest {
 
     @Test
     public void testLookAheadPoint() {
-
         Line line = new Line(-1, -1, 5, 5);
         Translation currPos = new Translation(4, -2);
         Translation closestPoint = line.getClosestPointOnSegment(currPos);
         assertEquals(line.getCurrDistanceTraveled(closestPoint), 2*Math.sqrt(2), kEpsilon);
         assertEquals(line.getLookAheadPoint(3*Math.sqrt(2), closestPoint).x(), 4, kEpsilon);
         assertEquals(line.getLookAheadPoint(3*Math.sqrt(2), closestPoint).y(), 4, kEpsilon);
+
+        line = new Line(0, 0, 0, 3);
+        currPos = new Translation(1, 1);
+        closestPoint = line.getClosestPointOnSegment(currPos);
+        double distanceTraveled = line.getCurrDistanceTraveled(closestPoint);
+        assertEquals(distanceTraveled, 1, kEpsilon);
+        double remainingDistance = line.getRemainingDistance(closestPoint);
+        assertEquals(remainingDistance, line.getLength()-distanceTraveled, kEpsilon);
+        Translation lookaheadPoint = line.getLookAheadPoint(2, closestPoint);
+        assertEquals(lookaheadPoint.x(), 0, kEpsilon);
+        assertEquals(lookaheadPoint.y(), 3, kEpsilon);
     }
 }

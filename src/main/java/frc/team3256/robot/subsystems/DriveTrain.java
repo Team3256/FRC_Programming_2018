@@ -10,6 +10,10 @@ import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.ADXRS453_Gyro;
 import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.lib.math.Rotation;
+import frc.team3256.lib.trajectory.Trajectory;
+import frc.team3256.lib.trajectory.TrajectoryCurveGenerator;
+import frc.team3256.lib.trajectory.TrajectoryFollower;
+import frc.team3256.lib.trajectory.TrajectoryGenerator;
 import frc.team3256.robot.Constants;
 
 public class DriveTrain extends SubsystemBase implements Loop {
@@ -18,6 +22,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private TalonSRX leftMaster, rightMaster, leftSlave, rightSlave;
     private ADXRS453_Gyro gyro;
     private DriveControlMode controlMode;
+    private Trajectory trajectory;
+    private Trajectory trajectoryCurveLead;
+    private Trajectory trajectoryCurveFollow;
 
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
@@ -41,6 +48,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     public enum DriveControlMode {
         OPEN_LOOP,
         VELOCITY,
+        FOLLOW_TRAJECTORY,
         TURN_TO_ANGLE,
         DRIVE_TO_DISTANCE
     }
@@ -75,6 +83,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
                                 , power.getRight()*Constants.kMaxVelocityHighGearInPerSec);
                 */
                 break;
+            case FOLLOW_TRAJECTORY:
+                break;
             /*
             case TURN_TO_ANGLE:
                 updateTurnToAngle();
@@ -91,7 +101,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         setOpenLoop(0, 0);
     }
 
-    private DriveTrain() {
+    public DriveTrain() {
         controlMode = DriveControlMode.OPEN_LOOP;
         // create talon objects
         // master talons are set to a 5 period control frame rate
@@ -197,6 +207,21 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
     public double rpmToNativeUnitsPerHundredMs(double rpm){
         return (rpm*4096)/600;
+    }
+
+    public void configureDistanceTrajectory(double startVel, double endVel, double distance){
+        TrajectoryGenerator trajectoryGenerator = new TrajectoryGenerator();
+        trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, distance);
+        trajectoryCurveLead = null;
+        trajectoryCurveFollow = null;
+    }
+
+    public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius) {
+        TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator();
+        trajectoryCurveGenerator.generateTrajectoryCurve(startVel, endVel, degrees, turnRadius);
+        trajectoryCurveLead = trajectoryCurveGenerator.getLeadPath();
+        trajectoryCurveFollow = trajectoryCurveGenerator.getFollowPath();
+        trajectory = null;
     }
 
     /*

@@ -26,7 +26,9 @@ public abstract class Segment {
 
     public abstract Translation getClosestPointOnSegment(Translation position);
 
-    public abstract Translation getLookAheadPoint(double lookaheadDistance, Translation closestPoint);
+    public abstract Translation getLookAheadPoint(double lookaheadDistance, Translation position);
 
-    public abstract double getCurrDistanceTraveled(Translation point);
+    public abstract double getCurrDistanceTraveled(Translation closestPoint);
+
+    public abstract double getRemainingDistance(Translation closestPoint);
 }

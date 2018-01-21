@@ -91,19 +91,28 @@ public class Arc extends Segment{
     }
 
     @Override
-    public Translation getLookAheadPoint(double lookaheadDistance, Translation closestPoint) {
+    public Translation getLookAheadPoint(double lookaheadDistance, Translation position) {
+        /*
         double startToLookAheadAngle = (lookaheadDistance + getCurrDistanceTraveled(closestPoint)) / radius;
         double xDif = radius*(1 - Math.cos(startToLookAheadAngle));
         double yDif = radius*Math.sin(startToLookAheadAngle);
         Translation startToLookAhead = new Translation(xDif, yDif);
         return startToLookAhead.translate(start);
-
+        */
+        Translation centerToPosition = new Translation(center, position);
+        double angleToRotate = lookaheadDistance/radius;
+        return center.translate(centerToPosition.rotate(Rotation.fromRadians(angleToRotate)));
     }
 
     @Override
-    public double getCurrDistanceTraveled(Translation point) {
-        Translation pointToCenter = new Translation(point, center);
-        Rotation angle = centerToStart.getAngle(pointToCenter);
-        return radius*angle.radians();
+    public double getCurrDistanceTraveled(Translation closestPoint) {
+        Translation centerToClosestPoint = new Translation(center, closestPoint);
+        double angle = centerToClosestPoint.getAngle(centerToStart).radians();
+        return angle*radius;
+    }
+
+    @Override
+    public double getRemainingDistance(Translation closestPoint) {
+        return getLength() - getCurrDistanceTraveled(closestPoint);
     }
 }

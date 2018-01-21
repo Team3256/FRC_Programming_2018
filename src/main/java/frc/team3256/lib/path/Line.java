@@ -1,7 +1,6 @@
 package frc.team3256.lib.path;
 
 import frc.team3256.lib.math.Translation;
-import frc.team3256.lib.trajectory.Trajectory;
 
 public class Line extends Segment{
 
@@ -53,14 +52,23 @@ public class Line extends Segment{
     }
 
     @Override
-    public Translation getLookAheadPoint(double lookaheadDistance, Translation closestPoint) {
+    public Translation getLookAheadPoint(double lookaheadDistance, Translation position) {
+        if (lookaheadDistance > getLength()){
+            lookaheadDistance = getLength();
+        }
+        Translation closestPoint = getClosestPointOnSegment(position);
         Translation scaledSlope = slope.scale((lookaheadDistance+getCurrDistanceTraveled(closestPoint))/(slope.norm()));
-        return scaledSlope.translate(start);
+        return start.translate(scaledSlope);
     }
 
     @Override
-    public double getCurrDistanceTraveled(Translation point) {
-        Translation startToClosestPoint = new Translation(start, point);
+    public double getCurrDistanceTraveled(Translation closestPoint) {
+        Translation startToClosestPoint = new Translation(start, closestPoint);
         return startToClosestPoint.norm();
+    }
+
+    @Override
+    public double getRemainingDistance(Translation closestPoint){
+        return getLength() - getCurrDistanceTraveled(closestPoint);
     }
 }

@@ -10,6 +10,25 @@
 
 <body onload="init()">
 	<b><h1>Welcome to the 2018 PowerUp Season Motion Profiling Tool for Team 3256!</h1></b><br>
-	<img src="PowerUpField.PNG" id="field">
+	<canvas id="field"></canvas>
+	<button onclick="addPoint()">Add Point</button>
+	<table>
+		<thead>
+			<th>Point X</th>
+			<th>Point Y</th>
+			<th>Velocity</th>
+			<th>Description</th>
+			<th>Delete</th>
+		</thead>
+		<tbody>
+			<tr>
+				<td><input class="x" value="5"></td>
+				<td><input class="y" value="5"></td>
+				<td><span class="vel">0</span></td>
+				<td><input placeholder="Description" class="desc"></td>
+			</tr>
+		</tbody>
+	</table>
+
 </body>
 </html>

@@ -71,4 +71,15 @@ public class LineTest {
         assertEquals(line.getClosestPointOnSegment(currentPosition).x(), 1, kEpsilon);
         assertEquals(line.getClosestPointOnSegment(currentPosition).y(), 16, kEpsilon);
     }
+
+    @Test
+    public void testLookAheadPoint() {
+
+        Line line = new Line(-1, -1, 5, 5);
+        Translation currPos = new Translation(4, -2);
+        Translation closestPoint = line.getClosestPointOnSegment(currPos);
+        assertEquals(line.getCurrDistanceTraveled(closestPoint), 2*Math.sqrt(2), kEpsilon);
+        assertEquals(line.getLookAheadPoint(3*Math.sqrt(2), closestPoint).x(), 4, kEpsilon);
+        assertEquals(line.getLookAheadPoint(3*Math.sqrt(2), closestPoint).y(), 4, kEpsilon);
+    }
 }

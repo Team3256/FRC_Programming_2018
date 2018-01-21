@@ -1,5 +1,6 @@
 package frc.team3256.lib.path;
 
+import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Translation;
 
 public class Arc extends Segment{
@@ -15,7 +16,7 @@ public class Arc extends Segment{
         center = new Translation(centerX, centerY);
         centerToStart = new Translation(center, start);
         centerToEnd = new Translation(center, end);
-        //This should not be possible. We are using ocnstant-curvature arcs.
+        //This should not be possible. We are using constant-curvature arcs.
         //If this ever occurs, then one (or more) of the parameters were passed in incorrectly
         if (centerToStart.norm() != centerToEnd.norm()){
             /*
@@ -90,7 +91,19 @@ public class Arc extends Segment{
     }
 
     @Override
-    public Translation getLookAheadPoint(double lookaheadDistance) {
-        return null;
+    public Translation getLookAheadPoint(double lookaheadDistance, Translation closestPoint) {
+        double startToLookAheadAngle = (lookaheadDistance + getCurrDistanceTraveled(closestPoint)) / radius;
+        double xDif = radius*(1 - Math.cos(startToLookAheadAngle));
+        double yDif = radius*Math.sin(startToLookAheadAngle);
+        Translation startToLookAhead = new Translation(xDif, yDif);
+        return startToLookAhead.translate(start);
+
+    }
+
+    @Override
+    public double getCurrDistanceTraveled(Translation point) {
+        Translation pointToCenter = new Translation(point, center);
+        Rotation angle = centerToStart.getAngle(pointToCenter);
+        return radius*angle.radians();
     }
 }

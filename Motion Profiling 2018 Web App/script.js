@@ -14,10 +14,11 @@ var imageFlipped;
 var points = [];
 
 class Point {
-	constructor(x, y, vel, desc) {
+	constructor(x, y, vel, radius, desc) {
 		this.x = x;
 		this.y = y;
 		this.vel = vel;
+		this.radius = radius;
 		this.desc = desc;
 	}
 
@@ -53,8 +54,8 @@ class Point {
 		return Math.atan2(-this.y, this.x);
 	}
 
-	draw(color) {
-		color = color || "#f72c1c";
+	draw() {
+		var color = "#f72c1c";
 		ctx.beginPath();
 		ctx.arc(this.getX(), this.getY(), pointRadius, 0, 2*Math.PI, false);
 		ctx.fillStyle = color;
@@ -84,7 +85,21 @@ class Point {
 }
 
 class Line {
+    constructor(pointA, pointB) {
+        this.start = pointA;
+		this.end = pointB;
+		this.slope = Point.diff(pointA, pointB);
+    }
 
+    draw() {
+		var color = "#2dc65b";
+        ctx.beginPath();
+        ctx.moveTo(this.start.getX(), this.start.getY());
+        ctx.lineTo(this.end.getX(), this.end.getY());
+        ctx.strokeStyle = color;
+		ctx.lineWidth = 2;
+        ctx.stroke();
+    }
 }
 
 class Arc {
@@ -98,9 +113,10 @@ function deletePoint(index) {
 function addPoint() {
     prevPoint = points[points.length-1];
 	$('tbody').append('<tr>'
-		+'<td class="hoverable"><input class="x" value="'+(parseInt(prevPoint.x)+5)+'"></td>'
-		+'<td class="hoverable"><input class="y" value="'+(parseInt(prevPoint.y)+5)+'"></td>'
-		+'<td class="hoverable"><input class="vel" value="10"></td>'
+		+'<td class="hoverable"><input class="x number_cell" value="'+(parseInt(prevPoint.x)+5)+'"></td>'
+		+'<td class="hoverable"><input class="y number_cell" value="'+(parseInt(prevPoint.y)+5)+'"></td>'
+		+'<td class="hoverable"><input class="vel number_cell" value="10"></td>'
+		+'<td class="hoverable"><input class="radius number_cell" value="0"></td>'
 		+'<td class="hoverable"><input class="desc" placeholder="Description"></td>'
 		+'<td><button class="delete">Delete</button></td>'
 		+'</tr>'
@@ -109,23 +125,40 @@ function addPoint() {
     update();
 }
 
+function fitSizeToText(input) {
+    var maxWidth = input.width() - 2;
+    var val = input.val();
+    if (val == 0) {return};
+    $('#text_width_calc').text(val);
+    var textWidth = $('#text_width_calc').width();
+    var width = textWidth < maxWidth ? textWidth : maxWidth;
+    input.css('width', width);
+}
+
 function addEventListeners() {
     row = $($('tbody').children('tr')[points.length]);
-    row.find('td').on('input', function() {
+
+    row.find('td').keyup(function() {
         update();
     });
 
-    row.find('.delete').on('click', function() {
-        $(this).closest('tr').remove();
+    row.find('.desc').focus(function() {
+        $(this).css('width','100%');
+    }).focusout(function() {
+        fitSizeToText($(this));
+    });
+
+    row.find('.delete').click(function() {
+        $(this).parent().parent().remove();
         update();
-    })
+    });
 
     row.find('.hoverable').hover(
         function() {
-            $($($(this).closest('tr')).find('.hoverable')).css("background-color", "#f5f5f5");
+            $(this).find('.hoverable').css("background-color", "#f5f5f5");
         },
         function() {
-            $($($(this).closest('tr')).find('.hoverable')).css("background-color", "white");
+            $(this).find('.hoverable').css("background-color", "white");
         }
     )
 }
@@ -140,10 +173,15 @@ function update() {
         var y = $(row.find('.y')).val();
         var vel = $(row.find('.vel')).val();
         var desc = $(row.find('.desc')).val();
-        points.push(new Point(x, y, vel, desc));
+        var radius = $(row.find('.radius')).val();
+        points.push(new Point(x, y, vel, radius, desc));
     })
     for (var point in points) {
-        points[point].draw("#f72c1c");
+        points[point].draw();
+        if (point > 0) {
+            var line = new Line(points[point-1], points[point]);
+            line.draw();
+        }
     }
 }
 

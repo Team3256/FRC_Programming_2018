@@ -2,40 +2,48 @@
 <html>
 
 <head>
-	<img src="powerup_logo.jpg" class="logo">
-	<img src="first_logo.jpg" class="logo">
-    <img src="nvidia_logo.png" class="logo">
-	<title>Motion Profiling 2018</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<script type="text/javascript" src="script.js"></script>
 	<link rel="stylesheet" type="text/css" href="main.css">
 </head>
 
 <body onload="init()">
-	<h1>Welcome to the 2018 PowerUp Season Motion Profiling Tool for Team 3256!</h1>
+    <img src="powerup_logo.jpg" class="logo">
+    <img src="first_logo.jpg" class="logo">
+    <img src="valley_logo.png" class="logo">
+    <img src="nvidia_logo.png" class="logo">
+    <img src="bae_systems.png" class="logo">
+    <img src="cisco_logo.png" class="logo">
+    <img src="gorilla_metals_logo.jpg" class="logo">
+    <title>Motion Profiling 2018</title>
+	<h1 id="title">Welcome to the 2018 PowerUp Season Motion Profiling Tool for Team 3256!</h1>
 	<br>
 	<canvas id="field"></canvas>
-	<br>
-	<button onclick="addPoint()">Add Point</button>
-	<div>
-		<table>
-			<thead>
-				<th>X</th>
-				<th>Y</th>
-				<th>Velocity</th>
-				<th>Description</th>
-				<th>Delete</th>
-			</thead>
-			<tbody>
-				<tr>
-					<td class="hoverable"><input class="x" value="10"></td>
-					<td class="hoverable"><input class="y" value="5"></td>
-					<td class="hoverable"><span class="vel">0</span></td>
-					<td class="hoverable"><input placeholder="Description" class="desc"></td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+    <br>
+    <div class="button_container">
+	    <button onclick="addPoint()">Add Point</button>
+        <button onclick="saveConfiguration()">Save Configuration</button>
+    </div>
+    <table>
+        <thead>
+            <th>X</th>
+            <th>Y</th>
+            <th>Speed</th>
+            <th>Radius</th>
+            <th style="width: 25%">Description</th>
+            <th>Delete</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="hoverable"><input class="x number_cell" value="10"></td>
+                <td class="hoverable"><input class="y number_cell" value="5"></td>
+                <td class="hoverable"><div class="vel number_cell">0</div></td>
+                <td class="hoverable"><div class="radius number_cell">0</div></td>
+                <td class="hoverable"><input placeholder="Description" class="desc"></td>
+            </tr>
+        </tbody>
+    </table>
+    <span id="text_width_calc">Text width placeholder</span>
 
 </body>
 </html>

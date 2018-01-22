@@ -2,40 +2,85 @@ body{
 	text-align: center;
 	font-family: Helvetica;
 	padding: 10px;
+	letter-spacing: .9px;
 }
 
 .logo {
     height: 35px;
+    margin-left: 15px;
 }
 
-div {
-    box-shadow: 2px 2px 8px grey;
-    width: 60%;
-    offset: center;
-    margin: auto;
+#title {
+    border-bottom: #aaa solid 1px;
+}
+
+button {
+    cursor: pointer;
+    outline: none;
+}
+
+.delete {
+    background-color: #d8c300;
+    border-radius: 2px;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+.button_container > button {
+    border-radius: 12px;
+    font-size: 14px;
+    background-color: #f44242;
+    color: white;
+    float: left;
+    padding: 5px 10px;
+    margin-left: 5px;
+}
+
+.button_container {
+    margin: 10px;
+    margin-left: 200px;
+    height: 30px;
+    width: auto;
 }
 
 table {
+    box-shadow: 2px 2px 8px grey;
+    width: 60%;
     margin: auto;
-    width: 100%;
+    border-collapse: separate;
 }
 
-td > input, th {
-    width: 150px;
-    border-bottom: 1px solid #ddd;
+td, th {
+    text-align: left;
+    font-size: 15px;
+    font-weight: normal;
     padding: 7px;
+    width: 15%
 }
 
 th {
     background-color: #4268f4;
     color: white;
-    font-weight: normal;
 }
 
 .hoverable {
     background: transparent;
 }
 
-input {
-    font-size: 12px;
+.number_cell, .number_cell:focus {
+    width: 25%;
+}
+
+input, input:focus, span {
+    font-size: 15px;
+    border: none;
+    border-bottom: #aaa solid 1px;
+    outline: none;
+    background: transparent;
+    width: 100%;
+}
+
+span {
+    border-bottom: none;
+    color: transparent;
 }

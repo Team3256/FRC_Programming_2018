@@ -133,6 +133,17 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.config_kF(Constants.kDriveVelocityProfile, Constants.kRightDriveVelocityF, 0);
         rightMaster.config_IntegralZone(Constants.kDriveVelocityProfile, Constants.kRightDriveVelocityIZone, 0);
 
+        leftMaster.config_kP(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicP, 0);
+        leftMaster.config_kI(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicI, 0);
+        leftMaster.config_kD(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicD, 0);
+        leftMaster.config_kF(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicF, 0);
+        rightMaster.config_kP(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicP, 0);
+        rightMaster.config_kI(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicI, 0);
+        rightMaster.config_kD(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicD, 0);
+        rightMaster.config_kF(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicF, 0);
+
+        leftMaster.configMotionCruiseVelocity()
+
         leftMaster.setSensorPhase(true);
         rightMaster.setSensorPhase(true);
     }
@@ -278,8 +289,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
             return;
         }
         Kinematics.DriveVelocity delta = Kinematics.inverseKinematics(new Twist(0,0,error), Constants.kRobotTrack);
-        leftMaster.set(ControlMode.MotionMagic, inchesToTicks(getLeftDistance()) + delta.left);
-        rightMaster.set(ControlMode.MotionMagic, inchesToTicks(getRightDistance()) + delta.right);
+        leftMaster.set(ControlMode.MotionMagic, inchesToTicks(getLeftDistance()) + delta.left, 0);
+        rightMaster.set(ControlMode.MotionMagic, inchesToTicks(getRightDistance()) + delta.right, 0);
     }
 
     public boolean isTurnFinished() {

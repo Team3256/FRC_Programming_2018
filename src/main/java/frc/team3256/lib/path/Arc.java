@@ -9,6 +9,14 @@ public class Arc extends Segment{
     private Translation centerToStart, centerToEnd;
     private double radius;
 
+    /**
+     * @param startX X-Coordinate of the starting position
+     * @param startY Y-Coordinate of the starting position
+     * @param endX X-Coordinate of the ending position
+     * @param endY Y-Coordinate of the ending position
+     * @param centerX X-Coordinate of the circle
+     * @param centerY X-Coordinate of the circle
+     */
     public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY){
         type = Type.ARC;
         start = new Translation(startX, startY);

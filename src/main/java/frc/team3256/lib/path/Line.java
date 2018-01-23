@@ -54,7 +54,9 @@ public class Line extends Segment{
      * @return length of line, .norm is pythagorean theorem
      */
     @Override
-    public double getLength() { return slope.norm(); }
+    public double getLength() {
+        return slope.norm();
+    }
 
     /**
      * dot = dot product of u & v

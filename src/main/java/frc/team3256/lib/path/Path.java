@@ -34,7 +34,7 @@ public class Path {
 
 
         rv.distanceToPath = robotToClosestPoint.norm();
-        rv.lookaheadPoint = currSegment.getLookAheadPoint(rv.distanceToPath, robotCoordinates);
+        rv.lookaheadPoint = currSegment.getLookAheadPoint(rv.distanceToPath, closestPoint);
 
         for (Segment s : segments) {
             rv.remainingDistance += s.getLength();

@@ -29,17 +29,17 @@ public class PathTest {
             double y = Math.sin(Math.toRadians(deg));
             Path.PathUpdate pathUpdate = p.update(new Translation(3.0*x+2.0, 10.0+3.0*y));
             assertEquals(pathUpdate.distanceToPath, 2.0, kEpsilon);
-            double lookaheadPointX = 1.0 - Math.cos(.4);
-            double lookaheadPointY = Math.sin(.4);
+            double lookaheadPointX = (1.0 - Math.cos(Math.toRadians(deg)+2.0/5.0));
+            double lookaheadPointY = (Math.sin(Math.toRadians(deg)+2.0/5.0));
 
-            //System.out.println((1.0 - Math.cos(Math.toRadians(deg)+.4))*5.0);
-            //System.out.println((lookaheadPointX*5.0)+"   "+(10.0+5.0*lookaheadPointY));
-            System.out.println(pathUpdate.lookaheadPoint.x()+"   "+pathUpdate.lookaheadPoint.y());
+            //System.out.println(3.0*x+2.0 + "  " + (10.0+3.0*y));
+            //System.out.println(lookaheadPointX*5.0 + "   "+pathUpdate.lookaheadPoint.x());
+            //System.out.println(lookaheadPointY*5.0+10.0 + "   "+pathUpdate.lookaheadPoint.y());
 
             assertEquals(pathUpdate.remainingDistance, ((90-deg)*Math.PI/180.0)*5.0, kEpsilon);
 
-            //assertEquals(pathUpdate.lookaheadPoint.x(), lookaheadPointX*5.0, kEpsilon);
-            //assertEquals(pathUpdate.lookaheadPoint.y(), 10.0+5.0*lookaheadPointY, kEpsilon);
+            assertEquals(pathUpdate.lookaheadPoint.x(), lookaheadPointX*5.0, kEpsilon);
+            assertEquals(pathUpdate.lookaheadPoint.y(), 10.0+5.0*lookaheadPointY, kEpsilon);
         }
 
     }

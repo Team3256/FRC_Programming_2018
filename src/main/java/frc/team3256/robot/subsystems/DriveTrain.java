@@ -6,15 +6,18 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.team3256.lib.DrivePower;
+import frc.team3256.lib.Kinematics;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.ADXRS453_Gyro;
 import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.lib.math.Rotation;
+import frc.team3256.lib.math.Twist;
 import frc.team3256.lib.trajectory.Trajectory;
 import frc.team3256.lib.trajectory.TrajectoryCurveGenerator;
 import frc.team3256.lib.trajectory.TrajectoryFollower;
 import frc.team3256.lib.trajectory.TrajectoryGenerator;
 import frc.team3256.robot.Constants;
+import org.opencv.core.Mat;
 
 public class DriveTrain extends SubsystemBase implements Loop {
 
@@ -25,6 +28,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private Trajectory trajectory;
     private Trajectory trajectoryCurveLead;
     private Trajectory trajectoryCurveFollow;
+    private double degrees;
 
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
@@ -85,14 +89,13 @@ public class DriveTrain extends SubsystemBase implements Loop {
                 break;
             case FOLLOW_TRAJECTORY:
                 break;
-            /*
+
             case TURN_TO_ANGLE:
                 updateTurnToAngle();
                 break;
-            case DRIVE_TO_DISTANCE:
+            /*case DRIVE_TO_DISTANCE:
                 updateDriveToDistance();
-                break;
-            */
+                break; */
 }
     }
 
@@ -118,20 +121,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
             DriverStation.reportError("Mag Encoder on Right Master not detected!!!", false);
         }
         gyro = new ADXRS453_Gyro();
-
-        /*
-        We haven't tested this yet
-        leftMaster.setPID(Constants.kDriveMotionMagicP, Constants.kDriveMotionMagicI, Constants.kDriveMotionMagicD,
-                Constants.kDriveMotionMagicF, Constants.kDriveMotionMagicIZone, Constants.kDriveMotionMagicCloseLoopRampRate,
-                Constants.kDriveMotionMagicProfile);
-        rightMaster.setPID(Constants.kDriveMotionMagicP, Constants.kDriveMotionMagicI, Constants.kDriveMotionMagicD,
-                Constants.kDriveMotionMagicF, Constants.kDriveMotionMagicIZone, Constants.kDriveMotionMagicCloseLoopRampRate,
-                Constants.kDriveMotionMagicProfile);
-        leftMaster.setMotionMagicAcceleration(Constants.kDriveMotionMagicAcceleration);
-        rightMaster.setMotionMagicAcceleration((Constants.kDriveMotionMagicAcceleration));
-        leftMaster.setMotionMagicCruiseVelocity(Constants.kDriveMotionMagicCruiseVelocity);
-        rightMaster.setMotionMagicCruiseVelocity(Constants.kDriveMotionMagicCruiseVelocity);
-        */
 
         leftMaster.config_kP(Constants.kDriveVelocityProfile, Constants.kLeftDriveVelocityP, 0);
         leftMaster.config_kI(Constants.kDriveVelocityProfile, Constants.kLeftDriveVelocityI, 0);
@@ -224,23 +213,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
         trajectory = null;
     }
 
-    /*
-    We haven't started testing these yet
-    public void configureTalonsForDistance() {
-        if (controlMode != DriveControlMode.DRIVE_TO_DISTANCE)
-            controlMode = DriveControlMode.DRIVE_TO_DISTANCE;
-        leftMaster.changeControlMode(CANTalon.TalonControlMode.MotionMagic);
-        rightMaster.changeControlMode(CANTalon.TalonControlMode.MotionMagic);
-    }
-
-    public void configureTalonsForAngle() {
-        if (controlMode != DriveControlMode.TURN_TO_ANGLE)
-            controlMode = DriveControlMode.TURN_TO_ANGLE;
-        leftMaster.changeControlMode(CANTalon.TalonControlMode.MotionMagic);
-        rightMaster.changeControlMode(CANTalon.TalonControlMode.MotionMagic);
-    }
-    */
-
     /**
      * Changes the mode into Velocity mode, and sets the setpoints for the talons
      * @param setpoint_left left velocity setpoint in inches/sec
@@ -277,22 +249,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.set(ControlMode.Velocity, inchesPerSecToRpm(right_velocity));
     }
 
-    /*
-    We haven't started testing these yet
-    public void setAngleSetpoint(double angle) {
-        configureTalonsForAngle();
-        leftMaster.set(degreesToInches(angle));
-        rightMaster.set(degreesToInches(angle));
-        this.angle = angle;
-    }
-
-    public void setDistanceSetpoint(double distance) {
-        configureTalonsForDistance();
-        leftMaster.set(distance);
-        rightMaster.set(distance);
-        this.distance = distance;
-    }
-    */
 
     /**
      * Set the mode into open-loop mode (PercentVBus on the talons, and set the corresponding power
@@ -312,20 +268,43 @@ public class DriveTrain extends SubsystemBase implements Loop {
         setOpenLoop(power.getLeft(), power.getRight());
     }
 
-    /*
-    We haven't started testing these yet
-    public void updateTurnToAngle() {
-        //TODO: Take in gyro heading and set a new setpoint based on the gyro heading. This accounts for wheels slipping.
-        leftMaster.set(degreesToInches(angle));
-        rightMaster.set(degreesToInches(angle));
+    private void updateTurnToAngle() {
+        if (controlMode != DriveControlMode.TURN_TO_ANGLE){
+            return;
+        }
+        double error = degrees - gyro.getAngle();
+        if (isTurnFinished()){
+            setOpenLoop(0,0);
+            return;
+        }
+        Kinematics.DriveVelocity delta = Kinematics.inverseKinematics(new Twist(0,0,error), Constants.kRobotTrack);
+        leftMaster.set(ControlMode.MotionMagic, inchesToTicks(getLeftDistance()) + delta.left);
+        rightMaster.set(ControlMode.MotionMagic, inchesToTicks(getRightDistance()) + delta.right);
     }
 
-    public void updateDriveToDistance() {
-        //TODO: Take in gyro heading and adjust the left and right talon setpoints to make sure we are driving straight
-        leftMaster.set(distance);
-        rightMaster.set(distance);
+    public boolean isTurnFinished() {
+        double error = Math.abs(degrees - gyro.getAngle());
+        if (controlMode != DriveControlMode.TURN_TO_ANGLE){
+            return true;
+        }
+        if (error <= 1){
+            return true;
+        }
+        return false;
     }
-    */
+
+    public void setTurnSetpoint(double setpoint) {
+        if (controlMode != DriveControlMode.TURN_TO_ANGLE){
+            controlMode = DriveControlMode.TURN_TO_ANGLE;
+        }
+        this.degrees = setpoint;
+        updateTurnToAngle();
+    }
+
+
+    public double inchesToTicks(double inches) {
+        return (inches * 4096)/Constants.kWheelDiameter * Math.PI;
+    }
 
     public ADXRS453_Gyro getGyro(){
         return gyro;

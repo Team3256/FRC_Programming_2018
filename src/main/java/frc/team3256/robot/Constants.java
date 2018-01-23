@@ -10,8 +10,6 @@ public class Constants {
     public static final int kCarriageRollerRight = 8;
 
 
-
-
     //Solenoids
     public static final int kIntakePivotForward = 3;
     public static final int kIntakePivotReverse = 4;
@@ -39,7 +37,7 @@ public class Constants {
     //Robot constants:
     //everything is in inches, seconds, or degrees
     public static final double kRobotTrack = 25; //TODO: TBD
-    public static final double kWheelDiameter = 6.0;
+    public static final double kWheelDiameter = 4.0;
     //12 fps
     public static final double kMaxVelocityHighGearInPerSec = 12.0*12.0;
 

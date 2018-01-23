@@ -15,7 +15,7 @@ public class DualLogitechConfig implements ControlsInterface{
 
     @Override
     public double getTurn(){
-        return driver.getRawAxis(2);
+        return driver.getRawAxis(4);
     }
 
     @Override

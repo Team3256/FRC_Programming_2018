@@ -170,7 +170,7 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
     }
 
     public boolean hasCube(){
-        return Intake.getInstance().hasCube();
+        return false;//Instance().hasCube();
     }
 
     @Override

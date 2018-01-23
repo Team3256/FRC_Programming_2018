@@ -109,6 +109,9 @@ public class Arc extends Segment{
         */
         Translation centerToPosition = new Translation(center, position);
         double angleToRotate = lookaheadDistance/radius;
+        if (end.rotate(start.direction().inverse()).y() < 0) {
+            angleToRotate = -1.0 * angleToRotate;
+        }
         return center.translate(centerToPosition.rotate(Rotation.fromRadians(angleToRotate)));
     }
 

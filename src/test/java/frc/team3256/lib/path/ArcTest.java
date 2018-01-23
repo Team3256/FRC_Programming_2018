@@ -140,9 +140,8 @@ public class ArcTest {
         closestPoint = arc.getClosestPointOnSegment(currPos);
         assertEquals(closestPoint.x(), 0, kEpsilon);
         assertEquals(closestPoint.y(), 10.0, kEpsilon);
-
         assertEquals(arc.getLookAheadPoint(2.0, closestPoint).x(), 5.0-5.0*Math.cos(2.0/5.0), kEpsilon);
-        assertEquals(arc.getLookAheadPoint(2.0, closestPoint).y(), 5.0*Math.sin(2.0/5.0), kEpsilon);
+        assertEquals(arc.getLookAheadPoint(2.0, closestPoint).y(), 10+5.0*Math.sin(2.0/5.0), kEpsilon);
 
     }
 }

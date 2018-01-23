@@ -142,7 +142,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.config_kD(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicD, 0);
         rightMaster.config_kF(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicF, 0);
 
-        leftMaster.configMotionCruiseVelocity()
+        //leftMaster.configMotionCruiseVelocity() not exactly sure what goes in there
 
         leftMaster.setSensorPhase(true);
         rightMaster.setSensorPhase(true);

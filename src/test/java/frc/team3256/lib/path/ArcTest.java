@@ -114,11 +114,35 @@ public class ArcTest {
         Arc arc = new Arc(2, 0, -2, 0, 0, 0);
         Translation currPos = new Translation(Math.sqrt(2)/2, Math.sqrt(2)/2);
         Translation closestPoint = arc.getClosestPointOnSegment(currPos);
-        assertEquals(closestPoint.x(), Math.sqrt(2)/2*2, kEpsilon);
-        assertEquals(closestPoint.y(), Math.sqrt(2)/2*2, kEpsilon);
+        assertEquals(closestPoint.x(), Math.sqrt(2), kEpsilon);
+        assertEquals(closestPoint.y(), Math.sqrt(2), kEpsilon);
 
         assertEquals(arc.getCurrDistanceTraveled(closestPoint), Math.PI/2, kEpsilon);
         assertEquals(arc.getLookAheadPoint(2.0*15.0/180.0*Math.PI, closestPoint).x(), 1.0, kEpsilon);
         assertEquals(arc.getLookAheadPoint(2.0*15.0/180.0*Math.PI, closestPoint).y(), Math.sqrt(3), kEpsilon);
+
+
+        arc = new Arc(2, 0, Math.sqrt(2), -Math.sqrt(2), 0, 0);
+        currPos = new Translation(Math.sqrt(2)/2, Math.sqrt(2)/2);
+        closestPoint = arc.getClosestPointOnSegment(currPos);
+        assertEquals(closestPoint.x(), 2, kEpsilon);
+        assertEquals(closestPoint.y(), 0, kEpsilon);
+
+        arc = new Arc(2, 0, -2, 0, 0, 0);
+        currPos = new Translation(-1, Math.sqrt(3));
+        closestPoint = arc.getClosestPointOnSegment(currPos);
+        assertEquals(arc.getCurrDistanceTraveled(closestPoint), 4*Math.PI/3, kEpsilon);
+        assertEquals(arc.getLookAheadPoint(Math.PI/3, closestPoint).x(), -Math.sqrt(3), kEpsilon);
+        assertEquals(arc.getLookAheadPoint(Math.PI/3, closestPoint).y(), 1, kEpsilon);
+
+        arc = new Arc(0.0, 10.0, 5.0, 15.0, 5.0, 10.0);
+        currPos = new Translation(2.0, 10.0);
+        closestPoint = arc.getClosestPointOnSegment(currPos);
+        assertEquals(closestPoint.x(), 0, kEpsilon);
+        assertEquals(closestPoint.y(), 10.0, kEpsilon);
+
+        assertEquals(arc.getLookAheadPoint(2.0, closestPoint).x(), 5.0-5.0*Math.cos(2.0/5.0), kEpsilon);
+        assertEquals(arc.getLookAheadPoint(2.0, closestPoint).y(), 5.0*Math.sin(2.0/5.0), kEpsilon);
+
     }
 }

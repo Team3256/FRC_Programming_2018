@@ -28,6 +28,25 @@ public class Path {
 
     public PathUpdate update(Translation robotCoordinates){
         PathUpdate rv = new PathUpdate();
+        Segment currSegment = segments.get(0);
+        Translation closestPoint = currSegment.getClosestPointOnSegment(robotCoordinates);
+        Translation robotToClosestPoint = new Translation(robotCoordinates, closestPoint);
+
+
+        rv.distanceToPath = robotToClosestPoint.norm();
+        rv.lookaheadPoint = currSegment.getLookAheadPoint(rv.distanceToPath, robotCoordinates);
+
+        for (Segment s : segments) {
+            rv.remainingDistance += s.getLength();
+        }
+
+        rv.remainingDistance -= currSegment.getCurrDistanceTraveled(closestPoint);
+
+        if(closestPoint.equals(currSegment.getEndPoint())) {
+            segments.remove(0);
+            System.out.println("deleted path");
+        }
+
         return rv;
     }
 

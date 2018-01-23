@@ -52,8 +52,8 @@ public class Constants {
     public static final double kDriveMotionMagicD = 0;
     public static final double kDriveMotionMagicF = 0;
     public static final double kDriveMotionMagicCloseLoopRampRate = 0;
-    public static final double kDriveMotionMagicAcceleration = 0;
-    public static final double kDriveMotionMagicCruiseVelocity = 0;
+    public static final int kDriveMotionMagicAcceleration = 0;
+    public static final int kDriveMotionMagicCruiseVelocity = 12;
     public static final int kDriveMotionMagicIZone = 0;
     public static final int kDriveMotionMagicProfile = 0;
 

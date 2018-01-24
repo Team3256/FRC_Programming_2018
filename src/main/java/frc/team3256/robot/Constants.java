@@ -38,8 +38,6 @@ public class Constants {
     //everything is in inches, seconds, or degrees
     public static final double kRobotTrack = 25; //TODO: TBD
     public static final double kWheelDiameter = 4.0;
-    //12 fps
-    public static final double kMaxVelocityHighGearInPerSec = 12.0*12.0;
 
     //Control Loop Parameters:
     //Looping period
@@ -51,10 +49,8 @@ public class Constants {
     public static final double kDriveMotionMagicI = 0;
     public static final double kDriveMotionMagicD = 0;
     public static final double kDriveMotionMagicF = 0;
-    public static final double kDriveMotionMagicCloseLoopRampRate = 0;
-    public static final int kDriveMotionMagicAcceleration = 0;
-    public static final int kDriveMotionMagicCruiseVelocity = 12;
-    public static final int kDriveMotionMagicIZone = 0;
+    public static final double kDriveMotionMagicAcceleration = 12.0*12.0;
+    public static final double kDriveMotionMagicCruiseVelocity = 12.0*12.0;
     public static final int kDriveMotionMagicProfile = 0;
 
     //Drive Velocity
@@ -62,13 +58,11 @@ public class Constants {
     public static final double kLeftDriveVelocityI = 0.0003;
     public static final double kLeftDriveVelocityD = 6.5;
     public static final double kLeftDriveVelocityF = 0.214;
-    public static final double kLeftDriveVelocityCloseLoopRampRate = 240.0; //240
     public static final int kLeftDriveVelocityIZone = 0;//72
     public static final double kRightDriveVelocityP = 0.3;
     public static final double kRightDriveVelocityI = 0.0005;
     public static final double kRightDriveVelocityD = 6;
     public static final double kRightDriveVelocityF = 0.214;
-    public static final double kRightDriveVelocityCloseLoopRampRate = 120.0; //240
     public static final int kRightDriveVelocityIZone = 0;//72
     public static final int kDriveVelocityProfile = 1;
 
@@ -83,8 +77,8 @@ public class Constants {
     public static final int kCarriageScoreForwardPower = 0;
     public static final int kCarriageScoreBackwardPower = -0;
 
-    public static final double rollForwardMotorPower = 0;
-    public static final double rollBackwardMotorPower = -0;
+    public static final double kScoreForwardMotorPower = 0;
+    public static final double kScoreBackwardMotorPower = -0;
 
     //Game Data:
     public static final int kSwitchIndex = 0;

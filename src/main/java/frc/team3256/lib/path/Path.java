@@ -44,7 +44,7 @@ public class Path {
 
         if(closestPoint.equals(currSegment.getEndPoint())) {
             segments.remove(0);
-            System.out.println("deleted path");
+            //System.out.println("deleted path");
         }
 
         return rv;

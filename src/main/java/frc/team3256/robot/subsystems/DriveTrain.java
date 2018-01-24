@@ -14,10 +14,8 @@ import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Twist;
 import frc.team3256.lib.trajectory.Trajectory;
 import frc.team3256.lib.trajectory.TrajectoryCurveGenerator;
-import frc.team3256.lib.trajectory.TrajectoryFollower;
 import frc.team3256.lib.trajectory.TrajectoryGenerator;
 import frc.team3256.robot.Constants;
-import org.opencv.core.Mat;
 
 public class DriveTrain extends SubsystemBase implements Loop {
 
@@ -89,14 +87,12 @@ public class DriveTrain extends SubsystemBase implements Loop {
                 break;
             case FOLLOW_TRAJECTORY:
                 break;
-
             case TURN_TO_ANGLE:
-                updateTurnToAngle();
+                updateTurnInPlace();
                 break;
-            /*case DRIVE_TO_DISTANCE:
-                updateDriveToDistance();
-                break; */
-}
+            case DRIVE_TO_DISTANCE:
+                break;
+        }
     }
 
     @Override
@@ -142,32 +138,39 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.config_kD(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicD, 0);
         rightMaster.config_kF(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicF, 0);
 
-        //leftMaster.configMotionCruiseVelocity() not exactly sure what goes in there
+        leftMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kDriveMotionMagicCruiseVelocity),
+            0);
+        leftMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kDriveMotionMagicAcceleration)
+            ,0);
+        rightMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kDriveMotionMagicCruiseVelocity),
+            0);
+        rightMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kDriveMotionMagicAcceleration),
+            0);
 
         leftMaster.setSensorPhase(true);
         rightMaster.setSensorPhase(true);
     }
 
     public double getLeftDistance() {
-        return rotToInches(leftMaster.getSelectedSensorPosition(0));
+        return sensorUnitsToInches(leftMaster.getSelectedSensorPosition(0));
     }
 
     public double getRightDistance() {
-        return rotToInches(rightMaster.getSelectedSensorPosition(0));
+        return sensorUnitsToInches(rightMaster.getSelectedSensorPosition(0));
     }
 
     /**
      * @return left velocity in in/sec
      */
     public double getLeftVelocity(){
-        return rpmToInchesPerSec(leftMaster.getSelectedSensorVelocity(0));
+        return sensorUnitsToInchesPerSec(leftMaster.getSelectedSensorVelocity(0));
     }
 
     /**
      * @return right velocity in in/sec
      */
     public double getRightVelocity(){
-        return rpmToInchesPerSec(rightMaster.getSelectedSensorVelocity(0));
+        return sensorUnitsToInches(rightMaster.getSelectedSensorVelocity(0));
     }
 
     //TODO: test these methods
@@ -177,7 +180,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
             return 0;
         }
         //Returns in in/sec
-        return Constants.kWheelDiameter*Math.PI/leftMaster.getClosedLoopError(0)*100;
+        return sensorUnitsToInchesPerSec(leftMaster.getClosedLoopError(0));
     }
 
     public double getRightVelocityError(){
@@ -186,27 +189,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
             return 0;
         }
         //Returns in in/sec
-        return Constants.kWheelDiameter*Math.PI/rightMaster.getClosedLoopError(0)*100;
-    }
-
-    public double rotToInches(double rot){
-        return rot*4*Math.PI;
-    }
-
-    public double inchesToRot(double inches){
-        return inches / (4*Math.PI);
-    }
-
-    public double rpmToInchesPerSec(double rpm){
-        return rotToInches(rpm)/60;
-    }
-
-    public double inchesPerSecToRpm(double inchesPerSec){
-        return inchesToRot(inchesPerSec)*60;
-    }
-
-    public double rpmToNativeUnitsPerHundredMs(double rpm){
-        return (rpm*4096)/600;
+        return sensorUnitsToInchesPerSec(rightMaster.getClosedLoopError(0));
     }
 
     public void configureDistanceTrajectory(double startVel, double endVel, double distance){
@@ -249,15 +232,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
             rightMaster.set(ControlMode.PercentOutput, 0);
             return;
         }
-        if (Math.abs(left_velocity) <= 24){
-            left_velocity = 0;
-        }
-        else if (Math.abs(right_velocity) <= 24){
-            right_velocity = 0;
-        }
         //otherwise, update the talons with the new velocity setpoint
-        leftMaster.set(ControlMode.Velocity, inchesPerSecToRpm(left_velocity));
-        rightMaster.set(ControlMode.Velocity, inchesPerSecToRpm(right_velocity));
+        leftMaster.set(ControlMode.Velocity, inchesPerSecToSensorUnits(left_velocity));
+        rightMaster.set(ControlMode.Velocity, inchesPerSecToSensorUnits(right_velocity));
     }
 
 
@@ -279,42 +256,62 @@ public class DriveTrain extends SubsystemBase implements Loop {
         setOpenLoop(power.getLeft(), power.getRight());
     }
 
-    private void updateTurnToAngle() {
+    //updates turning in place
+    private void updateTurnInPlace() {
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
             return;
         }
-        double error = degrees - gyro.getAngle();
-        if (isTurnFinished()){
+        Rotation error = Rotation.fromDegrees(degrees - gyro.getAngle());
+        if (isTurnInPlaceFinished()){
             setOpenLoop(0,0);
             return;
         }
-        Kinematics.DriveVelocity delta = Kinematics.inverseKinematics(new Twist(0,0,error), Constants.kRobotTrack);
-        leftMaster.set(ControlMode.MotionMagic, inchesToTicks(getLeftDistance()) + delta.left, 0);
-        rightMaster.set(ControlMode.MotionMagic, inchesToTicks(getRightDistance()) + delta.right, 0);
+        //periodically re-converts the gyro angle into a new motion magic goal for the talons
+        Kinematics.DriveVelocity delta = Kinematics.inverseKinematics(new Twist(0,0,error.radians()), Constants.kRobotTrack);
+        leftMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(getLeftDistance() + delta.left), 0);
+        rightMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(getRightDistance() + delta.right), 0);
     }
 
-    public boolean isTurnFinished() {
+    public boolean isTurnInPlaceFinished() {
         double error = Math.abs(degrees - gyro.getAngle());
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
             return true;
         }
-        if (error <= 1){
+        if (error <= 1.0){
             return true;
         }
         return false;
     }
 
-    public void setTurnSetpoint(double setpoint) {
+    //sets the turn in place setpoint in degrees
+    public void setTurnInPlaceSetpoint(double setpoint) {
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
             controlMode = DriveControlMode.TURN_TO_ANGLE;
         }
         this.degrees = setpoint;
-        updateTurnToAngle();
+        updateTurnInPlace();
     }
 
 
-    public double inchesToTicks(double inches) {
-        return (inches * 4096)/Constants.kWheelDiameter * Math.PI;
+    public double inchesToSensorUnits(double inches) {
+        return (inches * 4096)/(Constants.kWheelDiameter * Math.PI);
+    }
+
+    //Sensor units for velocity are encoder units per 100 ms
+    public double inchesPerSecToSensorUnits(double inchesPerSec){
+        return inchesToSensorUnits(inchesPerSec)/10.0;
+    }
+
+    public double inchesPerSec2ToSensorUnits(double inchesPerSec2){
+      return inchesPerSecToSensorUnits(inchesPerSec2)/10.0;
+    }
+
+    public double sensorUnitsToInches(double sensorUnits){
+        return sensorUnits/4096*Math.PI*Constants.kWheelDiameter;
+    }
+
+    public double sensorUnitsToInchesPerSec(double sensorUnits){
+        return sensorUnitsToInches(sensorUnits*10.0);
     }
 
     public ADXRS453_Gyro getGyro(){
@@ -323,10 +320,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
     public Rotation getAngle(){
         return Rotation.fromDegrees(gyro.getAngle());
-    }
-
-    public double degreesToInches(double degrees) {
-        return Constants.kRobotTrack * Math.PI * degrees / 360;
     }
 
     public DriveControlMode getMode(){

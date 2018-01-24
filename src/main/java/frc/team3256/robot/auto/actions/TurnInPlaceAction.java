@@ -1,6 +1,5 @@
 package frc.team3256.robot.auto.actions;
 
-import frc.team3256.robot.auto.AutoModeBase;
 import frc.team3256.robot.subsystems.DriveTrain;
 
 public class TurnInPlaceAction implements Action {
@@ -14,7 +13,7 @@ public class TurnInPlaceAction implements Action {
 
     @Override
     public boolean isFinished() {
-        return drive.isTurnFinished();
+        return drive.isTurnInPlaceFinished();
     }
 
     @Override
@@ -28,6 +27,6 @@ public class TurnInPlaceAction implements Action {
 
     @Override
     public void start() {
-        drive.setTurnSetpoint(degrees);
+        drive.setTurnInPlaceSetpoint(degrees);
     }
 }

@@ -14,7 +14,7 @@ import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Twist;
 import frc.team3256.lib.trajectory.Trajectory;
 import frc.team3256.lib.trajectory.TrajectoryCurveGenerator;
-import frc.team3256.lib.trajectory.TrajectoryFollower;
+import frc.team3256.lib.trajectory.TrajectoryWrapper;
 import frc.team3256.lib.trajectory.TrajectoryGenerator;
 import frc.team3256.robot.Constants;
 
@@ -24,10 +24,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private TalonSRX leftMaster, rightMaster, leftSlave, rightSlave;
     private ADXRS453_Gyro gyro;
     private DriveControlMode controlMode;
-    private Trajectory trajectory;
     private double degrees;
     private double distance;
-
+    private TrajectoryWrapper trajectoryWrapper = new TrajectoryWrapper();
     private double leftOffset = 0;
     private double rightOffset = 0;
 
@@ -90,7 +89,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
                 */
                 break;
             case FOLLOW_TRAJECTORY:
-                updateTrajectory();
                 break;
             case TURN_TO_ANGLE:
                 updateTurnInPlace();
@@ -204,24 +202,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
         return sensorUnitsToInchesPerSec(rightMaster.getClosedLoopError(0));
     }
 
-    public void configureDistanceTrajectory(double startVel, double endVel, double distance){
-        TrajectoryGenerator trajectoryGenerator = new TrajectoryGenerator();
-        trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, distance);
-        //trajectoryFollower.setTrajectory(trajectory);
-        if (controlMode != DriveControlMode.FOLLOW_TRAJECTORY) {
-            controlMode = DriveControlMode.FOLLOW_TRAJECTORY;
-        }
-        updateTrajectory();
-    }
-
-    public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius) {
-        TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator();
-        trajectoryCurveGenerator.generateTrajectoryCurve(startVel, endVel, degrees, turnRadius);
-        /*trajectoryCurveLead = trajectoryCurveGenerator.getLeadPath();
-        trajectoryCurveFollow = trajectoryCurveGenerator.getFollowPath();*/
-        trajectory = null;
-    }
-
     /**
      * Changes the mode into Velocity mode, and sets the setpoints for the talons
      * @param setpoint_left left velocity setpoint in inches/sec
@@ -302,13 +282,13 @@ public class DriveTrain extends SubsystemBase implements Loop {
     public void updateTrajectory() {
         if (controlMode != DriveControlMode.FOLLOW_TRAJECTORY) {
             return;
-        }/*
-        if (trajectoryFollower.isFinished()){
+        }
+        if (trajectoryWrapper.isFinished()){
             setOpenLoop(0,0);
             return;
         }
-        leftMaster.set(ControlMode.PercentOutput, trajectoryFollower.update(getLeftDistance()));
-        rightMaster.set(ControlMode.PercentOutput, trajectoryFollower.update(getRightDistance()));*/
+        leftMaster.set(ControlMode.PercentOutput, trajectoryWrapper.updateCalculations(getLeftDistance()));
+        rightMaster.set(ControlMode.PercentOutput, trajectoryWrapper.updateCalculations(getRightDistance()));
     }
 
     public void resetEncoders() {
@@ -343,12 +323,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
         }
         return false;
     }
-/*
-    public boolean isTrajectoryFinished() {
-        return curr_segment >= trajectory.getLength();
-    }*/
 
-    //sets the turn in place setpoint in degrees
+    public boolean isTrajectoryFinished() {
+        return trajectoryWrapper.isFinished();
+    }
     public void setTurnInPlaceSetpoint(double setpoint) {
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
             controlMode = DriveControlMode.TURN_TO_ANGLE;

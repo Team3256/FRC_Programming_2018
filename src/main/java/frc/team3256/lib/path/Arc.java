@@ -99,6 +99,17 @@ public class Arc extends Segment{
     }
 
     @Override
+    public Translation getDirection(Translation lookaheadPoint) {
+        Translation lookaheadToCenter = new Translation(lookaheadPoint, center);
+        return (lookaheadToCenter.inverse().scale(1/lookaheadToCenter.norm()));
+    }
+
+    /*public static void main(String args[]) {
+        Arc arc = new Arc(0, 0, 5, 5, 5, 0);
+        System.out.println(arc.getDirection(new Translation(5-2.5*Math.sqrt(2), 2.5*Math.sqrt(2))));
+    }*/
+
+    @Override
     public Translation getLookAheadPoint(double lookaheadDistance, Translation position) {
         /*
         double startToLookAheadAngle = (lookaheadDistance + getCurrDistanceTraveled(closestPoint)) / radius;

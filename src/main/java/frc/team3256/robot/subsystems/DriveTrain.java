@@ -14,6 +14,7 @@ import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Twist;
 import frc.team3256.lib.trajectory.Trajectory;
 import frc.team3256.lib.trajectory.TrajectoryCurveGenerator;
+import frc.team3256.lib.trajectory.TrajectoryFollower;
 import frc.team3256.lib.trajectory.TrajectoryGenerator;
 import frc.team3256.robot.Constants;
 
@@ -24,8 +25,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private ADXRS453_Gyro gyro;
     private DriveControlMode controlMode;
     private Trajectory trajectory;
-    private Trajectory trajectoryCurveLead;
-    private Trajectory trajectoryCurveFollow;
     private double degrees;
     private double distance;
 
@@ -91,6 +90,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
                 */
                 break;
             case FOLLOW_TRAJECTORY:
+                updateTrajectory();
                 break;
             case TURN_TO_ANGLE:
                 updateTurnInPlace();
@@ -207,8 +207,11 @@ public class DriveTrain extends SubsystemBase implements Loop {
     public void configureDistanceTrajectory(double startVel, double endVel, double distance){
         TrajectoryGenerator trajectoryGenerator = new TrajectoryGenerator();
         trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, distance);
-        trajectoryCurveLead = null;
-        trajectoryCurveFollow = null;
+        trajectoryFollower.setTrajectory(trajectory);
+        if (controlMode != DriveControlMode.FOLLOW_TRAJECTORY) {
+            controlMode = DriveControlMode.FOLLOW_TRAJECTORY;
+        }
+        updateTrajectory();
     }
 
     public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius) {
@@ -296,6 +299,18 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(distance + rightOffset), 0);
     }
 
+    public void updateTrajectory() {
+        if (controlMode != DriveControlMode.FOLLOW_TRAJECTORY) {
+            return;
+        }
+        if (trajectoryFollower.isFinished()){
+            setOpenLoop(0,0);
+            return;
+        }
+        leftMaster.set(ControlMode.PercentOutput, trajectoryFollower.update(getLeftDistance()));
+        rightMaster.set(ControlMode.PercentOutput, trajectoryFollower.update(getRightDistance()));
+    }
+
     public void resetEncoders() {
         leftMaster.setSelectedSensorPosition(0, 0, 0);
         rightMaster.setSelectedSensorPosition(0, 0,0);
@@ -327,6 +342,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
             return true;
         }
         return false;
+    }
+
+    public boolean isTrajectoryFinished() {
+        return curr_segment >= trajectory.getLength();
     }
 
     //sets the turn in place setpoint in degrees

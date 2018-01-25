@@ -59,7 +59,7 @@ public class TrajectoryFollower {
             curr_segment++;
             if (output > 1) {
                 output = 1;
-            }
+        }
             else if (output < -1) {
                 output = -1;
             }

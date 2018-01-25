@@ -27,8 +27,6 @@ public class FollowTrajectoryAction implements Action {
 
     @Override
     public void update() {
-        double currPos = (drive.getLeftDistance() + drive.getRightDistance())/2;
-        trajectoryFollower.update(currPos);
     }
 
     @Override
@@ -37,7 +35,7 @@ public class FollowTrajectoryAction implements Action {
 
     @Override
     public void start() {
-        trajectoryFollower.setTrajectory(trajectory);
         drive.configureDistanceTrajectory(startVel, endVel, distance);
+        drive.updateTrajectory();
     }
 }

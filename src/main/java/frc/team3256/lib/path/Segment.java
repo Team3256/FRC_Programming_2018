@@ -1,6 +1,7 @@
 package frc.team3256.lib.path;
 
 import frc.team3256.lib.math.RigidTransform;
+import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Translation;
 
 public abstract class Segment {
@@ -25,6 +26,8 @@ public abstract class Segment {
     public abstract double getLength();
 
     public abstract Translation getClosestPointOnSegment(Translation position);
+
+    public abstract Translation getDirection(Translation lookaheadPoint);
 
     public abstract Translation getLookAheadPoint(double lookaheadDistance, Translation position);
 

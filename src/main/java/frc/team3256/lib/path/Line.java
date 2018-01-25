@@ -1,5 +1,6 @@
 package frc.team3256.lib.path;
 
+import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Translation;
 
 public class Line extends Segment{
@@ -77,6 +78,11 @@ public class Line extends Segment{
         if (interpolationParameter < 0) return start;
         else if (interpolationParameter > 1) return end;
         return start.translate(slope.scale(interpolationParameter));
+    }
+
+    @Override
+    public Translation getDirection(Translation lookaheadPoint) {
+        return slope.scale(1.0/slope.norm());
     }
 
     /**

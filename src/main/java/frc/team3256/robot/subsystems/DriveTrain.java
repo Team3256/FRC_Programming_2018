@@ -207,7 +207,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     public void configureDistanceTrajectory(double startVel, double endVel, double distance){
         TrajectoryGenerator trajectoryGenerator = new TrajectoryGenerator();
         trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, distance);
-        trajectoryFollower.setTrajectory(trajectory);
+        //trajectoryFollower.setTrajectory(trajectory);
         if (controlMode != DriveControlMode.FOLLOW_TRAJECTORY) {
             controlMode = DriveControlMode.FOLLOW_TRAJECTORY;
         }
@@ -217,8 +217,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
     public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius) {
         TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator();
         trajectoryCurveGenerator.generateTrajectoryCurve(startVel, endVel, degrees, turnRadius);
-        trajectoryCurveLead = trajectoryCurveGenerator.getLeadPath();
-        trajectoryCurveFollow = trajectoryCurveGenerator.getFollowPath();
+        /*trajectoryCurveLead = trajectoryCurveGenerator.getLeadPath();
+        trajectoryCurveFollow = trajectoryCurveGenerator.getFollowPath();*/
         trajectory = null;
     }
 
@@ -302,13 +302,13 @@ public class DriveTrain extends SubsystemBase implements Loop {
     public void updateTrajectory() {
         if (controlMode != DriveControlMode.FOLLOW_TRAJECTORY) {
             return;
-        }
+        }/*
         if (trajectoryFollower.isFinished()){
             setOpenLoop(0,0);
             return;
         }
         leftMaster.set(ControlMode.PercentOutput, trajectoryFollower.update(getLeftDistance()));
-        rightMaster.set(ControlMode.PercentOutput, trajectoryFollower.update(getRightDistance()));
+        rightMaster.set(ControlMode.PercentOutput, trajectoryFollower.update(getRightDistance()));*/
     }
 
     public void resetEncoders() {
@@ -343,10 +343,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
         }
         return false;
     }
-
+/*
     public boolean isTrajectoryFinished() {
         return curr_segment >= trajectory.getLength();
-    }
+    }*/
 
     //sets the turn in place setpoint in degrees
     public void setTurnInPlaceSetpoint(double setpoint) {

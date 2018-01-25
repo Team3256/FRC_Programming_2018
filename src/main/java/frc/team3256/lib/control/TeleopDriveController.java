@@ -4,7 +4,7 @@ import frc.team3256.lib.DrivePower;
 
 public class TeleopDriveController {
 
-    private static final double xboxDeadband = 0.2;
+    private static final double xboxDeadband = 0.05;
     private static double quickStopAccumulator = 0.0;
     private static final double kQuickStopThreshold = 0.2;
     private static final double kQuickStopAlpha = 0.1;

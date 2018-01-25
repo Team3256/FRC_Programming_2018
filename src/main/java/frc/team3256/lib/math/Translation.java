@@ -150,4 +150,9 @@ public class Translation {
         final DecimalFormat format = new DecimalFormat("#0.000");
         return "(" + format.format(x) + "," + format.format(y) + ")";
     }
+
+
+    public boolean equals(Translation t) {
+        return (this.x == t.x) && (this.y == t.y);
+    }
 }

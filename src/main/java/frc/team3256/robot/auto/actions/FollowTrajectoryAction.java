@@ -10,11 +10,8 @@ public class FollowTrajectoryAction implements Action {
 
     private DriveTrain drive = DriveTrain.getInstance();
     private double startVel, endVel, distance;
-    private TrajectoryFollower trajectoryFollower = new TrajectoryFollower();
-    private Trajectory trajectory;
 
     public FollowTrajectoryAction(double startVel, double endVel, double distance) {
-        this.trajectory = new TrajectoryGenerator().generateTrajectory(startVel, endVel, distance);
         this.startVel = startVel;
         this.endVel = endVel;
         this.distance = distance;
@@ -22,7 +19,7 @@ public class FollowTrajectoryAction implements Action {
 
     @Override
     public boolean isFinished() {
-        return trajectoryFollower.isFinished();
+        return drive.isTrajectoryFinished();
     }
 
     @Override
@@ -31,6 +28,7 @@ public class FollowTrajectoryAction implements Action {
 
     @Override
     public void done() {
+        drive.setOpenLoop(0,0);
     }
 
     @Override

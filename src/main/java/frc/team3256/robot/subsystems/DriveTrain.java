@@ -27,6 +27,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private Trajectory trajectoryCurveLead;
     private Trajectory trajectoryCurveFollow;
     private double degrees;
+    private double distance;
+
+    private double leftOffset = 0;
+    private double rightOffset = 0;
 
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
@@ -65,7 +69,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
     @Override
     public void update(double timestamp) {
-        System.out.println(getMode());
+        //System.out.println(getMode());
+        //System.out.println("Dist Traveled: " + (getLeftDistance() + getRightDistance())/2);
         switch (controlMode) {
             case OPEN_LOOP:
                 //Fall through, all driver/manipulator input is handled in TeleopPeriodic
@@ -91,6 +96,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
                 updateTurnInPlace();
                 break;
             case DRIVE_TO_DISTANCE:
+                updateDistance();
                 break;
         }
     }
@@ -149,6 +155,12 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
         leftMaster.setSensorPhase(true);
         rightMaster.setSensorPhase(true);
+
+        //leftMaster.setInverted(true);
+        //leftSlave.setInverted(true);
+
+        rightMaster.setInverted(true);
+        rightSlave.setInverted(true);
     }
 
     public double getLeftDistance() {
@@ -248,7 +260,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
             controlMode = DriveControlMode.OPEN_LOOP;
         }
         //TALON reverseOutput doesn't work in PercentVBus (open loop)
-        leftMaster.set(ControlMode.PercentOutput, -1.0*leftPower);
+        leftMaster.set(ControlMode.PercentOutput, leftPower);
         rightMaster.set(ControlMode.PercentOutput, rightPower);
     }
 
@@ -272,6 +284,40 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(getRightDistance() + delta.right), 0);
     }
 
+    public void updateDistance() {
+        if (controlMode != DriveControlMode.DRIVE_TO_DISTANCE){
+            return;
+        }
+        if (isDriveToDistanceFinished()){
+            setOpenLoop(0,0);
+            return;
+        }
+        leftMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(distance + leftOffset), 0);
+        rightMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(distance + rightOffset), 0);
+    }
+
+    public void resetEncoders() {
+        leftMaster.setSelectedSensorPosition(0, 0, 0);
+        rightMaster.setSelectedSensorPosition(0, 0,0);
+        System.out.println("AFTER RESET: " + getLeftDistance() + " " + getRightDistance());
+    }
+
+    public void setOffsets(double leftOffset, double rightOffset) {
+        this.leftOffset = leftOffset;
+        this.rightOffset = rightOffset;
+    }
+
+    public boolean isDriveToDistanceFinished() {
+        double distanceTraveled = (getLeftDistance() - leftOffset + getRightDistance() - rightOffset)/2;
+        if (controlMode != DriveControlMode.DRIVE_TO_DISTANCE) {
+            return true;
+        }
+        if (Math.abs(distance - distanceTraveled) <= 0.75) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean isTurnInPlaceFinished() {
         double error = Math.abs(degrees - gyro.getAngle());
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
@@ -290,6 +336,14 @@ public class DriveTrain extends SubsystemBase implements Loop {
         }
         this.degrees = setpoint;
         updateTurnInPlace();
+    }
+
+    public void setDriveToDistanceSetpoint(double setpoint) {
+        if (controlMode != DriveControlMode.DRIVE_TO_DISTANCE) {
+            controlMode = DriveControlMode.DRIVE_TO_DISTANCE;
+        }
+        this.distance = setpoint;
+        updateDistance();
     }
 
 

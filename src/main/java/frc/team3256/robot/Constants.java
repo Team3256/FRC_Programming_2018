@@ -45,11 +45,11 @@ public class Constants {
     public static final double kSlowLoopPeriod = 1.0/50.0;
 
     //Drive Motion Magic
-    public static final double kDriveMotionMagicP = 0;
+    public static final double kDriveMotionMagicP = 0.4;
     public static final double kDriveMotionMagicI = 0;
     public static final double kDriveMotionMagicD = 0;
-    public static final double kDriveMotionMagicF = 0;
-    public static final double kDriveMotionMagicAcceleration = 12.0*12.0;
+    public static final double kDriveMotionMagicF = 0.245;
+    public static final double kDriveMotionMagicAcceleration = 24.0*12.0;
     public static final double kDriveMotionMagicCruiseVelocity = 12.0*12.0;
     public static final int kDriveMotionMagicProfile = 0;
 

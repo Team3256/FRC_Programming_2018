@@ -9,7 +9,7 @@ public class LogitechButtonBoardConfig implements ControlsInterface{
 
     @Override
     public double getThrottle(){
-        return driver.getRawAxis(1);
+        return -driver.getRawAxis(1);
     }
 
     @Override

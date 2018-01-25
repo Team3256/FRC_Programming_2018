@@ -5,6 +5,9 @@ import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Looper;
 import frc.team3256.lib.control.TeleopDriveController;
 import frc.team3256.lib.hardware.ADXRS453_Calibrator;
+import frc.team3256.robot.auto.AutoModeExecuter;
+import frc.team3256.robot.auto.modes.TestDriveToDistanceAuto;
+import frc.team3256.robot.auto.modes.TestTrajectoryAuto;
 import frc.team3256.robot.operation.ControlsInterface;
 import frc.team3256.robot.operation.DualLogitechConfig;
 import frc.team3256.robot.subsystems.DriveTrain;
@@ -19,6 +22,7 @@ public class Robot extends IterativeRobot {
     SubsystemManager subsystemManager;
     ADXRS453_Calibrator gyroCalibrator;
     ControlsInterface controlsInterface;
+    AutoModeExecuter autoModeExecuter;
 
     @Override
     public void robotInit() {
@@ -42,6 +46,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledInit() {
+        driveTrain.resetEncoders();
         enabledLooper.stop();
         disabledLooper.start();
     }
@@ -50,6 +55,11 @@ public class Robot extends IterativeRobot {
     public void autonomousInit() {
         disabledLooper.stop();
         enabledLooper.start();
+
+        autoModeExecuter = new AutoModeExecuter();
+        //autoModeExecuter.setAutoMode(new TestDriveToDistanceAuto());
+        autoModeExecuter.setAutoMode(new TestTrajectoryAuto());
+        autoModeExecuter.start();
     }
 
     @Override
@@ -69,6 +79,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void autonomousPeriodic() {
+
     }
 
     @Override

@@ -8,7 +8,7 @@ public class TrajectoryFollower {
     private int curr_segment;
     private double output, feedForwardValue, feedBackValue;
 
-    public void setTrajectory() {
+    public void setTrajectory(Trajectory trajectory) {
         this.trajectory = trajectory;
     }
 

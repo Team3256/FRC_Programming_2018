@@ -10,12 +10,12 @@ public class DualLogitechConfig implements ControlsInterface{
 
     @Override
     public double getThrottle(){
-        return driver.getRawAxis(1);
+        return -driver.getRawAxis(1);
     }
 
     @Override
     public double getTurn(){
-        return driver.getRawAxis(4);
+        return -driver.getRawAxis(4);
     }
 
     @Override

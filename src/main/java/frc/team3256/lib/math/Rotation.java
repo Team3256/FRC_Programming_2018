@@ -46,7 +46,7 @@ public class Rotation {
     }
 
     /**
-     * Normalizes the rotatation matrix by forcing the sin and cos values to be in the unit circle.
+     * Normalizes the rotation matrix by forcing the sin and cos values to be in the unit circle.
      */
     private void normalize() {
         double magnitude = Math.hypot(cos, sin);

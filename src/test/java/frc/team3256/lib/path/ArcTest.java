@@ -111,6 +111,7 @@ public class ArcTest {
 
     @Test
     public void testLookAheadPoint() {
+
         Arc arc = new Arc(2, 0, -2, 0, 0, 0);
         Translation currPos = new Translation(Math.sqrt(2)/2, Math.sqrt(2)/2);
         Translation closestPoint = arc.getClosestPointOnSegment(currPos);

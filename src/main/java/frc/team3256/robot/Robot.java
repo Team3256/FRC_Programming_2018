@@ -44,6 +44,8 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopPeriodic() {
         elevator.setOpenLoop(joystick.getRawAxis(1));
+        System.out.println("TRIGGERED? " + elevator.isTriggered());
+        System.out.println("HEIGHT: " + elevator.getAbsoluteHeight());
     }
 
     @Override

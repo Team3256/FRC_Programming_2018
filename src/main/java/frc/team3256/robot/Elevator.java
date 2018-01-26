@@ -7,24 +7,42 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.InterruptHandlerFunction;
 
 public class Elevator {
 
     private static Elevator instance;
     private TalonSRX master, slave;
     private DigitalInput hallEffect;
+    private boolean homed = false;
+    private double offset = 0.0;
 
     public static Elevator getInstance(){
         return instance == null ? instance = new Elevator() : instance;
     }
 
-    private Elevator(){
+    private InterruptHandlerFunction<Elevator> ihr = new InterruptHandlerFunction<Elevator>() {
 
-        hallEffect = new DigitalInput(0);
+        @Override
+        public void interruptFired(int interruptAssertedMask, Elevator param) {
+            if (!homed){
+                offset = getRelativeHeight();
+                homed = true;
+                hallEffect.disableInterrupts();
+            }
+        }
+    };
+
+
+    private Elevator(){
+        hallEffect = new DigitalInput(9);
+        hallEffect.requestInterrupts(ihr);
         hallEffect.setUpSourceEdge(true, false);
+        hallEffect.enableInterrupts();
 
         master = new TalonSRX(1);
         slave = new TalonSRX(2);
+
         slave.set(ControlMode.Follower, master.getDeviceID());
 
         master.setNeutralMode(NeutralMode.Brake);
@@ -47,14 +65,21 @@ public class Elevator {
 
     public void setOpenLoop(double value){
         master.set(ControlMode.PercentOutput, value);
-    }
+}
 
 
     public boolean isTriggered(){
         return !hallEffect.get();
     }
 
-    public double getHeight(){
+    public double getRelativeHeight(){
         return master.getSelectedSensorPosition(0);
+    }
+
+    public double getAbsoluteHeight(){
+        if (homed){
+            return getRelativeHeight() + offset;
+        }
+        else return 0.0;
     }
 }

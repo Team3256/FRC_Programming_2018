@@ -27,12 +27,12 @@ public class Arc extends Segment{
         //This should not be possible. We are using constant-curvature arcs.
         //If this ever occurs, then one (or more) of the parameters were passed in incorrectly
         if (centerToStart.norm() != centerToEnd.norm()){
-            /*
+
             System.out.println("ERROR: THIS ARC IS NOT CONSTANT_CURVATURE");
             System.out.println("START: " + start);
             System.out.println("END: " + end);
             System.out.println("CENTER: " + center + "\n");
-            */
+
             radius = Double.NaN;
         }
         else radius = centerToStart.norm();

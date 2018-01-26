@@ -1,21 +1,13 @@
 package frc.team3256.lib.trajectory;
 
-import frc.team3256.robot.subsystems.DriveTrain;
-
-public class TrajectoryWrapper {
+public class TrajectoryArcWrapper {
 
     private double kP, kI, kD, kV, kA, dt;
     double PID, error, sumError, changeError = 0, prevError = 0;
-    private Trajectory trajectory;
     private int curr_segment;
-    private Trajectory trajectoryStraight;
     private Trajectory trajectoryCurveLead;
     private Trajectory trajectoryCurveFollow;
     private double output, feedForwardValue, feedBackValue;
-
-    public void setTrajectory(Trajectory trajectory) {
-        this.trajectory = trajectory;
-    }
 
     public void setGains() {
         this.kP = kP;
@@ -53,7 +45,7 @@ public class TrajectoryWrapper {
 
     public double updateCalculations(double currPos) {
         if (!isFinished()){
-            Trajectory.Point point = trajectory.getCurrPoint(curr_segment);
+            Trajectory.Point point = trajectoryCurveLead.getCurrPoint(curr_segment);
             feedForwardValue = calculateFeedForward(point.getVel(), point.getAcc());
             feedBackValue = calculateFeedBack(point.getPos(), currPos, point.getVel());
             output = feedBackValue + feedForwardValue;
@@ -71,18 +63,14 @@ public class TrajectoryWrapper {
     }
 
     public boolean isFinished() {
-        return curr_segment >= trajectory.getLength();
-    }
-
-    public void configureDistanceTrajectory(double startVel, double endVel, double distance){
-        TrajectoryGenerator trajectoryGenerator = new TrajectoryGenerator();
-        trajectoryStraight = trajectoryGenerator.generateTrajectory(startVel, endVel, distance);
+        return curr_segment >= trajectoryCurveLead.getLength();
     }
 
     public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius) {
         TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator();
         trajectoryCurveGenerator.generateTrajectoryCurve(startVel, endVel, degrees, turnRadius);
-        trajectoryCurveLead = trajectoryCurveGenerator.getLeadPath();
-        trajectoryCurveFollow = trajectoryCurveGenerator.getFollowPath();
+        this.trajectoryCurveLead = trajectoryCurveGenerator.getLeadPath();
+        this.trajectoryCurveFollow = trajectoryCurveGenerator.getFollowPath();
     }
 }
+

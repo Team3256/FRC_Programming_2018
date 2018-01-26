@@ -1,9 +1,5 @@
 package frc.team3256.robot.auto.actions;
 
-import frc.team3256.lib.Kinematics;
-import frc.team3256.lib.trajectory.Trajectory;
-import frc.team3256.lib.trajectory.TrajectoryFollower;
-import frc.team3256.lib.trajectory.TrajectoryGenerator;
 import frc.team3256.robot.subsystems.DriveTrain;
 
 public class FollowTrajectoryAction implements Action {
@@ -29,11 +25,13 @@ public class FollowTrajectoryAction implements Action {
     @Override
     public void done() {
         drive.setOpenLoop(0,0);
+        System.out.println("Finished....");
     }
 
     @Override
     public void start() {
         drive.configureDistanceTrajectory(startVel, endVel, distance);
-        drive.updateTrajectory();
+        System.out.println("Started...");
+        drive.updateDistanceTrajectory();
     }
 }

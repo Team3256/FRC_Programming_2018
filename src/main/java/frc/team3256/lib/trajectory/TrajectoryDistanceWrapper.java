@@ -1,6 +1,8 @@
 package frc.team3256.lib.trajectory;
 
-public class TrajectoryFollower {
+import frc.team3256.robot.subsystems.DriveTrain;
+
+public class TrajectoryDistanceWrapper {
 
     private double kP, kI, kD, kV, kA, dt;
     double PID, error, sumError, changeError = 0, prevError = 0;
@@ -8,15 +10,11 @@ public class TrajectoryFollower {
     private int curr_segment;
     private double output, feedForwardValue, feedBackValue;
 
-    public void setTrajectory(Trajectory trajectory) {
-        this.trajectory = trajectory;
-    }
-
-    public void setGains() {
+    public void setGains(double kP, double kI, double kD, double kV, double kA) {
         this.kP = kP;
         this.kI = kI;
-        this.kD = kD;
         this.kV = kV;
+        this.kD = kD;
         this.kA = kA;
     }
 
@@ -46,11 +44,7 @@ public class TrajectoryFollower {
         return PID;
     }
 
-    public boolean isFinished() {
-        return curr_segment >= trajectory.getLength();
-    }
-
-    public double update(double currPos) {
+    public double updateCalculations(double currPos) {
         if (!isFinished()){
             Trajectory.Point point = trajectory.getCurrPoint(curr_segment);
             feedForwardValue = calculateFeedForward(point.getVel(), point.getAcc());
@@ -59,15 +53,22 @@ public class TrajectoryFollower {
             curr_segment++;
             if (output > 1) {
                 output = 1;
-        }
+            }
             else if (output < -1) {
                 output = -1;
             }
 
             return output;
         }
-
         return 0;
     }
 
+    public boolean isFinished() {
+        return curr_segment >= trajectory.getLength();
+    }
+
+    public void configureDistanceTrajectory(double startVel, double endVel, double distance){
+        TrajectoryGenerator trajectoryGenerator = new TrajectoryGenerator();
+        this.trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, distance);
+    }
 }

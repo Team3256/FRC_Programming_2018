@@ -26,14 +26,12 @@ public class DriveToDistanceAction implements Action {
     @Override
     public void done() {
         drive.setOpenLoop(0,0);
-        System.out.println("" + drive.getLeftDistance() + " " + drive.getRightDistance());
         drive.setOffsets(drive.getLeftDistance(), drive.getRightDistance());
     }
 
     @Override
     public void start() {
         drive.setDriveToDistanceSetpoint(distance);
-        System.out.println("" + drive.getLeftDistance() + " " + drive.getRightDistance());
         drive.setOffsets(drive.getLeftDistance(), drive.getRightDistance());
     }
 }

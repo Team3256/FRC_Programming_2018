@@ -53,6 +53,15 @@ public class Constants {
     public static final double kDriveMotionMagicCruiseVelocity = 12.0*12.0;
     public static final int kDriveMotionMagicProfile = 0;
 
+    //Drive Percent Output
+
+    public static final double kPercentOutputP = 0.2;
+    public static final double kPercentOutputI = 0;
+    public static final double kPercentOutputD = 0;
+    public static final double kPercentOutputV = 0.245;
+    public static final double kPercentOutputA = 24.0*12.0;
+    public static final double kPercentOutputCruiseVelocity = 12.0*12.0;
+
     //Drive Velocity
     public static final double kLeftDriveVelocityP = 0.3;
     public static final double kLeftDriveVelocityI = 0.0003;

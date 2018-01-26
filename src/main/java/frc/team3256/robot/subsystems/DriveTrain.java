@@ -12,10 +12,7 @@ import frc.team3256.lib.hardware.ADXRS453_Gyro;
 import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Twist;
-import frc.team3256.lib.trajectory.Trajectory;
-import frc.team3256.lib.trajectory.TrajectoryCurveGenerator;
-import frc.team3256.lib.trajectory.TrajectoryWrapper;
-import frc.team3256.lib.trajectory.TrajectoryGenerator;
+import frc.team3256.lib.trajectory.*;
 import frc.team3256.robot.Constants;
 
 public class DriveTrain extends SubsystemBase implements Loop {
@@ -26,7 +23,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private DriveControlMode controlMode;
     private double degrees;
     private double distance;
-    private TrajectoryWrapper trajectoryWrapper = new TrajectoryWrapper();
+    private TrajectoryDistanceWrapper trajectoryDistanceWrapper = new TrajectoryDistanceWrapper();
+    private TrajectoryArcWrapper trajectoryArcWrapper = new TrajectoryArcWrapper();
     private double leftOffset = 0;
     private double rightOffset = 0;
 
@@ -52,9 +50,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
     public enum DriveControlMode {
         OPEN_LOOP,
         VELOCITY,
-        FOLLOW_TRAJECTORY,
+        CUSTOM_DISTANCE_TRAJECTORY,
         TURN_TO_ANGLE,
-        DRIVE_TO_DISTANCE
+        DRIVE_TO_DISTANCE,
+        CUSTOM_ARC_TRAJECTORY
     }
 
     @Override
@@ -88,7 +87,11 @@ public class DriveTrain extends SubsystemBase implements Loop {
                                 , power.getRight()*Constants.kMaxVelocityHighGearInPerSec);
                 */
                 break;
-            case FOLLOW_TRAJECTORY:
+            case CUSTOM_DISTANCE_TRAJECTORY:
+                updateDistanceTrajectory();
+                break;
+            case CUSTOM_ARC_TRAJECTORY:
+                updateArcTrajectory();
                 break;
             case TURN_TO_ANGLE:
                 updateTurnInPlace();
@@ -159,6 +162,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
         rightMaster.setInverted(true);
         rightSlave.setInverted(true);
+
+        trajectoryDistanceWrapper.setGains(Constants.kPercentOutputP, Constants.kPercentOutputI, Constants.kPercentOutputD, Constants.kPercentOutputV, Constants.kPercentOutputA);
     }
 
     public double getLeftDistance() {
@@ -279,16 +284,43 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(distance + rightOffset), 0);
     }
 
-    public void updateTrajectory() {
-        if (controlMode != DriveControlMode.FOLLOW_TRAJECTORY) {
+    public void updateDistanceTrajectory() {
+        if (controlMode != DriveControlMode.CUSTOM_DISTANCE_TRAJECTORY) {
             return;
         }
-        if (trajectoryWrapper.isFinished()){
+        if (trajectoryDistanceWrapper.isFinished()){
             setOpenLoop(0,0);
             return;
         }
-        leftMaster.set(ControlMode.PercentOutput, trajectoryWrapper.updateCalculations(getLeftDistance()));
-        rightMaster.set(ControlMode.PercentOutput, trajectoryWrapper.updateCalculations(getRightDistance()));
+        System.out.println("Updating....");
+        leftMaster.set(ControlMode.PercentOutput, trajectoryDistanceWrapper.updateCalculations(getLeftDistance()));
+        rightMaster.set(ControlMode.PercentOutput, trajectoryDistanceWrapper.updateCalculations(getRightDistance()));
+    }
+
+    public void updateArcTrajectory() {
+        if (controlMode != DriveControlMode.CUSTOM_ARC_TRAJECTORY) {
+            return;
+        }
+        if (trajectoryArcWrapper.isFinished()){
+            setOpenLoop(0,0);
+            return;
+        }
+        leftMaster.set(ControlMode.PercentOutput, trajectoryArcWrapper.updateCalculations(getLeftDistance()));
+        rightMaster.set(ControlMode.PercentOutput, trajectoryArcWrapper.updateCalculations(getRightDistance()));
+    }
+
+    public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius) {
+        trajectoryArcWrapper.configureArcTrajectory(startVel, endVel, degrees, turnRadius);
+        if (controlMode != DriveControlMode.CUSTOM_ARC_TRAJECTORY){
+            controlMode = DriveControlMode.CUSTOM_ARC_TRAJECTORY;
+        }
+    }
+
+    public void configureDistanceTrajectory(double startVel, double endVel, double distance){
+        trajectoryDistanceWrapper.configureDistanceTrajectory(startVel, endVel, distance);
+        if (controlMode != DriveControlMode.CUSTOM_DISTANCE_TRAJECTORY){
+            controlMode = DriveControlMode.CUSTOM_DISTANCE_TRAJECTORY;
+        }
     }
 
     public void resetEncoders() {
@@ -325,7 +357,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public boolean isTrajectoryFinished() {
-        return trajectoryWrapper.isFinished();
+        return trajectoryDistanceWrapper.isFinished();
     }
     public void setTurnInPlaceSetpoint(double setpoint) {
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){

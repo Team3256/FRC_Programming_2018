@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj.Joystick;
 public class Robot extends IterativeRobot {
 
     Elevator elevator = Elevator.getInstance();
+    Intake intake = Intake.getInstance();
+
     Joystick joystick = new Joystick(0);
 
     @Override
@@ -43,9 +45,32 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-        elevator.setOpenLoop(joystick.getRawAxis(1));
-        System.out.println("TRIGGERED? " + elevator.isTriggered());
+        System.out.println("CLE: " + elevator.getClosedLoopError());
+        boolean in = joystick.getRawAxis(3) > 0.25;
+        boolean out = joystick.getRawAxis(2) > 0.25;
+        boolean preset = joystick.getRawButton(4);
+        if (Math.abs(joystick.getRawAxis(1)) > 0.05 ){
+            elevator.setOpenLoop(-joystick.getRawAxis(1));
+        }
+        else if (preset){
+            System.out.println("PRESET");
+            elevator.midPreset();
+        }
+        else{
+            elevator.setOpenLoop(0);
+        }
+        if (in && out){
+            intake.stop();
+        }
+        else if (in){
+            intake.intake();
+        }
+        else if (out){
+            intake.outtake();
+        }
+        else intake.stop();
         System.out.println("HEIGHT: " + elevator.getAbsoluteHeight());
+        System.out.println(elevator.getMasterVoltage() + " " + elevator.getSlaveVoltage());
     }
 
     @Override

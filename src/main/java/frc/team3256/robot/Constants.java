@@ -36,7 +36,7 @@ public class Constants {
 
     //Robot constants:
     //everything is in inches, seconds, or degrees
-    public static final double kRobotTrack = 25; //TODO: TBD
+    public static final double kRobotTrack = 28.0; //TODO: TBD
     public static final double kWheelDiameter = 4.0;
 
     //Control Loop Parameters:
@@ -45,17 +45,26 @@ public class Constants {
     public static final double kSlowLoopPeriod = 1.0/50.0;
 
     //Drive Motion Magic
-    public static final double kDriveMotionMagicP = 0.4;
-    public static final double kDriveMotionMagicI = 0;
-    public static final double kDriveMotionMagicD = 0;
-    public static final double kDriveMotionMagicF = 0.245;
-    public static final double kDriveMotionMagicAcceleration = 24.0*12.0;
-    public static final double kDriveMotionMagicCruiseVelocity = 12.0*12.0;
+    public static final double kDriveHighGearMotionMagicP = 0.05;
+    public static final double kDriveHighGearMotionMagicI = 0;
+    public static final double kDriveHighGearMotionMagicD = 0;
+    public static final double kDriveHighGearMotionMagicF = 0.25;
+    public static final double kDriveHighGearMotionMagicAcceleration = 36.0*12.0;
+    public static final double kDriveHighGearMotionMagicCruiseVelocity = 12.0*12.0;
     public static final int kDriveMotionMagicProfile = 0;
+
+    //Turn Motion Magic
+    public static final double kTurnLowGearMotionMagicP = 3.0;
+    public static final double kTurnLowGearMotionMagicI = 0;
+    public static final double kTurnLowGearMotionMagicD = 0.0;
+    public static final double kTurnLowGearMotionMagicF = 0.25;
+    public static final double kTurnLowGearMotionMagicAcceleration = 18.0*12.0;
+    public static final double kTurnLowGearMotionMagicCruiseVelocity = 6.0*12.0;
+    public static final int kTurnMotionMagicProfile = 2;
 
     //Drive Percent Output
 
-    public static final double kPercentOutputP = 0.2;
+    public static final double kPercentOutputP = 1.0;
     public static final double kPercentOutputI = 0;
     public static final double kPercentOutputD = 0;
     public static final double kPercentOutputV = 0.245;

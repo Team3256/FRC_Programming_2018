@@ -8,6 +8,7 @@ import frc.team3256.lib.hardware.ADXRS453_Calibrator;
 import frc.team3256.robot.auto.AutoModeExecuter;
 import frc.team3256.robot.auto.modes.TestDriveToDistanceAuto;
 import frc.team3256.robot.auto.modes.TestTrajectoryAuto;
+import frc.team3256.robot.auto.modes.TestTurnInPlaceAuto;
 import frc.team3256.robot.operation.ControlsInterface;
 import frc.team3256.robot.operation.DualLogitechConfig;
 import frc.team3256.robot.subsystems.DriveTrain;
@@ -58,7 +59,8 @@ public class Robot extends IterativeRobot {
 
         autoModeExecuter = new AutoModeExecuter();
         //autoModeExecuter.setAutoMode(new TestDriveToDistanceAuto());
-        autoModeExecuter.setAutoMode(new TestTrajectoryAuto());
+        //autoModeExecuter.setAutoMode(new TestTrajectoryAuto());
+        autoModeExecuter.setAutoMode(new TestTurnInPlaceAuto());
         autoModeExecuter.start();
     }
 
@@ -79,7 +81,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void autonomousPeriodic() {
-
+        System.out.println("GYRO: " + driveTrain.getAngle());
     }
 
     @Override
@@ -89,6 +91,8 @@ public class Robot extends IterativeRobot {
         boolean quickTurn = controlsInterface.getQuickTurn();
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
         driveTrain.setOpenLoop(power);
+
+        System.out.println("LEFT ENCODER: " + driveTrain.getLeftVelocity() + "RIGHT ENCODER: " + driveTrain.getRightVelocity());
     }
 
     @Override

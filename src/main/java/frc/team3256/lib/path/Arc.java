@@ -8,6 +8,7 @@ public class Arc extends Segment{
     private Translation center;
     private Translation centerToStart, centerToEnd;
     private double radius;
+    private Rotation angle;
 
     /**
      * @param startX X-Coordinate of the starting position
@@ -24,6 +25,7 @@ public class Arc extends Segment{
         center = new Translation(centerX, centerY);
         centerToStart = new Translation(center, start);
         centerToEnd = new Translation(center, end);
+        angle = centerToEnd.getAngle(centerToStart);
         //This should not be possible. We are using constant-curvature arcs.
         //If this ever occurs, then one (or more) of the parameters were passed in incorrectly
         if (centerToStart.norm() != centerToEnd.norm()){
@@ -56,7 +58,7 @@ public class Arc extends Segment{
     @Override
     public double getLength() {
         //arc length = radius*theta
-        return radius*centerToStart.getAngle(centerToEnd).radians();
+        return radius*getAngle().radians();
     }
 
     public double getRadius(){
@@ -74,6 +76,8 @@ public class Arc extends Segment{
     public Translation getCenterToEnd(){
         return centerToEnd;
     }
+
+    public Rotation getAngle() { return angle; }
 
     @Override
     public Translation getClosestPointOnSegment(Translation position) {

@@ -24,6 +24,8 @@ public class Path {
         double remainingDistance;
         //distance from our current pose to the closest point on the path
         double distanceToPath;
+        //current segment
+        Segment currSegment;
     }
 
     public PathUpdate update(Translation robotCoordinates){
@@ -46,6 +48,8 @@ public class Path {
             segments.remove(0);
             //System.out.println("deleted path");
         }
+
+        rv.currSegment = currSegment;
 
         return rv;
     }

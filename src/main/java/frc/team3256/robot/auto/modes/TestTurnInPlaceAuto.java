@@ -7,6 +7,6 @@ import frc.team3256.robot.auto.actions.TurnInPlaceAction;
 public class TestTurnInPlaceAuto extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
-        runAction(new TurnInPlaceAction(90));
+        runAction(new TurnInPlaceAction(45.0));
     }
 }

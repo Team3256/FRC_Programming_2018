@@ -36,8 +36,9 @@ public class Constants {
 
     //Robot constants:
     //everything is in inches, seconds, or degrees
-    public static final double kRobotTrack = 28.0; //TODO: TBD
-    public static final double kWheelDiameter = 4.0;
+    public static final double kRobotTrack = 27.5; //TODO: TBD
+    public static final double kScrubFactor = 0.3;
+    public static final double kWheelDiameter = 4.1;
 
     //Control Loop Parameters:
     //Looping period
@@ -54,12 +55,13 @@ public class Constants {
     public static final int kDriveMotionMagicProfile = 0;
 
     //Turn Motion Magic
-    public static final double kTurnLowGearMotionMagicP = 3.0;
-    public static final double kTurnLowGearMotionMagicI = 0;
-    public static final double kTurnLowGearMotionMagicD = 0.0;
-    public static final double kTurnLowGearMotionMagicF = 0.25;
-    public static final double kTurnLowGearMotionMagicAcceleration = 18.0*12.0;
-    public static final double kTurnLowGearMotionMagicCruiseVelocity = 6.0*12.0;
+    public static final double kTurnLowGearMotionMagicP = 3.5;
+    public static final double kTurnLowGearMotionMagicI = 0.001;
+    public static final int kTurnLowGearIZone = 1000;
+    public static final double kTurnLowGearMotionMagicD = 100.0;
+    public static final double kTurnLowGearMotionMagicF = 0.45;
+    public static final double kTurnLowGearMotionMagicAcceleration = 15.0*12.0;
+    public static final double kTurnLowGearMotionMagicCruiseVelocity = 5.0*12.0;
     public static final int kTurnMotionMagicProfile = 2;
 
     //Drive Percent Output

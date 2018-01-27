@@ -150,10 +150,13 @@ public class DriveTrain extends SubsystemBase implements Loop {
         leftMaster.config_kI(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicI, 0);
         leftMaster.config_kD(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicD, 0);
         leftMaster.config_kF(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicF, 0);
+        leftMaster.config_IntegralZone(Constants.kTurnMotionMagicProfile, (int)(Constants.kTurnLowGearIZone), 0);
         rightMaster.config_kP(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicP, 0);
         rightMaster.config_kI(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicI, 0);
         rightMaster.config_kD(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicD, 0);
         rightMaster.config_kF(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicF, 0);
+        rightMaster.config_IntegralZone(Constants.kTurnMotionMagicProfile, (int)(Constants.kTurnLowGearIZone), 0);
+
 
         leftMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kDriveHighGearMotionMagicCruiseVelocity),
             0);
@@ -188,6 +191,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
      * @return left velocity in in/sec
      */
     public double getLeftVelocity(){
+        //return leftMaster.getSelectedSensorVelocity(0);
         return sensorUnitsToInchesPerSec(leftMaster.getSelectedSensorVelocity(0));
     }
 
@@ -195,6 +199,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
      * @return right velocity in in/sec
      */
     public double getRightVelocity(){
+        //return rightMaster.getSelectedSensorVelocity(0);
         return sensorUnitsToInches(rightMaster.getSelectedSensorVelocity(0));
     }
 
@@ -271,14 +276,18 @@ public class DriveTrain extends SubsystemBase implements Loop {
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
             return;
         }
-        Rotation error = Rotation.fromDegrees(degrees - gyro.getAngle());
+        Rotation robotToTarget = getAngle().inverse().rotate(Rotation.fromDegrees(degrees));
         if (isTurnInPlaceFinished()){
             return;
         }
         //periodically re-converts the gyro angle into a new motion magic goal for the talons
-        Kinematics.DriveVelocity delta = Kinematics.inverseKinematics(new Twist(0,0,error.radians()), Constants.kRobotTrack);
-        leftMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(getLeftDistance() + delta.left + leftOffset), Constants.kTurnMotionMagicProfile);
-        rightMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(getRightDistance() + delta.right + rightOffset), Constants.kTurnMotionMagicProfile);
+        Kinematics.DriveVelocity delta = Kinematics.inverseKinematics(new Twist(0,0,robotToTarget.radians()), Constants.kRobotTrack, Constants.kScrubFactor);
+        //System.out.println("Left CLE: " + sensorUnitsToInches(leftMaster.getClosedLoopError(0)));
+        //System.out.println("Right CLE: " + sensorUnitsToInches(rightMaster.getClosedLoopError(0)));
+
+        //System.out.println("DL: " + delta.left + "; " + "DR: " + delta.right);
+        leftMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(getLeftDistance() + delta.left), Constants.kTurnMotionMagicProfile);
+        rightMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(getRightDistance() + delta.right), Constants.kTurnMotionMagicProfile);
     }
 
     public void updateDistance() {
@@ -362,33 +371,57 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public boolean isTurnInPlaceFinished() {
-        double error = Math.abs(degrees + startAngle - gyro.getAngle());
+        double error = Math.abs(degrees - getAngle().degrees() + startAngle);
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
             return true;
         }
         if (error <= 1.0){
             return true;
         }
-        return Math.abs(degrees + startAngle) < Math.abs(gyro.getAngle());
+        return false;
+        //return sensorUnitsToInches(leftMaster.getClosedLoopError(0)) < 0.5 && sensorUnitsToInches(rightMaster.getClosedLoopError(0)) < 0.5;
+        //return Math.abs(degrees + startAngle) < Math.abs(gyro.getAngle());
     }
 
     public boolean isTrajectoryFinished() {
         return trajectoryDistanceWrapper.isFinished();
     }
+
     public void setTurnInPlaceSetpoint(double setpoint) {
         this.degrees = setpoint;
         leftMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kTurnLowGearMotionMagicCruiseVelocity),
                 0);
+        System.out.println("CRUISE VELOCITY: " + inchesPerSecToSensorUnits(Constants.kTurnLowGearMotionMagicCruiseVelocity));
         leftMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kTurnLowGearMotionMagicAcceleration)
                 ,0);
         rightMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kTurnLowGearMotionMagicCruiseVelocity),
                 0);
         rightMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kTurnLowGearMotionMagicAcceleration),
                 0);
-        updateTurnInPlace();
+
+        leftMaster.configNominalOutputReverse(-1.0/12.0, 0);
+        leftMaster.configNominalOutputForward(1.0/12.0, 0);
+
+        rightMaster.configNominalOutputReverse(-1.0/12.0, 0);
+        rightMaster.configNominalOutputForward(1.0/12.0, 0);
+
+
+        leftSlave.configNominalOutputReverse(-1.0/12.0, 0);
+        leftSlave.configNominalOutputForward(1.0/12.0, 0);
+
+
+        rightSlave.configNominalOutputReverse(-1.0/12.0, 0);
+        rightSlave.configNominalOutputForward(1.0/12.0, 0);
+
+        leftMaster.enableVoltageCompensation(true);
+        leftSlave.enableVoltageCompensation(true);
+        rightMaster.enableVoltageCompensation(true);
+        rightSlave.enableVoltageCompensation(true);
+
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
             controlMode = DriveControlMode.TURN_TO_ANGLE;
         }
+        updateTurnInPlace();
     }
 
     public void setDriveToDistanceSetpoint(double setpoint) {
@@ -426,10 +459,11 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public Rotation getAngle(){
-        return Rotation.fromDegrees(gyro.getAngle());
+        return Rotation.fromDegrees(-gyro.getAngle());
     }
 
     public DriveControlMode getMode(){
         return controlMode;
     }
+
 }

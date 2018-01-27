@@ -28,6 +28,10 @@ public class Path {
         Segment currSegment;
     }
 
+    public void removeSegment() {
+        segments.remove(0);
+    }
+
     public PathUpdate update(Translation robotCoordinates){
         PathUpdate rv = new PathUpdate();
         Segment currSegment = segments.get(0);
@@ -44,10 +48,6 @@ public class Path {
 
         rv.remainingDistance -= currSegment.getCurrDistanceTraveled(closestPoint);
 
-        if(closestPoint.equals(currSegment.getEndPoint())) {
-            segments.remove(0);
-            //System.out.println("deleted path");
-        }
 
         rv.currSegment = currSegment;
 

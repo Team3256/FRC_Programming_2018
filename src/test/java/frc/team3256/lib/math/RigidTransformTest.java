@@ -54,6 +54,12 @@ public class RigidTransformTest {
         Translation intersectionPoint = pose.intersection(otherPose);
         assertEquals(intersectionPoint.x(), -5.0, kEpsilon);
         assertEquals(intersectionPoint.y(), 0.0, kEpsilon);
+
+        pose = new RigidTransform(new Translation(48.0, 24.0), Rotation.fromDegrees(45.0));
+        otherPose = new RigidTransform(new Translation(48.0, 28.0), Rotation.fromDegrees(-45.0));
+        intersectionPoint = pose.intersection(otherPose);
+        assertEquals(intersectionPoint.x(), 50.0, kEpsilon);
+        assertEquals(intersectionPoint.y(), 26.0, kEpsilon);
     }
 
     @Test

@@ -25,10 +25,10 @@ public class Arc extends Segment{
         center = new Translation(centerX, centerY);
         centerToStart = new Translation(center, start);
         centerToEnd = new Translation(center, end);
-        angle = centerToEnd.getAngle(centerToStart);
+        angle = centerToStart.getAngle(centerToEnd);
         //This should not be possible. We are using constant-curvature arcs.
         //If this ever occurs, then one (or more) of the parameters were passed in incorrectly
-        if (centerToStart.norm() != centerToEnd.norm()){
+        if (centerToStart.norm() - centerToEnd.norm() > 10E-9){
 
             System.out.println("ERROR: THIS ARC IS NOT CONSTANT_CURVATURE");
             System.out.println("START: " + start);
@@ -104,8 +104,8 @@ public class Arc extends Segment{
 
     @Override
     public Translation getDirection(Translation lookaheadPoint) {
-        Translation lookaheadToCenter = new Translation(lookaheadPoint, center);
-        return (lookaheadToCenter.inverse().scale(1/lookaheadToCenter.norm()));
+        Translation lookaheadToTarget = new Translation(center, lookaheadPoint).rotate(Rotation.fromDegrees(90));
+        return (lookaheadToTarget.scale(1/lookaheadToTarget.norm()));
     }
 
     /*public static void main(String args[]) {

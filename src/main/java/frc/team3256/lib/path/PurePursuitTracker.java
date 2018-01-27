@@ -23,7 +23,7 @@ public class PurePursuitTracker {
     }
 
     public static int getDirection(Translation lookaheadPoint, Translation robotCoordinates) {
-        if (lookaheadPoint.direction().rotate(robotCoordinates.direction().inverse()).radians() < 0.0) {
+        if (lookaheadPoint.cross(robotCoordinates) > 0.0) {
             return 1;
         } else {
             return -1;
@@ -31,23 +31,28 @@ public class PurePursuitTracker {
     }
 
     public Arc getArcToSegment(Segment s, Translation lookaheadPoint, Translation robotCoordinates) {
-        Translation lookaheadPointToCenter;
 
         int direction = getDirection(lookaheadPoint, robotCoordinates);
+        int lookaheadSlopeDirection = s.getDirection(lookaheadPoint).direction().tan() > 0 ? 1 : -1;
 
-        lookaheadPointToCenter = s.getDirection(lookaheadPoint).rotate(Rotation.fromDegrees(90 * direction));
+        Translation lookaheadPointToCenter = s.getDirection(lookaheadPoint).rotate(Rotation.fromDegrees(90.0 * direction * lookaheadSlopeDirection));
 
         Translation lookaheadPointToRobot = new Translation(lookaheadPoint, robotCoordinates);
-        Rotation angleDifference = lookaheadPointToCenter.getAngle(lookaheadPointToRobot);
+        Rotation angleDifference = Rotation.fromRadians(lookaheadPointToCenter.getAngle(lookaheadPointToRobot).radians()*direction*-1);
         Translation robotToCenter = lookaheadPointToRobot.inverse().rotate(angleDifference.inverse()).scale(.5);
         RigidTransform lookaheadPointToCenterTransform = new RigidTransform(lookaheadPoint, lookaheadPointToCenter.direction());
         RigidTransform robotToCenterTransform = new RigidTransform(robotCoordinates, robotToCenter.direction());
+
+
         Translation center = lookaheadPointToCenterTransform.intersection(robotToCenterTransform);
 
         if (center.norm() == Double.POSITIVE_INFINITY) {
             center = robotCoordinates.translate(robotToCenter);
         }
+
+
         Arc robotToLookaheadPointArc = new Arc(robotCoordinates.x(), robotCoordinates.y(), lookaheadPoint.x(), lookaheadPoint.y(), center.x(), center.y());
+
 
         return robotToLookaheadPointArc;
     }
@@ -57,15 +62,18 @@ public class PurePursuitTracker {
         Segment s = pathUpdate.currSegment;
         Arc arc = getArcToSegment(s, lookaheadPoint, robotCoordinates);
 
+
         if(isFinished()) {
-            return new Command(new Twist(0, 0, 0));
+            //return new Command(new Twist(0, 0, 0));
         }
 
         if(pathUpdate.remainingDistance < arc.getLength()) {
             reachedEnd = true;
+            path.removeSegment();
+            System.out.println("END REACHED");
         }
 
-        return new Command(new Twist(0, arc.getLength(), arc.getAngle().radians()*getDirection(lookaheadPoint, robotCoordinates)));
+        return new Command(new Twist(0, arc.getLength(), -arc.getAngle().radians()));
     }
 
     private boolean isFinished() {

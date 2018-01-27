@@ -13,7 +13,7 @@ public abstract class Segment {
     //Type of segment: is this an arc or a line?
     public enum Type{
         LINE,
-        ARC;
+        ARC
     }
 
     //Methods that are common to both types of segments

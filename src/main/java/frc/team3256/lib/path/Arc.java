@@ -40,6 +40,14 @@ public class Arc extends Segment{
         else radius = centerToStart.norm();
     }
 
+
+    public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY, double startVel, double accel){
+        this(startX, startY, endX, endY, centerX, centerY);
+        this.startVel = startVel;
+        this.accel = accel;
+        this.endVel = Math.sqrt(Math.pow(startVel, 2) + 2 * accel * getLength());
+    }
+
     @Override
     public Type getType() {
         return type;

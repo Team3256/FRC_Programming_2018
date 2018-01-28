@@ -20,7 +20,6 @@ public class PurePursuitTrackerTest {
         PurePursuitTracker pursuit = new PurePursuitTracker(p);
         Translation lookaheadPoint = new Translation(9, 9);
         Translation robotCoordinates = new Translation(15, 3);
-        Translation robotToLookAhead = new Translation(robotCoordinates, lookaheadPoint);
         PurePursuitTracker.Command command = pursuit.update(lookaheadPoint, robotCoordinates);
         assertEquals(command.delta.dx(), 0, kEpsilon);
         assertEquals(command.delta.dy(), Math.PI * 3.0 * Math.sqrt(2), kEpsilon);

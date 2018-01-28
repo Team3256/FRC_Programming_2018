@@ -21,6 +21,21 @@ public class Line extends Segment{
     }
 
     /**
+     * @param startX X-Coordinate of the starting position
+     * @param startY Y-Coordinate of the starting position
+     * @param endX X-Coordinate of the ending position
+     * @param endY Y-Coordinate of the ending position
+     * @param startVel starting velocity
+     * @param accel acceleration
+     */
+    public Line(double startX, double startY, double endX, double endY, double startVel, double accel){
+        this(startX, startY, endX, endY);
+        this.startVel = startVel;
+        this.accel = accel;
+        this.endVel = Math.sqrt(Math.pow(startVel, 2) + 2 * accel * getLength());
+    }
+
+    /**
      * @return type of the segment, in this case a line
      */
     @Override

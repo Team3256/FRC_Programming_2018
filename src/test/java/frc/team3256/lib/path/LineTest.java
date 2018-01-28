@@ -92,4 +92,12 @@ public class LineTest {
         assertEquals(lookaheadPoint.x(), 0, kEpsilon);
         assertEquals(lookaheadPoint.y(), 3, kEpsilon);
     }
+
+    @Test
+    public void testVelocity() {
+        Line line = new Line(0, 0, 20, 0, 0, 2);
+        Translation closestPoint = new Translation(20, 0);
+        double currVelocity = line.getVelocity(closestPoint);
+        assertEquals(currVelocity, line.endVel, kEpsilon);
+    }
 }

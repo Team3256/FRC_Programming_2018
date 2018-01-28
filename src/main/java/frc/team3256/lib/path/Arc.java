@@ -8,6 +8,7 @@ public class Arc extends Segment{
     private Translation center;
     private Translation centerToStart, centerToEnd;
     private double radius;
+    private Rotation angle;
 
     /**
      * @param startX X-Coordinate of the starting position
@@ -24,9 +25,10 @@ public class Arc extends Segment{
         center = new Translation(centerX, centerY);
         centerToStart = new Translation(center, start);
         centerToEnd = new Translation(center, end);
+        angle = centerToStart.getAngle(centerToEnd);
         //This should not be possible. We are using constant-curvature arcs.
         //If this ever occurs, then one (or more) of the parameters were passed in incorrectly
-        if (centerToStart.norm() != centerToEnd.norm()){
+        if (centerToStart.norm() - centerToEnd.norm() > 10E-9){
 
             System.out.println("ERROR: THIS ARC IS NOT CONSTANT_CURVATURE");
             System.out.println("START: " + start);
@@ -36,6 +38,14 @@ public class Arc extends Segment{
             radius = Double.NaN;
         }
         else radius = centerToStart.norm();
+    }
+
+
+    public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY, double startVel, double accel){
+        this(startX, startY, endX, endY, centerX, centerY);
+        this.startVel = startVel;
+        this.accel = accel;
+        this.endVel = Math.sqrt(Math.pow(startVel, 2) + 2 * accel * getLength());
     }
 
     @Override
@@ -56,7 +66,7 @@ public class Arc extends Segment{
     @Override
     public double getLength() {
         //arc length = radius*theta
-        return radius*centerToStart.getAngle(centerToEnd).radians();
+        return radius*getAngle().radians();
     }
 
     public double getRadius(){
@@ -74,6 +84,8 @@ public class Arc extends Segment{
     public Translation getCenterToEnd(){
         return centerToEnd;
     }
+
+    public Rotation getAngle() { return angle; }
 
     @Override
     public Translation getClosestPointOnSegment(Translation position) {
@@ -100,8 +112,8 @@ public class Arc extends Segment{
 
     @Override
     public Translation getDirection(Translation lookaheadPoint) {
-        Translation lookaheadToCenter = new Translation(lookaheadPoint, center);
-        return (lookaheadToCenter.inverse().scale(1/lookaheadToCenter.norm()));
+        Translation lookaheadToTarget = new Translation(center, lookaheadPoint).rotate(Rotation.fromDegrees(90));
+        return (lookaheadToTarget.scale(1/lookaheadToTarget.norm()));
     }
 
     /*public static void main(String args[]) {

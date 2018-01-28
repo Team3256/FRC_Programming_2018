@@ -89,7 +89,7 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
         if (stateChanged){
             squeeze();
         }
-        //If we have a cube, then we squee
+        //If we have a cube, then we squeeze
         if (hasCube()){
             runMotors(0);
             return SystemState.SQUEEZING_IDLE;

@@ -64,13 +64,14 @@ public class Constants {
     public static final double kTurnLowGearMotionMagicCruiseVelocity = 5.0*12.0;
     public static final int kTurnMotionMagicProfile = 2;
 
-    //Drive Percent Output
+    //Trajectory Gains
 
-    public static final double kPercentOutputP = 1.0;
-    public static final double kPercentOutputI = 0;
-    public static final double kPercentOutputD = 0;
-    public static final double kPercentOutputV = 0.245;
-    public static final double kPercentOutputA = 24.0*12.0;
+    public static final double kTrajectoryP = 0;
+    public static final double kTrajectoryI = 0;
+    public static final double kTrajectoryD = 0;
+    public static final double kTrajectoryV = 0.245;
+    public static final double kTrajectoryA = 0;
+    public static final double kPercentOutputMaxA = 12.0*12.0;
     public static final double kPercentOutputCruiseVelocity = 12.0*12.0;
 
     //Drive Velocity

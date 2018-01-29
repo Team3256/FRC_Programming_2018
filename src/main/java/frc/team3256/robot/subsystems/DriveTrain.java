@@ -176,7 +176,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.setInverted(true);
         rightSlave.setInverted(true);
 
-        trajectoryDistanceWrapper.setGains(Constants.kPercentOutputP, Constants.kPercentOutputI, Constants.kPercentOutputD, Constants.kPercentOutputV, Constants.kPercentOutputA);
+        trajectoryDistanceWrapper.setGains(Constants.kTrajectoryP, Constants.kTrajectoryI, Constants.kTrajectoryD, Constants.kTrajectoryV, Constants.kTrajectoryA);
+        trajectoryDistanceWrapper.setLoopTime(Constants.kControlLoopPeriod);
     }
 
     public double getLeftDistance() {
@@ -316,6 +317,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
         System.out.println("Updating....");
         leftMaster.set(ControlMode.PercentOutput, trajectoryDistanceWrapper.updateCalculations(getLeftDistance()));
         rightMaster.set(ControlMode.PercentOutput, trajectoryDistanceWrapper.updateCalculations(getRightDistance()));
+        System.out.println("Left Calc: " + trajectoryDistanceWrapper.updateCalculations(getLeftDistance()));
+        System.out.println("Right Calc: " + trajectoryDistanceWrapper.updateCalculations(getRightDistance()));
+
     }
 
     public void updateArcTrajectory() {

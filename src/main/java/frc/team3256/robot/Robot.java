@@ -1,5 +1,6 @@
 package frc.team3256.robot;
 
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Looper;
@@ -41,6 +42,8 @@ public class Robot extends IterativeRobot {
         subsystemManager = new SubsystemManager();
         subsystemManager.addSubsystems(driveTrain);
 
+        CameraServer.getInstance().startAutomaticCapture(0);
+
         //Dual Logitech Config
         controlsInterface = new DualLogitechConfig();
     }
@@ -60,7 +63,7 @@ public class Robot extends IterativeRobot {
         autoModeExecuter = new AutoModeExecuter();
         //autoModeExecuter.setAutoMode(new TestDriveToDistanceAuto());
         //autoModeExecuter.setAutoMode(new TestTrajectoryAuto());
-        autoModeExecuter.setAutoMode(new TestTurnInPlaceAuto());
+        autoModeExecuter.setAutoMode(new TestTrajectoryAuto());
         autoModeExecuter.start();
     }
 
@@ -81,7 +84,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void autonomousPeriodic() {
-        System.out.println("GYRO: " + driveTrain.getAngle());
+       // System.out.println("GYRO: " + driveTrain.getAngle());
     }
 
     @Override

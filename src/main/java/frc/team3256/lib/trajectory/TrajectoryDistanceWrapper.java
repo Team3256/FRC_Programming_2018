@@ -18,7 +18,7 @@ public class TrajectoryDistanceWrapper {
         this.kA = kA;
     }
 
-    public void setLoopTime() {
+    public void setLoopTime(double dt) {
         this.dt = dt;
     }
 
@@ -49,6 +49,8 @@ public class TrajectoryDistanceWrapper {
             Trajectory.Point point = trajectory.getCurrPoint(curr_segment);
             feedForwardValue = calculateFeedForward(point.getVel(), point.getAcc());
             feedBackValue = calculateFeedBack(point.getPos(), currPos, point.getVel());
+            System.out.println("feed forward: " + feedForwardValue);
+            System.out.println("feed back: " + feedBackValue);
             output = feedBackValue + feedForwardValue;
             curr_segment++;
             if (output > 1) {

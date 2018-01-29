@@ -45,7 +45,6 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-        System.out.println("CLE: " + elevator.getClosedLoopError());
         boolean in = joystick.getRawAxis(3) > 0.25;
         boolean out = joystick.getRawAxis(2) > 0.25;
         boolean preset = joystick.getRawButton(4);
@@ -53,12 +52,13 @@ public class Robot extends IterativeRobot {
             elevator.setOpenLoop(-joystick.getRawAxis(1));
         }
         else if (preset){
-            System.out.println("PRESET");
-            elevator.midPreset();
+            elevator.preset();
         }
         else{
-            elevator.setOpenLoop(0);
+            elevator.hold();
         }
+
+
         if (in && out){
             intake.stop();
         }
@@ -71,6 +71,7 @@ public class Robot extends IterativeRobot {
         else intake.stop();
         System.out.println("HEIGHT: " + elevator.getAbsoluteHeight());
         System.out.println(elevator.getMasterVoltage() + " " + elevator.getSlaveVoltage());
+        System.out.println("STATE: " + elevator.getState());
     }
 
     @Override

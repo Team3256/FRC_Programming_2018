@@ -23,6 +23,16 @@ public class Elevator {
     private final double ELEVATOR_MIDDLE_HEIGHT = -15.0;
     private final double GEAR_RATIO = 16.0;
 
+    private State state = State.OPEN_LOOP;
+    private State prevState = State.OPEN_LOOP;
+
+    enum State{
+        HOLD,
+        OPEN_LOOP,
+        SERVO
+    }
+
+
     public static Elevator getInstance(){
         return instance == null ? instance = new Elevator() : instance;
     }
@@ -35,11 +45,12 @@ public class Elevator {
                 master.setSelectedSensorPosition(inchesToSensorUnits(ELEVATOR_HOME_HEIGHT), 0, 0);
                 homed = true;
                 homingTime = Timer.getFPGATimestamp();
+                master.configForwardSoftLimitEnable(true, 0);
+                slave.configForwardSoftLimitEnable(true, 0);
                 hallEffect.disableInterrupts();
             }
         }
     };
-
 
     private Elevator(){
         hallEffect = new DigitalInput(9);
@@ -55,7 +66,6 @@ public class Elevator {
         master.setNeutralMode(NeutralMode.Brake);
         slave.setNeutralMode(NeutralMode.Brake);
 
-        //master.setSensorPhase(true);
         master.setInverted(true);
         slave.setInverted(true);
 
@@ -68,6 +78,12 @@ public class Elevator {
         slave.configPeakCurrentDuration(100, 0);
         slave.enableCurrentLimit(true);
 
+
+        master.configForwardSoftLimitEnable(false, 0);
+        master.configForwardSoftLimitThreshold(inchesToSensorUnits(1.0), 9);
+        slave.configForwardSoftLimitEnable(false, 0);
+        slave.configForwardSoftLimitThreshold(inchesToSensorUnits(1.0), 9);
+
         if (master.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,
            0, 0) != ErrorCode.OK){
             DriverStation.reportError("ENCODER NOT DETECTED", false);
@@ -76,13 +92,16 @@ public class Elevator {
         master.config_kP(0, 0.015, 0);
         master.config_kI(0, 0.0, 0);
         master.config_kD(0, 0.0, 0);
-        master.configPeakOutputForward(4.0/12.0, 0);
-        master.configPeakOutputReverse(-4.0/12.0, 0);
+        master.enableVoltageCompensation(true);
+        slave.enableVoltageCompensation(true);
         //master.configNominalOutputForward(0.5/12.0, 0);
         //master.configNominalOutputReverse(0.5/12.0, 0);
     }
 
     public void setOpenLoop(double value){
+        if (state != state.OPEN_LOOP){
+            state = state.OPEN_LOOP;
+        }
         master.set(ControlMode.PercentOutput, value);
     }
 
@@ -94,8 +113,28 @@ public class Elevator {
         return !hallEffect.get();
     }
 
-    public void midPreset(){
-        if (homed) master.set(ControlMode.Position, inchesToSensorUnits(ELEVATOR_MIDDLE_HEIGHT), 0);
+    public void preset(){
+        if (homed) {
+            if (state != State.SERVO){
+                state = State.SERVO;
+                master.configPeakOutputForward(8.0/12.0, 0);
+                master.configPeakOutputReverse(-8.0/12.0, 0);
+            }
+            master.set(ControlMode.Position, inchesToSensorUnits(-5.0), 0);
+        }
+    }
+
+    public void hold(){
+        if (homed){
+            if (state != State.HOLD){
+                state = State.HOLD;
+                master.configPeakOutputForward(2.0/12.0, 0);
+                master.configPeakOutputReverse(-2.0/12.0, 0);
+                System.out.println("SWITCHED STATE");
+            }
+            master.set(ControlMode.Position, inchesToSensorUnits(getAbsoluteHeight()), 0);
+        }
+        else setOpenLoop(0);
     }
 
     public boolean isCalibrated(){
@@ -145,4 +184,9 @@ public class Elevator {
     public double getSlaveVoltage(){
         return slave.getMotorOutputVoltage();
     }
+
+    public State getState(){
+        return state;
+    }
+
 }

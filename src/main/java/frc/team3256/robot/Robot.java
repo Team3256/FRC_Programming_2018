@@ -63,11 +63,16 @@ public class Robot extends IterativeRobot {
         double power = 0.5;
         if (intake){
             motorTwo.set(power);
+            motorFive.set(-power);
         }
         else if (outtake){
             motorTwo.set(-power);
+            motorFive.set(power);
         }
-        else motorTwo.set(0);
+        else {
+            motorTwo.set(0);
+            motorFive.set(0);
+        }
         prevA = A;
     }
 

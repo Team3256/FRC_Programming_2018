@@ -62,12 +62,12 @@ import frc.team3256.robot.Constants;
      * @param deltaPos
      * @return
      */
-    public static DriveVelocity inverseKinematics(Twist deltaPos, double robotTrack){
+    public static DriveVelocity inverseKinematics(Twist deltaPos, double robotTrack, double scrubFactor){
         //If dtheta is 0, then we are not rotating, so our "velocities" are just dx
         if (Math.abs(deltaPos.dtheta()) < kEpsilon){
             return new DriveVelocity(deltaPos.dx(), deltaPos.dx());
         }
-        double angularOffset =  robotTrack * deltaPos.dtheta() / 2.0;
+        double angularOffset =  robotTrack * deltaPos.dtheta()/(2.0*scrubFactor);
         return new DriveVelocity(deltaPos.dx() - angularOffset, deltaPos.dx() + angularOffset);
     }
 }

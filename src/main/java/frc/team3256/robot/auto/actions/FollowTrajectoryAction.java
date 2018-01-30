@@ -26,10 +26,13 @@ public class FollowTrajectoryAction implements Action {
     public void done() {
         drive.setOpenLoop(0,0);
         System.out.println("Finished....");
+        drive.resetTrajectory();
+        System.out.println("Distance Traveled: " + drive.getRightDistance());
     }
 
     @Override
     public void start() {
+        drive.resetEncoders();
         drive.configureDistanceTrajectory(startVel, endVel, distance);
         System.out.println("Started...");
         drive.updateDistanceTrajectory();

@@ -27,6 +27,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private TrajectoryArcWrapper trajectoryArcWrapper = new TrajectoryArcWrapper();
     private double leftOffset = 0;
     private double rightOffset = 0;
+    private double startAngle;
 
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
@@ -120,7 +121,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         if (leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0) != ErrorCode.OK){
             DriverStation.reportError("Mag Encoder on Left Master not detected!!!", false);
         }
-        if (rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0) != ErrorCode.OK){
+        if (rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0) != ErrorCode.OK) {
             DriverStation.reportError("Mag Encoder on Right Master not detected!!!", false);
         }
         gyro = new ADXRS453_Gyro();
@@ -136,22 +137,34 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.config_kF(Constants.kDriveVelocityProfile, Constants.kRightDriveVelocityF, 0);
         rightMaster.config_IntegralZone(Constants.kDriveVelocityProfile, Constants.kRightDriveVelocityIZone, 0);
 
-        leftMaster.config_kP(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicP, 0);
-        leftMaster.config_kI(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicI, 0);
-        leftMaster.config_kD(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicD, 0);
-        leftMaster.config_kF(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicF, 0);
-        rightMaster.config_kP(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicP, 0);
-        rightMaster.config_kI(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicI, 0);
-        rightMaster.config_kD(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicD, 0);
-        rightMaster.config_kF(Constants.kDriveMotionMagicProfile, Constants.kDriveMotionMagicF, 0);
+        leftMaster.config_kP(Constants.kDriveMotionMagicProfile, Constants.kDriveHighGearMotionMagicP, 0);
+        leftMaster.config_kI(Constants.kDriveMotionMagicProfile, Constants.kDriveHighGearMotionMagicI, 0);
+        leftMaster.config_kD(Constants.kDriveMotionMagicProfile, Constants.kDriveHighGearMotionMagicD, 0);
+        leftMaster.config_kF(Constants.kDriveMotionMagicProfile, Constants.kDriveHighGearMotionMagicF, 0);
+        rightMaster.config_kP(Constants.kDriveMotionMagicProfile, Constants.kDriveHighGearMotionMagicP, 0);
+        rightMaster.config_kI(Constants.kDriveMotionMagicProfile, Constants.kDriveHighGearMotionMagicI, 0);
+        rightMaster.config_kD(Constants.kDriveMotionMagicProfile, Constants.kDriveHighGearMotionMagicD, 0);
+        rightMaster.config_kF(Constants.kDriveMotionMagicProfile, Constants.kDriveHighGearMotionMagicF, 0);
 
-        leftMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kDriveMotionMagicCruiseVelocity),
+        leftMaster.config_kP(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicP, 0);
+        leftMaster.config_kI(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicI, 0);
+        leftMaster.config_kD(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicD, 0);
+        leftMaster.config_kF(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicF, 0);
+        leftMaster.config_IntegralZone(Constants.kTurnMotionMagicProfile, (int)(Constants.kTurnLowGearIZone), 0);
+        rightMaster.config_kP(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicP, 0);
+        rightMaster.config_kI(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicI, 0);
+        rightMaster.config_kD(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicD, 0);
+        rightMaster.config_kF(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicF, 0);
+        rightMaster.config_IntegralZone(Constants.kTurnMotionMagicProfile, (int)(Constants.kTurnLowGearIZone), 0);
+
+
+        leftMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kDriveHighGearMotionMagicCruiseVelocity),
             0);
-        leftMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kDriveMotionMagicAcceleration)
+        leftMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kDriveHighGearMotionMagicAcceleration)
             ,0);
-        rightMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kDriveMotionMagicCruiseVelocity),
+        rightMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kDriveHighGearMotionMagicCruiseVelocity),
             0);
-        rightMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kDriveMotionMagicAcceleration),
+        rightMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kDriveHighGearMotionMagicAcceleration),
             0);
 
         leftMaster.setSensorPhase(true);
@@ -163,7 +176,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.setInverted(true);
         rightSlave.setInverted(true);
 
-        trajectoryDistanceWrapper.setGains(Constants.kPercentOutputP, Constants.kPercentOutputI, Constants.kPercentOutputD, Constants.kPercentOutputV, Constants.kPercentOutputA);
+        trajectoryDistanceWrapper.setGains(Constants.kTrajectoryP, Constants.kTrajectoryI, Constants.kTrajectoryD, Constants.kTrajectoryV, Constants.kTrajectoryA);
+        trajectoryDistanceWrapper.setLoopTime(Constants.kControlLoopPeriod);
     }
 
     public double getLeftDistance() {
@@ -178,6 +192,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
      * @return left velocity in in/sec
      */
     public double getLeftVelocity(){
+        //return leftMaster.getSelectedSensorVelocity(0);
         return sensorUnitsToInchesPerSec(leftMaster.getSelectedSensorVelocity(0));
     }
 
@@ -185,6 +200,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
      * @return right velocity in in/sec
      */
     public double getRightVelocity(){
+        //return rightMaster.getSelectedSensorVelocity(0);
         return sensorUnitsToInches(rightMaster.getSelectedSensorVelocity(0));
     }
 
@@ -261,15 +277,18 @@ public class DriveTrain extends SubsystemBase implements Loop {
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
             return;
         }
-        Rotation error = Rotation.fromDegrees(degrees - gyro.getAngle());
+        Rotation robotToTarget = getAngle().inverse().rotate(Rotation.fromDegrees(degrees));
         if (isTurnInPlaceFinished()){
-            setOpenLoop(0,0);
             return;
         }
         //periodically re-converts the gyro angle into a new motion magic goal for the talons
-        Kinematics.DriveVelocity delta = Kinematics.inverseKinematics(new Twist(0,0,error.radians()), Constants.kRobotTrack);
-        leftMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(getLeftDistance() + delta.left), 0);
-        rightMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(getRightDistance() + delta.right), 0);
+        Kinematics.DriveVelocity delta = Kinematics.inverseKinematics(new Twist(0,0,robotToTarget.radians()), Constants.kRobotTrack, Constants.kScrubFactor);
+        //System.out.println("Left CLE: " + sensorUnitsToInches(leftMaster.getClosedLoopError(0)));
+        //System.out.println("Right CLE: " + sensorUnitsToInches(rightMaster.getClosedLoopError(0)));
+
+        //System.out.println("DL: " + delta.left + "; " + "DR: " + delta.right);
+        leftMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(getLeftDistance() + delta.left), Constants.kTurnMotionMagicProfile);
+        rightMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(getRightDistance() + delta.right), Constants.kTurnMotionMagicProfile);
     }
 
     public void updateDistance() {
@@ -280,8 +299,11 @@ public class DriveTrain extends SubsystemBase implements Loop {
             setOpenLoop(0,0);
             return;
         }
-        leftMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(distance + leftOffset), 0);
-        rightMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(distance + rightOffset), 0);
+        /*double error = Math.toRadians(getAngle().degrees() - startAngle);
+        System.out.println(Math.toDegrees(error));
+        Kinematics.DriveVelocity delta = Kinematics.inverseKinematics(new Twist(0, 0, error), Constants.kRobotTrack);*/
+        leftMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(distance + leftOffset), Constants.kDriveMotionMagicProfile);
+        rightMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(distance + rightOffset), Constants.kDriveMotionMagicProfile);
     }
 
     public void updateDistanceTrajectory() {
@@ -295,6 +317,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
         System.out.println("Updating....");
         leftMaster.set(ControlMode.PercentOutput, trajectoryDistanceWrapper.updateCalculations(getLeftDistance()));
         rightMaster.set(ControlMode.PercentOutput, trajectoryDistanceWrapper.updateCalculations(getRightDistance()));
+        System.out.println("Left Calc: " + trajectoryDistanceWrapper.updateCalculations(getLeftDistance()));
+        System.out.println("Right Calc: " + trajectoryDistanceWrapper.updateCalculations(getRightDistance()));
+
     }
 
     public void updateArcTrajectory() {
@@ -323,6 +348,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
         }
     }
 
+    public void resetTrajectory() {
+        trajectoryDistanceWrapper.resetTrajectory();
+    }
+
     public void resetEncoders() {
         leftMaster.setSelectedSensorPosition(0, 0, 0);
         rightMaster.setSelectedSensorPosition(0, 0,0);
@@ -332,6 +361,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
     public void setOffsets(double leftOffset, double rightOffset) {
         this.leftOffset = leftOffset;
         this.rightOffset = rightOffset;
+    }
+
+    public void setStartAngle(double startAngle) {
+        this.startAngle = startAngle;
     }
 
     public boolean isDriveToDistanceFinished() {
@@ -346,7 +379,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public boolean isTurnInPlaceFinished() {
-        double error = Math.abs(degrees - gyro.getAngle());
+        double error = Math.abs(degrees - getAngle().degrees() + startAngle);
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
             return true;
         }
@@ -354,16 +387,48 @@ public class DriveTrain extends SubsystemBase implements Loop {
             return true;
         }
         return false;
+        //return sensorUnitsToInches(leftMaster.getClosedLoopError(0)) < 0.5 && sensorUnitsToInches(rightMaster.getClosedLoopError(0)) < 0.5;
+        //return Math.abs(degrees + startAngle) < Math.abs(gyro.getAngle());
     }
 
     public boolean isTrajectoryFinished() {
         return trajectoryDistanceWrapper.isFinished();
     }
+
     public void setTurnInPlaceSetpoint(double setpoint) {
+        this.degrees = setpoint;
+        leftMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kTurnLowGearMotionMagicCruiseVelocity),
+                0);
+        System.out.println("CRUISE VELOCITY: " + inchesPerSecToSensorUnits(Constants.kTurnLowGearMotionMagicCruiseVelocity));
+        leftMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kTurnLowGearMotionMagicAcceleration)
+                ,0);
+        rightMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kTurnLowGearMotionMagicCruiseVelocity),
+                0);
+        rightMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kTurnLowGearMotionMagicAcceleration),
+                0);
+
+        leftMaster.configNominalOutputReverse(-1.0/12.0, 0);
+        leftMaster.configNominalOutputForward(1.0/12.0, 0);
+
+        rightMaster.configNominalOutputReverse(-1.0/12.0, 0);
+        rightMaster.configNominalOutputForward(1.0/12.0, 0);
+
+
+        leftSlave.configNominalOutputReverse(-1.0/12.0, 0);
+        leftSlave.configNominalOutputForward(1.0/12.0, 0);
+
+
+        rightSlave.configNominalOutputReverse(-1.0/12.0, 0);
+        rightSlave.configNominalOutputForward(1.0/12.0, 0);
+
+        leftMaster.enableVoltageCompensation(true);
+        leftSlave.enableVoltageCompensation(true);
+        rightMaster.enableVoltageCompensation(true);
+        rightSlave.enableVoltageCompensation(true);
+
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
             controlMode = DriveControlMode.TURN_TO_ANGLE;
         }
-        this.degrees = setpoint;
         updateTurnInPlace();
     }
 
@@ -390,7 +455,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public double sensorUnitsToInches(double sensorUnits){
-        return sensorUnits/4096*Math.PI*Constants.kWheelDiameter;
+        return (sensorUnits*Math.PI*Constants.kWheelDiameter)/4096;
     }
 
     public double sensorUnitsToInchesPerSec(double sensorUnits){
@@ -402,10 +467,11 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public Rotation getAngle(){
-        return Rotation.fromDegrees(gyro.getAngle());
+        return Rotation.fromDegrees(-gyro.getAngle());
     }
 
     public DriveControlMode getMode(){
         return controlMode;
     }
+
 }

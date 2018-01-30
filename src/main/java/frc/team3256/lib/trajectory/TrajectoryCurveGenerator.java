@@ -4,14 +4,14 @@ import java.util.ArrayList;
 
 public class TrajectoryCurveGenerator {
 
-    public double robotTrack = 2.4; //feet
+    public double robotTrack = 2.4*12.0; //inches
 
     TrajectoryGenerator trajectoryGenerator;
     Trajectory leadPath;
     Trajectory followPath;
 
     public TrajectoryCurveGenerator() {
-        this(12, 12, 0.005);
+        this(144, 144, 0.005);
     }
 
     public TrajectoryCurveGenerator(double acc, double maxVel, double dt){
@@ -36,7 +36,7 @@ public class TrajectoryCurveGenerator {
     }
 
     public static void main (String [] args){
-        TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator(12, 12, 0.005);
+        TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator(144, 144, 0.005);
         trajectoryCurveGenerator.generateTrajectoryCurve(2, 3, 30, 5);
     }
 

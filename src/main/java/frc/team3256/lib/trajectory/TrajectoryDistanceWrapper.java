@@ -1,5 +1,6 @@
 package frc.team3256.lib.trajectory;
 
+import frc.team3256.robot.Constants;
 import frc.team3256.robot.subsystems.DriveTrain;
 
 public class TrajectoryDistanceWrapper {
@@ -41,7 +42,7 @@ public class TrajectoryDistanceWrapper {
         changeError = (prevError - error)/dt - setpointVel;
         PID = (kP * error) + (kI * sumError) + (kD * changeError);
         prevError = error;
-        return PID;
+        return -PID; //PID is backwards
     }
 
     public double updateCalculations(double currPos) {
@@ -49,8 +50,7 @@ public class TrajectoryDistanceWrapper {
             Trajectory.Point point = trajectory.getCurrPoint(curr_segment);
             feedForwardValue = calculateFeedForward(point.getVel(), point.getAcc());
             feedBackValue = calculateFeedBack(point.getPos(), currPos, point.getVel());
-            System.out.println("feed forward: " + feedForwardValue);
-            System.out.println("feed back: " + feedBackValue);
+            System.out.println(PID);
             output = feedBackValue + feedForwardValue;
             curr_segment++;
             if (output > 1) {
@@ -65,12 +65,16 @@ public class TrajectoryDistanceWrapper {
         return 0;
     }
 
+    public void resetTrajectory(){
+        curr_segment = 0;
+    }
+
     public boolean isFinished() {
         return curr_segment >= trajectory.getLength();
     }
 
     public void configureDistanceTrajectory(double startVel, double endVel, double distance){
-        TrajectoryGenerator trajectoryGenerator = new TrajectoryGenerator();
+        TrajectoryGenerator trajectoryGenerator = new TrajectoryGenerator(Constants.kPercentOutputMaxA, Constants.kPercentOutputCruiseVelocity, Constants.kControlLoopPeriod);
         this.trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, distance);
     }
 }

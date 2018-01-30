@@ -348,6 +348,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
         }
     }
 
+    public void resetTrajectory() {
+        trajectoryDistanceWrapper.resetTrajectory();
+    }
+
     public void resetEncoders() {
         leftMaster.setSelectedSensorPosition(0, 0, 0);
         rightMaster.setSelectedSensorPosition(0, 0,0);
@@ -451,7 +455,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public double sensorUnitsToInches(double sensorUnits){
-        return sensorUnits/4096*Math.PI*Constants.kWheelDiameter;
+        return (sensorUnits*Math.PI*Constants.kWheelDiameter)/4096;
     }
 
     public double sensorUnitsToInchesPerSec(double sensorUnits){

@@ -66,13 +66,13 @@ public class Constants {
 
     //Trajectory Gains
 
-    public static final double kTrajectoryP = 0;
+    public static final double kTrajectoryP = 0.05;
     public static final double kTrajectoryI = 0;
     public static final double kTrajectoryD = 0;
-    public static final double kTrajectoryV = 0.245;
+    public static final double kTrajectoryV = 1.0/120.0;
     public static final double kTrajectoryA = 0;
-    public static final double kPercentOutputMaxA = 12.0*12.0;
-    public static final double kPercentOutputCruiseVelocity = 12.0*12.0;
+    public static final double kPercentOutputMaxA = 9.0*12.0;
+    public static final double kPercentOutputCruiseVelocity = 10.0*12.0;
 
     //Drive Velocity
     public static final double kLeftDriveVelocityP = 0.3;

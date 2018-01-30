@@ -9,8 +9,7 @@ public abstract class Segment {
     protected Type type = null;
     protected Translation start = null;
     protected Translation end = null;
-    protected double startVel = 0;
-    protected double endVel = 0;
+    protected double goalVel = 0;
     protected double accel = 0;
 
     //Type of segment: is this an arc or a line?
@@ -38,9 +37,9 @@ public abstract class Segment {
 
     public abstract double getRemainingDistance(Translation closestPoint);
 
-    public double getVelocity(Translation closestPoint) {
-        double currDistanceTraveled = getCurrDistanceTraveled(closestPoint);
-        double currVelocity = Math.sqrt(Math.pow(startVel, 2) + 2 * accel * currDistanceTraveled);
-        return currVelocity;
+    public double runVelocity(Translation closestPoint) {
+        double remainingDistance = getRemainingDistance(closestPoint);
+        double vel = Math.sqrt(Math.pow(goalVel, 2.0) - 2.0 * accel * remainingDistance);
+        return vel;
     }
 }

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Path {
 
-    private ArrayList<Segment> segments;
+    public ArrayList<Segment> segments;
 
     public Path(){
         segments = new ArrayList<>();
@@ -26,6 +26,8 @@ public class Path {
         double distanceToPath;
         //current segment
         Segment currSegment;
+        //closest point
+        Translation closestPoint;
     }
 
     public void removeSegment() {
@@ -39,6 +41,7 @@ public class Path {
         Translation robotToClosestPoint = new Translation(robotCoordinates, closestPoint);
 
 
+
         rv.distanceToPath = robotToClosestPoint.norm();
         rv.lookaheadPoint = currSegment.getLookAheadPoint(rv.distanceToPath, closestPoint);
 
@@ -50,6 +53,8 @@ public class Path {
 
 
         rv.currSegment = currSegment;
+
+        rv.closestPoint = closestPoint;
 
         return rv;
     }

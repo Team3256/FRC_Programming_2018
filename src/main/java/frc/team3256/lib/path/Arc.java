@@ -28,7 +28,7 @@ public class Arc extends Segment{
         angle = centerToStart.getAngle(centerToEnd);
         //This should not be possible. We are using constant-curvature arcs.
         //If this ever occurs, then one (or more) of the parameters were passed in incorrectly
-        if (centerToStart.norm() - centerToEnd.norm() > 10E-9){
+        if (Math.abs(centerToStart.norm() - centerToEnd.norm()) > 10E-9){
 
             System.out.println("ERROR: THIS ARC IS NOT CONSTANT_CURVATURE");
             System.out.println("START: " + start);
@@ -41,11 +41,10 @@ public class Arc extends Segment{
     }
 
 
-    public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY, double startVel, double accel){
+    public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY, double goalVel, double accel){
         this(startX, startY, endX, endY, centerX, centerY);
-        this.startVel = startVel;
+        this.goalVel = goalVel;
         this.accel = accel;
-        this.endVel = Math.sqrt(Math.pow(startVel, 2) + 2 * accel * getLength());
     }
 
     @Override

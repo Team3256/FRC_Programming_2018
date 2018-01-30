@@ -12,16 +12,23 @@ public class PathGenerator {
 
         Translation position;
         double radius;
+        double vel;
 
         public Waypoint(double x, double y, double radius){
             this.position = new Translation(x, y);
             this.radius = radius;
+        }
+
+        public Waypoint(double x, double y, double radius, double vel){
+            this(x, y, radius);
+            this.vel = vel;
         }
     }
 
     public static class LineGenerator{
         Waypoint a, b;
         Translation start, end, slope;
+        double vel;
 
         public LineGenerator(Waypoint a, Waypoint b){
             this.a = a;
@@ -32,12 +39,13 @@ public class PathGenerator {
             //so we adjust the start and end points respectively
             this.start = a.position.translate(slope.scale(a.radius/slope.norm()));
             this.end = b.position.translate(slope.scale(-1.0*b.radius/slope.norm()));
+            this.vel = b.vel;
         }
 
         private void addToPath(Path path){
             double len = new Translation(start, end).norm();
             if (len > 1E-9){
-                path.addSegment(new Line(start.x(), start.y(), end.x(), end.y()));
+                path.addSegment(new Line(start.x(), start.y(), end.x(), end.y(), vel, 2.0));
             }
         }
     }

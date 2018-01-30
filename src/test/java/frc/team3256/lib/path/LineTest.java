@@ -97,7 +97,7 @@ public class LineTest {
     public void testVelocity() {
         Line line = new Line(0, 0, 20, 0, 0, 2);
         Translation closestPoint = new Translation(20, 0);
-        double currVelocity = line.getVelocity(closestPoint);
-        assertEquals(currVelocity, line.endVel, kEpsilon);
+        double currVelocity = line.runVelocity(closestPoint);
+        assertEquals(currVelocity, line.goalVel, kEpsilon);
     }
 }

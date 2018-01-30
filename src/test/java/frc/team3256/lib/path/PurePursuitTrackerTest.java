@@ -14,7 +14,7 @@ public class PurePursuitTrackerTest {
     public void testArcToSegment() {
 
         Path p = new Path();
-        p.addSegment(new Line(0, 0, 24, 24));
+        p.addSegment(new Line(0, 0, 24, 24, 120.0, 2.0));
         p.addSegment(new Arc(24, 24, 48,24, 36, 12));
 
         PurePursuitTracker pursuit = new PurePursuitTracker(p);
@@ -25,6 +25,9 @@ public class PurePursuitTrackerTest {
         assertEquals(command.delta.dy(), Math.PI * 3.0 * Math.sqrt(2), kEpsilon);
         assertEquals(command.delta.dtheta(), -Math.PI, kEpsilon);
 
+        assertEquals(command.vel, Math.sqrt(Math.pow(120.0, 2.0) - 2.0 * 2.0 * 15.0), 10E-1);
+        lookaheadPoint = new Translation(20, 20);
+        assertEquals(command.vel, Math.sqrt(Math.pow(120.0, 2.0) - 2.0 * 2.0 * 4.0),kEpsilon);
 
 
         robotCoordinates = new Translation(9, 3);

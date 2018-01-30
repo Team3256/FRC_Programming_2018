@@ -25,14 +25,13 @@ public class Line extends Segment{
      * @param startY Y-Coordinate of the starting position
      * @param endX X-Coordinate of the ending position
      * @param endY Y-Coordinate of the ending position
-     * @param startVel starting velocity
+     * @param goalVel desired velocity at end of segment
      * @param accel acceleration
      */
-    public Line(double startX, double startY, double endX, double endY, double startVel, double accel){
+    public Line(double startX, double startY, double endX, double endY, double goalVel, double accel){
         this(startX, startY, endX, endY);
-        this.startVel = startVel;
+        this.goalVel = goalVel;
         this.accel = accel;
-        this.endVel = Math.sqrt(Math.pow(startVel, 2) + 2 * accel * getLength());
     }
 
     /**

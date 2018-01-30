@@ -12,9 +12,11 @@ public class PurePursuitTracker {
 
     public class Command {
         public Twist delta;
+        public double vel;
 
-        public Command(Twist delta) {
+        public Command(Twist delta, double vel) {
             this.delta = delta;
+            this.vel = vel;
         }
     }
 
@@ -61,19 +63,18 @@ public class PurePursuitTracker {
         Path.PathUpdate pathUpdate = path.update(robotCoordinates);
         Segment s = pathUpdate.currSegment;
         Arc arc = getArcToSegment(s, lookaheadPoint, robotCoordinates);
-
+        double vel = s.runVelocity(pathUpdate.closestPoint);
 
         if(isFinished()) {
             //return new Command(new Twist(0, 0, 0));
         }
-
         if(pathUpdate.remainingDistance < arc.getLength()) {
             reachedEnd = true;
             path.removeSegment();
             System.out.println("END REACHED");
         }
 
-        return new Command(new Twist(0, arc.getLength(), -arc.getAngle().radians()));
+        return new Command(new Twist(0, arc.getLength(), -arc.getAngle().radians()), vel);
     }
 
     private boolean isFinished() {

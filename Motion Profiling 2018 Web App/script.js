@@ -103,7 +103,7 @@ class Line {
 }
 
 class Arc {
-
+        
 }
 
 function deletePoint(index) {

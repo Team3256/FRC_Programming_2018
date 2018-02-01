@@ -14,12 +14,12 @@ var imageFlipped;
 var points = [];
 
 class Point {
-	constructor(x, y, vel, radius, desc) {
+	constructor(x, y) {
 		this.x = x;
 		this.y = y;
-		this.vel = vel;
+		/*this.vel = vel;
 		this.radius = radius;
-		this.desc = desc;
+		this.desc = desc;*/
 	}
 
 	norm() {
@@ -65,8 +65,6 @@ class Point {
 		ctx.stroke();
 	}
 
-
-
 	static diff(a, b) {
 		return new Point(b.x - a.x, b.y - a.y);
 	}
@@ -84,11 +82,28 @@ class Point {
 	}
 }
 
+class WayPoint {
+    constructor(x, y, vel, radius, desc) {
+        this.position = new Point(x, y);
+        this.vel = vel;
+        this.radius = radius;
+        this.desc = desc;
+    }
+
+    draw() {
+        this.position.draw((this.radius > 0) ? "rgba(120,120,120,0.8)" : null);
+    }
+
+    /*toString() {
+    		return "sWaypoints.add(new Waypoint("+this.position.x+","+this.position.y+","+this.radius+","+this.velocity+"));";
+    	}*/
+}
+
 class Line {
     constructor(pointA, pointB) {
-        this.start = pointA;
-		this.end = pointB;
-		this.slope = Point.diff(pointA, pointB);
+        this.start = pointA.position;
+		this.end = pointB.position;
+		this.slope = Point.diff(pointA.position, pointB.position);
     }
 
     draw() {
@@ -100,10 +115,68 @@ class Line {
 		ctx.lineWidth = 2;
         ctx.stroke();
     }
+
+    static intersect(a, b, c, d) {
+        lineA = new Line(a, b);
+        lineC = new Line(c, d);
+        var slopeA = lineA.slope;
+        var slopeC = lineC.slope;
+        var y_intA = -slopeA(a.x) + a.y;
+        var y_intC = -slopeC(c.x) + c.y;
+        var x = (y-intC - y-intA)/(slopeA - slopeC);
+        var y = (slopeA * x) - y-intA;
+        return new Point(x,y);
+    }
 }
 
 class Arc {
-        
+
+        constructor (lineA, lineB) {
+            this.lineA = lineA;
+            this.lineB = lineB;
+            this.center = Line.intersect(lineA.end, lineA.end.translate(lineA.slope.perp()), lineB.start, lineB.start.translate(lineB.slope.perp()));
+            //this.center.draw;
+            this.radius = Point.diff(lineA.end, this.center).norm();
+        }
+
+        draw() {
+            var sTrans = Point.diff(this.center, this.lineA.end);
+            var eTrans = Point.diff(this.center, this.lineB.start);
+            var sAngle, eAngle;
+
+            if(Point.cross(sTrans, eTrans) > 0) {
+            	eAngle = -Math.atan2(sTrans.y, sTrans.x);
+            	sAngle = -Math.atan2(eTrans.y, eTrans.x);
+            } else {
+            	sAngle = -Math.atan2(sTrans.y, sTrans.x);
+            	eAngle = -Math.atan2(eTrans.y, eTrans.x);
+            }
+
+            this.lineA.draw;
+            this.lineB.draw;
+            ctx.beginPath;
+            ctx.arc(this.center.drawX,this.center.drawY,this.radius*ftToPixelsScale,sAngle,eAngle);
+            ctx.strokeStyle=getColorForSpeed(this.lineB.pointB.speed);
+            ctx.stroke();
+        }
+
+
+        fill() {
+            this.lineA.fill();
+            this.lineB.fill();
+            var sTrans = Point.diff(this.center, this.lineA.end);
+            var eTrans = Point.diff(this.center, this.lineB.start);
+            var sAngle = (Point.cross(sTrans, eTrans) > 0) ? sTrans.angle : eTrans.angle;
+            var angle = Point.angle(sTrans, eTrans);
+            var length = angle * this.radius;
+            for(var i=0; i<length; i+=this.radius/100) {
+                //drawRotatedRect(this.center.translate(new Point(this.radius*Math.cos(sAngle-i/length*angle),-this.radius*Math.sin(sAngle-i/length*angle))), robotHeight, robotWidth, sAngle-i/length*angle+Math.PI/2, null, pathFillColor, true);
+            }
+        }
+
+        static fromPoints(a, b, c) {
+            return new Arc( new Line(a, b), new Line(b, c));
+        }
 }
 
 function deletePoint(index) {
@@ -111,7 +184,7 @@ function deletePoint(index) {
 }
 
 function addPoint() {
-    prevPoint = points[points.length-1];
+    prevPoint = points[points.length-1].position;
 	$('tbody').append('<tr>'
 		+'<td class="hoverable"><input class="x number_cell" value="'+(parseInt(prevPoint.x)+5)+'"></td>'
 		+'<td class="hoverable"><input class="y number_cell" value="'+(parseInt(prevPoint.y)+5)+'"></td>'
@@ -174,13 +247,17 @@ function update() {
         var vel = $(row.find('.vel')).val();
         var desc = $(row.find('.desc')).val();
         var radius = $(row.find('.radius')).val();
-        points.push(new Point(x, y, vel, radius, desc));
+        points.push(new WayPoint(x, y, vel, radius, desc));
     })
     for (var point in points) {
-        points[point].draw();
+        points[point].position.draw();
         if (point > 0) {
+            if(radius == 0){
             var line = new Line(points[point-1], points[point]);
             line.draw();
+            } else {
+            
+            }
         }
     }
 }

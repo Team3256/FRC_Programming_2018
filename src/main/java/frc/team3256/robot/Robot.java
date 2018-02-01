@@ -1,5 +1,8 @@
 package frc.team3256.robot;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoMode;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Looper;
@@ -12,6 +15,7 @@ import frc.team3256.robot.operation.ControlsInterface;
 import frc.team3256.robot.operation.DualLogitechConfig;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.subsystems.SubsystemManager;
+import javafx.scene.Camera;
 
 public class Robot extends IterativeRobot {
 
@@ -23,6 +27,8 @@ public class Robot extends IterativeRobot {
     ADXRS453_Calibrator gyroCalibrator;
     ControlsInterface controlsInterface;
     AutoModeExecuter autoModeExecuter;
+
+    UsbCamera camera;
 
     @Override
     public void robotInit() {
@@ -42,6 +48,8 @@ public class Robot extends IterativeRobot {
 
         //Dual Logitech Config
         controlsInterface = new DualLogitechConfig();
+
+        camera = CameraServer.getInstance().startAutomaticCapture();
     }
 
     @Override
@@ -89,6 +97,7 @@ public class Robot extends IterativeRobot {
         boolean quickTurn = controlsInterface.getQuickTurn();
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
         driveTrain.setOpenLoop(power);
+        System.out.println(camera.getDescription());
     }
 
     @Override

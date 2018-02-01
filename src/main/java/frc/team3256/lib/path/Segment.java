@@ -37,9 +37,5 @@ public abstract class Segment {
 
     public abstract double getRemainingDistance(Translation closestPoint);
 
-    public double runVelocity(Translation closestPoint) {
-        double remainingDistance = getRemainingDistance(closestPoint);
-        double vel = Math.sqrt(Math.pow(goalVel, 2.0) - 2.0 * accel * remainingDistance);
-        return vel;
-    }
+    public abstract double runVelocity(Translation closestPoint, double currVel);
 }

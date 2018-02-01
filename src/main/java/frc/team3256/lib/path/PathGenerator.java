@@ -14,15 +14,16 @@ public class PathGenerator {
         double radius;
         double vel;
 
-        public Waypoint(double x, double y, double radius){
+        public Waypoint(double x, double y, double radius, double vel){
             this.position = new Translation(x, y);
             this.radius = radius;
-        }
-
-        public Waypoint(double x, double y, double radius, double vel){
-            this(x, y, radius);
             this.vel = vel;
         }
+
+        public Waypoint(double x, double y, double radius){
+            this(x, y, radius, 0.0);
+        }
+
     }
 
     public static class LineGenerator{

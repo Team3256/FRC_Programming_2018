@@ -10,15 +10,7 @@ public class Arc extends Segment{
     private double radius;
     private Rotation angle;
 
-    /**
-     * @param startX X-Coordinate of the starting position
-     * @param startY Y-Coordinate of the starting position
-     * @param endX X-Coordinate of the ending position
-     * @param endY Y-Coordinate of the ending position
-     * @param centerX X-Coordinate of the circle
-     * @param centerY X-Coordinate of the circle
-     */
-    public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY){
+    public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY, double goalVel, double accel){
         type = Type.ARC;
         start = new Translation(startX, startY);
         end = new Translation(endX, endY);
@@ -26,6 +18,10 @@ public class Arc extends Segment{
         centerToStart = new Translation(center, start);
         centerToEnd = new Translation(center, end);
         angle = centerToStart.getAngle(centerToEnd);
+
+        this.goalVel = goalVel;
+        this.accel = accel;
+
         //This should not be possible. We are using constant-curvature arcs.
         //If this ever occurs, then one (or more) of the parameters were passed in incorrectly
         if (Math.abs(centerToStart.norm() - centerToEnd.norm()) > 10E-9){
@@ -41,10 +37,8 @@ public class Arc extends Segment{
     }
 
 
-    public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY, double goalVel, double accel){
-        this(startX, startY, endX, endY, centerX, centerY);
-        this.goalVel = goalVel;
-        this.accel = accel;
+    public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY){
+        this(startX, startY, endX, endY, centerX, centerY, 0.0, 0.0);
     }
 
     @Override
@@ -147,5 +141,10 @@ public class Arc extends Segment{
     @Override
     public double getRemainingDistance(Translation closestPoint) {
         return getLength() - getCurrDistanceTraveled(closestPoint);
+    }
+
+    @Override
+    public double runVelocity(Translation closestPoint, double currVel) {
+        return 0.0;
     }
 }

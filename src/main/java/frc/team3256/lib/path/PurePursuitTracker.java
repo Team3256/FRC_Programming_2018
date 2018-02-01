@@ -59,11 +59,11 @@ public class PurePursuitTracker {
         return robotToLookaheadPointArc;
     }
 
-    public Command update(Translation lookaheadPoint, Translation robotCoordinates) {
+    public Command update(Translation lookaheadPoint, Translation robotCoordinates, double currVel) {
         Path.PathUpdate pathUpdate = path.update(robotCoordinates);
         Segment s = pathUpdate.currSegment;
         Arc arc = getArcToSegment(s, lookaheadPoint, robotCoordinates);
-        double vel = s.runVelocity(pathUpdate.closestPoint);
+        double vel = s.runVelocity(pathUpdate.closestPoint, currVel);
 
         if(isFinished()) {
             //return new Command(new Twist(0, 0, 0));

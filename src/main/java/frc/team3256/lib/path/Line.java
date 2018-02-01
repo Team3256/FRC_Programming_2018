@@ -2,36 +2,23 @@ package frc.team3256.lib.path;
 
 import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Translation;
+import frc.team3256.robot.Constants;
 
 public class Line extends Segment{
 
     private Translation slope;
 
-    /**
-     * @param startX X-Coordinate of the starting position
-     * @param startY Y-Coordinate of the starting position
-     * @param endX X-Coordinate of the ending position
-     * @param endY Y-Coordinate of the ending position
-     */
-    public Line(double startX, double startY, double endX, double endY){
+    public Line(double startX, double startY, double endX, double endY, double goalVel, double accel){
         type = Type.LINE;
         start = new Translation(startX, startY);
         end = new Translation(endX, endY);
         slope = new Translation(start, end);
-    }
-
-    /**
-     * @param startX X-Coordinate of the starting position
-     * @param startY Y-Coordinate of the starting position
-     * @param endX X-Coordinate of the ending position
-     * @param endY Y-Coordinate of the ending position
-     * @param goalVel desired velocity at end of segment
-     * @param accel acceleration
-     */
-    public Line(double startX, double startY, double endX, double endY, double goalVel, double accel){
-        this(startX, startY, endX, endY);
         this.goalVel = goalVel;
         this.accel = accel;
+    }
+
+    public Line(double startX, double startY, double endX, double endY){
+        this(startX, startY, endX, endY, 0.0, 0.0);
     }
 
     /**
@@ -135,5 +122,23 @@ public class Line extends Segment{
     @Override
     public double getRemainingDistance(Translation closestPoint){
         return getLength() - getCurrDistanceTraveled(closestPoint);
+    }
+
+    @Override
+    public double runVelocity(Translation closestPoint, double currVel) {
+        double remainingDistance = getRemainingDistance(closestPoint);
+        double calculatedAccel = (Math.pow(goalVel, 2.0)-Math.pow(currVel, 2.0))/(2.0*remainingDistance);
+        double runAccel = Math.min(calculatedAccel, accel);
+        //System.out.println("calculated accel: "+calculatedAccel);
+        if (runAccel == calculatedAccel) {
+            //System.out.println("runs calculated: " + runAccel);
+        } else {
+            //System.out.println("runs max possible: " + runAccel);
+        }
+        double nextVel = currVel + (runAccel * Constants.kControlLoopPeriod);
+        double runVel = Math.min(nextVel, 10000.0000);      //robot maximum velocity
+        //System.out.println("currVel: "+currVel);
+        //System.out.println("runVel: "+runVel);
+        return runVel;
     }
 }

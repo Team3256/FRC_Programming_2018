@@ -23,11 +23,15 @@ var startPositions = {
     "left": [10, 24],
     "right": [10, 6],
 }
-var startPos;
 
 function chooseStart(position) {
     startPos = startPositions[position];
-    updateStartPoint();
+    startX = startPos[0];
+    startY = startPos[1];
+    waypoints.push(new WayPoint(startX, startY, 0, 0, ""));
+    $($('tbody').children('tr')[0]).find('.x').val(startX);
+    $($('tbody').children('tr')[0]).find('.y').val(startY);
+    update();
 }
 
 
@@ -228,16 +232,6 @@ function invertField() {
 }
 
 
-
-function updateStartPoint() {
-    startX = startPos[0];
-    startY = startPos[1];
-    waypoints.push(new WayPoint(startX, startY, 0, 0, ""));
-    $($('tbody').children('tr')[0]).find('.x').val(startX);
-    $($('tbody').children('tr')[0]).find('.y').val(startY);
-    update();
-}
-
 function fitSizeToText(input) {
     var maxWidth = input.width() - 2;
     var val = input.val();
@@ -269,10 +263,10 @@ function addEventListeners() {
 
     row.find('.hoverable').hover(
         function() {
-            $(this).find('.hoverable').css("background-color", "#f5f5f5");
+            $(this).parent().find('.hoverable').css("background-color", "#f5f5f5");
         },
         function() {
-            $(this).find('.hoverable').css("background-color", "white");
+            $(this).parent().find('.hoverable').css("background-color", "white");
         }
     )
 }
@@ -308,11 +302,11 @@ function update() {
     }
 }
 
-function onDown(event){
-        cx = Math.round((event.offsetX/ftToPixelsScale)*10)/10;
-        cy = Math.round((30-event.offsetY/ftToPixelsScale)*10)/10;
-        addPoint(cx, cy);
-    }
+function fieldClicked(event){
+    cx = Math.round((event.offsetX/ftToPixelsScale)*10)/10;
+    cy = Math.round((30-event.offsetY/ftToPixelsScale)*10)/10;
+    addPoint(cx, cy);
+}
 
 function init() {
 	$('#field').css("width", width);
@@ -328,8 +322,7 @@ function init() {
     image.onload = function(){
         ctx.drawImage(image, 0, 0, width, height);
         var field = document.getElementById('field');
-        var context = field.getContext('2d');
-        field.addEventListener('mousedown',onDown,false);
+        field.addEventListener('mousedown', fieldClicked, false);
         update();
     }
 	addEventListeners();

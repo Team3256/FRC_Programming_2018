@@ -29,7 +29,7 @@ button {
 .button_container > button {
     border-radius: 12px;
     font-size: 14px;
-    background-color: #f44242;
+    background-color: #808080;
     color: white;
     float: left;
     padding: 5px 10px;

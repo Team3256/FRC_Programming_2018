@@ -191,6 +191,10 @@ class Arc {
         static fromwaypoints(a, b, c) {
             return new Arc( new Line(a, b), new Line(b, c));
         }
+
+        getTurnAngle() {
+            return sAngle - eAngle;
+        }
 }
 
 function deletePoint(index) {
@@ -220,6 +224,7 @@ function invertField() {
         ctx.drawImage(image, 0, 0, width, height);
         isFlipped = false;
     }
+    update();
 }
 
 

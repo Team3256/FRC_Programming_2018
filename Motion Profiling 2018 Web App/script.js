@@ -124,17 +124,14 @@ class Line {
         this.pointB = pointB;
         this.slope = Translation.diff(pointA.position, pointB.position);
 
-        var scaledA=this.slope.scale( pointA.radius/this.slope.norm() );
-        var scaledB=this.slope.scale( pointB.radius/this.slope.norm()).invert();
+        var scaledA = this.slope.scale(pointA.radius/this.slope.norm() );
+        var scaledB = this.slope.scale(pointB.radius/this.slope.norm()).invert();
 
         this.start = pointA.position.translate(scaledA);
         this.end = pointB.position.translate(scaledB);
-
     }
 
     draw() {
-        console.log(this.start.getX()+"  "+this.start.getY());
-        console.log(this.end.getX()+"  "+this.end.getY());
 		var color = "#2dc65b";
         ctx.beginPath();
         ctx.moveTo(this.start.getX(), this.start.getY());
@@ -301,10 +298,10 @@ function update() {
         console.log(typeof point.x);
         waypoints[point].position.draw();
         if (point > 0) {
-            var line = new Line(waypoints[point], waypoints[point - 1]);
-            line.draw();
-            //var arc = new Arc (fromwaypoints(waypoints[point], waypoints[point - 1], waypoints[point - 2]));
-            //arc.draw();
+           var line = new Line(waypoints[point - 1], waypoints[point]);
+           line.draw();
+           //var arc = new Arc (fromwaypoints(waypoints[point], waypoints[point - 1], waypoints[point - 2]));
+           //arc.draw();
         }
     }
 }

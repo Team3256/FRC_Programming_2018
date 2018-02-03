@@ -45,7 +45,12 @@ public class TalonUtil{
         talon.overrideLimitSwitchesEnable(false);
         //no ramping on default
         talon.configOpenloopRamp(0,10);
+        talon.configNominalOutputReverse(-1.0/12.0, 10);
+        talon.configPeakOutputForward(1.0, 10);
+        talon.configPeakOutputReverse(-1.0, 10);
         talon.configClosedloopRamp(0, 10);
+        //set minimum and maximum voltage output for talons
+        talon.configNominalOutputForward(1.0/12.0, 10);
         return talon;
     }
 
@@ -82,6 +87,11 @@ public class TalonUtil{
         //no ramping on default
         talon.configOpenloopRamp(0, 10);
         talon.configClosedloopRamp(0, 10);
+        //set minimum and maximum voltage output for talons
+        talon.configNominalOutputForward(1.0/12.0, 10);
+        talon.configNominalOutputReverse(-1.0/12.0, 10);
+        talon.configPeakOutputForward(1.0, 10);
+        talon.configPeakOutputReverse(-1.0, 10);
         return talon;
     }
 

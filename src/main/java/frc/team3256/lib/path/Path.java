@@ -1,8 +1,6 @@
 package frc.team3256.lib.path;
 
-import frc.team3256.lib.math.RigidTransform;
 import frc.team3256.lib.math.Translation;
-
 import java.util.ArrayList;
 
 public class Path {
@@ -26,6 +24,12 @@ public class Path {
         double distanceToPath;
         //current segment
         Segment currSegment;
+        //closest point
+        Translation closestPoint;
+    }
+
+    public void removeSegment() {
+        segments.remove(0);
     }
 
     public PathUpdate update(Translation robotCoordinates){
@@ -33,6 +37,7 @@ public class Path {
         Segment currSegment = segments.get(0);
         Translation closestPoint = currSegment.getClosestPointOnSegment(robotCoordinates);
         Translation robotToClosestPoint = new Translation(robotCoordinates, closestPoint);
+
 
 
         rv.distanceToPath = robotToClosestPoint.norm();
@@ -44,12 +49,9 @@ public class Path {
 
         rv.remainingDistance -= currSegment.getCurrDistanceTraveled(closestPoint);
 
-        if(closestPoint.equals(currSegment.getEndPoint())) {
-            segments.remove(0);
-            //System.out.println("deleted path");
-        }
-
         rv.currSegment = currSegment;
+
+        rv.closestPoint = closestPoint;
 
         return rv;
     }

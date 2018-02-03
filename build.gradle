@@ -17,6 +17,7 @@ sourceSets {
 wpi{
     ctreVersion = "5.2.1.1"
     wpilibVersion = "2018.2.1"
+    cscoreVersion = "1.1.0"
 }
 
 def TEAM = 3256

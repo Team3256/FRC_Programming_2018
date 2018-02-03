@@ -18,15 +18,21 @@ public class TurnInPlaceAction implements Action {
 
     @Override
     public void update() {
+
     }
 
     @Override
     public void done() {
         drive.setOpenLoop(0,0);
+        drive.setStartAngle(drive.getAngle().degrees());
+        drive.setOffsets(drive.getLeftDistance(), drive.getRightDistance());
+        System.out.println("DONE: " + drive.getAngle().degrees());
     }
 
     @Override
     public void start() {
+        drive.setStartAngle(drive.getAngle().degrees());
+        drive.setOffsets(drive.getLeftDistance(), drive.getRightDistance());
         drive.setTurnInPlaceSetpoint(degrees);
     }
 }

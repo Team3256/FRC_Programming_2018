@@ -10,25 +10,22 @@ public class Arc extends Segment{
     private double radius;
     private Rotation angle;
 
-    /**
-     * @param startX X-Coordinate of the starting position
-     * @param startY Y-Coordinate of the starting position
-     * @param endX X-Coordinate of the ending position
-     * @param endY Y-Coordinate of the ending position
-     * @param centerX X-Coordinate of the circle
-     * @param centerY X-Coordinate of the circle
-     */
-    public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY){
+    public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY, double goalVel, double maxAccel, double maxVel){
         type = Type.ARC;
         start = new Translation(startX, startY);
         end = new Translation(endX, endY);
         center = new Translation(centerX, centerY);
         centerToStart = new Translation(center, start);
         centerToEnd = new Translation(center, end);
-        angle = centerToEnd.getAngle(centerToStart);
+        angle = centerToStart.getAngle(centerToEnd);
+
+        this.goalVel = goalVel;
+        this.maxAccel = maxAccel;
+        this.maxVel = maxVel;
+
         //This should not be possible. We are using constant-curvature arcs.
         //If this ever occurs, then one (or more) of the parameters were passed in incorrectly
-        if (centerToStart.norm() != centerToEnd.norm()){
+        if (Math.abs(centerToStart.norm() - centerToEnd.norm()) > 10E-9){
 
             System.out.println("ERROR: THIS ARC IS NOT CONSTANT_CURVATURE");
             System.out.println("START: " + start);
@@ -38,6 +35,11 @@ public class Arc extends Segment{
             radius = Double.NaN;
         }
         else radius = centerToStart.norm();
+    }
+
+
+    public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY){
+        this(startX, startY, endX, endY, centerX, centerY, 0.0, 0.0, 0.0);
     }
 
     @Override
@@ -104,8 +106,8 @@ public class Arc extends Segment{
 
     @Override
     public Translation getDirection(Translation lookaheadPoint) {
-        Translation lookaheadToCenter = new Translation(lookaheadPoint, center);
-        return (lookaheadToCenter.inverse().scale(1/lookaheadToCenter.norm()));
+        Translation lookaheadToTarget = new Translation(center, lookaheadPoint).rotate(Rotation.fromDegrees(90));
+        return (lookaheadToTarget.scale(1/lookaheadToTarget.norm()));
     }
 
     /*public static void main(String args[]) {
@@ -140,5 +142,10 @@ public class Arc extends Segment{
     @Override
     public double getRemainingDistance(Translation closestPoint) {
         return getLength() - getCurrDistanceTraveled(closestPoint);
+    }
+
+    @Override
+    public double runVelocity(Translation closestPoint, double currVel) {
+        return 0.0;
     }
 }

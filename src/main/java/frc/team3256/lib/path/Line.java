@@ -1,23 +1,24 @@
 package frc.team3256.lib.path;
 
-import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Translation;
+import frc.team3256.robot.Constants;
 
 public class Line extends Segment{
 
     private Translation slope;
 
-    /**
-     * @param startX X-Coordinate of the starting position
-     * @param startY Y-Coordinate of the starting position
-     * @param endX X-Coordinate of the ending position
-     * @param endY Y-Coordinate of the ending position
-     */
-    public Line(double startX, double startY, double endX, double endY){
+    public Line(double startX, double startY, double endX, double endY, double goalVel, double maxAccel, double maxVel){
         type = Type.LINE;
         start = new Translation(startX, startY);
         end = new Translation(endX, endY);
         slope = new Translation(start, end);
+        this.goalVel = goalVel;
+        this.maxAccel = maxAccel;
+        this.maxVel = maxVel;
+    }
+
+    public Line(double startX, double startY, double endX, double endY){
+        this(startX, startY, endX, endY, 0.0, 0.0, 0.0);
     }
 
     /**
@@ -121,5 +122,17 @@ public class Line extends Segment{
     @Override
     public double getRemainingDistance(Translation closestPoint){
         return getLength() - getCurrDistanceTraveled(closestPoint);
+    }
+
+    @Override
+    public double runVelocity(Translation closestPoint, double currVel) {
+        double remainingDistance = getRemainingDistance(closestPoint);
+        double calculatedAccel = (Math.pow(goalVel, 2.0)-Math.pow(currVel, 2.0))/(2.0*remainingDistance);
+        double runAccel = Math.min(calculatedAccel, maxAccel);
+
+        double nextVel = currVel + (runAccel * Constants.kControlLoopPeriod);
+        double runVel = Math.min(nextVel, maxVel);
+
+        return runVel;
     }
 }

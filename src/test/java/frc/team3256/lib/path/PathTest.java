@@ -24,23 +24,20 @@ public class PathTest {
             assertEquals(pathUpdate.remainingDistance, .5 * Math.PI * 5 + 10 - y, kEpsilon);
         }
 
+        p.removeSegment();
+
         for (int deg = 0; deg <= 90; deg++) {
-            double x = 1.0 - Math.cos(Math.toRadians(deg));
+            double x = Math.cos(Math.toRadians(deg));
             double y = Math.sin(Math.toRadians(deg));
-            Path.PathUpdate pathUpdate = p.update(new Translation(3.0*x+2.0, 10.0+3.0*y));
+            Path.PathUpdate pathUpdate = p.update(new Translation(5.0-3.0*x, 10.0+3.0*y));
             assertEquals(pathUpdate.distanceToPath, 2.0, kEpsilon);
             double lookaheadPointX = (1.0 - Math.cos(Math.toRadians(deg)+2.0/5.0));
             double lookaheadPointY = (Math.sin(Math.toRadians(deg)+2.0/5.0));
 
-            //System.out.println(3.0*x+2.0 + "  " + (10.0+3.0*y));
-            //System.out.println(lookaheadPointX*5.0 + "   "+pathUpdate.lookaheadPoint.x());
-            //System.out.println(lookaheadPointY*5.0+10.0 + "   "+pathUpdate.lookaheadPoint.y());
-
-            assertEquals(pathUpdate.remainingDistance, ((90-deg)*Math.PI/180.0)*5.0, kEpsilon);
+            assertEquals(pathUpdate.remainingDistance, ((90.0-deg)*Math.PI/180.0)*5.0, kEpsilon);
 
             assertEquals(pathUpdate.lookaheadPoint.x(), lookaheadPointX*5.0, kEpsilon);
             assertEquals(pathUpdate.lookaheadPoint.y(), 10.0+5.0*lookaheadPointY, kEpsilon);
         }
-
     }
 }

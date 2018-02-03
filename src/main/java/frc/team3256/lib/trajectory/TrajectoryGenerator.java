@@ -7,10 +7,6 @@ public class TrajectoryGenerator {
 
     public double accelDistance, decelDistance, cruiseDistance;
 
-    public TrajectoryGenerator() {
-        this(12, 12, 0.005);
-    }
-
     public TrajectoryGenerator(double acc, double maxVel, double dt){
         this.acc = acc;
         this.maxVel = maxVel;

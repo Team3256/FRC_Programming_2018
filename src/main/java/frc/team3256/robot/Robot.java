@@ -1,13 +1,21 @@
 package frc.team3256.robot;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Looper;
 import frc.team3256.lib.control.TeleopDriveController;
 import frc.team3256.lib.hardware.ADXRS453_Calibrator;
+import frc.team3256.robot.auto.AutoModeBase;
+import frc.team3256.robot.auto.AutoModeChooser;
 import frc.team3256.robot.auto.AutoModeExecuter;
+import frc.team3256.robot.auto.modes.DoNothingAuto;
 import frc.team3256.robot.auto.modes.TestDriveToDistanceAuto;
 import frc.team3256.robot.auto.modes.TestTrajectoryAuto;
+import frc.team3256.robot.auto.modes.TestTurnInPlaceAuto;
 import frc.team3256.robot.operation.ControlsInterface;
 import frc.team3256.robot.operation.DualLogitechConfig;
 import frc.team3256.robot.subsystems.DriveTrain;
@@ -23,6 +31,9 @@ public class Robot extends IterativeRobot {
     ADXRS453_Calibrator gyroCalibrator;
     ControlsInterface controlsInterface;
     AutoModeExecuter autoModeExecuter;
+    AutoModeChooser autoModeChooser;
+
+    UsbCamera camera;
 
     @Override
     public void robotInit() {
@@ -40,8 +51,19 @@ public class Robot extends IterativeRobot {
         subsystemManager = new SubsystemManager();
         subsystemManager.addSubsystems(driveTrain);
 
+        camera = CameraServer.getInstance().startAutomaticCapture();
+        System.out.println(camera.isConnected());
+        //UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();
+        //System.out.println(camera2.isConnected());
         //Dual Logitech Config
         controlsInterface = new DualLogitechConfig();
+
+        autoModeChooser = new AutoModeChooser();
+        autoModeChooser.addAutoModes(new TestDriveToDistanceAuto(), new TestTurnInPlaceAuto(), new TestTrajectoryAuto());
+        autoModeChooser.addAutoModes(new DoNothingAuto());
+
+        NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
+        NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
     }
 
     @Override
@@ -58,7 +80,10 @@ public class Robot extends IterativeRobot {
 
         autoModeExecuter = new AutoModeExecuter();
         //autoModeExecuter.setAutoMode(new TestDriveToDistanceAuto());
-        autoModeExecuter.setAutoMode(new TestTrajectoryAuto());
+        //autoModeExecuter.setAutoMode(new TestTrajectoryAuto());
+        AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
+        autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
+        autoModeExecuter.setAutoMode(autoMode);
         autoModeExecuter.start();
     }
 
@@ -75,11 +100,12 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledPeriodic() {
+        System.out.println(camera.isConnected());
     }
 
     @Override
     public void autonomousPeriodic() {
-
+       // System.out.println("GYRO: " + driveTrain.getAngle());
     }
 
     @Override
@@ -89,6 +115,8 @@ public class Robot extends IterativeRobot {
         boolean quickTurn = controlsInterface.getQuickTurn();
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
         driveTrain.setOpenLoop(power);
+
+        System.out.println("LEFT ENCODER: " + driveTrain.getLeftVelocity() + "RIGHT ENCODER: " + driveTrain.getRightVelocity());
     }
 
     @Override

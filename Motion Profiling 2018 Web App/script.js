@@ -11,9 +11,9 @@ var pointRadius = 5; //in pixels
 var kEpsilon = 1E-9; 
 var image;
 var imageFlipped;
-var points = [];
+var waypoints = [];
 var isFlipped = false;
-var startXY = [0, 0];
+var startXY = [64, 16];
 var startX;
 var startY;
 
@@ -99,7 +99,7 @@ class WayPoint {
     }
 
     /*toString() {
-    		return "sWaypoints.add(new Waypoint("+this.position.x+","+this.position.y+","+this.radius+","+this.velocity+"));";
+    		return "sWaywaypoints.add(new Waypoint("+this.position.x+","+this.position.y+","+this.radius+","+this.velocity+"));";
     	}*/
 }
 
@@ -178,7 +178,7 @@ class Arc {
             }
         }
 
-        static fromPoints(a, b, c) {
+        static fromwaypoints(a, b, c) {
             return new Arc( new Line(a, b), new Line(b, c));
         }
 }
@@ -187,11 +187,11 @@ function deletePoint(index) {
     $('tr')[index].remove();
 }
 
-function addPoint() {
-    prevPoint = points[points.length-1].position;
+function addPoint(cx, cy) {
+    prevPoint = waypoints[waypoints.length-1].position;
 	$('tbody').append('<tr>'
-		+'<td class="hoverable"><input class="x number_cell" value="'+(parseInt(prevPoint.x)+5)+'"></td>'
-		+'<td class="hoverable"><input class="y number_cell" value="'+(parseInt(prevPoint.y)+5)+'"></td>'
+		+'<td class="hoverable"><input class="x number_cell" value="'+(cx)+'"></td>'
+		+'<td class="hoverable"><input class="y number_cell" value="'+(cy)+'"></td>'
 		+'<td class="hoverable"><input class="vel number_cell" value="10"></td>'
 		+'<td class="hoverable"><input class="radius number_cell" value="0"></td>'
 		+'<td class="hoverable"><input class="desc" placeholder="Description"></td>'
@@ -214,9 +214,9 @@ function invertField() {
 
 function centerStart() {
     if(isFlipped){
-        startXY = [64, 16]
+        startXY = [64.0, 16.0]
     }else {
-        startXY = [10, 14];
+        startXY = [10.0, 14.0];
     }
     startX = startXY[0];
     startY = startXY[1];
@@ -225,9 +225,9 @@ function centerStart() {
 
 function leftStart() {
     if(isFlipped){
-        startXY = [64, 6]
+        startXY = [64.0, 6.0]
     }else {
-        startXY = [10, 24];
+        startXY = [10.0, 24.0];
     }
     startX = startXY[0];
     startY = startXY[1];
@@ -236,9 +236,9 @@ function leftStart() {
 
 function rightStart() {
     if(isFlipped){
-        startXY = [64, 24]
+        startXY = [64.0, 24.0]
     }else {
-        startXY = [10, 6];
+        startXY = [10.0, 6.0];
     }
     startX = startXY[0];
     startY = startXY[1];
@@ -246,7 +246,7 @@ function rightStart() {
 }
 
 function updateStartPoint() {
-    points.push(new WayPoint(startX, startY, 0, 0, ""));
+    waypoints.push(new WayPoint(startX, startY, 0, 0, ""));
     $($('tbody').children('tr')[0]).find('.x').val(startX);
     $($('tbody').children('tr')[0]).find('.y').val(startY);
     update();
@@ -263,7 +263,8 @@ function fitSizeToText(input) {
 }
 
 function addEventListeners() {
-    row = $($('tbody').children('tr')[points.length]);
+
+    row = $($('tbody').children('tr')[waypoints.length]);
 
     row.find('td').keyup(function() {
         update();
@@ -293,7 +294,7 @@ function addEventListeners() {
 function update() {
     ctx.clearRect(0, 0, width, height);
     ctx.drawImage(image, 0, 0, width, height);
-    points = [];
+    waypoints = [];
     $('tbody').children('tr').each(function() {
         var row = $(this);
         var x = $(row.find('.x')).val();
@@ -301,20 +302,26 @@ function update() {
         var vel = $(row.find('.vel')).val();
         var desc = $(row.find('.desc')).val();
         var radius = $(row.find('.radius')).val();
-        points.push(new WayPoint(x, y, vel, radius, desc));
+        waypoints.push(new WayPoint(x, y, vel, radius, desc));
     })
-    for (var point in points) {
-        points[point].position.draw();
+    for (var point in waypoints) {
+        waypoints[point].position.draw();
         if (point > 0) {
-            if(radius == 0){
-            var line = new Line(points[point-1], points[point]);
-            line.draw();
+            if(waypoints[point].position.radius == 0){
+                var line = new Line(waypoints[point-1], waypoints[point]);
+                line.draw();
             } else {
             
             }
         }
     }
 }
+
+function onDown(event){
+        cx = Math.round((event.offsetX/ftToPixelsScale)*10)/10;
+        cy = Math.round((30-event.offsetY/ftToPixelsScale)*10)/10;
+        addPoint(cx, cy);
+    }
 
 function init() {
 	$('#field').css("width", width);
@@ -327,6 +334,9 @@ function init() {
     image.src = 'PowerUpField.PNG';
     image.onload = function(){
         ctx.drawImage(image, 0, 0, width, height);
+        var field = document.getElementById('field');
+        var context = field.getContext('2d');
+        field.addEventListener('mousedown',onDown,false);
         update();
     }
 	addEventListeners();

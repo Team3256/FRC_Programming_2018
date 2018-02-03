@@ -12,6 +12,10 @@ var kEpsilon = 1E-9;
 var image;
 var imageFlipped;
 var points = [];
+var isFlipped = false;
+var startXY = [0, 0];
+var startX;
+var startY;
 
 class Point {
 	constructor(x, y) {
@@ -195,6 +199,56 @@ function addPoint() {
 		+'</tr>'
 		);
 	addEventListeners();
+    update();
+}
+function invertField() {
+    if (!isFlipped) {
+        $('#field').addClass('invert_field');
+        isFlipped = true;
+    }
+    else{
+        $('#field').removeClass('invert_field');
+        isFlipped = false;
+    }
+}
+
+function centerStart() {
+    if(isFlipped){
+        startXY = [64, 16]
+    }else {
+        startXY = [10, 14];
+    }
+    startX = startXY[0];
+    startY = startXY[1];
+    updateStartPoint();
+}
+
+function leftStart() {
+    if(isFlipped){
+        startXY = [64, 6]
+    }else {
+        startXY = [10, 24];
+    }
+    startX = startXY[0];
+    startY = startXY[1];
+    updateStartPoint();
+}
+
+function rightStart() {
+    if(isFlipped){
+        startXY = [64, 24]
+    }else {
+        startXY = [10, 6];
+    }
+    startX = startXY[0];
+    startY = startXY[1];
+    updateStartPoint();
+}
+
+function updateStartPoint() {
+    points.push(new WayPoint(startX, startY, 0, 0, ""));
+    $($('tbody').children('tr')[0]).find('.x').val(startX);
+    $($('tbody').children('tr')[0]).find('.y').val(startY);
     update();
 }
 

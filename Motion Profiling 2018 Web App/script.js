@@ -120,9 +120,11 @@ class WayPoint {
 
 class Line {
     constructor(pointA, pointB) {
+        this.pointA = pointA;
+        this.pointB = pointB;
+        this.slope = Point.diff(pointA.position, pointB.position);
         this.start = pointA.position;
 		this.end = pointB.position;
-		this.slope = Point.diff(pointA.position, pointB.position);
     }
 
     draw() {
@@ -131,7 +133,7 @@ class Line {
         ctx.moveTo(this.start.getX(), this.start.getY());
         ctx.lineTo(this.end.getX(), this.end.getY());
         ctx.strokeStyle = color;
-		ctx.lineWidth = 2;
+		ctx.lineWidth = 5;
         ctx.stroke();
     }
 
@@ -153,7 +155,7 @@ class Arc {
             this.lineA = lineA;
             this.lineB = lineB;
             this.center = Line.intersect(lineA.end, lineA.end.translate(lineA.slope.perp()), lineB.start, lineB.start.translate(lineB.slope.perp()));
-            //this.center.draw;
+            this.center.draw;
             this.radius = Point.diff(lineA.end, this.center).norm();
         }
 
@@ -292,12 +294,10 @@ function update() {
     for (var point in waypoints) {
         waypoints[point].position.draw();
         if (point > 0) {
-            if(waypoints[point].position.radius == 0){
-                var line = new Line(waypoints[point-1], waypoints[point]);
-                line.draw();
-            } else {
-            
-            }
+            var line = new Line(waypoints[point], waypoints[point - 1]);
+            line.draw();
+            //var arc = new Arc (fromwaypoints(waypoints[point], waypoints[point - 1], waypoints[point - 2]));
+            //arc.draw();
         }
     }
 }

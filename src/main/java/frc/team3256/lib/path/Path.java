@@ -1,13 +1,11 @@
 package frc.team3256.lib.path;
 
-import frc.team3256.lib.math.RigidTransform;
 import frc.team3256.lib.math.Translation;
-
 import java.util.ArrayList;
 
 public class Path {
 
-    public ArrayList<Segment> segments;
+    private ArrayList<Segment> segments;
 
     public Path(){
         segments = new ArrayList<>();
@@ -50,7 +48,6 @@ public class Path {
         }
 
         rv.remainingDistance -= currSegment.getCurrDistanceTraveled(closestPoint);
-
 
         rv.currSegment = currSegment;
 

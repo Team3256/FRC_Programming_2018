@@ -42,9 +42,9 @@ public class PurePursuitTracker {
         Translation lookaheadPointToRobot = new Translation(lookaheadPoint, robotCoordinates);
         Rotation angleDifference = Rotation.fromRadians(lookaheadPointToCenter.getAngle(lookaheadPointToRobot).radians()*direction*-1);
         Translation robotToCenter = lookaheadPointToRobot.inverse().rotate(angleDifference.inverse()).scale(.5);
+
         RigidTransform lookaheadPointToCenterTransform = new RigidTransform(lookaheadPoint, lookaheadPointToCenter.direction());
         RigidTransform robotToCenterTransform = new RigidTransform(robotCoordinates, robotToCenter.direction());
-
 
         Translation center = lookaheadPointToCenterTransform.intersection(robotToCenterTransform);
 
@@ -52,11 +52,32 @@ public class PurePursuitTracker {
             center = robotCoordinates.translate(robotToCenter);
         }
 
+        if (robotToCenter.norm() < .001) { //allowed error from path
+            // generate a line to some point
+        }
 
         Arc robotToLookaheadPointArc = new Arc(robotCoordinates.x(), robotCoordinates.y(), lookaheadPoint.x(), lookaheadPoint.y(), center.x(), center.y());
 
-
         return robotToLookaheadPointArc;
+    }
+
+    public Command update(Translation robotCoordinates, double currVel) {
+        Path.PathUpdate pathUpdate = path.update(robotCoordinates);
+        Translation lookaheadPoint = pathUpdate.lookaheadPoint;
+        Segment s = pathUpdate.currSegment;
+        Arc arc = getArcToSegment(s, lookaheadPoint, robotCoordinates);
+        double vel = s.runVelocity(pathUpdate.closestPoint, currVel);
+
+        if(isFinished()) {
+            //return new Command(new Twist(0, 0, 0));
+        }
+        if(pathUpdate.remainingDistance < arc.getLength()) {
+            reachedEnd = true;
+            path.removeSegment();
+            System.out.println("END REACHED");
+        }
+
+        return new Command(new Twist(0, arc.getLength(), -arc.getAngle().radians()), vel);
     }
 
     public Command update(Translation lookaheadPoint, Translation robotCoordinates, double currVel) {

@@ -46,7 +46,7 @@ public class PathGenerator {
         private void addToPath(Path path){
             double len = new Translation(start, end).norm();
             if (len > 1E-9){
-                path.addSegment(new Line(start.x(), start.y(), end.x(), end.y(), vel, 2.0));
+                path.addSegment(new Line(start.x(), start.y(), end.x(), end.y(), vel, 2.0, 250));
             }
         }
     }

@@ -1,6 +1,5 @@
 package frc.team3256.lib.path;
 
-import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Translation;
 import frc.team3256.robot.Constants;
 
@@ -8,17 +7,18 @@ public class Line extends Segment{
 
     private Translation slope;
 
-    public Line(double startX, double startY, double endX, double endY, double goalVel, double accel){
+    public Line(double startX, double startY, double endX, double endY, double goalVel, double maxAccel, double maxVel){
         type = Type.LINE;
         start = new Translation(startX, startY);
         end = new Translation(endX, endY);
         slope = new Translation(start, end);
         this.goalVel = goalVel;
-        this.accel = accel;
+        this.maxAccel = maxAccel;
+        this.maxVel = maxVel;
     }
 
     public Line(double startX, double startY, double endX, double endY){
-        this(startX, startY, endX, endY, 0.0, 0.0);
+        this(startX, startY, endX, endY, 0.0, 0.0, 0.0);
     }
 
     /**
@@ -128,17 +128,11 @@ public class Line extends Segment{
     public double runVelocity(Translation closestPoint, double currVel) {
         double remainingDistance = getRemainingDistance(closestPoint);
         double calculatedAccel = (Math.pow(goalVel, 2.0)-Math.pow(currVel, 2.0))/(2.0*remainingDistance);
-        double runAccel = Math.min(calculatedAccel, accel);
-        //System.out.println("calculated accel: "+calculatedAccel);
-        if (runAccel == calculatedAccel) {
-            //System.out.println("runs calculated: " + runAccel);
-        } else {
-            //System.out.println("runs max possible: " + runAccel);
-        }
+        double runAccel = Math.min(calculatedAccel, maxAccel);
+
         double nextVel = currVel + (runAccel * Constants.kControlLoopPeriod);
-        double runVel = Math.min(nextVel, 10000.0000);      //robot maximum velocity
-        //System.out.println("currVel: "+currVel);
-        //System.out.println("runVel: "+runVel);
+        double runVel = Math.min(nextVel, maxVel);
+
         return runVel;
     }
 }

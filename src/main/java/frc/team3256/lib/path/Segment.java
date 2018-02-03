@@ -10,7 +10,8 @@ public abstract class Segment {
     protected Translation start = null;
     protected Translation end = null;
     protected double goalVel = 0;
-    protected double accel = 0;
+    protected double maxAccel = 0;
+    protected double maxVel = 0;
 
     //Type of segment: is this an arc or a line?
     public enum Type{

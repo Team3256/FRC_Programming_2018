@@ -10,7 +10,7 @@ public class Arc extends Segment{
     private double radius;
     private Rotation angle;
 
-    public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY, double goalVel, double accel){
+    public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY, double goalVel, double maxAccel, double maxVel){
         type = Type.ARC;
         start = new Translation(startX, startY);
         end = new Translation(endX, endY);
@@ -20,7 +20,8 @@ public class Arc extends Segment{
         angle = centerToStart.getAngle(centerToEnd);
 
         this.goalVel = goalVel;
-        this.accel = accel;
+        this.maxAccel = maxAccel;
+        this.maxVel = maxVel;
 
         //This should not be possible. We are using constant-curvature arcs.
         //If this ever occurs, then one (or more) of the parameters were passed in incorrectly
@@ -38,7 +39,7 @@ public class Arc extends Segment{
 
 
     public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY){
-        this(startX, startY, endX, endY, centerX, centerY, 0.0, 0.0);
+        this(startX, startY, endX, endY, centerX, centerY, 0.0, 0.0, 0.0);
     }
 
     @Override

@@ -124,7 +124,7 @@ class Line {
         this.pointB = pointB;
         this.slope = Translation.diff(pointA.position, pointB.position);
         this.start = pointA.position;
-		this.end = pointB.position;
+        this.end = pointB.position;
     }
 
     draw() {

@@ -145,7 +145,6 @@ class Line {
 }
 
 class Arc {
-
         constructor (lineA, lineB) {
             this.lineA = lineA;
             this.lineB = lineB;

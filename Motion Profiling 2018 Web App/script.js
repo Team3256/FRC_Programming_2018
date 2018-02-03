@@ -123,11 +123,18 @@ class Line {
         this.pointA = pointA;
         this.pointB = pointB;
         this.slope = Translation.diff(pointA.position, pointB.position);
-        this.start = pointA.position;
-		this.end = pointB.position;
+
+        var scaledA=this.slope.scale( pointA.radius/this.slope.norm() );
+        var scaledB=this.slope.scale( pointB.radius/this.slope.norm()).invert();
+
+        this.start = pointA.position.translate(scaledA);
+        this.end = pointB.position.translate(scaledB);
+
     }
 
     draw() {
+        console.log(this.start.getX()+"  "+this.start.getY());
+        console.log(this.end.getX()+"  "+this.end.getY());
 		var color = "#2dc65b";
         ctx.beginPath();
         ctx.moveTo(this.start.getX(), this.start.getY());
@@ -277,21 +284,21 @@ function update() {
     ctx.clearRect(0, 0, width, height);
     if(isFlipped) {
         ctx.drawImage(imageFlipped, 0, 0, width, height);
-
     } else {
         ctx.drawImage(image, 0, 0, width, height);
     }
     waypoints = [];
     $('tbody').children('tr').each(function() {
         var row = $(this);
-        var x = $(row.find('.x')).val();
-        var y = $(row.find('.y')).val();
-        var vel = $(row.find('.vel')).val();
+        var x = parseInt($(row.find('.x')).val());
+        var y = parseInt($(row.find('.y')).val());
+        var vel = parseInt($(row.find('.vel')).val());
         var desc = $(row.find('.desc')).val();
-        var radius = $(row.find('.radius')).val();
+        var radius = parseInt($(row.find('.radius')).val());
         waypoints.push(new WayPoint(x, y, vel, radius, desc));
     })
     for (var point in waypoints) {
+        console.log(typeof point.x);
         waypoints[point].position.draw();
         if (point > 0) {
             var line = new Line(waypoints[point], waypoints[point - 1]);

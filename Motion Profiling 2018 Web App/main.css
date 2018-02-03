@@ -36,6 +36,10 @@ button {
     margin-left: 5px;
 }
 
+.invert_field {
+    transform: rotate(180deg);
+}
+
 .button_container {
     margin: 10px;
     margin-left: 200px;
@@ -68,7 +72,7 @@ th {
 }
 
 .number_cell, .number_cell:focus {
-    width: 25%;
+    width: 40%;
 }
 
 input, input:focus, span {

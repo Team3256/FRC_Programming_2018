@@ -35,30 +35,30 @@ function chooseStart(position) {
 }
 
 
-class Point {
+class Translation {
 	constructor(x, y) {
 		this.x = x;
 		this.y = y;
 	}
 
 	norm() {
-		return Math.sqrt(Point.dot(this, this));
+		return Math.sqrt(Translation.dot(this, this));
 	}
 
 	scale(s) {
-		return new Point(this.x * s, this.y * s);
+		return new Translation(this.x * s, this.y * s);
 	}
 
 	translate(t) {
-		return new Point(this.x + t.x, this.y + t.y);
+		return new Translation(this.x + t.x, this.y + t.y);
 	}
 
 	invert() {
-		return new Point(-this.x, -this.y);
+		return new Translation(-this.x, -this.y);
 	}
 
 	perp() {
-		return new Point(-this.y, this.x);
+		return new Translation(-this.y, this.x);
 	}
 
     getX() {
@@ -85,7 +85,7 @@ class Point {
 	}
 
 	static diff(a, b) {
-		return new Point(b.x - a.x, b.y - a.y);
+		return new Translation(b.x - a.x, b.y - a.y);
 	}
 
 	static cross(a, b) {
@@ -97,13 +97,13 @@ class Point {
 	}
 
 	static angle(a, b) {
-		return Math.acos(Point.dot(a,b) / (a.norm() * b.norm()));
+		return Math.acos(Translation.dot(a,b) / (a.norm() * b.norm()));
 	}
 }
 
 class WayPoint {
     constructor(x, y, vel, radius, desc) {
-        this.position = new Point(x, y);
+        this.position = new Translation(x, y);
         this.vel = vel;
         this.radius = radius;
         this.desc = desc;
@@ -122,7 +122,7 @@ class Line {
     constructor(pointA, pointB) {
         this.pointA = pointA;
         this.pointB = pointB;
-        this.slope = Point.diff(pointA.position, pointB.position);
+        this.slope = Translation.diff(pointA.position, pointB.position);
         this.start = pointA.position;
 		this.end = pointB.position;
     }
@@ -146,7 +146,7 @@ class Line {
         var y_intC = -slopeC(c.x) + c.y;
         var x = (y-intC - y-intA)/(slopeA - slopeC);
         var y = (slopeA * x) - y-intA;
-        return new Point(x,y);
+        return new Translation(x,y);
     }
 }
 
@@ -156,15 +156,15 @@ class Arc {
             this.lineB = lineB;
             this.center = Line.intersect(lineA.end, lineA.end.translate(lineA.slope.perp()), lineB.start, lineB.start.translate(lineB.slope.perp()));
             this.center.draw;
-            this.radius = Point.diff(lineA.end, this.center).norm();
+            this.radius = Translation.diff(lineA.end, this.center).norm();
         }
 
         draw() {
-            var sTrans = Point.diff(this.center, this.lineA.end);
-            var eTrans = Point.diff(this.center, this.lineB.start);
+            var sTrans = Translation.diff(this.center, this.lineA.end);
+            var eTrans = Translation.diff(this.center, this.lineB.start);
             var sAngle, eAngle;
 
-            if(Point.cross(sTrans, eTrans) > 0) {
+            if(Translation.cross(sTrans, eTrans) > 0) {
             	eAngle = -Math.atan2(sTrans.y, sTrans.x);
             	sAngle = -Math.atan2(eTrans.y, eTrans.x);
             } else {
@@ -184,13 +184,13 @@ class Arc {
         fill() {
             this.lineA.fill();
             this.lineB.fill();
-            var sTrans = Point.diff(this.center, this.lineA.end);
-            var eTrans = Point.diff(this.center, this.lineB.start);
-            var sAngle = (Point.cross(sTrans, eTrans) > 0) ? sTrans.angle : eTrans.angle;
-            var angle = Point.angle(sTrans, eTrans);
+            var sTrans = Translation.diff(this.center, this.lineA.end);
+            var eTrans = Translation.diff(this.center, this.lineB.start);
+            var sAngle = (Translation.cross(sTrans, eTrans) > 0) ? sTrans.angle : eTrans.angle;
+            var angle = Translation.angle(sTrans, eTrans);
             var length = angle * this.radius;
             for(var i=0; i<length; i+=this.radius/100) {
-                //drawRotatedRect(this.center.translate(new Point(this.radius*Math.cos(sAngle-i/length*angle),-this.radius*Math.sin(sAngle-i/length*angle))), robotHeight, robotWidth, sAngle-i/length*angle+Math.PI/2, null, pathFillColor, true);
+                //drawRotatedRect(this.center.translate(new Translation(this.radius*Math.cos(sAngle-i/length*angle),-this.radius*Math.sin(sAngle-i/length*angle))), robotHeight, robotWidth, sAngle-i/length*angle+Math.PI/2, null, pathFillColor, true);
             }
         }
 

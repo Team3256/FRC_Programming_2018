@@ -1,5 +1,5 @@
 
-var ctx;
+
 var ftToPixelsScale = 14;
 var fieldWidth = 74; //in feet
 var fieldHeight = 30; //in feet
@@ -8,22 +8,33 @@ var height = fieldHeight * ftToPixelsScale; //in pixels
 var robotWidth = 40/12; //in feet
 var robotHeight = 35/12; //in feet
 var pointRadius = 5; //in pixels
-var kEpsilon = 1E-9; 
+
+var kEpsilon = 1E-9;
+
+var ctx;
 var image;
 var imageFlipped;
+
 var waypoints = [];
+
 var isFlipped = false;
-var startXY = [64, 16];
-var startX;
-var startY;
+var startPositions = {
+    "center": [10, 14],
+    "left": [10, 24],
+    "right": [10, 6],
+}
+var startPos;
+
+function chooseStart(position) {
+    startPos = startPositions[position];
+    updateStartPoint();
+}
+
 
 class Point {
 	constructor(x, y) {
 		this.x = x;
 		this.y = y;
-		/*this.vel = vel;
-		this.radius = radius;
-		this.desc = desc;*/
 	}
 
 	norm() {
@@ -203,49 +214,20 @@ function addPoint(cx, cy) {
 }
 function invertField() {
     if (!isFlipped) {
-        $('#field').addClass('invert_field');
+        ctx.drawImage(imageFlipped, 0, 0, width, height);
         isFlipped = true;
     }
     else{
-        $('#field').removeClass('invert_field');
+        ctx.drawImage(image, 0, 0, width, height);
         isFlipped = false;
     }
 }
 
-function centerStart() {
-    if(isFlipped){
-        startXY = [64.0, 16.0]
-    }else {
-        startXY = [10.0, 14.0];
-    }
-    startX = startXY[0];
-    startY = startXY[1];
-    updateStartPoint();
-}
 
-function leftStart() {
-    if(isFlipped){
-        startXY = [64.0, 6.0]
-    }else {
-        startXY = [10.0, 24.0];
-    }
-    startX = startXY[0];
-    startY = startXY[1];
-    updateStartPoint();
-}
-
-function rightStart() {
-    if(isFlipped){
-        startXY = [64.0, 24.0]
-    }else {
-        startXY = [10.0, 6.0];
-    }
-    startX = startXY[0];
-    startY = startXY[1];
-    updateStartPoint();
-}
 
 function updateStartPoint() {
+    startX = startPos[0];
+    startY = startPos[1];
     waypoints.push(new WayPoint(startX, startY, 0, 0, ""));
     $($('tbody').children('tr')[0]).find('.x').val(startX);
     $($('tbody').children('tr')[0]).find('.y').val(startY);
@@ -293,7 +275,12 @@ function addEventListeners() {
 
 function update() {
     ctx.clearRect(0, 0, width, height);
-    ctx.drawImage(image, 0, 0, width, height);
+    if(isFlipped) {
+        ctx.drawImage(imageFlipped, 0, 0, width, height);
+
+    } else {
+        ctx.drawImage(image, 0, 0, width, height);
+    }
     waypoints = [];
     $('tbody').children('tr').each(function() {
         var row = $(this);
@@ -332,6 +319,8 @@ function init() {
     ctx.fillStyle="#FF0000";
     image = new Image();
     image.src = 'PowerUpField.PNG';
+    imageFlipped = new Image();
+    imageFlipped.src = 'PowerUpFieldReversed.PNG';
     image.onload = function(){
         ctx.drawImage(image, 0, 0, width, height);
         var field = document.getElementById('field');

@@ -1,6 +1,7 @@
 package frc.team3256.robot;
 
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.CameraServer;
@@ -52,6 +53,7 @@ public class Robot extends IterativeRobot {
         subsystemManager.addSubsystems(driveTrain);
 
         camera = CameraServer.getInstance().startAutomaticCapture();
+        camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 640, 360, 30);
         System.out.println(camera.isConnected());
         //UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();
         //System.out.println(camera2.isConnected());

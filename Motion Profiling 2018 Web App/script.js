@@ -1,39 +1,27 @@
-
-
 var ftToPixelsScale = 14;
+
 var fieldWidth = 74; //in feet
 var fieldHeight = 30; //in feet
-var width = fieldWidth * ftToPixelsScale; //in pixels
-var height = fieldHeight * ftToPixelsScale; //in pixels
 var robotWidth = 40/12; //in feet
 var robotHeight = 35/12; //in feet
-var pointRadius = 5; //in pixels
+var width = fieldWidth * ftToPixelsScale; //in pixels
+var height = fieldHeight * ftToPixelsScale; //in pixels
 
-var kEpsilon = 1E-9;
+var pointRadius = 5; //in pixels
 
 var ctx;
 var image;
 var imageFlipped;
-
-var waypoints = [];
-
 var isFlipped = false;
+
 var startPositions = {
     "center": [10, 14],
     "left": [10, 24],
     "right": [10, 6],
 }
 
-function chooseStart(position) {
-    startPos = startPositions[position];
-    startX = startPos[0];
-    startY = startPos[1];
-    waypoints.push(new WayPoint(startX, startY, 0, 0, ""));
-    $($('tbody').children('tr')[0]).find('.x').val(startX);
-    $($('tbody').children('tr')[0]).find('.y').val(startY);
-    update();
-}
-
+var kEpsilon = 1E-9;
+var waypoints = [];
 
 class Translation {
 	constructor(x, y) {
@@ -73,8 +61,8 @@ class Translation {
 		return Math.atan2(-this.y, this.x);
 	}
 
-	draw() {
-		var color = "#f72c1c";
+	draw(color) {
+		var color = color || "#f72c1c";
 		ctx.beginPath();
 		ctx.arc(this.getX(), this.getY(), pointRadius, 0, 2*Math.PI, false);
 		ctx.fillStyle = color;
@@ -101,113 +89,116 @@ class Translation {
 	}
 }
 
-class WayPoint {
+class Waypoint {
     constructor(x, y, vel, radius, desc) {
-        this.position = new Translation(x, y);
+        this.coordinates = new Translation(x, y);
         this.vel = vel;
         this.radius = radius;
         this.desc = desc;
     }
 
     draw() {
-        this.position.draw((this.radius > 0) ? "rgba(120,120,120,0.8)" : null);
+        this.coordinates.draw();
     }
 
+
     /*toString() {
-    		return "sWaywaypoints.add(new Waypoint("+this.position.x+","+this.position.y+","+this.radius+","+this.velocity+"));";
-    	}*/
+        return "sWaywaypoints.add(new Waypoint("+this.coordinates.x+","+this.coordinates.y+","+this.radius+","+this.velocity+"));";
+    }*/
 }
 
 class Line {
     constructor(pointA, pointB) {
         this.pointA = pointA;
         this.pointB = pointB;
-        this.slope = Translation.diff(pointA.position, pointB.position);
+        this.slope = Translation.diff(pointA.coordinates, pointB.coordinates);
 
-        var scaledA=this.slope.scale( pointA.radius/this.slope.norm() );
-        var scaledB=this.slope.scale( pointB.radius/this.slope.norm()).invert();
+        var scaledDiffA=this.slope.scale( pointA.radius/this.slope.norm() );
+        var scaledDiffB=this.slope.scale( pointB.radius/this.slope.norm()).invert();
 
-        this.start = pointA.position.translate(scaledA);
-        this.end = pointB.position.translate(scaledB);
+        this.start = pointA.coordinates.translate(scaledDiffA);
+        this.end = pointB.coordinates.translate(scaledDiffB);
 
     }
 
     draw() {
-        console.log(this.start.getX()+"  "+this.start.getY());
-        console.log(this.end.getX()+"  "+this.end.getY());
 		var color = "#2dc65b";
+        ctx.strokeStyle = color;
         ctx.beginPath();
         ctx.moveTo(this.start.getX(), this.start.getY());
         ctx.lineTo(this.end.getX(), this.end.getY());
-        ctx.strokeStyle = color;
-		ctx.lineWidth = 5;
+		ctx.lineWidth = 2;
         ctx.stroke();
     }
 
     static intersect(a, b, c, d) {
-        lineA = new Line(a, b);
-        lineC = new Line(c, d);
-        var slopeA = lineA.slope;
-        var slopeC = lineC.slope;
-        var y_intA = -slopeA(a.x) + a.y;
-        var y_intC = -slopeC(c.x) + c.y;
-        var x = (y-intC - y-intA)/(slopeA - slopeC);
-        var y = (slopeA * x) - y-intA;
+        var diffA = Translation.diff(a, b);
+        var diffC = Translation.diff(c, d);
+        var slopeA = diffA.y/diffA.x;
+        var slopeC = diffC.y/diffC.x;
+        var y_intA = -slopeA * a.x + a.y;
+        var y_intC = -slopeC * c.x + c.y;
+        var x = (y_intC - y_intA)/(slopeA - slopeC);
+        var y = (slopeA * x) + y_intA;
         return new Translation(x,y);
     }
+
 }
 
 class Arc {
-        constructor (lineA, lineB) {
-            this.lineA = lineA;
-            this.lineB = lineB;
-            this.center = Line.intersect(lineA.end, lineA.end.translate(lineA.slope.perp()), lineB.start, lineB.start.translate(lineB.slope.perp()));
-            this.center.draw;
-            this.radius = Translation.diff(lineA.end, this.center).norm();
+    constructor (lineA, lineB) {
+        this.lineA = lineA;
+        this.lineB = lineB;
+        var perpA = lineA.end.translate(lineA.slope.perp());
+        var perpB = lineB.start.translate(lineB.slope.perp());
+        this.center = Line.intersect(lineA.end, perpA, lineB.start, perpB);
+        this.radius = Translation.diff(lineA.end, this.center).norm();
+    }
+
+    draw() {
+        var sTrans = Translation.diff(this.center, this.lineA.end);
+        var eTrans = Translation.diff(this.center, this.lineB.start);
+        var sAngle, eAngle;
+
+/*      draws the center of arcs
+        if(Translation.diff(this.lineA.end, this.lineB.start).norm() > 0) {
+            this.center.draw("blue");
+        }
+        */
+
+        if(Translation.cross(sTrans, eTrans) > 0) {
+            eAngle = -Math.atan2(sTrans.y, sTrans.x);
+            sAngle = -Math.atan2(eTrans.y, eTrans.x);
+        } else {
+            sAngle = -Math.atan2(sTrans.y, sTrans.x);
+            eAngle = -Math.atan2(eTrans.y, eTrans.x);
         }
 
-        draw() {
-            var sTrans = Translation.diff(this.center, this.lineA.end);
-            var eTrans = Translation.diff(this.center, this.lineB.start);
-            var sAngle, eAngle;
+        ctx.strokeStyle="white";
+        ctx.beginPath();
+        ctx.arc(this.center.getX(), this.center.getY(), this.radius*ftToPixelsScale, sAngle, eAngle);
 
-            if(Translation.cross(sTrans, eTrans) > 0) {
-            	eAngle = -Math.atan2(sTrans.y, sTrans.x);
-            	sAngle = -Math.atan2(eTrans.y, eTrans.x);
-            } else {
-            	sAngle = -Math.atan2(sTrans.y, sTrans.x);
-            	eAngle = -Math.atan2(eTrans.y, eTrans.x);
-            }
+        ctx.stroke();
+    }
 
-            this.lineA.draw;
-            this.lineB.draw;
-            ctx.beginPath;
-            ctx.arc(this.center.drawX,this.center.drawY,this.radius*ftToPixelsScale,sAngle,eAngle);
-            ctx.strokeStyle=getColorForSpeed(this.lineB.pointB.speed);
-            ctx.stroke();
+/*
+    fill() {
+        this.lineA.fill();
+        this.lineB.fill();
+        var sTrans = Translation.diff(this.center, this.lineA.end);
+        var eTrans = Translation.diff(this.center, this.lineB.start);
+        var sAngle = (Translation.cross(sTrans, eTrans) > 0) ? sTrans.angle : eTrans.angle;
+        var angle = Translation.angle(sTrans, eTrans);
+        var length = angle * this.radius;
+        for(var i=0; i<length; i+=this.radius/100) {
+            //drawRotatedRect(this.center.translate(new Translation(this.radius*Math.cos(sAngle-i/length*angle),-this.radius*Math.sin(sAngle-i/length*angle))), robotHeight, robotWidth, sAngle-i/length*angle+Math.PI/2, null, pathFillColor, true);
         }
+    }
+    */
 
-
-        fill() {
-            this.lineA.fill();
-            this.lineB.fill();
-            var sTrans = Translation.diff(this.center, this.lineA.end);
-            var eTrans = Translation.diff(this.center, this.lineB.start);
-            var sAngle = (Translation.cross(sTrans, eTrans) > 0) ? sTrans.angle : eTrans.angle;
-            var angle = Translation.angle(sTrans, eTrans);
-            var length = angle * this.radius;
-            for(var i=0; i<length; i+=this.radius/100) {
-                //drawRotatedRect(this.center.translate(new Translation(this.radius*Math.cos(sAngle-i/length*angle),-this.radius*Math.sin(sAngle-i/length*angle))), robotHeight, robotWidth, sAngle-i/length*angle+Math.PI/2, null, pathFillColor, true);
-            }
-        }
-
-        static fromwaypoints(a, b, c) {
-            return new Arc( new Line(a, b), new Line(b, c));
-        }
-
-        getTurnAngle() {
-            return sAngle - eAngle;
-        }
+    getTurnAngle() {    //?
+        return sAngle - eAngle;
+    }
 }
 
 function deletePoint(index) {
@@ -215,7 +206,7 @@ function deletePoint(index) {
 }
 
 function addPoint(cx, cy) {
-    prevPoint = waypoints[waypoints.length-1].position;
+    prevPoint = waypoints[waypoints.length-1].coordinates;
 	$('tbody').append('<tr>'
 		+'<td class="hoverable"><input class="x number_cell" value="'+(cx)+'"></td>'
 		+'<td class="hoverable"><input class="y number_cell" value="'+(cy)+'"></td>'
@@ -228,6 +219,7 @@ function addPoint(cx, cy) {
 	addEventListeners();
     update();
 }
+
 function invertField() {
     if (!isFlipped) {
         ctx.drawImage(imageFlipped, 0, 0, width, height);
@@ -239,7 +231,6 @@ function invertField() {
     }
     update();
 }
-
 
 function fitSizeToText(input) {
     var maxWidth = input.width() - 2;
@@ -290,21 +281,24 @@ function update() {
     waypoints = [];
     $('tbody').children('tr').each(function() {
         var row = $(this);
-        var x = parseInt($(row.find('.x')).val());
-        var y = parseInt($(row.find('.y')).val());
-        var vel = parseInt($(row.find('.vel')).val());
+        var x = parseFloat($(row.find('.x')).val());
+        var y = parseFloat($(row.find('.y')).val());
+        var vel = parseFloat($(row.find('.vel')).val()) || 0;
         var desc = $(row.find('.desc')).val();
-        var radius = parseInt($(row.find('.radius')).val());
-        waypoints.push(new WayPoint(x, y, vel, radius, desc));
+        var radius = parseFloat($(row.find('.radius')).val()) || 0;
+        waypoints.push(new Waypoint(x, y, vel, radius, desc));
     })
     for (var point in waypoints) {
-        console.log(typeof point.x);
-        waypoints[point].position.draw();
+        waypoints[point].coordinates.draw();
         if (point > 0) {
             var line = new Line(waypoints[point], waypoints[point - 1]);
             line.draw();
-            //var arc = new Arc (fromwaypoints(waypoints[point], waypoints[point - 1], waypoints[point - 2]));
-            //arc.draw();
+            if (point > 1) {
+                var line1 = new Line(waypoints[point], waypoints[point - 1]);
+                var line2 = new Line(waypoints[point - 1], waypoints[point - 2]);
+                var arc = new Arc(line1, line2);
+                arc.draw();
+            }
         }
     }
 }
@@ -313,6 +307,16 @@ function fieldClicked(event){
     cx = Math.round((event.offsetX/ftToPixelsScale)*10)/10;
     cy = Math.round((30-event.offsetY/ftToPixelsScale)*10)/10;
     addPoint(cx, cy);
+}
+
+function chooseStart(position) {
+    startPos = startPositions[position];
+    startX = startPos[0];
+    startY = startPos[1];
+    waypoints.push(new Waypoint(startX, startY, 0, 0, ""));
+    $($('tbody').children('tr')[0]).find('.x').val(startX);
+    $($('tbody').children('tr')[0]).find('.y').val(startY);
+    update();
 }
 
 function init() {

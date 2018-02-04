@@ -34,7 +34,7 @@ public class Robot extends IterativeRobot {
     AutoModeExecuter autoModeExecuter;
     AutoModeChooser autoModeChooser;
 
-    UsbCamera camera;
+    UsbCamera camera1;
 
     @Override
     public void robotInit() {
@@ -52,11 +52,11 @@ public class Robot extends IterativeRobot {
         subsystemManager = new SubsystemManager();
         subsystemManager.addSubsystems(driveTrain);
 
-        camera = CameraServer.getInstance().startAutomaticCapture();
-        camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 640, 360, 30);
-        System.out.println(camera.isConnected());
-        //UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();
-        //System.out.println(camera2.isConnected());
+        camera1 = CameraServer.getInstance().startAutomaticCapture();
+        camera1.setVideoMode(VideoMode.PixelFormat.kMJPEG, 377, 236, 30);
+        UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();
+        camera2.setVideoMode(VideoMode.PixelFormat.kMJPEG, 377, 236, 30);
+        //System.out.println(camera2.isconnected());
         //Dual Logitech Config
         controlsInterface = new DualLogitechConfig();
 
@@ -102,7 +102,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledPeriodic() {
-        System.out.println(camera.isConnected());
+
     }
 
     @Override

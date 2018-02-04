@@ -29,6 +29,8 @@ function chooseStart(position) {
     startX = startPos[0];
     startY = startPos[1];
     waypoints.push(new WayPoint(startX, startY, 0, 0, ""));
+    deletePoint(1);
+    addPoint(startX,startY);
     $($('tbody').children('tr')[0]).find('.x').val(startX);
     $($('tbody').children('tr')[0]).find('.y').val(startY);
     update();
@@ -127,8 +129,8 @@ class Line {
         var scaledA = this.slope.scale(pointA.radius/this.slope.norm() );
         var scaledB = this.slope.scale(pointB.radius/this.slope.norm()).invert();
 
-        this.start = pointA.position.translate(scaledA);
-        this.end = pointB.position.translate(scaledB);
+        this.start = pointA.position.translate(scaledA); //there is a problem when these are < 0
+        this.end = pointB.position.translate(scaledB); //there is a problem when these are < 0
     }
 
     draw() {

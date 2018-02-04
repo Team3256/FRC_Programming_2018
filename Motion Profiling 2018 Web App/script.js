@@ -7,7 +7,7 @@ var width = fieldWidth * ftToPixelsScale; //in pixels
 var height = fieldHeight * ftToPixelsScale; //in pixels
 var robotWidth = 40/12; //in feet
 var robotHeight = 35/12; //in feet
-var pointRadius = 5; //in pixels
+var pointRadius = 4; //in pixels
 
 var kEpsilon = 1E-9;
 
@@ -33,6 +33,7 @@ function chooseStart(position) {
     addPoint(startX,startY);
     $($('tbody').children('tr')[0]).find('.x').val(startX);
     $($('tbody').children('tr')[0]).find('.y').val(startY);
+    addPoint(startX, startY);
     update();
 }
 
@@ -139,7 +140,7 @@ class Line {
         ctx.moveTo(this.start.getX(), this.start.getY());
         ctx.lineTo(this.end.getX(), this.end.getY());
         ctx.strokeStyle = color;
-		ctx.lineWidth = 5;
+		ctx.lineWidth = 3;
         ctx.stroke();
     }
 
@@ -186,7 +187,6 @@ class Arc {
             ctx.stroke();
         }
 
-
         fill() {
             this.lineA.fill();
             this.lineB.fill();
@@ -196,7 +196,7 @@ class Arc {
             var angle = Translation.angle(sTrans, eTrans);
             var length = angle * this.radius;
             for(var i=0; i<length; i+=this.radius/100) {
-                //drawRotatedRect(this.center.translate(new Translation(this.radius*Math.cos(sAngle-i/length*angle),-this.radius*Math.sin(sAngle-i/length*angle))), robotHeight, robotWidth, sAngle-i/length*angle+Math.PI/2, null, pathFillColor, true);
+                drawRotatedRect(this.center.translate(new Translation(this.radius*Math.cos(sAngle-i/length*angle),-this.radius*Math.sin(sAngle-i/length*angle))), robotHeight, robotWidth, sAngle-i/length*angle+Math.PI/2, null, pathFillColor, true);
             }
         }
 
@@ -302,8 +302,10 @@ function update() {
         if (point > 0) {
            var line = new Line(waypoints[point - 1], waypoints[point]);
            line.draw();
-           //var arc = new Arc (fromwaypoints(waypoints[point], waypoints[point - 1], waypoints[point - 2]));
-           //arc.draw();
+           if(waypoints[point].radius != 0){
+               var arc = new Arc (fromwaypoints(waypoints[point], waypoints[point - 1], waypoints[point - 2]));
+               arc.draw();
+           }
         }
     }
 }

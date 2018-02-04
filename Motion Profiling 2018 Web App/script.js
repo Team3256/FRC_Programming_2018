@@ -6,6 +6,7 @@ var robotWidth = 40/12; //in feet
 var robotHeight = 35/12; //in feet
 var width = fieldWidth * ftToPixelsScale; //in pixels
 var height = fieldHeight * ftToPixelsScale; //in pixels
+var pointRadius = 4; //in pixels
 
 var pointRadius = 5; //in pixels
 
@@ -20,8 +21,24 @@ var startPositions = {
     "right": [10, 6],
 }
 
+
 var kEpsilon = 1E-9;
 var waypoints = [];
+
+function chooseStart(position) {
+    startPos = startPositions[position];
+    startX = startPos[0];
+    startY = startPos[1];
+    waypoints.push(new WayPoint(startX, startY, 0, 0, ""));
+    deletePoint(1);
+    addPoint(startX,startY);
+    $($('tbody').children('tr')[0]).find('.x').val(startX);
+    $($('tbody').children('tr')[0]).find('.y').val(startY);
+    addPoint(startX, startY);
+    update();
+}
+
+
 
 class Translation {
 	constructor(x, y) {
@@ -113,12 +130,12 @@ class Line {
         this.pointB = pointB;
         this.slope = Translation.diff(pointA.coordinates, pointB.coordinates);
 
-        var scaledDiffA=this.slope.scale( pointA.radius/this.slope.norm() );
-        var scaledDiffB=this.slope.scale( pointB.radius/this.slope.norm()).invert();
 
-        this.start = pointA.coordinates.translate(scaledDiffA);
-        this.end = pointB.coordinates.translate(scaledDiffB);
+        var scaledA = this.slope.scale(pointA.radius/this.slope.norm() );
+        var scaledB = this.slope.scale(pointB.radius/this.slope.norm()).invert();
 
+        this.start = pointA.position.translate(scaledA);
+        this.end = pointB.position.translate(scaledB);
     }
 
     draw() {
@@ -127,7 +144,10 @@ class Line {
         ctx.beginPath();
         ctx.moveTo(this.start.getX(), this.start.getY());
         ctx.lineTo(this.end.getX(), this.end.getY());
-		ctx.lineWidth = 2;
+
+        ctx.strokeStyle = color;
+		ctx.lineWidth = 3;
+
         ctx.stroke();
     }
 
@@ -180,7 +200,6 @@ class Arc {
 
         ctx.stroke();
     }
-
 /*
     fill() {
         this.lineA.fill();

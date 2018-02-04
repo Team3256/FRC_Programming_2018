@@ -134,8 +134,8 @@ class Line {
         var scaledA = this.slope.scale(pointA.radius/this.slope.norm() );
         var scaledB = this.slope.scale(pointB.radius/this.slope.norm()).invert();
 
-        this.start = pointA.position.translate(scaledA);
-        this.end = pointB.position.translate(scaledB);
+        this.start = pointA.coordinates.translate(scaledA);
+        this.end = pointB.coordinates.translate(scaledB);
     }
 
     draw() {

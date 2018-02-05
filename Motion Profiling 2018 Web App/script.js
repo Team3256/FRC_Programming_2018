@@ -14,6 +14,7 @@ var ctx;
 var image;
 var imageFlipped;
 var isFlipped = false;
+var maxRadius = 0;
 
 var startPositions = {
     "center": [10, 14],
@@ -31,10 +32,10 @@ function chooseStart(position) {
     startY = startPos[1];
     waypoints.push(new WayPoint(startX, startY, 0, 0, ""));
     deletePoint(1);
-    addPoint(startX,startY);
+    addPoint(startX,startY,maxRadius);
     $($('tbody').children('tr')[0]).find('.x').val(startX);
     $($('tbody').children('tr')[0]).find('.y').val(startY);
-    addPoint(startX, startY);
+    addPoint(startX, startY,maxRadius);
     update();
 }
 
@@ -130,8 +131,7 @@ class Line {
         this.pointB = pointB;
         this.slope = Translation.diff(pointA.coordinates, pointB.coordinates);
 
-
-        var scaledA = this.slope.scale(pointA.radius/this.slope.norm() );
+        var scaledA = this.slope.scale(pointA.radius/this.slope.norm());
         var scaledB = this.slope.scale(pointB.radius/this.slope.norm()).invert();
 
         this.start = pointA.coordinates.translate(scaledA);
@@ -218,19 +218,26 @@ class Arc {
     getTurnAngle() {    //?
         return sAngle - eAngle;
     }
+
+    length() {
+        return Math.PI * this.radius * (getTurnAngle/180);
+    }
+
 }
 
 function deletePoint(index) {
     $('tr')[index].remove();
 }
 
-function addPoint(cx, cy) {
+function addPoint(cx, cy, maxRadiusP) {
     prevPoint = waypoints[waypoints.length-1].coordinates;
+
 	$('tbody').append('<tr>'
 		+'<td class="hoverable"><input class="x number_cell" value="'+(cx)+'"></td>'
 		+'<td class="hoverable"><input class="y number_cell" value="'+(cy)+'"></td>'
 		+'<td class="hoverable"><input class="vel number_cell" value="10"></td>'
 		+'<td class="hoverable"><input class="radius number_cell" value="0"></td>'
+		+'<td class="hoverable"><output class="max radius number_cell" value="'+(maxRadiusP)+'"></td>'
 		+'<td class="hoverable"><input class="desc" placeholder="Description"></td>'
 		+'<td><button class="delete">Delete</button></td>'
 		+'</tr>'
@@ -269,6 +276,11 @@ function addEventListeners() {
         update();
     });
 
+    row.find('.maxRadius').focus(function() {
+        $(this).css('width','100%');
+        update();
+    });
+
     row.find('.desc').focus(function() {
         $(this).css('width','100%');
     }).focusout(function() {
@@ -303,12 +315,13 @@ function update() {
         var x = parseFloat($(row.find('.x')).val());
         var y = parseFloat($(row.find('.y')).val());
         var vel = parseFloat($(row.find('.vel')).val()) || 0;
+        var maxRad = parseFloat($(row.find('.maxRadius')).val());
         var desc = $(row.find('.desc')).val();
         var radius = parseFloat($(row.find('.radius')).val()) || 0;
-        waypoints.push(new Waypoint(x, y, vel, radius, desc));
+        waypoints.push(new Waypoint(x, y, vel, radius, maxRad, desc));
     })
     for (var point in waypoints) {
-        waypoints[point].coordinates.draw();
+    waypoints[point].coordinates.draw();
         if (point > 0) {
             var line = new Line(waypoints[point], waypoints[point - 1]);
             line.draw();
@@ -325,7 +338,7 @@ function update() {
 function fieldClicked(event){
     cx = Math.round((event.offsetX/ftToPixelsScale)*10)/10;
     cy = Math.round((30-event.offsetY/ftToPixelsScale)*10)/10;
-    addPoint(cx, cy);
+    addPoint(cx, cy,maxRadius);
 }
 
 function chooseStart(position) {

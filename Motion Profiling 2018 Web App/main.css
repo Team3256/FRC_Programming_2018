@@ -19,11 +19,18 @@ button {
     outline: none;
 }
 
+.maxRadius {
+    background-color: #808080;
+    border-radius: 2px;
+    font-size: 12px;
+    margin-left: 15px;
+}
+
 .delete {
     background-color: #d8c300;
     border-radius: 2px;
     font-size: 12px;
-    margin-left: 10px;
+    margin-left: 15px;
 }
 
 .button_container > button {
@@ -72,6 +79,15 @@ th {
 }
 
 input, input:focus, span {
+    font-size: 15px;
+    border: none;
+    border-bottom: #aaa solid 1px;
+    outline: none;
+    background: transparent;
+    width: 100%;
+}
+
+output, output:focus, span {
     font-size: 15px;
     border: none;
     border-bottom: #aaa solid 1px;

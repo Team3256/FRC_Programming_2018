@@ -71,14 +71,17 @@ th {
     color: white;
 }
 
-.hoverable {
-}
-
 .number_cell, .number_cell:focus {
     width: 40%;
 }
 
-input, input:focus, span {
+.redBox {
+    border: 17px solid red;
+    outline-style: solid;
+    outline-color: red;
+}
+
+input, input:focus {
     font-size: 15px;
     border: none;
     border-bottom: #aaa solid 1px;
@@ -87,16 +90,40 @@ input, input:focus, span {
     width: 100%;
 }
 
-output, output:focus, span {
+.modal {
+    position: fixed;
+    width: 1000px;
+    min-height: 100px;
+    top: 100px;
+    left: 0; right: 0;
+    margin: 0 auto;
+    opacity: 1;
+    background-color: #fff;
+    transition: opacity .5s;
+}
+
+#modalTitle {
+    position: absolute;
+    display: inline-block;
     font-size: 15px;
     border: none;
     border-bottom: #aaa solid 1px;
-    outline: none;
-    background: transparent;
+    color: white;
+}
+
+.close {
+    position: absolute;
+    display: inline-block;
+    right: 0px;
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.15s;
+    text-align: right;
+    background-color: #0d0087;
     width: 100%;
 }
 
-span {
+#text_width_calc {
     border-bottom: none;
     color: transparent;
 }

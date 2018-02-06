@@ -21,7 +21,7 @@
 	<canvas id="field"></canvas>
     <br>
     <div class="button_container">
-        <button onclick="saveConfiguration()">Save Configuration</button>
+        <button onclick="displayConfiguration()">Display Trajectory Path</button>
         <button onclick="invertField()">Invert Field</button>
         <button onclick="chooseStart('left')">Left Auto</button>
         <button onclick="chooseStart('center')">Center Auto</button>
@@ -33,7 +33,6 @@
             <th>Y</th>
             <th>Speed</th>
             <th>Radius</th>
-            <th>Max Radius</th>
             <th style="width: 25%">Description</th>
             <th>Delete</th>
         </thead>
@@ -43,11 +42,14 @@
                 <td class="hoverable"><input class="y number_cell"></td>
                 <td class="hoverable"><div class="vel number_cell">0</div></td>
                 <td class="hoverable"><div class="radius number_cell">0</div></td>
-                <td class="hoverable"><output class="max radius number_cell">0</output></td>
                 <td class="hoverable"><input placeholder="Description" class="desc"></td>
             </tr>
         </tbody>
     </table>
+    <div class="modal">
+        <span class="close" onclick="hideConfiguration()">✕</span>
+        <span id="modalTitle">MODAL TITLE</span>
+    </div>
     <span id="text_width_calc">Text width placeholder</span>
 
 </body>

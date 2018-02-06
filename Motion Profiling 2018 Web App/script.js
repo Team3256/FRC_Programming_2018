@@ -14,7 +14,6 @@ var ctx;
 var image;
 var imageFlipped;
 var isFlipped = false;
-var maxRadius = 0;
 
 var startPositions = {
     "center": [10, 14],
@@ -32,10 +31,10 @@ function chooseStart(position) {
     startY = startPos[1];
     waypoints.push(new WayPoint(startX, startY, 0, 0, ""));
     deletePoint(1);
-    addPoint(startX,startY,maxRadius);
+    addPoint(startX,startY);
     $($('tbody').children('tr')[0]).find('.x').val(startX);
     $($('tbody').children('tr')[0]).find('.y').val(startY);
-    addPoint(startX, startY,maxRadius);
+    addPoint(startX, startY);
     update();
 }
 
@@ -136,6 +135,18 @@ class Line {
 
         this.start = pointA.coordinates.translate(scaledA);
         this.end = pointB.coordinates.translate(scaledB);
+
+
+    }
+
+    checkValid() {
+        if(Translation.diff(this.end, this.pointB.coordinates).norm() > this.slope.norm()){
+            return false;
+        }
+        else if(Translation.diff(this.pointA.coordinates, this.start).norm() > this.slope.norm()){
+            return false;
+        }
+        return true;
     }
 
     draw() {
@@ -229,7 +240,7 @@ function deletePoint(index) {
     $('tr')[index].remove();
 }
 
-function addPoint(cx, cy, maxRadiusP) {
+function addPoint(cx, cy) {
     prevPoint = waypoints[waypoints.length-1].coordinates;
 
 	$('tbody').append('<tr>'
@@ -237,7 +248,6 @@ function addPoint(cx, cy, maxRadiusP) {
 		+'<td class="hoverable"><input class="y number_cell" value="'+(cy)+'"></td>'
 		+'<td class="hoverable"><input class="vel number_cell" value="10"></td>'
 		+'<td class="hoverable"><input class="radius number_cell" value="0"></td>'
-		+'<td class="hoverable"><output class="max radius number_cell" value="'+(maxRadiusP)+'"></td>'
 		+'<td class="hoverable"><input class="desc" placeholder="Description"></td>'
 		+'<td><button class="delete">Delete</button></td>'
 		+'</tr>'
@@ -276,11 +286,6 @@ function addEventListeners() {
         update();
     });
 
-    row.find('.maxRadius').focus(function() {
-        $(this).css('width','100%');
-        update();
-    });
-
     row.find('.desc').focus(function() {
         $(this).css('width','100%');
     }).focusout(function() {
@@ -315,16 +320,21 @@ function update() {
         var x = parseFloat($(row.find('.x')).val());
         var y = parseFloat($(row.find('.y')).val());
         var vel = parseFloat($(row.find('.vel')).val()) || 0;
-        var maxRad = parseFloat($(row.find('.maxRadius')).val());
         var desc = $(row.find('.desc')).val();
         var radius = parseFloat($(row.find('.radius')).val()) || 0;
-        waypoints.push(new Waypoint(x, y, vel, radius, maxRad, desc));
+        waypoints.push(new Waypoint(x, y, vel, radius, desc));
     })
     for (var point in waypoints) {
     waypoints[point].coordinates.draw();
         if (point > 0) {
-            var line = new Line(waypoints[point], waypoints[point - 1]);
+            console.log("point"+point.toString());
+            var line = new Line(waypoints[point - 1], waypoints[point]);
             line.draw();
+            if (!line.checkValid()) {
+                $($('tbody').children('tr')[point - 1]).addClass('redBox');
+            } else {
+                $($('tbody').children('tr')[point - 1]).removeClass('redBox');
+            }
             if (point > 1) {
                 var line1 = new Line(waypoints[point], waypoints[point - 1]);
                 var line2 = new Line(waypoints[point - 1], waypoints[point - 2]);
@@ -333,12 +343,13 @@ function update() {
             }
         }
     }
+
 }
 
 function fieldClicked(event){
     cx = Math.round((event.offsetX/ftToPixelsScale)*10)/10;
     cy = Math.round((30-event.offsetY/ftToPixelsScale)*10)/10;
-    addPoint(cx, cy,maxRadius);
+    addPoint(cx, cy);
 }
 
 function chooseStart(position) {
@@ -351,8 +362,19 @@ function chooseStart(position) {
     update();
 }
 
+function displayConfiguration() {
+    //var title = ($("#title").val().length > 0) ? $("#title").val() : "Left Auto";
+    $('.modal').css({"z-index": "5", "opacity": "1"});
+    $("#modalTitle").html("Auto");
+}
+
+function hideConfiguration() {
+    $('.modal').css({"z-index": "-5", "opacity": "-1"});
+}
+
 function init() {
 	$('#field').css("width", width);
+	hideConfiguration();
 	ctx = document.getElementById('field').getContext('2d');
     ctx.canvas.width = width;
     ctx.canvas.height = height;

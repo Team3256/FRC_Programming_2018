@@ -1,133 +1,64 @@
 package frc.team3256.robot;
 
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.cscore.VideoMode;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import frc.team3256.lib.DrivePower;
-import frc.team3256.lib.Looper;
-import frc.team3256.lib.control.TeleopDriveController;
-import frc.team3256.lib.hardware.ADXRS453_Calibrator;
-import frc.team3256.robot.auto.AutoModeBase;
-import frc.team3256.robot.auto.AutoModeChooser;
-import frc.team3256.robot.auto.AutoModeExecuter;
-import frc.team3256.robot.auto.modes.DoNothingAuto;
-import frc.team3256.robot.auto.modes.TestDriveToDistanceAuto;
-import frc.team3256.robot.auto.modes.TestTrajectoryAuto;
-import frc.team3256.robot.auto.modes.TestTurnInPlaceAuto;
-import frc.team3256.robot.operation.ControlsInterface;
-import frc.team3256.robot.operation.DualLogitechConfig;
-import frc.team3256.robot.subsystems.DriveTrain;
-import frc.team3256.robot.subsystems.SubsystemManager;
 
 public class Robot extends IterativeRobot {
 
-    DriveTrain driveTrain;
-    PoseEstimator poseEstimator;
-    Looper disabledLooper;
-    Looper enabledLooper;
-    SubsystemManager subsystemManager;
-    ADXRS453_Calibrator gyroCalibrator;
-    ControlsInterface controlsInterface;
-    AutoModeExecuter autoModeExecuter;
-    AutoModeChooser autoModeChooser;
+    Intake m_intake = Intake.getInstance();
+    Elevator m_elevator = Elevator.getInstance();
 
-    UsbCamera camera1;
+    boolean prevIntakeToggle = false;
+    boolean prevSqueezeToggle = false;
 
     @Override
-    public void robotInit() {
-        driveTrain = DriveTrain.getInstance();
-        poseEstimator = new PoseEstimator();
-        gyroCalibrator = new ADXRS453_Calibrator(driveTrain.getGyro());
-
-        //disabled looper -> recalibrate gyro
-        disabledLooper = new Looper(Constants.kSlowLoopPeriod);
-        disabledLooper.addLoops(gyroCalibrator);
-        //enabled looper -> control loop for subsystems
-        enabledLooper = new Looper(Constants.kControlLoopPeriod);
-        enabledLooper.addLoops(driveTrain, poseEstimator);
-
-        subsystemManager = new SubsystemManager();
-        subsystemManager.addSubsystems(driveTrain);
-
-        camera1 = CameraServer.getInstance().startAutomaticCapture();
-        camera1.setVideoMode(VideoMode.PixelFormat.kMJPEG, 377, 236, 30);
-        UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();
-        camera2.setVideoMode(VideoMode.PixelFormat.kMJPEG, 377, 236, 30);
-        //System.out.println(camera2.isconnected());
-        //Dual Logitech Config
-        controlsInterface = new DualLogitechConfig();
-
-        autoModeChooser = new AutoModeChooser();
-        autoModeChooser.addAutoModes(new TestDriveToDistanceAuto(), new TestTurnInPlaceAuto(), new TestTrajectoryAuto());
-        autoModeChooser.addAutoModes(new DoNothingAuto());
-
-        NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
-        NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
-    }
-
-    @Override
-    public void disabledInit() {
-        driveTrain.resetEncoders();
-        enabledLooper.stop();
-        disabledLooper.start();
-    }
-
-    @Override
-    public void autonomousInit() {
-        disabledLooper.stop();
-        enabledLooper.start();
-
-        autoModeExecuter = new AutoModeExecuter();
-        //autoModeExecuter.setAutoMode(new TestDriveToDistanceAuto());
-        //autoModeExecuter.setAutoMode(new TestTrajectoryAuto());
-        AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
-        autoModeExecuter.setAutoMode(autoMode);
-        autoModeExecuter.start();
-    }
-
-    @Override
-    public void teleopInit() {
-        disabledLooper.stop();
-        enabledLooper.start();
-        //driveTrain.setVelocitySetpoint(0,0);
-    }
-
-    @Override
-    public void testInit() {
-    }
-
-    @Override
-    public void disabledPeriodic() {
+    public void robotInit(){
 
     }
 
     @Override
-    public void autonomousPeriodic() {
-       // System.out.println("GYRO: " + driveTrain.getAngle());
+    public void teleopInit(){
+
     }
 
     @Override
-    public void teleopPeriodic() {
-        double throttle = controlsInterface.getThrottle();
-        double turn = -controlsInterface.getTurn();
-        boolean quickTurn = controlsInterface.getQuickTurn();
-        DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
-        driveTrain.setOpenLoop(power);
+    public void teleopPeriodic(){
+        boolean intake = OI.getIntake();
+        boolean outtake = OI.getOuttake();
+        boolean unjam = OI.getUnjam();
+        if (unjam){
+            m_intake.runMotors(0, 0);
+        }
+        else if (intake){
+            m_intake.runMotors(0.7, 0.5);
+        }
+        else if (outtake){
+            m_intake.runMotors(-0.7, -0.5);
+        }
+        else{
+           m_intake.runMotors(0, 0);
+        }
 
-        System.out.println("LEFT ENCODER: " + driveTrain.getLeftVelocity() + "RIGHT ENCODER: " + driveTrain.getRightVelocity());
-    }
+        boolean toggleIntake = OI.toggleIntake();
+        if (toggleIntake && !prevIntakeToggle){
+            if (m_intake.isClosed()){
+                m_intake.open();
+            }
+            else{
+                m_intake.close();
+            }
+        }
 
-    @Override
-    public void testPeriodic() {
-    }
+        boolean squeezeToggle = OI.toggleSqueeze();
+        if (squeezeToggle && !prevSqueezeToggle){
+            if (m_elevator.isSqueezing()){
+                m_elevator.open();
+            }
+            else{
+                m_elevator.squeeze();
+            }
+        }
 
-    public void allPeriodic(){
-        subsystemManager.outputToDashboard();
-        enabledLooper.outputToDashboard();
-        disabledLooper.outputToDashboard();
+        double val = OI.elevatorPower();
+        m_elevator.runElevator(val);
     }
 }

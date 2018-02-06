@@ -26,18 +26,19 @@ public class Robot extends IterativeRobot {
         boolean outtake = OI.getOuttake();
         boolean unjam = OI.getUnjam();
         if (unjam){
-            m_intake.runMotors(0, 0);
+            m_intake.runMotors(0);
         }
         else if (intake){
-            m_intake.runMotors(0.7, 0.5);
+            m_intake.runMotors(0.6);
         }
         else if (outtake){
-            m_intake.runMotors(-0.7, -0.5);
+            m_intake.runMotors(-0.6);
         }
         else{
-           m_intake.runMotors(0, 0);
+           m_intake.runMotors(0);
         }
 
+	/*
         boolean toggleIntake = OI.toggleIntake();
         if (toggleIntake && !prevIntakeToggle){
             if (m_intake.isClosed()){
@@ -47,6 +48,7 @@ public class Robot extends IterativeRobot {
                 m_intake.close();
             }
         }
+	*/
 
         boolean squeezeToggle = OI.toggleSqueeze();
         if (squeezeToggle && !prevSqueezeToggle){
@@ -58,7 +60,9 @@ public class Robot extends IterativeRobot {
             }
         }
 
+	/*
         double val = OI.elevatorPower();
         m_elevator.runElevator(val);
+	*/
     }
 }

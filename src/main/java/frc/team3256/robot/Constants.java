@@ -2,8 +2,7 @@ package frc.team3256.robot;
 
 public class Constants {
 
-    public static final int kIntakeLeft = 0;
-    public static final int kIntakeRight = 1;
+    public static final int kIntakeRoller = 0;
     public static final int kElevatorOne = 2;
     public static final int kElevatorTwo = 3;
     public static final int kCarriageLeft = 4;

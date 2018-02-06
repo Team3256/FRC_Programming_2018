@@ -14,8 +14,6 @@ public class Elevator {
 
     private VictorSP one;
     private VictorSP two;
-    private VictorSP leftRoller;
-    private VictorSP rightRoller;
     private DoubleSolenoid squeeze;
 
     private boolean squeezing = false;
@@ -23,22 +21,12 @@ public class Elevator {
     private Elevator(){
         one = new VictorSP(Constants.kElevatorOne);
         two = new VictorSP(Constants.kElevatorTwo);
-        leftRoller = new VictorSP(Constants.kCarriageLeft);
-        rightRoller= new VictorSP(Constants.kCarriageRight);
         squeeze = new DoubleSolenoid(Constants.kCarriageSqueezeA, Constants.kCarriageSqueezeB);
-
-        leftRoller.setInverted(true);
-        rightRoller.setInverted(false);
     }
 
     public void runElevator(double power){
         one.set(power);
         two.set(power);
-    }
-
-    public void runRoller(double power){
-        leftRoller.set(power);
-        rightRoller.set(power);
     }
 
     public void squeeze(){

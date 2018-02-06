@@ -7,7 +7,8 @@ import edu.wpi.first.wpilibj.VictorSP;
 public class Intake{
 
     private static Intake instance;
-    private VictorSP roller;
+    private VictorSP rollerLeft;
+    private VictorSP rollerRight;
     private DoubleSolenoid flopper;
 
     private boolean isClosed = true;
@@ -17,12 +18,14 @@ public class Intake{
     }
 
     private Intake(){
-        roller = new VictorSP(Constants.kIntakeRoller);
+        rollerLeft = new VictorSP(Constants.kIntakeLeft);
+        rollerRight = new VictorSP(Constants.kIntakeRight);
         flopper = new DoubleSolenoid(Constants.kIntakeFlopA, Constants.kIntakeFlopB);
     }
 
     public void runMotors(double val){
-	roller.set(val);
+	    rollerLeft.set(val);
+	    rollerRight.set(-val);
     }
 
     public void open(){

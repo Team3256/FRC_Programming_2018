@@ -11,11 +11,11 @@ public class OI {
     }
 
     public static boolean getIntake(){
-        return false;
+        return joystick.getRawAxis(3) > 0.25;
     }
 
     public static boolean getOuttake(){
-        return false;
+        return joystick.getRawAxis(2) > 0.25;
     }
 
     public static boolean getUnjam(){
@@ -28,7 +28,7 @@ public class OI {
     }
 
     public static boolean toggleSqueeze(){
-        return false;
+        return joystick.getRawButton(4);
     }
 
     public static double elevatorPower(){

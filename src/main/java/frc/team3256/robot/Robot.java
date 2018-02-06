@@ -29,10 +29,10 @@ public class Robot extends IterativeRobot {
             m_intake.runMotors(0);
         }
         else if (intake){
-            m_intake.runMotors(0.6);
+            m_intake.runMotors(-0.6);
         }
         else if (outtake){
-            m_intake.runMotors(-0.6);
+            m_intake.runMotors(0.6);
         }
         else{
            m_intake.runMotors(0);
@@ -64,5 +64,6 @@ public class Robot extends IterativeRobot {
         double val = OI.elevatorPower();
         m_elevator.runElevator(val);
 	*/
+	prevSqueezeToggle = squeezeToggle;
     }
 }

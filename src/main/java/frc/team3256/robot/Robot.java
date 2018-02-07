@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Robot extends IterativeRobot{
@@ -14,6 +13,8 @@ public class Robot extends IterativeRobot{
 
     Solenoid solenoidZero, solenoidOne, solenoidTwo, solenoidThree,
         solenoidFour, solenoidFive, solenoidSix, solenoidSeven;
+
+
 
     double delay = 1.0;
 
@@ -58,6 +59,16 @@ public class Robot extends IterativeRobot{
         testSolenoid(solenoidFive, 5, delay);
         testSolenoid(solenoidSix, 6, delay);
         testSolenoid(solenoidSeven, 7, delay);
+    }
+
+    @Override
+    public void teleopInit(){
+
+    }
+
+    @Override
+    public void teleopPeriodic(){
+
     }
 
     private void testTalon(TalonSRX talon, double delay){

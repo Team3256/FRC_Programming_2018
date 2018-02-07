@@ -1,133 +1,90 @@
 package frc.team3256.robot;
 
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.cscore.VideoMode;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.CameraServer;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import frc.team3256.lib.DrivePower;
-import frc.team3256.lib.Looper;
-import frc.team3256.lib.control.TeleopDriveController;
-import frc.team3256.lib.hardware.ADXRS453_Calibrator;
-import frc.team3256.robot.auto.AutoModeBase;
-import frc.team3256.robot.auto.AutoModeChooser;
-import frc.team3256.robot.auto.AutoModeExecuter;
-import frc.team3256.robot.auto.modes.DoNothingAuto;
-import frc.team3256.robot.auto.modes.TestDriveToDistanceAuto;
-import frc.team3256.robot.auto.modes.TestTrajectoryAuto;
-import frc.team3256.robot.auto.modes.TestTurnInPlaceAuto;
-import frc.team3256.robot.operation.ControlsInterface;
-import frc.team3256.robot.operation.DualLogitechConfig;
-import frc.team3256.robot.subsystems.DriveTrain;
-import frc.team3256.robot.subsystems.SubsystemManager;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.Timer;
 
-public class Robot extends IterativeRobot {
+public class Robot extends IterativeRobot{
 
-    DriveTrain driveTrain;
-    PoseEstimator poseEstimator;
-    Looper disabledLooper;
-    Looper enabledLooper;
-    SubsystemManager subsystemManager;
-    ADXRS453_Calibrator gyroCalibrator;
-    ControlsInterface controlsInterface;
-    AutoModeExecuter autoModeExecuter;
-    AutoModeChooser autoModeChooser;
+    TalonSRX talonZero, talonOne, talonTwo, talonThree,
+        talonFour, talonFive, talonSix, talonSeven;
 
-    UsbCamera camera1;
+    Solenoid solenoidZero, solenoidOne, solenoidTwo, solenoidThree,
+        solenoidFour, solenoidFive, solenoidSix, solenoidSeven;
+
+    double delay = 1.0;
 
     @Override
-    public void robotInit() {
-        driveTrain = DriveTrain.getInstance();
-        poseEstimator = new PoseEstimator();
-        gyroCalibrator = new ADXRS453_Calibrator(driveTrain.getGyro());
+    public void robotInit(){
+        talonZero = new TalonSRX(0);
+        talonOne = new TalonSRX(1);
+        talonTwo = new TalonSRX(2);
+        talonThree = new TalonSRX(3);
+        talonFour = new TalonSRX(4);
+        talonFive = new TalonSRX(5);
+        talonSix = new TalonSRX(6);
+        talonSeven = new TalonSRX(7);
 
-        //disabled looper -> recalibrate gyro
-        disabledLooper = new Looper(Constants.kSlowLoopPeriod);
-        disabledLooper.addLoops(gyroCalibrator);
-        //enabled looper -> control loop for subsystems
-        enabledLooper = new Looper(Constants.kControlLoopPeriod);
-        enabledLooper.addLoops(driveTrain, poseEstimator);
-
-        subsystemManager = new SubsystemManager();
-        subsystemManager.addSubsystems(driveTrain);
-
-        camera1 = CameraServer.getInstance().startAutomaticCapture();
-        camera1.setVideoMode(VideoMode.PixelFormat.kMJPEG, 377, 236, 30);
-        UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();
-        camera2.setVideoMode(VideoMode.PixelFormat.kMJPEG, 377, 236, 30);
-        //System.out.println(camera2.isconnected());
-        //Dual Logitech Config
-        controlsInterface = new DualLogitechConfig();
-
-        autoModeChooser = new AutoModeChooser();
-        autoModeChooser.addAutoModes(new TestDriveToDistanceAuto(), new TestTurnInPlaceAuto(), new TestTrajectoryAuto());
-        autoModeChooser.addAutoModes(new DoNothingAuto());
-
-        NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
-        NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
+        solenoidZero = new Solenoid(0);
+        solenoidOne = new Solenoid(1);
+        solenoidTwo = new Solenoid(2);
+        solenoidThree = new Solenoid(3);
+        solenoidFour = new Solenoid(4);
+        solenoidFive = new Solenoid(5);
+        solenoidSix = new Solenoid(6);
+        solenoidSeven = new Solenoid(7);
     }
 
     @Override
-    public void disabledInit() {
-        driveTrain.resetEncoders();
-        enabledLooper.stop();
-        disabledLooper.start();
+    public void testInit(){
+        System.out.println("TESTING TALONS\n");
+        testTalon(talonZero, delay);
+        testTalon(talonOne, delay);
+        testTalon(talonTwo, delay);
+        testTalon(talonThree, delay);
+        testTalon(talonFour, delay);
+        testTalon(talonFive, delay);
+        testTalon(talonSix, delay);
+        testTalon(talonSeven, delay);
+        System.out.println("TESTING SOLENOIDS\n");
+        testSolenoid(solenoidZero, 0, delay);
+        testSolenoid(solenoidOne, 1, delay);
+        testSolenoid(solenoidTwo, 2, delay);
+        testSolenoid(solenoidThree, 3, delay);
+        testSolenoid(solenoidFour, 4, delay);
+        testSolenoid(solenoidFive, 5, delay);
+        testSolenoid(solenoidSix, 6, delay);
+        testSolenoid(solenoidSeven, 7, delay);
     }
 
-    @Override
-    public void autonomousInit() {
-        disabledLooper.stop();
-        enabledLooper.start();
-
-        autoModeExecuter = new AutoModeExecuter();
-        //autoModeExecuter.setAutoMode(new TestDriveToDistanceAuto());
-        //autoModeExecuter.setAutoMode(new TestTrajectoryAuto());
-        AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
-        autoModeExecuter.setAutoMode(autoMode);
-        autoModeExecuter.start();
+    private void testTalon(TalonSRX talon, double delay){
+        int id = talon.getDeviceID();
+        System.out.println("Talon " + id + ": Full Throttle");
+        talon.set(ControlMode.PercentOutput, 1.0);
+        Timer.delay(delay);
+        System.out.println("Talon " + id + ": Full Reverse");
+        talon.set(ControlMode.PercentOutput, -1.0);
+        Timer.delay(delay);
+        System.out.println("Talon " + id + ": Half Throttle");
+        talon.set(ControlMode.PercentOutput, 0.5);
+        Timer.delay(delay);
+        System.out.println("Talon " + id + ": Half Reverse");
+        talon.set(ControlMode.PercentOutput, -0.5);
+        Timer.delay(delay);
+        System.out.println("Talon " + id + ": Zero Throttle");
+        talon.set(ControlMode.PercentOutput, 0.0);
+        Timer.delay(delay);
     }
 
-    @Override
-    public void teleopInit() {
-        disabledLooper.stop();
-        enabledLooper.start();
-        //driveTrain.setVelocitySetpoint(0,0);
-    }
-
-    @Override
-    public void testInit() {
-    }
-
-    @Override
-    public void disabledPeriodic() {
-
-    }
-
-    @Override
-    public void autonomousPeriodic() {
-       // System.out.println("GYRO: " + driveTrain.getAngle());
-    }
-
-    @Override
-    public void teleopPeriodic() {
-        double throttle = controlsInterface.getThrottle();
-        double turn = -controlsInterface.getTurn();
-        boolean quickTurn = controlsInterface.getQuickTurn();
-        DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
-        driveTrain.setOpenLoop(power);
-
-        System.out.println("LEFT ENCODER: " + driveTrain.getLeftVelocity() + "RIGHT ENCODER: " + driveTrain.getRightVelocity());
-    }
-
-    @Override
-    public void testPeriodic() {
-    }
-
-    public void allPeriodic(){
-        subsystemManager.outputToDashboard();
-        enabledLooper.outputToDashboard();
-        disabledLooper.outputToDashboard();
+    private void testSolenoid(Solenoid solenoid, int id, double delay){
+        System.out.println("Solenoid " + id + ": ON");
+        solenoid.set(true);
+        Timer.delay(delay);
+        System.out.println("Solenoid " + id + ": OFF");
+        solenoid.set(false);
+        Timer.delay(delay);
     }
 }

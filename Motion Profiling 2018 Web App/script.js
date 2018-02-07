@@ -181,6 +181,12 @@ function update() {
         if (point > 0) {
             var line = new Line(points[point-1], points[point]);
             line.draw();
+<<<<<<< Updated upstream
+=======
+            } else {
+
+            }
+>>>>>>> Stashed changes
         }
     }
 }

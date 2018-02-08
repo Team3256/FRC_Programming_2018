@@ -2,6 +2,7 @@ package frc.team3256.lib.path;
 
 import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Translation;
+import frc.team3256.robot.Constants;
 
 public class Arc extends Segment{
 
@@ -146,6 +147,12 @@ public class Arc extends Segment{
 
     @Override
     public double checkVelocity(Translation closestPoint, double currVel) {
-        return 0.0;
+        double remainingDistance = getRemainingDistance(closestPoint);
+        double outputVelFromEnd = Math.sqrt(Math.pow(goalVel, 2.0)-2*maxAccel*remainingDistance);
+        double outputVel = currVel + maxAccel * Constants.kControlLoopPeriod;
+        outputVel = Math.min(outputVel, outputVelFromEnd);
+        outputVel = Math.min(outputVel, maxVel);
+
+        return outputVel;
     }
 }

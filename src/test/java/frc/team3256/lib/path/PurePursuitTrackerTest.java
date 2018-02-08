@@ -1,6 +1,7 @@
 package frc.team3256.lib.path;
 
 import frc.team3256.lib.math.Translation;
+import frc.team3256.lib.math.Twist;
 import frc.team3256.robot.Constants;
 import org.junit.Test;
 
@@ -20,11 +21,11 @@ public class PurePursuitTrackerTest {
         PurePursuitTracker pursuit = new PurePursuitTracker(p);
         Translation lookaheadPoint = new Translation(9, 9);
         Translation robotCoordinates = new Translation(15, 3);
-        PurePursuitTracker.Command command = pursuit.update(lookaheadPoint, robotCoordinates, 100.0);
+        Twist command = pursuit.update(lookaheadPoint, robotCoordinates, 100.0);
 
-        assertEquals(command.delta.dx(), 0, kEpsilon);
-        assertEquals(command.delta.dy(), Math.PI * 3.0 * Math.sqrt(2), kEpsilon);
-        assertEquals(command.delta.dtheta(), -Math.PI, kEpsilon);
+        assertEquals(command.dx(), 0, kEpsilon);
+        assertEquals(command.dy(), Math.PI * 3.0 * Math.sqrt(2), kEpsilon);
+        assertEquals(command.dtheta(), -Math.PI, kEpsilon);
 
         System.out.println("CHECK");
         robotCoordinates = new Translation(0, 0);
@@ -58,16 +59,16 @@ public class PurePursuitTrackerTest {
 
         robotCoordinates = new Translation(9, 3);
         command = pursuit.update(lookaheadPoint, robotCoordinates, 100.0);
-        assertEquals(command.delta.dx(), 0.0, kEpsilon);
-        assertEquals(command.delta.dy(), Math.PI * 1.5 * Math.sqrt(2), kEpsilon);
-        assertEquals(command.delta.dtheta(), -Math.PI / 2.0, kEpsilon);
+        assertEquals(command.dx(), 0.0, kEpsilon);
+        assertEquals(command.dy(), Math.PI * 1.5 * Math.sqrt(2), kEpsilon);
+        assertEquals(command.dtheta(), -Math.PI / 2.0, kEpsilon);
 
 
         robotCoordinates = new Translation(3, 9);
         command = pursuit.update(lookaheadPoint, robotCoordinates, 100.0);
-        assertEquals(command.delta.dx(), 0.0, kEpsilon);
-        assertEquals(command.delta.dy(), Math.PI * 1.5 * Math.sqrt(2), kEpsilon);
-        assertEquals(command.delta.dtheta(), - Math.PI / 2.0, kEpsilon);
+        assertEquals(command.dx(), 0.0, kEpsilon);
+        assertEquals(command.dy(), Math.PI * 1.5 * Math.sqrt(2), kEpsilon);
+        assertEquals(command.dtheta(), - Math.PI / 2.0, kEpsilon);
 
         robotCoordinates = new Translation(48, 0);
         lookaheadPoint = new Translation(24, 24);
@@ -76,13 +77,13 @@ public class PurePursuitTrackerTest {
         robotCoordinates = new Translation(48,28);
         lookaheadPoint = new Translation(48,24);
         command = pursuit.update(lookaheadPoint, robotCoordinates, 100.0);
-        assertEquals(command.delta.dx(), 0.0, kEpsilon);
-        assertEquals(command.delta.dy(), Math.PI * Math.sqrt(2), kEpsilon);
-        assertEquals(command.delta.dtheta(), - Math.PI / 2.0, kEpsilon);
+        assertEquals(command.dx(), 0.0, kEpsilon);
+        assertEquals(command.dy(), Math.PI * Math.sqrt(2), kEpsilon);
+        assertEquals(command.dtheta(), - Math.PI / 2.0, kEpsilon);
 
         p.addSegment(new Line(0, 0, 100, 100, 120, 20, 250));
         robotCoordinates = new Translation(30, 0);
-        PurePursuitTracker.Command pursuitUpdate = pursuit.update(robotCoordinates, 20);
+        Twist pursuitUpdate = pursuit.update(robotCoordinates, 20);
         System.out.println(pursuitUpdate.delta);
         System.out.println(pursuitUpdate.vel);
 

@@ -5,6 +5,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
+import frc.team3256.lib.hardware.PressureSensor;
+import frc.team3256.lib.hardware.SharpIR;
+
 
 public class Robot extends IterativeRobot{
 
@@ -14,7 +17,8 @@ public class Robot extends IterativeRobot{
     Solenoid solenoidZero, solenoidOne, solenoidTwo, solenoidThree,
         solenoidFour, solenoidFive, solenoidSix, solenoidSeven;
 
-
+    SharpIR testIR;
+    PressureSensor testSensor;
 
     double delay = 1.0;
 
@@ -37,6 +41,7 @@ public class Robot extends IterativeRobot{
         solenoidFive = new Solenoid(5);
         solenoidSix = new Solenoid(6);
         solenoidSeven = new Solenoid(7);
+
     }
 
     @Override
@@ -63,11 +68,13 @@ public class Robot extends IterativeRobot{
 
     @Override
     public void teleopInit(){
+        testIR = new SharpIR(0, 1, 3);
 
     }
 
     @Override
     public void teleopPeriodic(){
+        System.out.println(testIR.getDistance());
 
     }
 

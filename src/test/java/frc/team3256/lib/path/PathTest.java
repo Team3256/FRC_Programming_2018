@@ -16,15 +16,13 @@ public class PathTest {
         p.addSegment(new Line(0,0,0,10));
         p.addSegment(new Arc(0,10,5,15,5,10));
 
-        for (int y = 0; y <= 10; y++) {
+        for (int y = 0; y < 10; y++) {
             Path.PathUpdate pathUpdate = p.update(new Translation(5, y));
             assertEquals(pathUpdate.distanceToPath, 5, kEpsilon);
             assertEquals(pathUpdate.lookaheadPoint.x(), 0, kEpsilon);
             assertEquals(pathUpdate.lookaheadPoint.y(), y+5, kEpsilon);
             assertEquals(pathUpdate.remainingDistance, .5 * Math.PI * 5 + 10 - y, kEpsilon);
         }
-
-        p.removeSegment();
 
         for (int deg = 0; deg <= 90; deg++) {
             double x = Math.cos(Math.toRadians(deg));

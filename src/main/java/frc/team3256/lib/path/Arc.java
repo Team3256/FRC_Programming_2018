@@ -27,12 +27,10 @@ public class Arc extends Segment{
         //This should not be possible. We are using constant-curvature arcs.
         //If this ever occurs, then one (or more) of the parameters were passed in incorrectly
         if (Math.abs(centerToStart.norm() - centerToEnd.norm()) > 10E-9){
-
             System.out.println("ERROR: THIS ARC IS NOT CONSTANT_CURVATURE");
             System.out.println("START: " + start);
             System.out.println("END: " + end);
             System.out.println("CENTER: " + center + "\n");
-
             radius = Double.NaN;
         }
         else radius = centerToStart.norm();
@@ -146,13 +144,12 @@ public class Arc extends Segment{
     }
 
     @Override
-    public double checkVelocity(Translation closestPoint, double currVel) {
+    public double checkVelocity(Translation closestPoint, double prevVelocity) {
         double remainingDistance = getRemainingDistance(closestPoint);
         double outputVelFromEnd = Math.sqrt(Math.pow(goalVel, 2.0)-2*maxAccel*remainingDistance);
-        double outputVel = currVel + maxAccel * Constants.kControlLoopPeriod;
+        double outputVel = prevVelocity + maxAccel * Constants.kControlLoopPeriod;
         outputVel = Math.min(outputVel, outputVelFromEnd);
         outputVel = Math.min(outputVel, maxVel);
-
         return outputVel;
     }
 }

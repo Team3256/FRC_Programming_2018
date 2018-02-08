@@ -5,13 +5,19 @@ import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Translation;
 import frc.team3256.lib.math.Twist;
 
+import java.util.Optional;
+
 public class PurePursuitTracker {
 
-    public boolean reachedEnd = false;
-    public Path path;
+    private boolean reachedEnd = false;
+    private Path path;
+    private final double kEpsilon = 1E-9;
+    private double tolerance;
+    private Twist prevOutput = new Twist(0,0,0);
 
-    public PurePursuitTracker(Path path) {
+    public PurePursuitTracker(Path path, double tolerance) {
         this.path = path;
+        this.tolerance = tolerance;
     }
 
     public static int getDirection(Translation lookaheadPoint, Translation robotCoordinates) {
@@ -22,8 +28,7 @@ public class PurePursuitTracker {
         }
     }
 
-    public Arc getArcToSegment(Segment s, Translation lookaheadPoint, Translation robotCoordinates) {
-
+    public Optional<Arc> getArcToSegment(Segment s, Translation lookaheadPoint, Translation robotCoordinates) {
         int direction = getDirection(lookaheadPoint, robotCoordinates);
         int lookaheadSlopeDirection = s.getDirection(lookaheadPoint).direction().tan() > 0 ? 1 : -1;
 
@@ -41,68 +46,43 @@ public class PurePursuitTracker {
         if (center.norm() == Double.POSITIVE_INFINITY) {
             center = robotCoordinates.translate(robotToCenter);
         }
-
-        if (robotToCenter.norm() < .001) { //allowed error from path
-            // generate a line to some point
+        if (robotToCenter.norm() < kEpsilon) { //allowed error from path
+            //Cross track error is 0, so no arc (just continue driving straight)
+            return Optional.empty();
         }
 
         Arc robotToLookaheadPointArc = new Arc(robotCoordinates.x(), robotCoordinates.y(), lookaheadPoint.x(), lookaheadPoint.y(), center.x(), center.y());
-
-        return robotToLookaheadPointArc;
+        return Optional.of(robotToLookaheadPointArc);
     }
 
-    public Twist update(Translation robotCoordinates, double currVel) {
+    public Twist update(Translation robotCoordinates) {
+        //Update path
         Path.PathUpdate pathUpdate = path.update(robotCoordinates);
-        Translation lookaheadPoint = pathUpdate.lookaheadPoint;
-        Segment s = pathUpdate.currSegment;
-        Arc arc = getArcToSegment(s, lookaheadPoint, robotCoordinates);
-        double vel = s.checkVelocity(pathUpdate.closestPoint, currVel);
-
-        if(isFinished()) {
-            //return new Command(new Twist(0, 0, 0));
-        }
-        if(pathUpdate.remainingDistance < arc.getLength()) {
+        //Check if we are done
+        if(pathUpdate.remainingDistance < tolerance) {
             reachedEnd = true;
-            path.removeSegment();
-            System.out.println("END REACHED");
         }
-
-        return new Twist(0, arc.getLength(), -arc.getAngle().radians());
-    }
-
-    public Twist update(Translation lookaheadPoint, Translation robotCoordinates, double leftVel, double rightVel) {
-
-
-        Path.PathUpdate pathUpdate = path.update(robotCoordinates);
-        Segment s = pathUpdate.currSegment;
-        Arc arc = getArcToSegment(s, lookaheadPoint, robotCoordinates);
-
-        double direction = arc.getAngle().radians() / Math.abs(arc.getAngle().radians());
-
-        double innerVel, outerVel;
-
-        if (direction == 1) {
-            innerVel = leftVel;
-            outerVel = rightVel;
-        } else {
-            innerVel = rightVel;
-            outerVel = leftVel;
-        }
-
-        double vel = s.checkVelocity(pathUpdate.closestPoint, innerVel);
-
         if(isFinished()) {
             return new Twist(0, 0, 0);
         }
-        if(pathUpdate.remainingDistance < arc.getLength()) {
-            reachedEnd = true;
-            path.removeSegment();
-            System.out.println("END REACHED");
+        Segment s = pathUpdate.currSegment;
+        //Calculate arc to get us back on path
+        Optional<Arc> optionalArc = getArcToSegment(s, pathUpdate.lookaheadPoint, robotCoordinates);
+        //calculate linear and angular velocities
+        double vel, angularVel = 0;
+        vel = s.checkVelocity(pathUpdate.closestPoint, prevOutput.dx());
+        Twist rv;
+        //If we have an arc
+        if (optionalArc.isPresent()){
+            Arc arc = optionalArc.get();
+            double direction = arc.getAngle().radians() / Math.abs(arc.getAngle().radians());
+            angularVel = vel /arc.getRadius();
+            rv = new Twist(vel, 0, angularVel*direction);
         }
-
-        double angularVel = vel/arc.getRadius();
-
-        return new Twist(vel, 0, angularVel * direction);
+        //Otherwise, we are on track, so only return a linear velocity
+        else rv = new Twist(vel, 0, 0);
+        prevOutput = rv;
+        return rv;
     }
 
     private boolean isFinished() {

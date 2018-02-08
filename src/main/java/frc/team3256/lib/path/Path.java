@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class Path {
 
     private ArrayList<Segment> segments;
+    private double segmentCompletionTolerance = 0.0;
 
     public Path(){
         segments = new ArrayList<>();
@@ -28,31 +29,29 @@ public class Path {
         Translation closestPoint;
     }
 
-    public void removeSegment() {
-        segments.remove(0);
-    }
-
     public PathUpdate update(Translation robotCoordinates){
         PathUpdate rv = new PathUpdate();
         Segment currSegment = segments.get(0);
+        //calculate closest point to robot on path
         Translation closestPoint = currSegment.getClosestPointOnSegment(robotCoordinates);
         Translation robotToClosestPoint = new Translation(robotCoordinates, closestPoint);
-
-
-
         rv.distanceToPath = robotToClosestPoint.norm();
-        rv.lookaheadPoint = currSegment.getLookAheadPoint(rv.distanceToPath, closestPoint);
 
+        //determine lookahead point
+        rv.lookaheadPoint = currSegment.getLookAheadPoint(rv.distanceToPath, closestPoint);
         for (Segment s : segments) {
             rv.remainingDistance += s.getLength();
         }
-
         rv.remainingDistance -= currSegment.getCurrDistanceTraveled(closestPoint);
-
         rv.currSegment = currSegment;
-
         rv.closestPoint = closestPoint;
-
+        //remove current segment if we are done with this segment
+        double distanceRemainingOnSegment = currSegment.getRemainingDistance(robotCoordinates);
+        if (distanceRemainingOnSegment <= segmentCompletionTolerance) {
+            System.out.println("REMOVING SEGMENT");
+            System.out.println(distanceRemainingOnSegment);
+            segments.remove(0);
+        }
         return rv;
     }
 

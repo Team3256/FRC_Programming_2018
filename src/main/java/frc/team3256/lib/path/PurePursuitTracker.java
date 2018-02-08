@@ -10,16 +10,6 @@ public class PurePursuitTracker {
     public boolean reachedEnd = false;
     public Path path;
 
-    public class Command {
-        public Twist delta;
-        public double vel;
-
-        public Command(Twist delta, double vel) {
-            this.delta = delta;
-            this.vel = vel;
-        }
-    }
-
     public PurePursuitTracker(Path path) {
         this.path = path;
     }
@@ -61,12 +51,12 @@ public class PurePursuitTracker {
         return robotToLookaheadPointArc;
     }
 
-    public Command update(Translation robotCoordinates, double currVel) {
+    public Twist update(Translation robotCoordinates, double currVel) {
         Path.PathUpdate pathUpdate = path.update(robotCoordinates);
         Translation lookaheadPoint = pathUpdate.lookaheadPoint;
         Segment s = pathUpdate.currSegment;
         Arc arc = getArcToSegment(s, lookaheadPoint, robotCoordinates);
-        double vel = s.runVelocity(pathUpdate.closestPoint, currVel);
+        double vel = s.checkVelocity(pathUpdate.closestPoint, currVel);
 
         if(isFinished()) {
             //return new Command(new Twist(0, 0, 0));
@@ -77,14 +67,14 @@ public class PurePursuitTracker {
             System.out.println("END REACHED");
         }
 
-        return new Command(new Twist(0, arc.getLength(), -arc.getAngle().radians()), vel);
+        return new Twist(0, arc.getLength(), -arc.getAngle().radians());
     }
 
-    public Command update(Translation lookaheadPoint, Translation robotCoordinates, double currVel) {
+    public Twist update(Translation lookaheadPoint, Translation robotCoordinates, double currVel) {
         Path.PathUpdate pathUpdate = path.update(robotCoordinates);
         Segment s = pathUpdate.currSegment;
         Arc arc = getArcToSegment(s, lookaheadPoint, robotCoordinates);
-        double vel = s.runVelocity(pathUpdate.closestPoint, currVel);
+        double vel = s.checkVelocity(pathUpdate.closestPoint, currVel);
 
         if(isFinished()) {
             //return new Command(new Twist(0, 0, 0));
@@ -95,7 +85,9 @@ public class PurePursuitTracker {
             System.out.println("END REACHED");
         }
 
-        return new Command(new Twist(0, arc.getLength(), -arc.getAngle().radians()), vel);
+        double angularVel = vel/arc.getRadius();
+
+        return new Twist(vel, 0, angularVel);
     }
 
     private boolean isFinished() {

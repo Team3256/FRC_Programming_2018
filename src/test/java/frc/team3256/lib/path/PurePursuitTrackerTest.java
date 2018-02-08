@@ -32,12 +32,12 @@ public class PurePursuitTrackerTest {
         Line line = new Line(0,0,20,20,10,3, 250);
         Translation closestPoint = new Translation(5,5);
         double accel = Math.min((Math.pow(10.0,2.0) - Math.pow(2.0,2))/(2*15*Math.sqrt(2)),3);
-        assertEquals(line.runVelocity(closestPoint,2.0),2.0 + accel*Constants.kControlLoopPeriod ,kEpsilon);
+        assertEquals(line.checkVelocity(closestPoint,2.0),2.0 + accel*Constants.kControlLoopPeriod ,kEpsilon);
 
         line = new Line(0,0,0,50,30,8, 250);
         closestPoint = new Translation(0,25);
         accel = Math.min((Math.pow(30.0,2)-Math.pow(10.0,2))/(2.0*25),8);
-        assertEquals(line.runVelocity(closestPoint,10.0),10.0+accel*Constants.kControlLoopPeriod,kEpsilon);
+        assertEquals(line.checkVelocity(closestPoint,10.0),10.0+accel*Constants.kControlLoopPeriod,kEpsilon);
 
         line = new Line(10.0,10.0,100.0,100.0,200.0,5.0, 250.0);
         double distance = 0;
@@ -49,7 +49,7 @@ public class PurePursuitTrackerTest {
             remainingDistance = line.getRemainingDistance(closestPoint);
             accel = Math.min((Math.pow(goalVel,2)-Math.pow(currVel,2))/(2*remainingDistance), 15.0);
             distance += currVel*Math.pow(Constants.kControlLoopPeriod, 2);
-            currVel = line.runVelocity(closestPoint, currVel);
+            currVel = line.checkVelocity(closestPoint, currVel);
             closestPoint = new Translation(10.0 + distance*Math.sqrt(2)/2, 10.0 + distance*Math.sqrt(2)/2);
             //System.out.println(currVel);
         } while(remainingDistance > 0);

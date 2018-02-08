@@ -145,7 +145,7 @@ public class Arc extends Segment{
     }
 
     @Override
-    public double runVelocity(Translation closestPoint, double currVel) {
+    public double checkVelocity(Translation closestPoint, double currVel) {
         return 0.0;
     }
 }

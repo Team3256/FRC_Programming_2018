@@ -9,7 +9,7 @@ public class TrajectoryArcWrapper {
     private Trajectory trajectoryCurveFollow;
     private double output, feedForwardValue, feedBackValue;
 
-    public void setGains() {
+    public void setGains(double kP, double kI, double kD, double kV, double kA) {
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;
@@ -17,7 +17,7 @@ public class TrajectoryArcWrapper {
         this.kA = kA;
     }
 
-    public void setLoopTime() {
+    public void setLoopTime(double dt) {
         this.dt = dt;
     }
 

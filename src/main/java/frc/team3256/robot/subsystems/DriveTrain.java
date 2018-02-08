@@ -4,6 +4,7 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Kinematics;
@@ -164,6 +165,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightSlave.setInverted(true);
 
         trajectoryDistanceWrapper.setGains(Constants.kPercentOutputP, Constants.kPercentOutputI, Constants.kPercentOutputD, Constants.kPercentOutputV, Constants.kPercentOutputA);
+        trajectoryArcWrapper.setGains(Constants.kPercentOutputP, Constants.kPercentOutputI, Constants.kPercentOutputD, Constants.kPercentOutputV, Constants.kPercentOutputA);
+        trajectoryDistanceWrapper.setLoopTime(Constants.kControlLoopPeriod);
+        trajectoryArcWrapper.setLoopTime(Constants.kControlLoopPeriod);
     }
 
     public double getLeftDistance() {
@@ -358,6 +362,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
     public boolean isTrajectoryFinished() {
         return trajectoryDistanceWrapper.isFinished();
+    }
+
+    public boolean isArcTrajectoryFinished() {
+        return trajectoryArcWrapper.isFinished();
     }
     public void setTurnInPlaceSetpoint(double setpoint) {
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){

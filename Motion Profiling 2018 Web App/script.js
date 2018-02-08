@@ -14,6 +14,7 @@ var ctx;
 var image;
 var imageFlipped;
 var isFlipped = false;
+var prevVel = 0;
 
 var startPositions = {
     "center": [10, 14],
@@ -184,30 +185,30 @@ class Arc {
         var perpB = lineB.start.translate(lineB.slope.perp());
         this.center = Line.intersect(lineA.end, perpA, lineB.start, perpB);
         this.radius = Translation.diff(lineA.end, this.center).norm();
-    }
 
-    draw() {
-        var sTrans = Translation.diff(this.center, this.lineA.end);
-        var eTrans = Translation.diff(this.center, this.lineB.start);
-        var sAngle, eAngle;
+        this.sTrans = Translation.diff(this.center, this.lineA.end);
+        this.eTrans = Translation.diff(this.center, this.lineB.start);
+        this.sAngle, this.eAngle;
 
-/*      draws the center of arcs
+        /*draws the center of arcs
         if(Translation.diff(this.lineA.end, this.lineB.start).norm() > 0) {
             this.center.draw("blue");
         }
         */
 
-        if(Translation.cross(sTrans, eTrans) > 0) {
-            eAngle = -Math.atan2(sTrans.y, sTrans.x);
-            sAngle = -Math.atan2(eTrans.y, eTrans.x);
+        if(Translation.cross(this.sTrans, this.eTrans) > 0) {
+            this.eAngle = -Math.atan2(this.sTrans.y, this.sTrans.x);
+            this.sAngle = -Math.atan2(this.eTrans.y, this.eTrans.x);
         } else {
-            sAngle = -Math.atan2(sTrans.y, sTrans.x);
-            eAngle = -Math.atan2(eTrans.y, eTrans.x);
+            this.sAngle = -Math.atan2(this.sTrans.y, this.sTrans.x);
+            this.eAngle = -Math.atan2(this.eTrans.y, this.eTrans.x);
         }
+    }
 
+    draw() {
         ctx.strokeStyle="white";
         ctx.beginPath();
-        ctx.arc(this.center.getX(), this.center.getY(), this.radius*ftToPixelsScale, sAngle, eAngle);
+        ctx.arc(this.center.getX(), this.center.getY(), this.radius*ftToPixelsScale, this.sAngle, this.eAngle);
 
         ctx.stroke();
     }
@@ -226,12 +227,12 @@ class Arc {
     }
     */
 
-    getTurnAngle() {    //?
-        return sAngle - eAngle;
+    getTurnAngle() {
+        return ((this.sAngle - this.eAngle)*180)/Math.PI * -1;
     }
 
     length() {
-        return Math.PI * this.radius * (getTurnAngle/180);
+        return Math.PI * this.radius * (getTurnAngle()/180);
     }
 
 }
@@ -327,7 +328,6 @@ function update() {
     for (var point in waypoints) {
     waypoints[point].coordinates.draw();
         if (point > 0) {
-            console.log("point"+point.toString());
             var line = new Line(waypoints[point - 1], waypoints[point]);
             line.draw();
             if (!line.checkValid()) {
@@ -362,10 +362,44 @@ function chooseStart(position) {
     update();
 }
 
+
+function setModalContents() {
+    var modalText = "";
+    var arcPath = false;
+    var distance = 0;
+    var angle = 0;
+    var radius = 0;
+
+    for (var index in waypoints) {
+        if (index > 0) {
+            var line = new Line(waypoints[index - 1], waypoints[index]);
+            distance = line.slope.norm();
+            if (index > 1) {
+                var line1 = new Line(waypoints[index], waypoints[index - 1]);
+                var line2 = new Line(waypoints[index - 1], waypoints[index - 2]);
+                var arc = new Arc(line1, line2);
+                angle = arc.getTurnAngle();
+                radius = arc.radius;
+                arcPath = true;
+            }
+
+            if(!arcPath) {
+                modalText += "runAction(new FollowTrajectoryAction(" + waypoints[index-1].vel + ", " + waypoints[index].vel + ", " + (Math.round(distance*10)/10) + "));<br />";
+            }
+            else {
+                modalText += "runAction(new FollowArcTrajectoryAction(" + waypoints[index-1].vel + ", " + waypoints[index].vel + ", " + (Math.round(radius*10)/10) + ", " + (Math.round(angle*10)/10) + "));<br />";
+            }
+        }
+    }
+
+    $("#trajectoryPath").html(modalText);
+}
+
 function displayConfiguration() {
     //var title = ($("#title").val().length > 0) ? $("#title").val() : "Left Auto";
     $('.modal').css({"z-index": "5", "opacity": "1"});
     $("#modalTitle").html("Auto");
+    setModalContents();
 }
 
 function hideConfiguration() {

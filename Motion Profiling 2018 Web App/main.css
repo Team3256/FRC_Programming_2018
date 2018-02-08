@@ -100,6 +100,7 @@ input, input:focus {
     opacity: 1;
     background-color: #fff;
     transition: opacity .5s;
+    height: 100%;
 }
 
 #modalTitle {
@@ -109,6 +110,17 @@ input, input:focus {
     border: none;
     border-bottom: #aaa solid 1px;
     color: white;
+}
+
+#trajectoryPath {
+    position: absolute;
+    display: inline-block;
+    font-size: 17px;
+    border: none;
+    color: black;
+    top: 50px;
+    text-align: left;
+    left: 10px;
 }
 
 .close {

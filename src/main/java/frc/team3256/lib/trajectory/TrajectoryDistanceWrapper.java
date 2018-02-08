@@ -18,7 +18,7 @@ public class TrajectoryDistanceWrapper {
         this.kA = kA;
     }
 
-    public void setLoopTime() {
+    public void setLoopTime(double dt) {
         this.dt = dt;
     }
 

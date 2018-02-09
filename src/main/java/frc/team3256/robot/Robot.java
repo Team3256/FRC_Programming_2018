@@ -103,7 +103,6 @@ public class Robot extends IterativeRobot {
         boolean quickTurn = controlsInterface.getQuickTurn();
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
         driveTrain.setOpenLoop(power);
-
         System.out.println("LEFT ENCODER: " + driveTrain.getLeftVelocity() + "RIGHT ENCODER: " + driveTrain.getRightVelocity());
     }
 

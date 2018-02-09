@@ -1,6 +1,6 @@
 package frc.team3256.lib.trajectory;
 
-public class TrajectoryArcWrapper {
+public class DriveArcController {
 
     private double kP, kI, kD, kV, kA, dt;
     double PID, error, sumError, changeError = 0, prevError = 0;

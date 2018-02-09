@@ -3,7 +3,7 @@ package frc.team3256.lib.trajectory;
 import frc.team3256.robot.Constants;
 import frc.team3256.robot.subsystems.DriveTrain;
 
-public class TrajectoryDistanceWrapper {
+public class DriveStraightController {
 
     private double kP, kI, kD, kV, kA, dt;
     double PID, error, sumError, changeError = 0, prevError = 0;

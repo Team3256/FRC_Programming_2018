@@ -32,7 +32,7 @@ public class OI {
     }
 
     public static double elevatorPower(){
-        return 0.0;
+        return joystick.getRawAxis(1);
     }
 
     public static boolean intakeCarriage(){

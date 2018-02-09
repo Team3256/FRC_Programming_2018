@@ -60,10 +60,9 @@ public class Robot extends IterativeRobot {
             }
         }
 
-	/*
         double val = OI.elevatorPower();
         m_elevator.runElevator(val);
-	*/
+
 	prevSqueezeToggle = squeezeToggle;
     }
 }

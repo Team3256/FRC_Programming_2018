@@ -19,12 +19,13 @@ public class Constants {
     public static final int kCarriageSqueezeReverse = 8;
 
     //CAN
-    public static final int kLeftDriveMaster = 1;
-    public static final int kLeftDriveSlave = 2;
+    //Drive: Finalized
+    public static final int kLeftDriveMaster = 4;
+    public static final int kLeftDriveSlave = 5;
     public static final int kRightDriveMaster = 3;
-    public static final int kRightDriveSlave = 4;
-    public static final int kElevatorMaster = 5;
-    public static final int kElevatorSlave = 6;
+    public static final int kRightDriveSlave = 2;
+    public static final int kElevatorMaster = 0;
+    public static final int kElevatorSlave = 1;
 
     //DIO
     public static final int kHallEffectPort = 0;

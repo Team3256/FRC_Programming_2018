@@ -1,10 +1,6 @@
 package frc.team3256.robot;
 
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.cscore.VideoMode;
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Looper;
@@ -34,8 +30,6 @@ public class Robot extends IterativeRobot {
     AutoModeExecuter autoModeExecuter;
     AutoModeChooser autoModeChooser;
 
-    UsbCamera camera1;
-
     @Override
     public void robotInit() {
         driveTrain = DriveTrain.getInstance();
@@ -52,11 +46,6 @@ public class Robot extends IterativeRobot {
         subsystemManager = new SubsystemManager();
         subsystemManager.addSubsystems(driveTrain);
 
-        camera1 = CameraServer.getInstance().startAutomaticCapture();
-        camera1.setVideoMode(VideoMode.PixelFormat.kMJPEG, 377, 236, 30);
-        UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();
-        camera2.setVideoMode(VideoMode.PixelFormat.kMJPEG, 377, 236, 30);
-        //System.out.println(camera2.isconnected());
         //Dual Logitech Config
         controlsInterface = new DualLogitechConfig();
 
@@ -81,8 +70,6 @@ public class Robot extends IterativeRobot {
         enabledLooper.start();
 
         autoModeExecuter = new AutoModeExecuter();
-        //autoModeExecuter.setAutoMode(new TestDriveToDistanceAuto());
-        //autoModeExecuter.setAutoMode(new TestTrajectoryAuto());
         AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
         autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
         autoModeExecuter.setAutoMode(autoMode);
@@ -107,13 +94,12 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void autonomousPeriodic() {
-       // System.out.println("GYRO: " + driveTrain.getAngle());
     }
 
     @Override
     public void teleopPeriodic() {
         double throttle = controlsInterface.getThrottle();
-        double turn = -controlsInterface.getTurn();
+        double turn = controlsInterface.getTurn();
         boolean quickTurn = controlsInterface.getQuickTurn();
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
         driveTrain.setOpenLoop(power);

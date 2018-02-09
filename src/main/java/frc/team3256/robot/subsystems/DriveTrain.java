@@ -170,11 +170,11 @@ public class DriveTrain extends SubsystemBase implements Loop {
         leftMaster.setSensorPhase(true);
         rightMaster.setSensorPhase(true);
 
-        //leftMaster.setInverted(true);
-        //leftSlave.setInverted(true);
+        leftMaster.setInverted(true);
+        leftSlave.setInverted(true);
 
-        rightMaster.setInverted(true);
-        rightSlave.setInverted(true);
+        rightMaster.setInverted(false);
+        rightSlave.setInverted(false);
 
         trajectoryDistanceWrapper.setGains(Constants.kTrajectoryP, Constants.kTrajectoryI, Constants.kTrajectoryD, Constants.kTrajectoryV, Constants.kTrajectoryA);
         trajectoryDistanceWrapper.setLoopTime(Constants.kControlLoopPeriod);

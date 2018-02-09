@@ -15,17 +15,17 @@ public class DualLogitechConfig implements ControlsInterface{
 
     @Override
     public double getTurn(){
-        return -driver.getRawAxis(4);
+        return driver.getRawAxis(4);
     }
 
     @Override
     public boolean getQuickTurn(){
-        return driver.getRawButton(6);
+        return driver.getRawAxis(3) > 0.25;
     }
 
     @Override
     public boolean getLowGear() {
-        return false;
+        return driver.getRawAxis(2) > 0.25;
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Path {
 
     private ArrayList<Segment> segments;
-    private double segmentCompletionTolerance = 0.0;
+    private double segmentCompletionTolerance = 0.01;
 
     public Path(){
         segments = new ArrayList<>();
@@ -32,26 +32,36 @@ public class Path {
     public PathUpdate update(Translation robotCoordinates){
         PathUpdate rv = new PathUpdate();
         Segment currSegment = segments.get(0);
-        //calculate closest point to robot on path
+
+
         Translation closestPoint = currSegment.getClosestPointOnSegment(robotCoordinates);
+
+        //remove current segment if we are done with this segment
+        double distanceRemainingOnSegment = currSegment.getRemainingDistance(closestPoint);
+
+        if (distanceRemainingOnSegment <= segmentCompletionTolerance) {
+            System.out.println("REMOVING SEGMENT");
+            System.out.println("remaining distance: " + distanceRemainingOnSegment);
+            segments.remove(0);
+            currSegment = segments.get(0);
+        }
+
+        //calculate closest point to robot on path
+        closestPoint = currSegment.getClosestPointOnSegment(robotCoordinates);
         Translation robotToClosestPoint = new Translation(robotCoordinates, closestPoint);
         rv.distanceToPath = robotToClosestPoint.norm();
 
         //determine lookahead point
         rv.lookaheadPoint = currSegment.getLookAheadPoint(rv.distanceToPath, closestPoint);
+
+        System.out.println(rv.lookaheadPoint);
         for (Segment s : segments) {
             rv.remainingDistance += s.getLength();
         }
         rv.remainingDistance -= currSegment.getCurrDistanceTraveled(closestPoint);
         rv.currSegment = currSegment;
         rv.closestPoint = closestPoint;
-        //remove current segment if we are done with this segment
-        double distanceRemainingOnSegment = currSegment.getRemainingDistance(robotCoordinates);
-        if (distanceRemainingOnSegment <= segmentCompletionTolerance) {
-            System.out.println("REMOVING SEGMENT");
-            System.out.println(distanceRemainingOnSegment);
-            segments.remove(0);
-        }
+
         return rv;
     }
 

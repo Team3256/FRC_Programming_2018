@@ -12,12 +12,12 @@ public class PurePursuitTracker {
     private boolean reachedEnd = false;
     private Path path;
     private final double kEpsilon = 1E-9;
-    private double tolerance;
+    private double pathCompletionTolerance;
     private Twist prevOutput = new Twist(0,0,0);
 
-    public PurePursuitTracker(Path path, double tolerance) {
+    public PurePursuitTracker(Path path, double pathCompletionTolerance) {
         this.path = path;
-        this.tolerance = tolerance;
+        this.pathCompletionTolerance = pathCompletionTolerance;
     }
 
     public static int getDirection(Translation lookaheadPoint, Translation robotCoordinates) {
@@ -30,7 +30,7 @@ public class PurePursuitTracker {
 
     public Optional<Arc> getArcToSegment(Segment s, Translation lookaheadPoint, Translation robotCoordinates) {
         int direction = getDirection(lookaheadPoint, robotCoordinates);
-        int lookaheadSlopeDirection = s.getDirection(lookaheadPoint).direction().tan() > 0 ? 1 : -1;
+        int lookaheadSlopeDirection = (int) Math.signum(s.getDirection(lookaheadPoint).direction().radians());
 
         Translation lookaheadPointToCenter = s.getDirection(lookaheadPoint).rotate(Rotation.fromDegrees(90.0 * direction * lookaheadSlopeDirection));
 
@@ -59,7 +59,7 @@ public class PurePursuitTracker {
         //Update path
         Path.PathUpdate pathUpdate = path.update(robotCoordinates);
         //Check if we are done
-        if(pathUpdate.remainingDistance < tolerance) {
+        if(pathUpdate.remainingDistance < pathCompletionTolerance) {
             reachedEnd = true;
         }
         if(isFinished()) {
@@ -75,7 +75,7 @@ public class PurePursuitTracker {
         //If we have an arc
         if (optionalArc.isPresent()){
             Arc arc = optionalArc.get();
-            double direction = arc.getAngle().radians() / Math.abs(arc.getAngle().radians());
+            double direction = Math.signum(arc.getDirection(pathUpdate.lookaheadPoint).direction().radians());
             angularVel = vel /arc.getRadius();
             rv = new Twist(vel, 0, angularVel*direction);
         }
@@ -89,4 +89,4 @@ public class PurePursuitTracker {
         return reachedEnd;
     }
 
-}
+    }

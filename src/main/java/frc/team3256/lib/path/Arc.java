@@ -105,7 +105,7 @@ public class Arc extends Segment{
 
     @Override
     public Translation getDirection(Translation lookaheadPoint) {
-        Translation lookaheadToTarget = new Translation(center, lookaheadPoint).rotate(Rotation.fromDegrees(90));
+        Translation lookaheadToTarget = new Translation(center, lookaheadPoint).rotate(Rotation.fromDegrees(-90));
         return (lookaheadToTarget.scale(1/lookaheadToTarget.norm()));
     }
 

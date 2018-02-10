@@ -4,6 +4,7 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.team3256.lib.hardware.TalonUtil;
@@ -16,9 +17,7 @@ public class Elevator extends SubsystemBase{
 
     private SystemState currentState;
     private WantedState wantedState;
-    private boolean isCalibrated;
-    private boolean manualUp;
-    private boolean manualDown;
+    private boolean isCalibrated = false;
     private boolean stateChanged;
 
     private double m_closedLoopTarget;
@@ -76,7 +75,8 @@ public class Elevator extends SubsystemBase{
         FAST_UP,
         FAST_DOWN,
         HOLD,
-        MANUAL_CONTROL
+        MANUAL_UP,
+        MANUAL_DOWN,
     }
 
     public enum WantedState{
@@ -85,13 +85,17 @@ public class Elevator extends SubsystemBase{
         LOW_SCALE,
         HOLD,
         SWITCH,
-        MANUAL_CONTROL,
+        MANUAL_UP,
+        MANUAL_DOWN,
         INTAKE_POS,
-        STOW
     }
 
     public void update(double currPos){
-        SystemState newState;
+        if(isTriggered() && !isCalibrated()){
+            master.setSelectedSensorPosition((int)Constants.kHomeHeight, 0, 0);
+            isCalibrated = true;
+        }
+        SystemState newState = SystemState.HOLD;
         switch(currentState){
             case HOLD:
                 newState = handleHold();
@@ -102,12 +106,15 @@ public class Elevator extends SubsystemBase{
             case FAST_DOWN:
                 newState = handleFastDown();
                 break;
-            case MANUAL_CONTROL: default:
-                newState = handleManualControl();
+            case MANUAL_UP:
+                newState = handleManualControlUp();
+            case MANUAL_DOWN:
+                newState = handleManualControlDown();
         }
         //State Transfer
         if(newState != currentState){
             currentState = newState;
+            System.out.println("\tCURR_STATE:" + currentState + "\tNEW_STATE:" + newState);
             stateChanged = true;
         }
         else stateChanged = false;
@@ -134,64 +141,67 @@ public class Elevator extends SubsystemBase{
         return SystemState.FAST_DOWN;
     }
 
-    private SystemState handleManualControl(){
-        if(manualUp){
-            setOpenLoop(Constants.kElevatorUpManualPower);
-            return SystemState.MANUAL_CONTROL;
-        }
-        else if(manualDown){
-            setOpenLoop(Constants.kElevatorDownManualPower);
-            return SystemState.MANUAL_CONTROL;
-        }
-        else{
-            setHold();
-            return SystemState.HOLD;
-        }
+    private SystemState handleManualControlUp(){
+        setOpenLoop(Constants.kElevatorUpManualPower);
+        return SystemState.MANUAL_UP;
     }
 
-    private void setWantedState(WantedState wantedState, boolean manualUp, boolean manualDown){
+    private SystemState handleManualControlDown(){
+        setOpenLoop(Constants.kElevatorDownManualPower);
+        return SystemState.MANUAL_DOWN;
+    }
+
+    private void setWantedState(WantedState wantedState){
         this.wantedState = wantedState;
-        this.manualUp = manualUp;
-        this.manualDown = manualDown;
     }
 
     private SystemState defaultStateTransfer(){
         SystemState rv = SystemState.HOLD;
         switch (wantedState){
             case HIGH_SCALE:
-                m_closedLoopTarget = Constants.kHighScalePreset;
+                if(stateChanged) {
+                    m_closedLoopTarget = Constants.kHighScalePreset;
+                }
                 m_usingClosedLoop = true;
                 break;
             case MID_SCALE:
-                m_closedLoopTarget = Constants.kMidScalePreset;
+                if(stateChanged) {
+                    m_closedLoopTarget = Constants.kMidScalePreset;
+                }
                 m_usingClosedLoop = true;
                 break;
             case LOW_SCALE:
-                m_closedLoopTarget = Constants.kLowScalePreset;
+                if(stateChanged) {
+                    m_closedLoopTarget = Constants.kLowScalePreset;
+                }
                 m_usingClosedLoop = true;
                 break;
             case HOLD:
-                m_closedLoopTarget = getEncoderValue();
+                if(stateChanged) {
+                    m_closedLoopTarget = getEncoderValue();
+                }
                 m_usingClosedLoop = true;
                 break;
             case SWITCH:
-                m_closedLoopTarget = Constants.kSwitchPreset;
+                if(stateChanged) {
+                    m_closedLoopTarget = Constants.kSwitchPreset;
+                }
                 m_usingClosedLoop = true;
                 break;
-            case MANUAL_CONTROL:
+            case MANUAL_UP:
                 m_usingClosedLoop = false;
-                rv = SystemState.MANUAL_CONTROL;
+                break;
+            case MANUAL_DOWN:
+                m_usingClosedLoop = false;
                 break;
             case INTAKE_POS:
-                m_closedLoopTarget = Constants.kIntakePreset;
-                m_usingClosedLoop = true;
-                break;
-            case STOW:
-                m_closedLoopTarget = Constants.kStowPreset;
+                if(stateChanged) {
+                    m_closedLoopTarget = Constants.kIntakePreset;
+                }
                 m_usingClosedLoop = true;
                 break;
             default:
-                rv = SystemState.MANUAL_CONTROL;
+                rv = SystemState.HOLD;
                 break;
         }
         if(m_closedLoopTarget > getEncoderValue() && m_usingClosedLoop) {
@@ -204,7 +214,11 @@ public class Elevator extends SubsystemBase{
     }
 
     public boolean isCalibrated(){
-        return hallEffect.get();
+        return isCalibrated;
+    }
+
+    public boolean isTriggered(){
+        return !hallEffect.get();
     }
 
     public int getEncoderValue() {

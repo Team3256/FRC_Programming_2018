@@ -133,6 +133,7 @@ public class Constants {
     public static final double kSwitchPreset = 0.0;
     public static final double kIntakePreset = 0.0;
     public static final double kStowPreset = 0.0;
+    public static final double kHomeHeight = 0.0;
 
     //Game Data:
     public static final int kSwitchIndex = 0;

@@ -107,7 +107,7 @@ public class Robot extends IterativeRobot {
         driveTrain.setOpenLoop(power);
         driveTrain.setHighGear(!shiftDown);
 
-        System.out.println("LEFT ENCODER: " + driveTrain.getLeftVelocity() + "RIGHT ENCODER: " + driveTrain.getRightVelocity());
+        //System.out.println("LEFT ENCODER: " + driveTrain.getLeftVelocity() + "RIGHT ENCODER: " + driveTrain.getRightVelocity());
     }
 
     @Override

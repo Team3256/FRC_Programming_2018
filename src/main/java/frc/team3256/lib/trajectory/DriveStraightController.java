@@ -1,5 +1,8 @@
 package frc.team3256.lib.trajectory;
 
+import frc.team3256.lib.DrivePower;
+import frc.team3256.lib.Util;
+import frc.team3256.lib.control.PIDController;
 import frc.team3256.robot.Constants;
 import frc.team3256.robot.subsystems.DriveTrain;
 
@@ -8,8 +11,9 @@ public class DriveStraightController {
     private double kP, kI, kD, kV, kA, dt;
     double PID, error, sumError, changeError = 0, prevError = 0;
     private Trajectory trajectory;
-    private int curr_segment;
-    private double output, feedForwardValue, feedBackValue;
+    private int curr_segment = 0;
+    private double leftOutput, rightOutput, feedForwardValue, feedBackValue, target, adj;
+    PIDController pidController = new PIDController();
 
     public void setGains(double kP, double kI, double kD, double kV, double kA) {
         this.kP = kP;
@@ -42,27 +46,31 @@ public class DriveStraightController {
         changeError = (prevError - error)/dt - setpointVel;
         PID = (kP * error) + (kI * sumError) + (kD * changeError);
         prevError = error;
-        return -PID; //PID is backwards
+        return PID; //PID is backwards
     }
 
-    public double updateCalculations(double currPos) {
+    public DrivePower updateCalculations(double currPos, double currAngle) {
+        if (curr_segment == 0){
+            target = currAngle;
+        }
         if (!isFinished()){
             Trajectory.Point point = trajectory.getCurrPoint(curr_segment);
             feedForwardValue = calculateFeedForward(point.getVel(), point.getAcc());
             feedBackValue = calculateFeedBack(point.getPos(), currPos, point.getVel());
             System.out.println(PID);
-            output = feedBackValue + feedForwardValue;
+            leftOutput = feedBackValue + feedForwardValue;
+            rightOutput = feedBackValue + feedForwardValue;
+            pidController.setTargetPosition(target);
+            pidController.setMinMaxOutput(-1, 1);
+            adj = pidController.update(currAngle);
+            leftOutput += adj;
+            rightOutput -= adj;
             curr_segment++;
-            if (output > 1) {
-                output = 1;
-            }
-            else if (output < -1) {
-                output = -1;
-            }
-
-            return output;
+            leftOutput = Util.clip(leftOutput, -1, 1);
+            rightOutput = Util.clip(rightOutput, -1, 1);
+            return new DrivePower(leftOutput, rightOutput);
         }
-        return 0;
+        return new DrivePower(0,0);
     }
 
     public void resetTrajectory(){

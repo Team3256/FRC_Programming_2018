@@ -203,6 +203,8 @@ class Arc {
             this.sAngle = -Math.atan2(this.sTrans.y, this.sTrans.x);
             this.eAngle = -Math.atan2(this.eTrans.y, this.eTrans.x);
         }
+        this.calcVel = lineA.vel * (lineA.slope.norm()/length());
+        waypoints.push(new Waypoint(this.sTrans.x, this.sTrans.y, vel, radius, desc));
     }
 
     draw() {

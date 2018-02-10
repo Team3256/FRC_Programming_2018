@@ -33,8 +33,9 @@ public class FollowTrajectoryAction implements Action {
     @Override
     public void start() {
         drive.resetEncoders();
+        drive.setHighGear(true);
         drive.configureDistanceTrajectory(startVel, endVel, distance);
         System.out.println("Started...");
-        drive.updateDistanceTrajectory();
+        drive.updateDriveStraight();
     }
 }

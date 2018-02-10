@@ -4,6 +4,9 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.sun.org.omg.CORBA.ContextIdSeqHelper;
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Kinematics;
@@ -29,6 +32,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private double leftOffset = 0;
     private double rightOffset = 0;
     private double startAngle;
+    DoubleSolenoid shifter = new DoubleSolenoid(Constants.kShiftForward, Constants.kShiftReverse);
 
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
@@ -90,7 +94,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
                 */
                 break;
             case DRIVE_STRAIGHT:
-                updateDistanceTrajectory();
+                updateDriveStraight();
                 break;
             case DRIVE_ARC:
                 updateArcTrajectory();
@@ -307,20 +311,22 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(distance + rightOffset), Constants.kDriveMotionMagicProfile);
     }
 
-    public void updateDistanceTrajectory() {
+    public void updateDriveStraight() {
         if (controlMode != DriveControlMode.DRIVE_STRAIGHT) {
             return;
         }
-        if (driveStraightController.isFinished()){
-            setOpenLoop(0,0);
+        if (driveStraightController.isFinished()) {
+            setOpenLoop(0, 0);
             return;
         }
         System.out.println("Updating....");
-        leftMaster.set(ControlMode.PercentOutput, driveStraightController.updateCalculations(getLeftDistance()));
-        rightMaster.set(ControlMode.PercentOutput, driveStraightController.updateCalculations(getRightDistance()));
-        System.out.println("Left Calc: " + driveStraightController.updateCalculations(getLeftDistance()));
-        System.out.println("Right Calc: " + driveStraightController.updateCalculations(getRightDistance()));
+        DrivePower output = driveStraightController.updateCalculations((getRightDistance() + getLeftDistance())/2, gyro.getAngle());
+        leftMaster.set(ControlMode.PercentOutput, output.getLeft());
+        rightMaster.set(ControlMode.PercentOutput, output.getRight());
+    }
 
+    public void setHighGear (boolean highGear) {
+        shifter.set(highGear ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
     }
 
     public void updateArcTrajectory() {

@@ -36,11 +36,11 @@ public class DriveStraightController {
         curr_segment = 0;
     }
 
-    public double calculateFeedForward(double currVel, double currAccel) {
+    private double calculateFeedForward(double currVel, double currAccel) {
         return kV * currVel + kA * currAccel;
     }
 
-    public double calculateFeedBack(double currPos, double setpointPos, double setpointVel) {
+    private double calculateFeedBack(double currPos, double setpointPos, double setpointVel) {
         error = setpointPos - currPos;
         sumError += error;
         changeError = (prevError - error)/dt - setpointVel;

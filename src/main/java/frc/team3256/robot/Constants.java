@@ -15,8 +15,10 @@ public class Constants {
     public static final int kIntakePivotReverse = 4;
     public static final int kIntakeFlopForward = 5;
     public static final int kIntakeFlopReverse = 6;
-    public static final int kCarriageSqueezeForward = 7;
+    public static final int kCarriageSqueezeForward = 2;
     public static final int kCarriageSqueezeReverse = 8;
+    public static final int kShiftForward = 7;
+    public static final int kShiftReverse = 0;
 
     //CAN
     //Drive: Finalized

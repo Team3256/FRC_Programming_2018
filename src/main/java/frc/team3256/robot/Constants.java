@@ -122,6 +122,15 @@ public class Constants {
     public static final double kScoreForwardMotorPower = 0;
     public static final double kScoreBackwardMotorPower = -0;
 
+    public static final double kElevatorUpManualPower = 0.0;
+    public static final double kElevatorDownManualPower = 0.0;
+    public static final double kHighScalePreset = 0.0;
+    public static final double kMidScalePreset = 0.0;
+    public static final double kLowScalePreset = 0.0;
+    public static final double kSwitchPreset = 0.0;
+    public static final double kIntakePreset = 0.0;
+    public static final double kStowPreset = 0.0;
+
     //Game Data:
     public static final int kSwitchIndex = 0;
     public static final int kScaleIndex = 1;

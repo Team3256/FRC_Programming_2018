@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Encoder;
 import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.robot.Constants;
 
@@ -22,15 +21,8 @@ public class Elevator extends SubsystemBase{
     private boolean manualDown;
     private boolean stateChanged;
 
-    private double manualUpPower = 0;
-    private double manualDownPower = 0;
-    private double targetPos;
-    private double HIGH_SCALE_POS = 0;
-    private double MID_SCALE_POS = 0;
-    private double LOW_SCALE_POS = 0;
-    private double SWITCH_POS = 0;
-    private double INTAKE_POS = 0;
-    private double STOW_POS = 0;
+    private double m_closedLoopTarget;
+    private boolean m_usingClosedLoop;
 
     private static Elevator instance;
     public static Elevator getInstance() {
@@ -46,7 +38,6 @@ public class Elevator extends SubsystemBase{
         slaveOne = TalonUtil.generateSlaveTalon(Constants.kElevatorSlaveOne, Constants.kElevatorMaster);
         slaveTwo = TalonUtil.generateSlaveTalon(Constants.kElevatorSlaveTwo, Constants.kElevatorMaster);
         slaveThree = TalonUtil.generateSlaveTalon(Constants.kElevatorSlaveThree, Constants.kElevatorMaster);
-
 
         if (master.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0) != ErrorCode.OK){
             DriverStation.reportError("Mag Encoder on elevator not detected!!!", false);
@@ -77,7 +68,7 @@ public class Elevator extends SubsystemBase{
         master.set(ControlMode.Position, getEncoderValue());
     }
 
-    public void setPosition(double targetPos, int slotID){
+    public void setTargetPosition(double targetPos, int slotID){
         master.set(ControlMode.Position, targetPos, slotID);
     }
 
@@ -104,10 +95,13 @@ public class Elevator extends SubsystemBase{
         switch(currentState){
             case HOLD:
                 newState = handleHold();
+                break;
             case FAST_UP:
                 newState = handleFastUp();
+                break;
             case FAST_DOWN:
                 newState = handleFastDown();
+                break;
             case MANUAL_CONTROL: default:
                 newState = handleManualControl();
         }
@@ -120,18 +114,15 @@ public class Elevator extends SubsystemBase{
     }
 
     private SystemState handleHold(){
-        if(isCalibrated) {
-
-        }
-        setPosition(targetPos, Constants.kElevatorHoldSlot);
-        return SystemState.HOLD;
+        setTargetPosition(m_closedLoopTarget, Constants.kElevatorHoldSlot);
+        return defaultStateTransfer();
     }
 
     private SystemState handleFastUp(){
         if(isCalibrated){
 
         }
-        setPosition(targetPos, Constants.kElevatorFastUpSlot);
+        setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastUpSlot);
         return SystemState.FAST_UP;
     }
 
@@ -139,17 +130,17 @@ public class Elevator extends SubsystemBase{
         if(isCalibrated){
 
         }
-        setPosition(targetPos, Constants.kElevatorFastDownSlot);
+        setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastDownSlot);
         return SystemState.FAST_DOWN;
     }
 
     private SystemState handleManualControl(){
         if(manualUp){
-            setOpenLoop(manualUpPower);
+            setOpenLoop(Constants.kElevatorUpManualPower);
             return SystemState.MANUAL_CONTROL;
         }
         else if(manualDown){
-            setOpenLoop(manualDownPower);
+            setOpenLoop(Constants.kElevatorDownManualPower);
             return SystemState.MANUAL_CONTROL;
         }
         else{
@@ -165,63 +156,51 @@ public class Elevator extends SubsystemBase{
     }
 
     private SystemState defaultStateTransfer(){
+        SystemState rv = SystemState.HOLD;
         switch (wantedState){
             case HIGH_SCALE:
-                targetPos = HIGH_SCALE_POS;
-                if(targetPos > getEncoderValue()) {
-                    return SystemState.FAST_UP;
-                }
-                else{
-                    return SystemState.FAST_DOWN;
-                }
+                m_closedLoopTarget = Constants.kHighScalePreset;
+                m_usingClosedLoop = true;
+                break;
             case MID_SCALE:
-                targetPos = MID_SCALE_POS;
-                if(targetPos > getEncoderValue()){
-                    return SystemState.FAST_UP;
-                }
-                else{
-                    return SystemState.FAST_DOWN;
-                }
+                m_closedLoopTarget = Constants.kMidScalePreset;
+                m_usingClosedLoop = true;
+                break;
             case LOW_SCALE:
-                targetPos = LOW_SCALE_POS;
-                if(targetPos > getEncoderValue()){
-                    return SystemState.FAST_UP;
-                }
-                else{
-                    return SystemState.FAST_DOWN;
-                }
+                m_closedLoopTarget = Constants.kLowScalePreset;
+                m_usingClosedLoop = true;
+                break;
             case HOLD:
-                targetPos = getEncoderValue();
-                return SystemState.HOLD;
+                m_closedLoopTarget = getEncoderValue();
+                m_usingClosedLoop = true;
+                break;
             case SWITCH:
-                targetPos = SWITCH_POS;
-                if(targetPos > getEncoderValue()){
-                    return SystemState.FAST_UP;
-                }
-                else{
-                    return SystemState.FAST_DOWN;
-                }
+                m_closedLoopTarget = Constants.kSwitchPreset;
+                m_usingClosedLoop = true;
+                break;
             case MANUAL_CONTROL:
-                return SystemState.MANUAL_CONTROL;
+                m_usingClosedLoop = false;
+                rv = SystemState.MANUAL_CONTROL;
+                break;
             case INTAKE_POS:
-                targetPos = INTAKE_POS;
-                if(targetPos > getEncoderValue()){
-                    return SystemState.FAST_UP;
-                }
-                else{
-                    return SystemState.FAST_DOWN;
-                }
+                m_closedLoopTarget = Constants.kIntakePreset;
+                m_usingClosedLoop = true;
+                break;
             case STOW:
-                targetPos = STOW_POS;
-                if(targetPos > getEncoderValue()){
-                    return SystemState.FAST_UP;
-                }
-                else{
-                    return SystemState.FAST_DOWN;
-                }
+                m_closedLoopTarget = Constants.kStowPreset;
+                m_usingClosedLoop = true;
+                break;
+            default:
+                rv = SystemState.MANUAL_CONTROL;
+                break;
         }
-        //Temporary, FIX LATER
-        return SystemState.HOLD;
+        if(m_closedLoopTarget > getEncoderValue() && m_usingClosedLoop) {
+            rv = SystemState.FAST_UP;
+        }
+        else if (m_closedLoopTarget < getEncoderValue() && m_usingClosedLoop){
+            rv = SystemState.FAST_DOWN;
+        }
+        return rv;
     }
 
     public boolean isCalibrated(){

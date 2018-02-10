@@ -42,6 +42,7 @@ public class Constants {
     public static final double kRobotTrack = 27.5; //TODO: TBD
     public static final double kScrubFactor = 0.3;
     public static final double kWheelDiameter = 6;
+    public static final double kEncoderScalingFactor = 3.0*60.0/24.0;
 
     //Control Loop Parameters:
     //Looping period
@@ -69,13 +70,13 @@ public class Constants {
 
     //Trajectory Gains
 
-    public static final double kTrajectoryP = 0.05;
+    public static final double kTrajectoryP = 0;
     public static final double kTrajectoryI = 0;
     public static final double kTrajectoryD = 0;
-    public static final double kTrajectoryV = 1.0/120.0;
+    public static final double kTrajectoryV = 1.0/100.0;
     public static final double kTrajectoryA = 0;
     public static final double kPercentOutputMaxA = 9.0*12.0;
-    public static final double kPercentOutputCruiseVelocity = 10.0*12.0;
+    public static final double kPercentOutputCruiseVelocity = 10.0*10.0;
 
     //Drive Velocity
     public static final double kLeftDriveVelocityP = 0.3;

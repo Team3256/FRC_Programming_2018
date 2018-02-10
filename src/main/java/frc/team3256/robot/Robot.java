@@ -17,6 +17,7 @@ import frc.team3256.robot.operation.ControlsInterface;
 import frc.team3256.robot.operation.DualLogitechConfig;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.subsystems.SubsystemManager;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 public class Robot extends IterativeRobot {
 
@@ -70,7 +71,8 @@ public class Robot extends IterativeRobot {
         enabledLooper.start();
 
         autoModeExecuter = new AutoModeExecuter();
-        AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
+        //AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
+        AutoModeBase autoMode = new TestTrajectoryAuto();
         autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
         autoModeExecuter.setAutoMode(autoMode);
         autoModeExecuter.start();
@@ -89,7 +91,8 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledPeriodic() {
-
+        System.out.println("Left: " + driveTrain.getLeftDistance());
+        System.out.println("Right: " + driveTrain.getRightDistance());
     }
 
     @Override
@@ -101,8 +104,10 @@ public class Robot extends IterativeRobot {
         double throttle = controlsInterface.getThrottle();
         double turn = controlsInterface.getTurn();
         boolean quickTurn = controlsInterface.getQuickTurn();
+        boolean shiftDown = controlsInterface.getLowGear();
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
         driveTrain.setOpenLoop(power);
+        driveTrain.setHighGear(!shiftDown);
         System.out.println("LEFT ENCODER: " + driveTrain.getLeftVelocity() + "RIGHT ENCODER: " + driveTrain.getRightVelocity());
     }
 

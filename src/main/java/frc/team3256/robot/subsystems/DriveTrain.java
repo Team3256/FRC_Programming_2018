@@ -4,8 +4,6 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.sun.org.omg.CORBA.ContextIdSeqHelper;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.team3256.lib.DrivePower;
@@ -172,8 +170,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kDriveHighGearMotionMagicAcceleration),
             0);
 
-        leftMaster.setSensorPhase(true);
-        rightMaster.setSensorPhase(true);
+        leftMaster.setSensorPhase(false);
+        rightMaster.setSensorPhase(false);
 
         leftMaster.setInverted(true);
         leftSlave.setInverted(true);
@@ -186,11 +184,11 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public double getLeftDistance() {
-        return sensorUnitsToInches(leftMaster.getSelectedSensorPosition(0)/3.0);
+        return sensorUnitsToInches(leftMaster.getSelectedSensorPosition(0)/Constants.kEncoderScalingFactor);
     }
 
     public double getRightDistance() {
-        return sensorUnitsToInches(rightMaster.getSelectedSensorPosition(0)/3.0);
+        return sensorUnitsToInches(rightMaster.getSelectedSensorPosition(0)/Constants.kEncoderScalingFactor);
     }
 
     /**

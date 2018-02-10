@@ -9,6 +9,6 @@ public class TestTrajectoryAuto extends AutoModeBase {
 
     @Override
     protected void routine() throws AutoModeEndedException {
-        runAction(new FollowTrajectoryAction(0, 0, 100));
+        runAction(new FollowTrajectoryAction(0, 0, 20));
     }
 }

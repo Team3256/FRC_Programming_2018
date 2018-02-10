@@ -220,6 +220,8 @@ public class Elevator extends SubsystemBase{
                     return SystemState.FAST_DOWN;
                 }
         }
+        //Temporary, FIX LATER
+        return SystemState.HOLD;
     }
 
     public boolean isCalibrated(){

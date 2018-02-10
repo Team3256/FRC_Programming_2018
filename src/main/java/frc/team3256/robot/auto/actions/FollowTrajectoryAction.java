@@ -36,6 +36,6 @@ public class FollowTrajectoryAction implements Action {
         drive.setHighGear(true);
         drive.configureDistanceTrajectory(startVel, endVel, distance);
         System.out.println("Started...");
-        drive.updateDriveStraight();
+        drive.resetTrajectory();
     }
 }

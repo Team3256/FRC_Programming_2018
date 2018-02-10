@@ -10,10 +10,6 @@ public class TrajectoryCurveGenerator {
     Trajectory leadPath;
     Trajectory followPath;
 
-    public TrajectoryCurveGenerator() {
-        this(144, 144, 0.005);
-    }
-
     public TrajectoryCurveGenerator(double acc, double maxVel, double dt){
         trajectoryGenerator = new TrajectoryGenerator(acc, maxVel, dt);
     }

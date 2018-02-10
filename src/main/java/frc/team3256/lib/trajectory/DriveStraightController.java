@@ -4,7 +4,6 @@ import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Util;
 import frc.team3256.lib.control.PIDController;
 import frc.team3256.robot.Constants;
-import frc.team3256.robot.subsystems.DriveTrain;
 
 public class DriveStraightController {
 
@@ -46,7 +45,7 @@ public class DriveStraightController {
         changeError = (prevError - error)/dt - setpointVel;
         PID = (kP * error) + (kI * sumError) + (kD * changeError);
         prevError = error;
-        return PID; //PID is backwards
+        return -PID; //PID is backwards
     }
 
     public DrivePower updateCalculations(double currPos, double currAngle) {
@@ -63,8 +62,8 @@ public class DriveStraightController {
             pidController.setTargetPosition(target);
             pidController.setMinMaxOutput(-1, 1);
             adj = pidController.update(currAngle);
-            leftOutput += adj;
-            rightOutput -= adj;
+            //leftOutput += adj;
+            //rightOutput -= adj;
             curr_segment++;
             leftOutput = Util.clip(leftOutput, -1, 1);
             rightOutput = Util.clip(rightOutput, -1, 1);
@@ -82,7 +81,7 @@ public class DriveStraightController {
     }
 
     public void configureDistanceTrajectory(double startVel, double endVel, double distance){
-        TrajectoryGenerator trajectoryGenerator = new TrajectoryGenerator(Constants.kPercentOutputMaxA, Constants.kPercentOutputCruiseVelocity, Constants.kControlLoopPeriod);
+        TrajectoryGenerator trajectoryGenerator = new TrajectoryGenerator(Constants.kTrajectoryMaxAccel, Constants.kTrajectoryCruiseVelocity, Constants.kControlLoopPeriod);
         this.trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, distance);
     }
 }

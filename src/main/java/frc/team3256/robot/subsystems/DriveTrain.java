@@ -181,6 +181,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
         driveStraightController.setGains(Constants.kTrajectoryP, Constants.kTrajectoryI, Constants.kTrajectoryD, Constants.kTrajectoryV, Constants.kTrajectoryA);
         driveStraightController.setLoopTime(Constants.kControlLoopPeriod);
+        driveArcController.setGains(Constants.kCurveTrajectoryP, Constants.kCurveTrajectoryI, Constants.kCurveTrajectoryD, Constants.kCurveTrajectoryV, Constants.kCurveTrajectoryA);
+        driveArcController.setLoopTime(Constants.kControlLoopPeriod);
     }
 
     public double getLeftDistance() {
@@ -335,8 +337,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
             setOpenLoop(0,0);
             return;
         }
-        leftMaster.set(ControlMode.PercentOutput, driveArcController.updateCalculations(getLeftDistance()));
-        rightMaster.set(ControlMode.PercentOutput, driveArcController.updateCalculations(getRightDistance()));
+        DrivePower output = driveArcController.updateCalculations(getRightDistance(), getLeftDistance());
+        leftMaster.set(ControlMode.PercentOutput, output.getLeft());
+        rightMaster.set(ControlMode.PercentOutput, output.getRight());
     }
 
     public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius) {
@@ -344,6 +347,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         if (controlMode != DriveControlMode.DRIVE_ARC){
             controlMode = DriveControlMode.DRIVE_ARC;
         }
+        updateArcTrajectory();
     }
 
     public void configureDistanceTrajectory(double startVel, double endVel, double distance){
@@ -351,10 +355,15 @@ public class DriveTrain extends SubsystemBase implements Loop {
         if (controlMode != DriveControlMode.DRIVE_STRAIGHT){
             controlMode = DriveControlMode.DRIVE_STRAIGHT;
         }
+        updateDriveStraight();
     }
 
     public void resetTrajectory() {
         driveStraightController.resetTrajectory();
+    }
+
+    public void resetArcTrajectory() {
+        driveArcController.resetTrajectory();
     }
 
     public void resetEncoders() {

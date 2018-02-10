@@ -9,15 +9,11 @@ import frc.team3256.lib.hardware.ADXRS453_Calibrator;
 import frc.team3256.robot.auto.AutoModeBase;
 import frc.team3256.robot.auto.AutoModeChooser;
 import frc.team3256.robot.auto.AutoModeExecuter;
-import frc.team3256.robot.auto.modes.DoNothingAuto;
-import frc.team3256.robot.auto.modes.TestDriveToDistanceAuto;
-import frc.team3256.robot.auto.modes.TestTrajectoryAuto;
-import frc.team3256.robot.auto.modes.TestTurnInPlaceAuto;
+import frc.team3256.robot.auto.modes.*;
 import frc.team3256.robot.operation.ControlsInterface;
 import frc.team3256.robot.operation.DualLogitechConfig;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.subsystems.SubsystemManager;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 public class Robot extends IterativeRobot {
 
@@ -72,7 +68,7 @@ public class Robot extends IterativeRobot {
 
         autoModeExecuter = new AutoModeExecuter();
         //AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        AutoModeBase autoMode = new TestTrajectoryAuto();
+        AutoModeBase autoMode = new TestArcTrajectoryAuto();
         autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
         autoModeExecuter.setAutoMode(autoMode);
         autoModeExecuter.start();
@@ -97,6 +93,8 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void autonomousPeriodic() {
+        System.out.println("Left: " + driveTrain.getLeftDistance());
+        System.out.println("Right: " + driveTrain.getRightDistance());
     }
 
     @Override

@@ -68,7 +68,7 @@ public class Constants {
     public static final double kDistanceTrajectoryA = 0;
     public static final double kDistanceTrajectoryAccel = 9.0*10.0;
     public static final double kDistanceTrajectoryCruiseVelocity = 10.0*10.0;
-    public static final double kStraightP = 0.05;
+    public static final double kStraightP = 0.01;
     public static final double kStraightI = 0.0;
     public static final double kStraightD = 0.0;
 

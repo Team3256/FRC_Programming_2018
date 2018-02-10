@@ -14,6 +14,7 @@ public class DriveStraightController {
     private int curr_segment = 0;
     private double leftOutput, rightOutput, feedForwardValue, feedBackValue, initialAngle, adjustment;
     private PIDController pidController = new PIDController();
+    private boolean reversed = false;
 
     public void setGains(double kP, double kI, double kD, double kV, double kA, double kStraightP, double kStraightI, double kStraightD) {
         this.kP = kP;
@@ -24,6 +25,7 @@ public class DriveStraightController {
         this.kStraightP = kStraightP;
         this.kStraightI = kStraightI;
         this.kStraightD = kStraightD;
+        pidController.setGains(kStraightP, kStraightI, kStraightD);
     }
 
     public void setLoopTime(double dt) {
@@ -61,15 +63,27 @@ public class DriveStraightController {
         if (!isFinished()){
             Trajectory.Point point = trajectory.getCurrPoint(curr_segment);
             feedForwardValue = calculateFeedForward(point.getVel(), point.getAcc());
+
+            if (reversed){
+                currPos *= -1;
+            }
             feedBackValue = calculateFeedBack(point.getPos(), currPos, point.getVel());
-            System.out.println(PID);
+            //System.out.println(PID);
+
 
             leftOutput = feedBackValue + feedForwardValue;
             rightOutput = feedBackValue + feedForwardValue;
 
-            adjustment = pidController.update(currAngle);
+            adjustment = -pidController.update(currAngle);
+            System.out.println("curr angle: " + currAngle);
+            System.out.println("adjustment: " + adjustment);
             leftOutput += adjustment;
             rightOutput -= adjustment;
+
+            if (reversed){
+                leftOutput *= -1;
+                rightOutput *= -1;
+            }
 
             curr_segment++;
 
@@ -77,6 +91,7 @@ public class DriveStraightController {
             rightOutput = Util.clip(rightOutput, -1, 1);
             return new DrivePower(leftOutput, rightOutput);
         }
+
         return new DrivePower(0,0);
     }
 
@@ -87,5 +102,6 @@ public class DriveStraightController {
     public void setSetpoint(double startVel, double endVel, double distance){
         TrajectoryGenerator trajectoryGenerator = new TrajectoryGenerator(Constants.kDistanceTrajectoryAccel, Constants.kDistanceTrajectoryCruiseVelocity, Constants.kControlLoopPeriod);
         this.trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, distance);
+        if (distance < 0){reversed = true;}
     }
 }

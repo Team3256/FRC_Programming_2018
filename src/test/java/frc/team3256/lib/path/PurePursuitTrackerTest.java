@@ -5,6 +5,10 @@ import frc.team3256.lib.math.Twist;
 import frc.team3256.robot.Constants;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 public class PurePursuitTrackerTest {
@@ -18,6 +22,7 @@ public class PurePursuitTrackerTest {
         p.addSegment(new Line(0, 0, 24, 24, 120.0, 20.0, 250.0));
         p.addSegment(new Arc(24, 24, 48,24, 36, 24, 120.0, 20.0, 250.0));
         p.addSegment(new Line(48, 12, 72, 12, 10, 10, 15));
+
 
         PurePursuitTracker pursuit = new PurePursuitTracker(p, 1.0);
         Translation robotCoordinates = new Translation(15, 3);
@@ -49,6 +54,7 @@ public class PurePursuitTrackerTest {
         command = pursuit.update(robotCoordinates);
         assertEquals(command.dy(), 0.0, kEpsilon);
         assertEquals(command.dx(), 5 * 20.0  * Constants.kControlLoopPeriod, kEpsilon);
+
 
     }
 }

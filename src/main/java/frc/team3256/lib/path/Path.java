@@ -29,6 +29,10 @@ public class Path {
         Translation closestPoint;
     }
 
+    public int getLength() {
+        return segments.size();
+    }
+
     public PathUpdate update(Translation robotCoordinates){
         PathUpdate rv = new PathUpdate();
         Segment currSegment = segments.get(0);

@@ -27,7 +27,9 @@ public class Constants {
     public static final int kRightDriveMaster = 3;
     public static final int kRightDriveSlave = 2;
     public static final int kElevatorMaster = 0;
-    public static final int kElevatorSlave = 1;
+    public static final int kElevatorSlaveOne = 1;
+    public static final int kElevatorSlaveTwo = 6;
+    public static final int kElevatorSlaveThree = 7;
 
     //DIO
     public static final int kHallEffectPort = 0;
@@ -90,6 +92,20 @@ public class Constants {
     public static final double kRightDriveVelocityF = 0.214;
     public static final int kRightDriveVelocityIZone = 0;//72
     public static final int kDriveVelocityProfile = 1;
+
+    //Elevator Gains
+    public static final int kElevatorHoldSlot = 0;
+    public static final int kElevatorHoldP = 0;
+    public static final int kElevatorHoldI = 0;
+    public static final int kElevatorHoldD = 0;
+    public static final int kElevatorFastUpSlot = 1;
+    public static final int kElevatorFastUpP = 0;
+    public static final int kElevatorFastUpI = 0;
+    public static final int kElevatorFastUpD = 0;
+    public static final int kElevatorFastDownSlot = 2;
+    public static final int kElevatorFastDownP = 0;
+    public static final int kElevatorFastDownI = 0;
+    public static final int kElevatorFastDownD = 0;
 
     //Presets:
     public static final double kIntakeSharpIRMaxVoltage = 12.0;

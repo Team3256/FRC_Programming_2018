@@ -12,10 +12,11 @@ import frc.team3256.robot.Constants;
 public class Elevator extends SubsystemBase{
 
     private TalonSRX master, slaveOne, slaveTwo, slaveThree;
-    private DigitalInput hallEffect, topBumper, bottomBumper;
+    private DigitalInput hallEffect;
 
     private SystemState currentState;
     private WantedState wantedState;
+
     private boolean isCalibrated = false;
     private boolean stateChanged;
 
@@ -29,8 +30,6 @@ public class Elevator extends SubsystemBase{
 
     private Elevator() {
         hallEffect = new DigitalInput(Constants.kHallEffectPort);
-        topBumper = new DigitalInput(Constants.kTopBumperPort);
-        bottomBumper = new DigitalInput(Constants.kBottomBumperPort);
 
         master = TalonUtil.generateGenericTalon(Constants.kElevatorMaster);
         slaveOne = TalonUtil.generateSlaveTalon(Constants.kElevatorSlaveOne, Constants.kElevatorMaster);
@@ -107,8 +106,10 @@ public class Elevator extends SubsystemBase{
                 break;
             case MANUAL_UP:
                 newState = handleManualControlUp();
+                break;
             case MANUAL_DOWN:
                 newState = handleManualControlDown();
+                break;
         }
         //State Transfer
         if(newState != currentState){
@@ -227,10 +228,6 @@ public class Elevator extends SubsystemBase{
     public void setTargetPosition(double targetPositionInches) {
 
     }
-
-    public boolean topBumperTriggered() { return topBumper.get(); }
-
-    public boolean bottomBumperTriggered() { return bottomBumper.get(); }
 
     @Override
     public void outputToDashboard() {

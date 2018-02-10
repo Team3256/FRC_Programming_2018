@@ -12,7 +12,7 @@ public class DriveArcController {
     private int curr_segment;
     private Trajectory trajectoryCurveLead;
     private Trajectory trajectoryCurveFollow;
-    private double feedForwardValueLead, feedBackValueLead, feedForwardValueFollow, feedBackValueFollow, followOutput, leadOutput, adjustment, targetAngle, angle;
+    private double feedForwardValueLead, feedBackValueLead, feedForwardValueFollow, feedBackValueFollow, followOutput, leadOutput, adjustment, targetAngle, radius;
     private PIDController pidController = new PIDController();
     private double kGyroP, kGyroI, kGyroD;
 
@@ -67,7 +67,7 @@ public class DriveArcController {
             System.out.println(PID);
             followOutput = feedBackValueFollow + feedForwardValueFollow;
             leadOutput = feedBackValueLead + feedForwardValueLead;
-            targetAngle = (curr_segment * angle)/trajectoryCurveLead.getLength();
+            targetAngle = ((leadPoint.getPos()+followPoint.getPos())/2)/radius;
             pidController.setTargetPosition(targetAngle);
             pidController.setMinMaxOutput(-1, 1);
             adjustment = pidController.update(currAngle);
@@ -86,7 +86,7 @@ public class DriveArcController {
     }
 
     public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius) {
-        angle = degrees;
+        radius = turnRadius;
         TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator(Constants.kCurveTrajectoryMaxAccel, Constants.kCurveTrajectoryCruiseVelocity, Constants.kControlLoopPeriod);
         trajectoryCurveGenerator.generateTrajectoryCurve(startVel, endVel, degrees, turnRadius);
         this.trajectoryCurveLead = trajectoryCurveGenerator.getLeadPath();

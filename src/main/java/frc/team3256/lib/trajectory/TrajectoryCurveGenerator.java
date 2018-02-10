@@ -33,7 +33,8 @@ public class TrajectoryCurveGenerator {
 
     public static void main (String [] args){
         TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator(144, 144, 0.005);
-        trajectoryCurveGenerator.generateTrajectoryCurve(2, 3, 30, 5);
+        trajectoryCurveGenerator.generateTrajectoryCurve(0, 0, 90, 36);
+
     }
 
 }

@@ -17,7 +17,7 @@ public class PurePursuitTrackerTest {
         Path p = new Path();
         p.addSegment(new Line(0, 0, 24, 24, 120.0, 20.0, 250.0));
         p.addSegment(new Arc(24, 24, 48,24, 36, 24));
-        p.addSegment(new Line(48, 24, 70, 24, 10, 5, 15));
+        p.addSegment(new Line(48, 12, 70, 12, 10, 5, 15));
 
         PurePursuitTracker pursuit = new PurePursuitTracker(p, 1.0);
         Translation robotCoordinates = new Translation(15, 3);
@@ -46,7 +46,7 @@ public class PurePursuitTrackerTest {
         robotCoordinates = new Translation(23.999, 23.999);
         pursuit.update(robotCoordinates);
 
-        robotCoordinates = new Translation(48, 24);
+        robotCoordinates = new Translation(48.2, 24.2);
         pursuit.update(robotCoordinates);
 
 

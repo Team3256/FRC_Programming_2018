@@ -43,7 +43,7 @@ public class Path {
             System.out.println("REMOVING SEGMENT");
             System.out.println("remaining distance: " + distanceRemainingOnSegment);
             segments.remove(0);
-            currSegment = segments.get(0);
+            return(update(robotCoordinates));
         }
 
         //calculate closest point to robot on path
@@ -51,10 +51,18 @@ public class Path {
         Translation robotToClosestPoint = new Translation(robotCoordinates, closestPoint);
         rv.distanceToPath = robotToClosestPoint.norm();
 
+        //remove current segment if robot is too far away to make an arc to it
+        if (robotToClosestPoint.norm() > distanceRemainingOnSegment) {
+            System.out.println("REMOVING SEGMENT");
+            System.out.println("robot to point distance: "+robotToClosestPoint.norm());
+            System.out.println("remaining distance: " + distanceRemainingOnSegment);
+            segments.remove(0);
+            return(update(robotCoordinates));
+        }
+
         //determine lookahead point
         rv.lookaheadPoint = currSegment.getLookAheadPoint(rv.distanceToPath, closestPoint);
 
-        System.out.println(rv.lookaheadPoint);
         for (Segment s : segments) {
             rv.remainingDistance += s.getLength();
         }

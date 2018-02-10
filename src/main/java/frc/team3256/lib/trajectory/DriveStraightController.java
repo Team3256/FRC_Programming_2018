@@ -8,18 +8,22 @@ import frc.team3256.robot.Constants;
 public class DriveStraightController {
 
     private double kP, kI, kD, kV, kA, dt;
+    private double kStraightP, kStraightI, kStraightD;
     double PID, error, sumError, changeError = 0, prevError = 0;
     private Trajectory trajectory;
     private int curr_segment = 0;
-    private double leftOutput, rightOutput, feedForwardValue, feedBackValue, target, adj;
-    PIDController pidController = new PIDController();
+    private double leftOutput, rightOutput, feedForwardValue, feedBackValue, initialAngle, adjustment;
+    private PIDController pidController = new PIDController();
 
-    public void setGains(double kP, double kI, double kD, double kV, double kA) {
+    public void setGains(double kP, double kI, double kD, double kV, double kA, double kStraightP, double kStraightI, double kStraightD) {
         this.kP = kP;
         this.kI = kI;
         this.kV = kV;
         this.kD = kD;
         this.kA = kA;
+        this.kStraightP = kStraightP;
+        this.kStraightI = kStraightI;
+        this.kStraightD = kStraightD;
     }
 
     public void setLoopTime(double dt) {
@@ -27,11 +31,11 @@ public class DriveStraightController {
     }
 
     public void resetController() {
-        kP = 0;
-        kI = 0;
-        kD = 0;
-        kV = 0;
-        kA = 0;
+        PID = 0;
+        error = 0;
+        sumError = 0;
+        changeError = 0;
+        prevError = 0;
         curr_segment = 0;
     }
 
@@ -39,32 +43,36 @@ public class DriveStraightController {
         return kV * currVel + kA * currAccel;
     }
 
-    private double calculateFeedBack(double currPos, double setpointPos, double setpointVel) {
+    private double calculateFeedBack(double setpointPos, double currPos, double setpointVel) {
         error = setpointPos - currPos;
         sumError += error;
         changeError = (prevError - error)/dt - setpointVel;
         PID = (kP * error) + (kI * sumError) + (kD * changeError);
         prevError = error;
-        return -PID; //PID is backwards
+        return PID;
     }
 
-    public DrivePower updateCalculations(double currPos, double currAngle) {
+    public DrivePower update(double currPos, double currAngle) {
         if (curr_segment == 0){
-            target = currAngle;
+            initialAngle = currAngle;
+            pidController.setTargetPosition(initialAngle);
+            pidController.setMinMaxOutput(-1, 1);
         }
         if (!isFinished()){
             Trajectory.Point point = trajectory.getCurrPoint(curr_segment);
             feedForwardValue = calculateFeedForward(point.getVel(), point.getAcc());
             feedBackValue = calculateFeedBack(point.getPos(), currPos, point.getVel());
             System.out.println(PID);
+
             leftOutput = feedBackValue + feedForwardValue;
             rightOutput = feedBackValue + feedForwardValue;
-            pidController.setTargetPosition(target);
-            pidController.setMinMaxOutput(-1, 1);
-            adj = pidController.update(currAngle);
-            //leftOutput += adj;
-            //rightOutput -= adj;
+
+            adjustment = pidController.update(currAngle);
+            leftOutput += adjustment;
+            rightOutput -= adjustment;
+
             curr_segment++;
+
             leftOutput = Util.clip(leftOutput, -1, 1);
             rightOutput = Util.clip(rightOutput, -1, 1);
             return new DrivePower(leftOutput, rightOutput);
@@ -72,16 +80,12 @@ public class DriveStraightController {
         return new DrivePower(0,0);
     }
 
-    public void resetTrajectory(){
-        curr_segment = 0;
-    }
-
     public boolean isFinished() {
         return curr_segment >= trajectory.getLength();
     }
 
-    public void configureDistanceTrajectory(double startVel, double endVel, double distance){
-        TrajectoryGenerator trajectoryGenerator = new TrajectoryGenerator(Constants.kTrajectoryMaxAccel, Constants.kTrajectoryCruiseVelocity, Constants.kControlLoopPeriod);
+    public void setSetpoint(double startVel, double endVel, double distance){
+        TrajectoryGenerator trajectoryGenerator = new TrajectoryGenerator(Constants.kDistanceTrajectoryAccel, Constants.kDistanceTrajectoryCruiseVelocity, Constants.kControlLoopPeriod);
         this.trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, distance);
     }
 }

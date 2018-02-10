@@ -17,11 +17,10 @@ public class Constants {
     public static final int kIntakeFlopReverse = 6;
     public static final int kCarriageSqueezeForward = 2;
     public static final int kCarriageSqueezeReverse = 8;
-    public static final int kShiftForward = 7;
-    public static final int kShiftReverse = 0;
+    public static final int kShifterForward = 7;
+    public static final int kShifterReverse = 0;
 
     //CAN
-    //Drive: Finalized
     public static final int kLeftDriveMaster = 4;
     public static final int kLeftDriveSlave = 5;
     public static final int kRightDriveMaster = 3;
@@ -41,7 +40,7 @@ public class Constants {
 
     //Robot constants:
     //everything is in inches, seconds, or degrees
-    public static final double kRobotTrack = 25.375; //TODO: TBD
+    public static final double kRobotTrack = 25.375;
     public static final double kScrubFactor = 0.3;
     public static final double kWheelDiameter = 6.045;
     public static final double kEncoderScalingFactor = 3.0*60.0/24.0;
@@ -51,16 +50,7 @@ public class Constants {
     public static final double kControlLoopPeriod = 1.0/200.0;
     public static final double kSlowLoopPeriod = 1.0/50.0;
 
-    //Drive Motion Magic
-    public static final double kDriveHighGearMotionMagicP = 0.05;
-    public static final double kDriveHighGearMotionMagicI = 0;
-    public static final double kDriveHighGearMotionMagicD = 0;
-    public static final double kDriveHighGearMotionMagicF = 0.25;
-    public static final double kDriveHighGearMotionMagicAcceleration = 36.0*12.0;
-    public static final double kDriveHighGearMotionMagicCruiseVelocity = 12.0*12.0;
-    public static final int kDriveMotionMagicProfile = 0;
-
-    //    //Turn Motion Magic
+    //Turn Motion Magic: Low Gear
     public static final double kTurnLowGearMotionMagicP = 3.5;
     public static final double kTurnLowGearMotionMagicI = 0.001;
     public static final int kTurnLowGearIZone = 1000;
@@ -68,20 +58,21 @@ public class Constants {
     public static final double kTurnLowGearMotionMagicF = 0.45;
     public static final double kTurnLowGearMotionMagicAcceleration = 15.0*12.0;
     public static final double kTurnLowGearMotionMagicCruiseVelocity = 5.0*12.0;
-    public static final int kTurnMotionMagicProfile = 2;
+    public static final int kTurnMotionMagicProfile = 0;
 
-    //Trajectory Gains
-
-    public static final double kTrajectoryP = 0.04;
-    public static final double kTrajectoryI = 0;
-    public static final double kTrajectoryD = 0;
-    public static final double kTrajectoryV = 1.0/140.0;
-    public static final double kTrajectoryA = 0;
-    public static final double kTrajectoryMaxAccel = 9.0*10.0;
-    public static final double kTrajectoryCruiseVelocity = 10.0*10.0;
+    //DriveStraightController Gains
+    public static final double kDistanceTrajectoryP = 0.04;
+    public static final double kDistanceTrajectoryI = 0;
+    public static final double kDistanceTrajectoryD = 0;
+    public static final double kDistanceTrajectoryV = 1.0/140.0;
+    public static final double kDistanceTrajectoryA = 0;
+    public static final double kDistanceTrajectoryAccel = 9.0*10.0;
+    public static final double kDistanceTrajectoryCruiseVelocity = 10.0*10.0;
+    public static final double kStraightP = 0.0;
+    public static final double kStraightI = 0.0;
+    public static final double kStraightD = 0.0;
 
     //Trajectory Curve Gains
-
     public static final double kCurveTrajectoryP = 0.17;
     public static final double kCurveTrajectoryI = 0;
     public static final double kCurveTrajectoryD = 0;

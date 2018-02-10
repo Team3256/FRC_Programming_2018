@@ -47,7 +47,7 @@ public class Robot extends IterativeRobot {
         controlsInterface = new DualLogitechConfig();
 
         autoModeChooser = new AutoModeChooser();
-        autoModeChooser.addAutoModes(new TestDriveToDistanceAuto(), new TestTurnInPlaceAuto(), new TestTrajectoryAuto());
+        autoModeChooser.addAutoModes(new TestTurnInPlaceAuto(), new TestTrajectoryAuto());
         autoModeChooser.addAutoModes(new DoNothingAuto());
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
@@ -106,6 +106,7 @@ public class Robot extends IterativeRobot {
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
         driveTrain.setOpenLoop(power);
         driveTrain.setHighGear(!shiftDown);
+
         System.out.println("LEFT ENCODER: " + driveTrain.getLeftVelocity() + "RIGHT ENCODER: " + driveTrain.getRightVelocity());
     }
 

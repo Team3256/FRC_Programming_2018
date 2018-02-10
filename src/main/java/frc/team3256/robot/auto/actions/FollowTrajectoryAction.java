@@ -25,17 +25,13 @@ public class FollowTrajectoryAction implements Action {
     @Override
     public void done() {
         drive.setOpenLoop(0,0);
-        System.out.println("Finished....");
-        drive.resetTrajectory();
-        System.out.println("Distance Traveled: " + drive.getRightDistance());
+        drive.resetDriveStraightController();
     }
 
     @Override
     public void start() {
-        drive.resetEncoders();
         drive.setHighGear(true);
-        drive.configureDistanceTrajectory(startVel, endVel, distance);
-        System.out.println("Started...");
-        drive.resetTrajectory();
+        drive.resetDriveStraightController();
+        drive.configureDriveStraight(startVel, endVel, distance + drive.getAverageDistance());
     }
 }

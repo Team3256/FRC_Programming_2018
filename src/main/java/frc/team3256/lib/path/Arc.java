@@ -2,6 +2,7 @@ package frc.team3256.lib.path;
 
 import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Translation;
+import frc.team3256.robot.Constants;
 
 public class Arc extends Segment{
 
@@ -26,12 +27,10 @@ public class Arc extends Segment{
         //This should not be possible. We are using constant-curvature arcs.
         //If this ever occurs, then one (or more) of the parameters were passed in incorrectly
         if (Math.abs(centerToStart.norm() - centerToEnd.norm()) > 10E-9){
-
             System.out.println("ERROR: THIS ARC IS NOT CONSTANT_CURVATURE");
             System.out.println("START: " + start);
             System.out.println("END: " + end);
             System.out.println("CENTER: " + center + "\n");
-
             radius = Double.NaN;
         }
         else radius = centerToStart.norm();
@@ -106,7 +105,7 @@ public class Arc extends Segment{
 
     @Override
     public Translation getDirection(Translation lookaheadPoint) {
-        Translation lookaheadToTarget = new Translation(center, lookaheadPoint).rotate(Rotation.fromDegrees(90));
+        Translation lookaheadToTarget = new Translation(center, lookaheadPoint).rotate(Rotation.fromDegrees(-90));
         return (lookaheadToTarget.scale(1/lookaheadToTarget.norm()));
     }
 
@@ -145,7 +144,13 @@ public class Arc extends Segment{
     }
 
     @Override
-    public double runVelocity(Translation closestPoint, double currVel) {
-        return 0.0;
+    public double checkVelocity(Translation closestPoint, double prevVelocity) {
+        double remainingDistance = getRemainingDistance(closestPoint);
+        double outputVelFromEnd = Math.sqrt(Math.pow(goalVel, 2.0)-2*maxAccel*remainingDistance);
+        double outputVel = prevVelocity + maxAccel * Constants.kControlLoopPeriod;
+        outputVelFromEnd = Double.isNaN(outputVelFromEnd) ? outputVel : outputVelFromEnd;
+        outputVel = Math.min(outputVel, outputVelFromEnd);
+        outputVel = Math.min(outputVel, maxVel);
+        return outputVel;
     }
 }

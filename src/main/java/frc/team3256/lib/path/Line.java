@@ -125,14 +125,13 @@ public class Line extends Segment{
     }
 
     @Override
-    public double runVelocity(Translation closestPoint, double currVel) {
+    public double checkVelocity(Translation closestPoint, double prevVelocity) {
         double remainingDistance = getRemainingDistance(closestPoint);
-        double calculatedAccel = (Math.pow(goalVel, 2.0)-Math.pow(currVel, 2.0))/(2.0*remainingDistance);
-        double runAccel = Math.min(calculatedAccel, maxAccel);
-
-        double nextVel = currVel + (runAccel * Constants.kControlLoopPeriod);
-        double runVel = Math.min(nextVel, maxVel);
-
-        return runVel;
+        double outputVelFromEnd = Math.sqrt(Math.pow(goalVel, 2.0)-2*maxAccel*remainingDistance);
+        double outputVel = prevVelocity + maxAccel * Constants.kControlLoopPeriod;
+        outputVelFromEnd = Double.isNaN(outputVelFromEnd) ? outputVel : outputVelFromEnd;
+        outputVel = Math.min(outputVel, outputVelFromEnd);
+        outputVel = Math.min(outputVel, maxVel);
+        return outputVel;
     }
 }

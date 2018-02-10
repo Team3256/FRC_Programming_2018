@@ -2,6 +2,9 @@ package frc.team3256.lib.path;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 public class PathGeneratorTest {
@@ -58,5 +61,17 @@ public class PathGeneratorTest {
         assertEquals(arcGenerator.center.x(), 5, kEpsilon);
         assertEquals(arcGenerator.center.y(), 5, kEpsilon);
     }
+
+    @Test
+    public void testGenerator() {
+
+        PathGenerator.Waypoint one = new PathGenerator.Waypoint(0, 0, 0);
+        PathGenerator.Waypoint two = new PathGenerator.Waypoint(0, 10, 5*Math.sqrt(2));
+        PathGenerator.Waypoint three = new PathGenerator.Waypoint(10, 10, 0);
+        List<PathGenerator.Waypoint> waypointList = Arrays.asList(one, two, three);
+        Path path = PathGenerator.generate(waypointList);
+        assertEquals(path.getLength(), 3, kEpsilon);
+    }
+
 
 }

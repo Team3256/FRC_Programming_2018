@@ -398,8 +398,12 @@ public class DriveTrain extends SubsystemBase implements Loop {
         //return Math.abs(degrees + startAngle) < Math.abs(gyro.getAngle());
     }
 
-    public boolean isTrajectoryFinished() {
+    public boolean isDriveStraightFinished() {
         return driveStraightController.isFinished();
+    }
+
+    public boolean isArcControllerFinished() {
+        return driveArcController.isFinished();
     }
 
     public void setTurnInPlaceSetpoint(double setpoint) {

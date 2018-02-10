@@ -15,7 +15,7 @@ public class FollowTrajectoryAction implements Action {
 
     @Override
     public boolean isFinished() {
-        return drive.isTrajectoryFinished();
+        return drive.isDriveStraightFinished();
     }
 
     @Override

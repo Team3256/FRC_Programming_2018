@@ -148,6 +148,7 @@ public class Arc extends Segment{
         double remainingDistance = getRemainingDistance(closestPoint);
         double outputVelFromEnd = Math.sqrt(Math.pow(goalVel, 2.0)-2*maxAccel*remainingDistance);
         double outputVel = prevVelocity + maxAccel * Constants.kControlLoopPeriod;
+        outputVelFromEnd = Double.isNaN(outputVelFromEnd) ? outputVel : outputVelFromEnd;
         outputVel = Math.min(outputVel, outputVelFromEnd);
         outputVel = Math.min(outputVel, maxVel);
         return outputVel;

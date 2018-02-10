@@ -16,8 +16,8 @@ public class PurePursuitTrackerTest {
 
         Path p = new Path();
         p.addSegment(new Line(0, 0, 24, 24, 120.0, 20.0, 250.0));
-        p.addSegment(new Arc(24, 24, 48,24, 36, 24));
-        p.addSegment(new Line(48, 12, 70, 12, 10, 5, 15));
+        p.addSegment(new Arc(24, 24, 48,24, 36, 24, 120.0, 20.0, 250.0));
+        p.addSegment(new Line(48, 12, 72, 12, 10, 10, 15));
 
         PurePursuitTracker pursuit = new PurePursuitTracker(p, 1.0);
         Translation robotCoordinates = new Translation(15, 3);
@@ -27,14 +27,11 @@ public class PurePursuitTrackerTest {
         assertEquals(command.dx(), 20.0 * Constants.kControlLoopPeriod, kEpsilon);
         assertEquals(command.dtheta(), 20.0 * Constants.kControlLoopPeriod / (6*Math.sqrt(2)), kEpsilon);
 
-
-
         robotCoordinates = new Translation(9, 3);
         command = pursuit.update(robotCoordinates);
         assertEquals(command.dy(), 0.0, kEpsilon);
         assertEquals(command.dx(), 2 * 20.0 * Constants.kControlLoopPeriod, kEpsilon);
         assertEquals(command.dtheta(), 2 * 20.0 * Constants.kControlLoopPeriod / (3* Math.sqrt(2)), kEpsilon);
-
 
         robotCoordinates = new Translation(3, 9);
         command = pursuit.update(robotCoordinates);
@@ -42,46 +39,16 @@ public class PurePursuitTrackerTest {
         assertEquals(command.dx(), 3 * 20.0 * Constants.kControlLoopPeriod, kEpsilon);
         assertEquals(command.dtheta(), -3 * 20.0 * Constants.kControlLoopPeriod / (3* Math.sqrt(2)), kEpsilon);
 
-
         robotCoordinates = new Translation(23.999, 23.999);
         pursuit.update(robotCoordinates);
 
         robotCoordinates = new Translation(48.2, 24.2);
         pursuit.update(robotCoordinates);
 
-
-
-
-
-
-        /*
-        robotCoordinates = new Translation(30, 0);
-        Twist pursuitUpdate = pursuit.update(robotCoordinates, 20);
-        System.out.println(pursuitUpdate.delta);
-        System.out.println(pursuitUpdate.vel);
-
-
-        robotCoordinates = new Translation(14, 15);
-        pursuitUpdate = pursuit.update(robotCoordinates, 0);
-        System.out.println(pursuitUpdate.delta);
-        System.out.println(pursuitUpdate.vel);
-
-
-        robotCoordinates = new Translation(0, 30);
-        pursuitUpdate = pursuit.update(robotCoordinates, 100);
-        System.out.println(pursuitUpdate.delta);
-        System.out.println(pursuitUpdate.vel);
-
-        robotCoordinates = new Translation(0, 30);
-        pursuitUpdate = pursuit.update(robotCoordinates, 200);
-        System.out.println(pursuitUpdate.delta);
-        System.out.println(pursuitUpdate.vel);
-
-        robotCoordinates = new Translation(0, 100);
-        pursuitUpdate = pursuit.update(robotCoordinates, 300);
-        System.out.println(pursuitUpdate.delta);
-        System.out.println(pursuitUpdate.vel);
-        */
+        robotCoordinates = new Translation(50, 0);
+        command = pursuit.update(robotCoordinates);
+        assertEquals(command.dy(), 0.0, kEpsilon);
+        assertEquals(command.dx(), 5 * 20.0  * Constants.kControlLoopPeriod, kEpsilon);
 
     }
 }

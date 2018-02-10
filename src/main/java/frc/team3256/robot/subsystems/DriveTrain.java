@@ -24,7 +24,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private DoubleSolenoid shifter;
 
     private DriveControlMode controlMode;
-    private double degrees;
+    private double degrees, angle;
     private DriveStraightController driveStraightController = new DriveStraightController();
     private DriveArcController driveArcController = new DriveArcController();
 
@@ -170,7 +170,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         driveStraightController.setGains(Constants.kDistanceTrajectoryP, Constants.kDistanceTrajectoryI, Constants.kDistanceTrajectoryD, Constants.kDistanceTrajectoryV, Constants.kDistanceTrajectoryA, Constants.kStraightP, Constants.kStraightI, Constants.kStraightD);
         driveStraightController.setLoopTime(Constants.kControlLoopPeriod);
 
-        driveArcController.setGains(Constants.kCurveTrajectoryP, Constants.kCurveTrajectoryI, Constants.kCurveTrajectoryD, Constants.kCurveTrajectoryV, Constants.kCurveTrajectoryA);
+        driveArcController.setGains(Constants.kCurveTrajectoryP, Constants.kCurveTrajectoryI, Constants.kCurveTrajectoryD, Constants.kCurveTrajectoryV, Constants.kCurveTrajectoryA, Constants.kCurveP, Constants.kCurveI, Constants.kCurveD);
         driveArcController.setLoopTime(Constants.kControlLoopPeriod);
     }
 
@@ -307,6 +307,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public void updateDriveArc() {
+        DrivePower output;
         if (controlMode != DriveControlMode.DRIVE_ARC) {
             return;
         }
@@ -314,12 +315,21 @@ public class DriveTrain extends SubsystemBase implements Loop {
             setOpenLoop(0,0);
             return;
         }
-        DrivePower output = driveArcController.updateCalculations(getRightDistance(), getLeftDistance());
-        leftMaster.set(ControlMode.PercentOutput, output.getLeft());
-        rightMaster.set(ControlMode.PercentOutput, output.getRight());
+
+        if (angle >= 0) {
+            output = driveArcController.updateCalculations(getRightDistance(), getLeftDistance(), getAngle().degrees());
+            leftMaster.set(ControlMode.PercentOutput, output.getRight());
+            rightMaster.set(ControlMode.PercentOutput, output.getLeft());
+        }
+        else {
+            output = driveArcController.updateCalculations(getLeftDistance(), getRightDistance(), getAngle().degrees());
+            leftMaster.set(ControlMode.PercentOutput, output.getLeft());
+            rightMaster.set(ControlMode.PercentOutput, output.getRight());
+        }
     }
 
     public void configureDriveArc(double startVel, double endVel, double degrees, double turnRadius) {
+        angle = degrees;
         driveArcController.configureArcTrajectory(startVel, endVel, degrees, turnRadius);
         if (controlMode != DriveControlMode.DRIVE_ARC){
             controlMode = DriveControlMode.DRIVE_ARC;

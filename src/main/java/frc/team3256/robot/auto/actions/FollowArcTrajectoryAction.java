@@ -36,5 +36,6 @@ public class FollowArcTrajectoryAction implements Action {
         drive.configureDriveArc(startVel, endVel, angle, radius);
         System.out.println("Started...");
         drive.resetDriveArcController();
+        drive.resetEncoders();
     }
 }

@@ -2,6 +2,7 @@ package frc.team3256.lib.trajectory;
 
 import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Util;
+import frc.team3256.lib.control.PIDController;
 import frc.team3256.robot.Constants;
 
 public class DriveArcController {
@@ -11,14 +12,19 @@ public class DriveArcController {
     private int curr_segment;
     private Trajectory trajectoryCurveLead;
     private Trajectory trajectoryCurveFollow;
-    private double feedForwardValueLead, feedBackValueLead, feedForwardValueFollow, feedBackValueFollow, leftOutput, rightOutput;
+    private double feedForwardValueLead, feedBackValueLead, feedForwardValueFollow, feedBackValueFollow, followOutput, leadOutput, adjustment, targetAngle, angle;
+    private PIDController pidController = new PIDController();
+    private double kGyroP, kGyroI, kGyroD;
 
-    public void setGains(double kP, double kI, double kD, double kV, double kA) {
+    public void setGains(double kP, double kI, double kD, double kV, double kA, double kGyroP, double kGyroI, double kGyroD) {
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;
         this.kV = kV;
         this.kA = kA;
+        this.kGyroP = kGyroP;
+        this.kGyroI = kGyroI;
+        this.kGyroD = kGyroD;
     }
 
     public void setLoopTime(double dt) {
@@ -38,32 +44,39 @@ public class DriveArcController {
         return kV * currVel + kA * currAccel;
     }
 
-    public double calculateFeedBack(double currPos, double setpointPos, double setpointVel) {
+    public double calculateFeedBack(double setpointPos, double currPos, double setpointVel) {
         error = setpointPos - currPos;
         sumError += error;
         changeError = (prevError - error)/dt - setpointVel;
         PID = (kP * error) + (kI * sumError) + (kD * changeError);
         prevError = error;
-        return -PID;
+        return PID;
     }
 
-    public DrivePower updateCalculations(double currPosLead, double currPosFollow) {
+    public DrivePower updateCalculations(double currPosLead, double currPosFollow, double currAngle) {
+        if (curr_segment == 0) {
+            pidController.setGains(kGyroP,kGyroI,kGyroD);
+        }
         if (!isFinished()){
-            Trajectory.Point leadPoints = trajectoryCurveLead.getCurrPoint(curr_segment);
-            Trajectory.Point followPoints = trajectoryCurveFollow.getCurrPoint(curr_segment);
-            feedForwardValueLead = calculateFeedForward(leadPoints.getVel(), leadPoints.getAcc());
-            feedBackValueLead = calculateFeedBack(leadPoints.getPos(), currPosLead, leadPoints.getVel());
-            feedForwardValueFollow = calculateFeedForward(followPoints.getVel(), leadPoints.getAcc());
-            feedBackValueFollow = calculateFeedBack(followPoints.getPos(), currPosFollow, followPoints.getVel());
+            Trajectory.Point leadPoint = trajectoryCurveLead.getCurrPoint(curr_segment);
+            Trajectory.Point followPoint = trajectoryCurveFollow.getCurrPoint(curr_segment);
+            feedForwardValueLead = calculateFeedForward(leadPoint.getVel(), leadPoint.getAcc());
+            feedBackValueLead = calculateFeedBack(leadPoint.getPos(), currPosLead, leadPoint.getVel());
+            feedForwardValueFollow = calculateFeedForward(followPoint.getVel(), leadPoint.getAcc());
+            feedBackValueFollow = calculateFeedBack(followPoint.getPos(), currPosFollow, followPoint.getVel());
             System.out.println(PID);
-            leftOutput = feedBackValueFollow + feedForwardValueFollow;
-            rightOutput = feedBackValueLead + feedForwardValueLead;
-            //leftOutput += adj;
-            //rightOutput -= adj;
+            followOutput = feedBackValueFollow + feedForwardValueFollow;
+            leadOutput = feedBackValueLead + feedForwardValueLead;
+            targetAngle = (curr_segment * angle)/trajectoryCurveLead.getLength();
+            pidController.setTargetPosition(targetAngle);
+            pidController.setMinMaxOutput(-1, 1);
+            adjustment = pidController.update(currAngle);
+            leadOutput -= adjustment;
+            followOutput += adjustment;
             curr_segment++;
-            leftOutput = Util.clip(leftOutput, -1, 1);
-            rightOutput = Util.clip(rightOutput, -1, 1);
-            return new DrivePower(leftOutput, rightOutput);
+            followOutput = Util.clip(followOutput, -1, 1);
+            leadOutput = Util.clip(leadOutput, -1, 1);
+            return new DrivePower(leadOutput, followOutput);
         }
         return new DrivePower(0,0);
     }
@@ -73,6 +86,7 @@ public class DriveArcController {
     }
 
     public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius) {
+        angle = degrees;
         TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator(Constants.kCurveTrajectoryMaxAccel, Constants.kCurveTrajectoryCruiseVelocity, Constants.kControlLoopPeriod);
         trajectoryCurveGenerator.generateTrajectoryCurve(startVel, endVel, degrees, turnRadius);
         this.trajectoryCurveLead = trajectoryCurveGenerator.getLeadPath();

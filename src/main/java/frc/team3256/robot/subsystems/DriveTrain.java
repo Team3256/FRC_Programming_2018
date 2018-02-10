@@ -186,11 +186,11 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public double getLeftDistance() {
-        return sensorUnitsToInches(leftMaster.getSelectedSensorPosition(0));
+        return sensorUnitsToInches(leftMaster.getSelectedSensorPosition(0)/3.0);
     }
 
     public double getRightDistance() {
-        return sensorUnitsToInches(rightMaster.getSelectedSensorPosition(0));
+        return sensorUnitsToInches(rightMaster.getSelectedSensorPosition(0)/3.0);
     }
 
     /**

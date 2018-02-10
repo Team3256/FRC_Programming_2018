@@ -41,7 +41,7 @@ public class Constants {
     //everything is in inches, seconds, or degrees
     public static final double kRobotTrack = 27.5; //TODO: TBD
     public static final double kScrubFactor = 0.3;
-    public static final double kWheelDiameter = 4.1;
+    public static final double kWheelDiameter = 6;
 
     //Control Loop Parameters:
     //Looping period

@@ -15,7 +15,7 @@ public class FollowTrajectoryAction implements Action {
 
     @Override
     public boolean isFinished() {
-        return drive.isTrajectoryFinished();
+        return drive.isDriveStraightFinished();
     }
 
     @Override
@@ -25,16 +25,13 @@ public class FollowTrajectoryAction implements Action {
     @Override
     public void done() {
         drive.setOpenLoop(0,0);
-        System.out.println("Finished....");
-        drive.resetTrajectory();
-        System.out.println("Distance Traveled: " + drive.getRightDistance());
+        drive.resetDriveStraightController();
     }
 
     @Override
     public void start() {
-        drive.resetEncoders();
-        drive.configureDistanceTrajectory(startVel, endVel, distance);
-        System.out.println("Started...");
-        drive.updateDistanceTrajectory();
+        drive.setHighGear(true);
+        drive.resetDriveStraightController();
+        drive.configureDriveStraight(startVel, endVel, distance + drive.getAverageDistance());
     }
 }

@@ -4,6 +4,7 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Kinematics;
@@ -20,14 +21,12 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private static DriveTrain instance;
     private TalonSRX leftMaster, rightMaster, leftSlave, rightSlave;
     private ADXRS453_Gyro gyro;
+    private DoubleSolenoid shifter;
+
     private DriveControlMode controlMode;
-    private double degrees;
-    private double distance;
-    private TrajectoryDistanceWrapper trajectoryDistanceWrapper = new TrajectoryDistanceWrapper();
-    private TrajectoryArcWrapper trajectoryArcWrapper = new TrajectoryArcWrapper();
-    private double leftOffset = 0;
-    private double rightOffset = 0;
-    private double startAngle;
+    private double degrees, angle;
+    private DriveStraightController driveStraightController = new DriveStraightController();
+    private DriveArcController driveArcController = new DriveArcController();
 
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
@@ -51,10 +50,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
     public enum DriveControlMode {
         OPEN_LOOP,
         VELOCITY,
-        CUSTOM_DISTANCE_TRAJECTORY,
-        TURN_TO_ANGLE,
-        DRIVE_TO_DISTANCE,
-        CUSTOM_ARC_TRAJECTORY
+        DRIVE_STRAIGHT,
+        DRIVE_ARC,
+        TURN_TO_ANGLE
     }
 
     @Override
@@ -88,17 +86,14 @@ public class DriveTrain extends SubsystemBase implements Loop {
                                 , power.getRight()*Constants.kMaxVelocityHighGearInPerSec);
                 */
                 break;
-            case CUSTOM_DISTANCE_TRAJECTORY:
-                updateDistanceTrajectory();
+            case DRIVE_STRAIGHT:
+                updateDriveStraight();
                 break;
-            case CUSTOM_ARC_TRAJECTORY:
-                updateArcTrajectory();
+            case DRIVE_ARC:
+                updateDriveArc();
                 break;
             case TURN_TO_ANGLE:
                 updateTurnInPlace();
-                break;
-            case DRIVE_TO_DISTANCE:
-                updateDistance();
                 break;
         }
     }
@@ -111,7 +106,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
     public DriveTrain() {
         controlMode = DriveControlMode.OPEN_LOOP;
         // create talon objects
-        // master talons are set to a 5 period control frame rate
         leftMaster = TalonUtil.generateGenericTalon(Constants.kLeftDriveMaster);
         leftSlave = TalonUtil.generateSlaveTalon(Constants.kLeftDriveSlave, Constants.kLeftDriveMaster);
         rightMaster = TalonUtil.generateGenericTalon(Constants.kRightDriveMaster);
@@ -124,8 +118,14 @@ public class DriveTrain extends SubsystemBase implements Loop {
         if (rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0) != ErrorCode.OK) {
             DriverStation.reportError("Mag Encoder on Right Master not detected!!!", false);
         }
+
+        //gyroscope
         gyro = new ADXRS453_Gyro();
 
+        //shifter
+        shifter = new DoubleSolenoid(Constants.kShifterForward, Constants.kShifterReverse);
+
+        //load gains
         leftMaster.config_kP(Constants.kDriveVelocityProfile, Constants.kLeftDriveVelocityP, 0);
         leftMaster.config_kI(Constants.kDriveVelocityProfile, Constants.kLeftDriveVelocityI, 0);
         leftMaster.config_kD(Constants.kDriveVelocityProfile, Constants.kLeftDriveVelocityD, 0);
@@ -136,15 +136,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.config_kD(Constants.kDriveVelocityProfile, Constants.kRightDriveVelocityD, 0);
         rightMaster.config_kF(Constants.kDriveVelocityProfile, Constants.kRightDriveVelocityF, 0);
         rightMaster.config_IntegralZone(Constants.kDriveVelocityProfile, Constants.kRightDriveVelocityIZone, 0);
-
-        leftMaster.config_kP(Constants.kDriveMotionMagicProfile, Constants.kDriveHighGearMotionMagicP, 0);
-        leftMaster.config_kI(Constants.kDriveMotionMagicProfile, Constants.kDriveHighGearMotionMagicI, 0);
-        leftMaster.config_kD(Constants.kDriveMotionMagicProfile, Constants.kDriveHighGearMotionMagicD, 0);
-        leftMaster.config_kF(Constants.kDriveMotionMagicProfile, Constants.kDriveHighGearMotionMagicF, 0);
-        rightMaster.config_kP(Constants.kDriveMotionMagicProfile, Constants.kDriveHighGearMotionMagicP, 0);
-        rightMaster.config_kI(Constants.kDriveMotionMagicProfile, Constants.kDriveHighGearMotionMagicI, 0);
-        rightMaster.config_kD(Constants.kDriveMotionMagicProfile, Constants.kDriveHighGearMotionMagicD, 0);
-        rightMaster.config_kF(Constants.kDriveMotionMagicProfile, Constants.kDriveHighGearMotionMagicF, 0);
 
         leftMaster.config_kP(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicP, 0);
         leftMaster.config_kI(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicI, 0);
@@ -158,34 +149,41 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.config_IntegralZone(Constants.kTurnMotionMagicProfile, (int)(Constants.kTurnLowGearIZone), 0);
 
 
-        leftMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kDriveHighGearMotionMagicCruiseVelocity),
+        leftMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kTurnLowGearMotionMagicCruiseVelocity),
             0);
-        leftMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kDriveHighGearMotionMagicAcceleration)
+        leftMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kTurnLowGearMotionMagicAcceleration)
             ,0);
-        rightMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kDriveHighGearMotionMagicCruiseVelocity),
+        rightMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kTurnLowGearMotionMagicCruiseVelocity),
             0);
-        rightMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kDriveHighGearMotionMagicAcceleration),
+        rightMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kTurnLowGearMotionMagicAcceleration),
             0);
 
-        leftMaster.setSensorPhase(true);
-        rightMaster.setSensorPhase(true);
+        leftMaster.setSensorPhase(false);
+        rightMaster.setSensorPhase(false);
 
-        //leftMaster.setInverted(true);
-        //leftSlave.setInverted(true);
+        leftMaster.setInverted(true);
+        leftSlave.setInverted(true);
+        rightMaster.setInverted(false);
+        rightSlave.setInverted(false);
 
-        rightMaster.setInverted(true);
-        rightSlave.setInverted(true);
+        //drive straight and drive arc trajectory following controllers
+        driveStraightController.setGains(Constants.kDistanceTrajectoryP, Constants.kDistanceTrajectoryI, Constants.kDistanceTrajectoryD, Constants.kDistanceTrajectoryV, Constants.kDistanceTrajectoryA, Constants.kStraightP, Constants.kStraightI, Constants.kStraightD);
+        driveStraightController.setLoopTime(Constants.kControlLoopPeriod);
 
-        trajectoryDistanceWrapper.setGains(Constants.kTrajectoryP, Constants.kTrajectoryI, Constants.kTrajectoryD, Constants.kTrajectoryV, Constants.kTrajectoryA);
-        trajectoryDistanceWrapper.setLoopTime(Constants.kControlLoopPeriod);
+        driveArcController.setGains(Constants.kCurveTrajectoryP, Constants.kCurveTrajectoryI, Constants.kCurveTrajectoryD, Constants.kCurveTrajectoryV, Constants.kCurveTrajectoryA, Constants.kCurveP, Constants.kCurveI, Constants.kCurveD);
+        driveArcController.setLoopTime(Constants.kControlLoopPeriod);
     }
 
     public double getLeftDistance() {
-        return sensorUnitsToInches(leftMaster.getSelectedSensorPosition(0));
+        return sensorUnitsToInches(leftMaster.getSelectedSensorPosition(0)/Constants.kEncoderScalingFactor);
     }
 
     public double getRightDistance() {
-        return sensorUnitsToInches(rightMaster.getSelectedSensorPosition(0));
+        return sensorUnitsToInches(rightMaster.getSelectedSensorPosition(0)/Constants.kEncoderScalingFactor);
+    }
+
+    public double getAverageDistance(){
+        return (getLeftDistance() + getRightDistance())/2.0;
     }
 
     /**
@@ -193,7 +191,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
      */
     public double getLeftVelocity(){
         //return leftMaster.getSelectedSensorVelocity(0);
-        return sensorUnitsToInchesPerSec(leftMaster.getSelectedSensorVelocity(0));
+        return sensorUnitsToInchesPerSec(leftMaster.getSelectedSensorVelocity(0))/Constants.kEncoderScalingFactor;
     }
 
     /**
@@ -201,7 +199,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
      */
     public double getRightVelocity(){
         //return rightMaster.getSelectedSensorVelocity(0);
-        return sensorUnitsToInches(rightMaster.getSelectedSensorVelocity(0));
+        return sensorUnitsToInches(rightMaster.getSelectedSensorVelocity(0))/Constants.kEncoderScalingFactor;
     }
 
     //TODO: test these methods
@@ -263,7 +261,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
         if (controlMode != DriveControlMode.OPEN_LOOP){
             controlMode = DriveControlMode.OPEN_LOOP;
         }
-        //TALON reverseOutput doesn't work in PercentVBus (open loop)
         leftMaster.set(ControlMode.PercentOutput, leftPower);
         rightMaster.set(ControlMode.PercentOutput, rightPower);
     }
@@ -291,95 +288,78 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(getRightDistance() + delta.right), Constants.kTurnMotionMagicProfile);
     }
 
-    public void updateDistance() {
-        if (controlMode != DriveControlMode.DRIVE_TO_DISTANCE){
+    public void updateDriveStraight() {
+        if (controlMode != DriveControlMode.DRIVE_STRAIGHT) {
             return;
         }
-        if (isDriveToDistanceFinished()){
-            setOpenLoop(0,0);
-            return;
-        }
-        /*double error = Math.toRadians(getAngle().degrees() - startAngle);
-        System.out.println(Math.toDegrees(error));
-        Kinematics.DriveVelocity delta = Kinematics.inverseKinematics(new Twist(0, 0, error), Constants.kRobotTrack);*/
-        leftMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(distance + leftOffset), Constants.kDriveMotionMagicProfile);
-        rightMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(distance + rightOffset), Constants.kDriveMotionMagicProfile);
-    }
-
-    public void updateDistanceTrajectory() {
-        if (controlMode != DriveControlMode.CUSTOM_DISTANCE_TRAJECTORY) {
-            return;
-        }
-        if (trajectoryDistanceWrapper.isFinished()){
-            setOpenLoop(0,0);
+        if (driveStraightController.isFinished()) {
+            setOpenLoop(0, 0);
             return;
         }
         System.out.println("Updating....");
-        leftMaster.set(ControlMode.PercentOutput, trajectoryDistanceWrapper.updateCalculations(getLeftDistance()));
-        rightMaster.set(ControlMode.PercentOutput, trajectoryDistanceWrapper.updateCalculations(getRightDistance()));
-        System.out.println("Left Calc: " + trajectoryDistanceWrapper.updateCalculations(getLeftDistance()));
-        System.out.println("Right Calc: " + trajectoryDistanceWrapper.updateCalculations(getRightDistance()));
-
+        DrivePower output = driveStraightController.update(getAverageDistance(), getAngle().degrees());
+        leftMaster.set(ControlMode.PercentOutput, output.getLeft());
+        rightMaster.set(ControlMode.PercentOutput, output.getRight());
     }
 
-    public void updateArcTrajectory() {
-        if (controlMode != DriveControlMode.CUSTOM_ARC_TRAJECTORY) {
+    public void setHighGear(boolean highGear) {
+        shifter.set(highGear ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
+    }
+
+    public void updateDriveArc() {
+        DrivePower output;
+        if (controlMode != DriveControlMode.DRIVE_ARC) {
             return;
         }
-        if (trajectoryArcWrapper.isFinished()){
+        if (driveArcController.isFinished()){
             setOpenLoop(0,0);
             return;
         }
-        leftMaster.set(ControlMode.PercentOutput, trajectoryArcWrapper.updateCalculations(getLeftDistance()));
-        rightMaster.set(ControlMode.PercentOutput, trajectoryArcWrapper.updateCalculations(getRightDistance()));
-    }
 
-    public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius) {
-        trajectoryArcWrapper.configureArcTrajectory(startVel, endVel, degrees, turnRadius);
-        if (controlMode != DriveControlMode.CUSTOM_ARC_TRAJECTORY){
-            controlMode = DriveControlMode.CUSTOM_ARC_TRAJECTORY;
+        if (angle >= 0) {
+            output = driveArcController.updateCalculations(getRightDistance(), getLeftDistance(), getAngle().degrees());
+            leftMaster.set(ControlMode.PercentOutput, output.getRight());
+            rightMaster.set(ControlMode.PercentOutput, output.getLeft());
+        }
+        else {
+            output = driveArcController.updateCalculations(getLeftDistance(), getRightDistance(), getAngle().degrees());
+            leftMaster.set(ControlMode.PercentOutput, output.getLeft());
+            rightMaster.set(ControlMode.PercentOutput, output.getRight());
         }
     }
 
-    public void configureDistanceTrajectory(double startVel, double endVel, double distance){
-        trajectoryDistanceWrapper.configureDistanceTrajectory(startVel, endVel, distance);
-        if (controlMode != DriveControlMode.CUSTOM_DISTANCE_TRAJECTORY){
-            controlMode = DriveControlMode.CUSTOM_DISTANCE_TRAJECTORY;
+    public void configureDriveArc(double startVel, double endVel, double degrees, double turnRadius) {
+        angle = degrees;
+        driveArcController.configureArcTrajectory(startVel, endVel, degrees, turnRadius);
+        if (controlMode != DriveControlMode.DRIVE_ARC){
+            controlMode = DriveControlMode.DRIVE_ARC;
         }
+        updateDriveArc();
     }
 
-    public void resetTrajectory() {
-        trajectoryDistanceWrapper.resetTrajectory();
+    public void configureDriveStraight(double startVel, double endVel, double distance){
+        driveStraightController.setSetpoint(startVel, endVel, distance);
+        if (controlMode != DriveControlMode.DRIVE_STRAIGHT){
+            controlMode = DriveControlMode.DRIVE_STRAIGHT;
+        }
+        updateDriveStraight();
+    }
+
+    public void resetDriveStraightController() {
+        driveStraightController.resetController();
+    }
+
+    public void resetDriveArcController() {
+        driveArcController.resetTrajectory();
     }
 
     public void resetEncoders() {
         leftMaster.setSelectedSensorPosition(0, 0, 0);
         rightMaster.setSelectedSensorPosition(0, 0,0);
-        System.out.println("AFTER RESET: " + getLeftDistance() + " " + getRightDistance());
-    }
-
-    public void setOffsets(double leftOffset, double rightOffset) {
-        this.leftOffset = leftOffset;
-        this.rightOffset = rightOffset;
-    }
-
-    public void setStartAngle(double startAngle) {
-        this.startAngle = startAngle;
-    }
-
-    public boolean isDriveToDistanceFinished() {
-        double distanceTraveled = (getLeftDistance() - leftOffset + getRightDistance() - rightOffset)/2;
-        if (controlMode != DriveControlMode.DRIVE_TO_DISTANCE) {
-            return true;
-        }
-        if (Math.abs(distance - distanceTraveled) <= 0.75) {
-            return true;
-        }
-        return false;
     }
 
     public boolean isTurnInPlaceFinished() {
-        double error = Math.abs(degrees - getAngle().degrees() + startAngle);
+        double error = Math.abs(degrees - getAngle().degrees());
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
             return true;
         }
@@ -391,55 +371,21 @@ public class DriveTrain extends SubsystemBase implements Loop {
         //return Math.abs(degrees + startAngle) < Math.abs(gyro.getAngle());
     }
 
-    public boolean isTrajectoryFinished() {
-        return trajectoryDistanceWrapper.isFinished();
+    public boolean isDriveStraightFinished() {
+        return driveStraightController.isFinished();
+    }
+
+    public boolean isArcControllerFinished() {
+        return driveArcController.isFinished();
     }
 
     public void setTurnInPlaceSetpoint(double setpoint) {
         this.degrees = setpoint;
-        leftMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kTurnLowGearMotionMagicCruiseVelocity),
-                0);
-        System.out.println("CRUISE VELOCITY: " + inchesPerSecToSensorUnits(Constants.kTurnLowGearMotionMagicCruiseVelocity));
-        leftMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kTurnLowGearMotionMagicAcceleration)
-                ,0);
-        rightMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kTurnLowGearMotionMagicCruiseVelocity),
-                0);
-        rightMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kTurnLowGearMotionMagicAcceleration),
-                0);
-
-        leftMaster.configNominalOutputReverse(-1.0/12.0, 0);
-        leftMaster.configNominalOutputForward(1.0/12.0, 0);
-
-        rightMaster.configNominalOutputReverse(-1.0/12.0, 0);
-        rightMaster.configNominalOutputForward(1.0/12.0, 0);
-
-
-        leftSlave.configNominalOutputReverse(-1.0/12.0, 0);
-        leftSlave.configNominalOutputForward(1.0/12.0, 0);
-
-
-        rightSlave.configNominalOutputReverse(-1.0/12.0, 0);
-        rightSlave.configNominalOutputForward(1.0/12.0, 0);
-
-        leftMaster.enableVoltageCompensation(true);
-        leftSlave.enableVoltageCompensation(true);
-        rightMaster.enableVoltageCompensation(true);
-        rightSlave.enableVoltageCompensation(true);
-
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
             controlMode = DriveControlMode.TURN_TO_ANGLE;
         }
         updateTurnInPlace();
     }
-
-    public void setDriveToDistanceSetpoint(double setpoint) {
-        if (controlMode != DriveControlMode.DRIVE_TO_DISTANCE) {
-            controlMode = DriveControlMode.DRIVE_TO_DISTANCE;
-        }
-        this.distance = setpoint;
-        updateDistance();
-    }
-
 
     public double inchesToSensorUnits(double inches) {
         return (inches * 4096)/(Constants.kWheelDiameter * Math.PI);
@@ -467,6 +413,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public Rotation getAngle(){
+        //Return negative value of the gyro, because the gyro returns
         return Rotation.fromDegrees(-gyro.getAngle());
     }
 

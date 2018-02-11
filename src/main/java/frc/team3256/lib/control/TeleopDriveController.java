@@ -4,7 +4,7 @@ import frc.team3256.lib.DrivePower;
 
 public class TeleopDriveController {
 
-    private static final double xboxDeadband = 0.05;
+    private static final double logitechDeadband = 0.05;
     private static double quickStopAccumulator = 0.0;
     private static final double kQuickStopThreshold = 0.2;
     private static final double kQuickStopAlpha = 0.1;
@@ -12,22 +12,17 @@ public class TeleopDriveController {
 
     //Tank Drive
     public static DrivePower tankDrive(double leftPower, double rightPower) {
-        if (Math.abs(leftPower) <= xboxDeadband){
-            leftPower = 0;
-        }
-        if (Math.abs(rightPower) <= xboxDeadband){
-                rightPower = 0;
-        }
-
+        leftPower = handleDeadband(leftPower, logitechDeadband);
+        rightPower = handleDeadband(rightPower, logitechDeadband);
         return new DrivePower(leftPower, rightPower);
     }
 
     //Arcade Drive
     public static DrivePower arcadeDrive(double throttle, double turn) {
-        if (Math.abs(throttle) <= xboxDeadband){
+        if (Math.abs(throttle) <= logitechDeadband){
             throttle = 0;
         }
-        if (Math.abs(turn) <= xboxDeadband){
+        if (Math.abs(turn) <= logitechDeadband){
             turn = 0;
         }
         double left = throttle + turn;
@@ -41,8 +36,8 @@ public class TeleopDriveController {
 
     //Curvature or Cheesy Drive
     public static DrivePower curvatureDrive(double throttle, double turn, boolean quickTurn){
-        throttle = handleDeadband(throttle, xboxDeadband);
-        turn = handleDeadband(turn, xboxDeadband);
+        throttle = handleDeadband(throttle, logitechDeadband);
+        turn = handleDeadband(turn, logitechDeadband);
 
         double angularPower, overPower;
 

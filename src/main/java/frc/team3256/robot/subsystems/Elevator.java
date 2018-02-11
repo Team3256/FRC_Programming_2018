@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.InterruptHandlerFunction;
 import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.robot.Constants;
 
@@ -28,8 +29,22 @@ public class Elevator extends SubsystemBase{
          return instance == null ? instance = new Elevator() : instance;
     }
 
+    private InterruptHandlerFunction<Elevator> ihr = new InterruptHandlerFunction<Elevator>() {
+        @Override
+        public void interruptFired(int interruptAssertedMask, Elevator param) {
+            if (!isCalibrated){
+                master.setSelectedSensorPosition((int)Constants.kHomeHeight, 0, 0);
+                isCalibrated = true;
+                hallEffect.disableInterrupts();
+            }
+        }
+    };
+
     private Elevator() {
         hallEffect = new DigitalInput(Constants.kHallEffectPort);
+        hallEffect.requestInterrupts(ihr);
+        hallEffect.setUpSourceEdge(false, true);
+        hallEffect.enableInterrupts();
 
         master = TalonUtil.generateGenericTalon(Constants.kElevatorMaster);
         slaveOne = TalonUtil.generateSlaveTalon(Constants.kElevatorSlaveOne, Constants.kElevatorMaster);
@@ -62,7 +77,7 @@ public class Elevator extends SubsystemBase{
 
     public void setHold(){
         //TODO: Make this the absolute position
-        master.set(ControlMode.Position, getEncoderValue());
+        setTargetPosition(getEncoderValue(), Constants.kElevatorHoldSlot);
     }
 
     public void setTargetPosition(double targetPos, int slotID){
@@ -90,8 +105,6 @@ public class Elevator extends SubsystemBase{
 
     public void update(double currPos){
         if(isTriggered() && !isCalibrated()){
-            master.setSelectedSensorPosition((int)Constants.kHomeHeight, 0, 0);
-            isCalibrated = true;
         }
         SystemState newState = SystemState.HOLD;
         switch(currentState){
@@ -223,10 +236,6 @@ public class Elevator extends SubsystemBase{
 
     public int getEncoderValue() {
         return master.getSelectedSensorPosition(0);
-    }
-
-    public void setTargetPosition(double targetPositionInches) {
-
     }
 
     @Override

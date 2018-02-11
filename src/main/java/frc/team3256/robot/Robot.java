@@ -87,14 +87,12 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledPeriodic() {
-        //System.out.println("Left: " + driveTrain.getLeftDistance());
-        //System.out.println("Right: " + driveTrain.getRightDistance());
+        System.out.println("Left: " + driveTrain.getLeftDistance());
+        System.out.println("Right: " + driveTrain.getRightDistance());
     }
 
     @Override
     public void autonomousPeriodic() {
-        //System.out.println("Left: " + driveTrain.getLeftDistance());
-        //System.out.println("Right: " + driveTrain.getRightDistance());
     }
 
     @Override

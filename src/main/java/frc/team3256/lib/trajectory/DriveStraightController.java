@@ -63,17 +63,14 @@ public class DriveStraightController {
         if (!isFinished()){
             Trajectory.Point point = trajectory.getCurrPoint(curr_segment);
             feedForwardValue = calculateFeedForward(point.getVel(), point.getAcc());
-
             if (reversed){
                 currPos *= -1;
             }
             feedBackValue = calculateFeedBack(point.getPos(), currPos, point.getVel());
             //System.out.println(PID);
-
-
+          
             leftOutput = feedBackValue + feedForwardValue;
             rightOutput = feedBackValue + feedForwardValue;
-
             adjustment = -pidController.update(currAngle);
             System.out.println("curr angle: " + currAngle);
             System.out.println("adjustment: " + adjustment);
@@ -84,14 +81,12 @@ public class DriveStraightController {
                 leftOutput *= -1;
                 rightOutput *= -1;
             }
-
             curr_segment++;
 
             leftOutput = Util.clip(leftOutput, -1, 1);
             rightOutput = Util.clip(rightOutput, -1, 1);
             return new DrivePower(leftOutput, rightOutput);
         }
-
         return new DrivePower(0,0);
     }
 
@@ -103,5 +98,6 @@ public class DriveStraightController {
         TrajectoryGenerator trajectoryGenerator = new TrajectoryGenerator(Constants.kDistanceTrajectoryAccel, Constants.kDistanceTrajectoryCruiseVelocity, Constants.kControlLoopPeriod);
         this.trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, distance);
         if (distance < 0){reversed = true;}
+
     }
 }

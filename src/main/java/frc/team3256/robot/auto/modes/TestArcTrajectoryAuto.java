@@ -9,6 +9,6 @@ import frc.team3256.robot.auto.actions.FollowArcTrajectoryAction;
 public class TestArcTrajectoryAuto extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
-        runAction(new FollowArcTrajectoryAction(0, 0, 36, 90));
+        runAction(new FollowArcTrajectoryAction(0, 0, 48, 90));
     }
 }

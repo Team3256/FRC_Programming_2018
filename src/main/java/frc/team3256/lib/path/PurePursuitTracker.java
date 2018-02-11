@@ -69,7 +69,7 @@ public class PurePursuitTracker {
         //Calculate arc to get us back on path
         Optional<Arc> optionalArc = getArcToSegment(s, pathUpdate.lookaheadPoint, robotCoordinates);
         //calculate linear and angular velocities
-        double vel, angularVel = 0;
+        double vel, angularVel;
         vel = s.checkVelocity(pathUpdate.closestPoint, prevOutput.dx());
         Twist rv;
         //If we have an arc

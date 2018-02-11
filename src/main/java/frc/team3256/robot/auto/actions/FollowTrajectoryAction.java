@@ -5,12 +5,13 @@ import frc.team3256.robot.subsystems.DriveTrain;
 public class FollowTrajectoryAction implements Action {
 
     private DriveTrain drive = DriveTrain.getInstance();
-    private double startVel, endVel, distance;
+    private double startVel, endVel, distance, initialAngle;
 
-    public FollowTrajectoryAction(double startVel, double endVel, double distance) {
+    public FollowTrajectoryAction(double startVel, double endVel, double distance, double initialAngle) {
         this.startVel = startVel;
         this.endVel = endVel;
         this.distance = distance;
+        this.initialAngle = initialAngle;
     }
 
     @Override
@@ -32,6 +33,6 @@ public class FollowTrajectoryAction implements Action {
     public void start() {
         drive.setHighGear(true);
         drive.resetDriveStraightController();
-        drive.configureDriveStraight(startVel, endVel, distance + drive.getAverageDistance());
+        drive.configureDriveStraight(startVel, endVel, distance + drive.getAverageDistance(), initialAngle);
     }
 }

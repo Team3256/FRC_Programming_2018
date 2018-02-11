@@ -73,13 +73,13 @@ public class Constants {
     public static final double kStraightD = 0.0;
 
     //Trajectory Curve Gains
-    public static final double kCurveTrajectoryP = 0.35; //0.075
+    public static final double kCurveTrajectoryP = 0.006; //0.075
     public static final double kCurveTrajectoryI = 0.0;
-    public static final double kCurveTrajectoryD = 0.0001;
+    public static final double kCurveTrajectoryD = 0.0;
     public static final double kCurveTrajectoryV = 1.0/140.0;
-    public static final double kCurveTrajectoryA = 1.0/200.0;
-    public static final double kCurveP = 0.0;
-    public static final double kCurveI = 0; //0.001
+    public static final double kCurveTrajectoryA = 0;
+    public static final double kCurveP = 0.035;
+    public static final double kCurveI = 0.0; //0.001
     public static final double kCurveD = 0;
     public static final double kCurveTrajectoryMaxAccel = 9.0*10.0;
     public static final double kCurveTrajectoryCruiseVelocity = 10.0*10.0;

@@ -10,9 +10,10 @@ public class TestTrajectoryAuto extends AutoModeBase {
 
     @Override
     protected void routine() throws AutoModeEndedException {
-        runAction(new FollowTrajectoryAction(0, 0, 20));
+        double initialAngle = DriveTrain.getInstance().getAngle().degrees();
+        runAction(new FollowTrajectoryAction(0, 0, -5,0));
         runAction(new WaitAction(3));
-        runAction(new FollowTrajectoryAction(0,0,-20));
+        //runAction(new FollowTrajectoryAction(0,0,-5,90));
         System.out.println("Left: " + DriveTrain.getInstance().getLeftDistance());
         System.out.println("Right: " + DriveTrain.getInstance().getRightDistance());
         System.out.println("angle: " + DriveTrain.getInstance().getAngle().degrees());

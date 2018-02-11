@@ -15,6 +15,7 @@ public class DriveStraightController {
     private double leftOutput, rightOutput, feedForwardValue, feedBackValue, initialAngle, adjustment;
     private PIDController pidController = new PIDController();
     private boolean reversed = false;
+    private boolean isInitialSet = false;
 
     public void setGains(double kP, double kI, double kD, double kV, double kA, double kStraightP, double kStraightI, double kStraightD) {
         this.kP = kP;
@@ -55,7 +56,7 @@ public class DriveStraightController {
     }
 
     public DrivePower update(double currPos, double currAngle) {
-        if (curr_segment == 0){
+        if (curr_segment == 0 && !isInitialSet){
             initialAngle = currAngle;
             pidController.setTargetPosition(initialAngle);
             pidController.setMinMaxOutput(-1, 1);
@@ -78,8 +79,8 @@ public class DriveStraightController {
             rightOutput -= adjustment;
 
             if (reversed){
-                leftOutput *= -1;
-                rightOutput *= -1;
+                leftOutput *= -1.0;
+                rightOutput *= -1.0;
             }
             curr_segment++;
 
@@ -94,10 +95,16 @@ public class DriveStraightController {
         return curr_segment >= trajectory.getLength();
     }
 
-    public void setSetpoint(double startVel, double endVel, double distance){
+    public void setSetpoint(double startVel, double endVel, double distance, double angle){
         TrajectoryGenerator trajectoryGenerator = new TrajectoryGenerator(Constants.kDistanceTrajectoryAccel, Constants.kDistanceTrajectoryCruiseVelocity, Constants.kControlLoopPeriod);
-        this.trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, distance);
-        if (distance < 0){reversed = true;}
+        if (distance < 0){
+            reversed = true;
+            this.trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, Math.abs(distance));
+        } else {
+            initialAngle = angle;
+            isInitialSet = true;
+            this.trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, distance);
+        }
 
     }
 }

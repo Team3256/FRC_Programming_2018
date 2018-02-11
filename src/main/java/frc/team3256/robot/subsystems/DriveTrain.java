@@ -3,6 +3,7 @@ package frc.team3256.robot.subsystems;
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -111,6 +112,12 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster = TalonUtil.generateGenericTalon(Constants.kRightDriveMaster);
         rightSlave = TalonUtil.generateSlaveTalon(Constants.kRightDriveSlave, Constants.kRightDriveMaster);
 
+        leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*Constants.kControlLoopPeriod), 0);
+        rightMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*Constants.kControlLoopPeriod), 0);
+
+        leftMaster.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*Constants.kControlLoopPeriod), 0);
+        rightMaster.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*Constants.kControlLoopPeriod), 0);
+
         // setup encoders
         if (leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0) != ErrorCode.OK){
             DriverStation.reportError("Mag Encoder on Left Master not detected!!!", false);
@@ -172,6 +179,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
         driveArcController.setGains(Constants.kCurveTrajectoryP, Constants.kCurveTrajectoryI, Constants.kCurveTrajectoryD, Constants.kCurveTrajectoryV, Constants.kCurveTrajectoryA, Constants.kCurveP, Constants.kCurveI, Constants.kCurveD);
         driveArcController.setLoopTime(Constants.kControlLoopPeriod);
+
     }
 
     public double getLeftDistance() {
@@ -334,11 +342,16 @@ public class DriveTrain extends SubsystemBase implements Loop {
         if (controlMode != DriveControlMode.DRIVE_ARC){
             controlMode = DriveControlMode.DRIVE_ARC;
         }
+        setHighGear(true);
+        leftMaster.configNominalOutputForward(1.0/12.0, 0);
+        rightMaster.configNominalOutputForward(1.0/12.0, 0);
+        leftSlave.configNominalOutputForward(1.0/12.0, 0);
+        rightSlave.configNominalOutputForward(1.0/12.0, 0);
         updateDriveArc();
     }
 
-    public void configureDriveStraight(double startVel, double endVel, double distance){
-        driveStraightController.setSetpoint(startVel, endVel, distance);
+    public void configureDriveStraight(double startVel, double endVel, double distance, double angle){
+        driveStraightController.setSetpoint(startVel, endVel, distance, angle);
         if (controlMode != DriveControlMode.DRIVE_STRAIGHT){
             controlMode = DriveControlMode.DRIVE_STRAIGHT;
         }

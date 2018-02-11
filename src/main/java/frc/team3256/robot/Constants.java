@@ -43,7 +43,8 @@ public class Constants {
     public static final double kRobotTrack = 25.146; //25.375
     public static final double kScrubFactor = 0.3;
     public static final double kWheelDiameter = 6.045;
-    public static final double kEncoderScalingFactor = 3.0*60.0/24.0;
+    public static final double kDriveEncoderScalingFactor = 3.0*60.0/24.0;
+    public static final double kElevatorEncoderScalingFactor = 1.0;
 
     //Control Loop Parameters:
     //Looping period

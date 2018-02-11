@@ -14,10 +14,21 @@ public class PurePursuitTracker {
     private final double kEpsilon = 1E-9;
     private double pathCompletionTolerance;
     private Twist prevOutput = new Twist(0,0,0);
+    private double dt;
 
-    public PurePursuitTracker(Path path, double pathCompletionTolerance) {
+    public PurePursuitTracker() {
+    }
+
+    public void setPath(Path path) {
         this.path = path;
+    }
+
+    public void setPathCompletionTolerance(double pathCompletionTolerance) {
         this.pathCompletionTolerance = pathCompletionTolerance;
+    }
+
+    public void setLoopTime(double dt) {
+        this.dt = dt;
     }
 
     public static int getDirection(Translation lookaheadPoint, Translation robotCoordinates) {
@@ -85,8 +96,8 @@ public class PurePursuitTracker {
         return rv;
     }
 
-    private boolean isFinished() {
+    public boolean isFinished() {
         return reachedEnd;
     }
 
-    }
+}

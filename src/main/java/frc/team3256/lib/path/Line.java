@@ -6,6 +6,7 @@ import frc.team3256.robot.Constants;
 public class Line extends Segment{
 
     private Translation slope;
+    private double dt;
 
     public Line(double startX, double startY, double endX, double endY, double goalVel, double maxAccel, double maxVel){
         type = Type.LINE;
@@ -20,6 +21,12 @@ public class Line extends Segment{
     public Line(double startX, double startY, double endX, double endY){
         this(startX, startY, endX, endY, 0.0, 0.0, 0.0);
     }
+
+    @Override
+    public void setLoopTime(double dt) {
+        this.dt = dt;
+    }
+
 
     /**
      * @return type of the segment, in this case a line

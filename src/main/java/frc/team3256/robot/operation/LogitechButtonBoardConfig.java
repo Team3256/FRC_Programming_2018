@@ -68,17 +68,17 @@ public class LogitechButtonBoardConfig implements ControlsInterface{
     }
 
     @Override
-    public boolean switchPresetLow() {
-        return false;
-    }
-
-    @Override
-    public boolean switchPresetHigh() {
+    public boolean switchPreset() {
         return false;
     }
 
     @Override
     public boolean scalePresetLow() {
+        return false;
+    }
+
+    @Override
+    public boolean scalePresetMid(){
         return false;
     }
 

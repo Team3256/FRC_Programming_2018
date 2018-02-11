@@ -14,8 +14,11 @@ import frc.team3256.lib.hardware.ADXRS453_Gyro;
 import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Twist;
+import frc.team3256.lib.path.Path;
+import frc.team3256.lib.path.PurePursuitTracker;
 import frc.team3256.lib.trajectory.*;
 import frc.team3256.robot.Constants;
+import frc.team3256.robot.PoseEstimator;
 
 public class DriveTrain extends SubsystemBase implements Loop {
 
@@ -28,6 +31,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private double degrees, angle;
     private DriveStraightController driveStraightController = new DriveStraightController();
     private DriveArcController driveArcController = new DriveArcController();
+    private PurePursuitTracker purePursuitTracker = new PurePursuitTracker();
 
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
@@ -53,7 +57,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
         VELOCITY,
         DRIVE_STRAIGHT,
         DRIVE_ARC,
-        TURN_TO_ANGLE
+        TURN_TO_ANGLE,
+        PURE_PURSUIT
     }
 
     @Override
@@ -95,6 +100,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
                 break;
             case TURN_TO_ANGLE:
                 updateTurnInPlace();
+                break;
+            case PURE_PURSUIT:
+                updatePurePursuit();
                 break;
         }
     }
@@ -180,6 +188,12 @@ public class DriveTrain extends SubsystemBase implements Loop {
         driveArcController.setGains(Constants.kCurveTrajectoryP, Constants.kCurveTrajectoryI, Constants.kCurveTrajectoryD, Constants.kCurveTrajectoryV, Constants.kCurveTrajectoryA, Constants.kCurveP, Constants.kCurveI, Constants.kCurveD);
         driveArcController.setLoopTime(Constants.kControlLoopPeriod);
 
+<<<<<<< HEAD
+        purePursuitTracker.setLoopTime(Constants.kControlLoopPeriod);
+        purePursuitTracker.setPathCompletionTolerance(Constants.pathCompletionTolerance);
+
+=======
+>>>>>>> 99d8bbcfedeec30d050864ba5255e7db2616b9b0
     }
 
     public double getLeftDistance() {
@@ -310,6 +324,21 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.set(ControlMode.PercentOutput, output.getRight());
     }
 
+    private void updatePurePursuit() {
+        if (controlMode != DriveControlMode.PURE_PURSUIT) {
+            return;
+        }
+        if (purePursuitTracker.isFinished()) {
+            setOpenLoop(0, 0);
+            return;
+        }
+
+        Kinematics.DriveVelocity output = Kinematics.inverseKinematics(purePursuitTracker.update(PoseEstimator.getInstance().getPose().getTranslation()), Constants.kRobotTrack, Constants.kScrubFactor);
+        leftMaster.set(ControlMode.Velocity, output.left);
+        rightMaster.set(ControlMode.Velocity, output.right);
+
+    }
+
     public void setHighGear(boolean highGear) {
         shifter.set(highGear ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
     }
@@ -358,12 +387,20 @@ public class DriveTrain extends SubsystemBase implements Loop {
         updateDriveStraight();
     }
 
+    public void configurePurePursuit(Path path) {
+        purePursuitTracker.setPath(path);
+        purePursuitTracker.setLoopTime();
+    }
+
     public void resetDriveStraightController() {
         driveStraightController.resetController();
     }
 
     public void resetDriveArcController() {
         driveArcController.resetTrajectory();
+    }
+
+    public void resetPurePursuit() {
     }
 
     public void resetEncoders() {
@@ -390,6 +427,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
     public boolean isArcControllerFinished() {
         return driveArcController.isFinished();
+    }
+
+    public boolean isPurePursuitFinished() {
+        return purePursuitTracker.isFinished();
     }
 
     public void setTurnInPlaceSetpoint(double setpoint) {

@@ -10,6 +10,7 @@ public class Arc extends Segment{
     private Translation centerToStart, centerToEnd;
     private double radius;
     private Rotation angle;
+    private double dt;
 
     public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY, double goalVel, double maxAccel, double maxVel){
         type = Type.ARC;
@@ -39,6 +40,11 @@ public class Arc extends Segment{
 
     public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY){
         this(startX, startY, endX, endY, centerX, centerY, 0.0, 0.0, 0.0);
+    }
+
+    @Override
+    public void setLoopTime(double dt) {
+        this.dt = dt;
     }
 
     @Override

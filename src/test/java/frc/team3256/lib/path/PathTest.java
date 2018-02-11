@@ -16,7 +16,7 @@ public class PathTest {
         p.addSegment(new Line(0,0,0,10));
         p.addSegment(new Arc(0,10,5,15,5,10));
 
-        for (int y = 0; y < 10; y++) {
+        for (int y = 0; y <= 5; y++) {
             Path.PathUpdate pathUpdate = p.update(new Translation(5, y));
             assertEquals(pathUpdate.distanceToPath, 5, kEpsilon);
             assertEquals(pathUpdate.lookaheadPoint.x(), 0, kEpsilon);
@@ -24,7 +24,7 @@ public class PathTest {
             assertEquals(pathUpdate.remainingDistance, .5 * Math.PI * 5 + 10 - y, kEpsilon);
         }
 
-        for (int deg = 0; deg <= 90; deg++) {
+        for (int deg = 0; deg < 90; deg++) {
             double x = Math.cos(Math.toRadians(deg));
             double y = Math.sin(Math.toRadians(deg));
             Path.PathUpdate pathUpdate = p.update(new Translation(5.0-3.0*x, 10.0+3.0*y));
@@ -37,5 +37,10 @@ public class PathTest {
             assertEquals(pathUpdate.lookaheadPoint.x(), lookaheadPointX*5.0, kEpsilon);
             assertEquals(pathUpdate.lookaheadPoint.y(), 10.0+5.0*lookaheadPointY, kEpsilon);
         }
+
+        double x = Math.cos(Math.toRadians(90));
+        double y = Math.sin(Math.toRadians(90));
+        p.update(new Translation(5.0-3.0*x, 10.0+3.0*y));
+
     }
 }

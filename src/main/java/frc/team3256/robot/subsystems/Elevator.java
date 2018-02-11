@@ -53,7 +53,6 @@ public class Elevator extends SubsystemBase{
         master.config_kP(Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownP, 0);
         master.config_kI(Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownI, 0);
         master.config_kD(Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownD, 0);
-
     }
 
     public void setOpenLoop(double power){

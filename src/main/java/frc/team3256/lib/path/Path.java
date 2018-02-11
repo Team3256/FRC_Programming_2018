@@ -11,6 +11,7 @@ public class Path {
     public Path(){
         segments = new ArrayList<>();
     }
+    PathUpdate prevPathUpdate;
 
     public void addSegment(Segment segment){
         segments.add(segment);
@@ -37,17 +38,18 @@ public class Path {
         PathUpdate rv = new PathUpdate();
         Segment currSegment = segments.get(0);
 
-
         Translation closestPoint = currSegment.getClosestPointOnSegment(robotCoordinates);
 
         //remove current segment if we are done with this segment
         double distanceRemainingOnSegment = currSegment.getRemainingDistance(closestPoint);
-
         if (distanceRemainingOnSegment <= segmentCompletionTolerance) {
             System.out.println("REMOVING SEGMENT");
             System.out.println("remaining distance: " + distanceRemainingOnSegment);
             segments.remove(0);
-            return(update(robotCoordinates));
+            if (segments.isEmpty()) {
+                return prevPathUpdate;
+            }
+            else currSegment = segments.get(0);
         }
 
         //calculate closest point to robot on path
@@ -55,7 +57,9 @@ public class Path {
         Translation robotToClosestPoint = new Translation(robotCoordinates, closestPoint);
         rv.distanceToPath = robotToClosestPoint.norm();
 
+        /*
         //remove current segment if robot is too far away to make an arc to it
+        //probably not needed
         if (robotToClosestPoint.norm() > distanceRemainingOnSegment) {
             System.out.println("REMOVING SEGMENT");
             System.out.println("robot to point distance: "+robotToClosestPoint.norm());
@@ -63,6 +67,7 @@ public class Path {
             segments.remove(0);
             return(update(robotCoordinates));
         }
+        */
 
         //determine lookahead point
         rv.lookaheadPoint = currSegment.getLookAheadPoint(rv.distanceToPath, closestPoint);
@@ -73,6 +78,8 @@ public class Path {
         rv.remainingDistance -= currSegment.getCurrDistanceTraveled(closestPoint);
         rv.currSegment = currSegment;
         rv.closestPoint = closestPoint;
+
+        prevPathUpdate = rv;
 
         return rv;
     }

@@ -68,7 +68,7 @@ public class Robot extends IterativeRobot {
 
         autoModeExecuter = new AutoModeExecuter();
         //AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        AutoModeBase autoMode = new TestArcTrajectoryAuto();
+        AutoModeBase autoMode = new TestTrajectoryAuto();
         autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
         autoModeExecuter.setAutoMode(autoMode);
         autoModeExecuter.start();
@@ -87,8 +87,8 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledPeriodic() {
-        System.out.println("Left: " + driveTrain.getLeftDistance());
-        System.out.println("Right: " + driveTrain.getRightDistance());
+        //System.out.println("Left: " + driveTrain.getLeftDistance());
+        //System.out.println("Right: " + driveTrain.getRightDistance());
     }
 
     @Override

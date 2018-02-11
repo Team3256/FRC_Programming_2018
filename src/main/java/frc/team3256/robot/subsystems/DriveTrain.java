@@ -175,11 +175,11 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public double getLeftDistance() {
-        return sensorUnitsToInches(leftMaster.getSelectedSensorPosition(0)/Constants.kEncoderScalingFactor);
+        return sensorUnitsToInches(leftMaster.getSelectedSensorPosition(0)/Constants.kDriveEncoderScalingFactor);
     }
 
     public double getRightDistance() {
-        return sensorUnitsToInches(rightMaster.getSelectedSensorPosition(0)/Constants.kEncoderScalingFactor);
+        return sensorUnitsToInches(rightMaster.getSelectedSensorPosition(0)/Constants.kDriveEncoderScalingFactor);
     }
 
     public double getAverageDistance(){
@@ -191,7 +191,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
      */
     public double getLeftVelocity(){
         //return leftMaster.getSelectedSensorVelocity(0);
-        return sensorUnitsToInchesPerSec(leftMaster.getSelectedSensorVelocity(0))/Constants.kEncoderScalingFactor;
+        return sensorUnitsToInchesPerSec(leftMaster.getSelectedSensorVelocity(0))/Constants.kDriveEncoderScalingFactor;
     }
 
     /**
@@ -199,7 +199,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
      */
     public double getRightVelocity(){
         //return rightMaster.getSelectedSensorVelocity(0);
-        return sensorUnitsToInches(rightMaster.getSelectedSensorVelocity(0))/Constants.kEncoderScalingFactor;
+        return sensorUnitsToInches(rightMaster.getSelectedSensorVelocity(0))/Constants.kDriveEncoderScalingFactor;
     }
 
     //TODO: test these methods

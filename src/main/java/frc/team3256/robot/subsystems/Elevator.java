@@ -74,13 +74,13 @@ public class Elevator extends SubsystemBase{
         master.set(ControlMode.PercentOutput, power);
     }
 
-    public void setHold(){
+    public void holdPosition(){
         //TODO: Make this the absolute position
-        setTargetPosition(getEncoderValue(), Constants.kElevatorHoldSlot);
+        setTargetPosition(getHeight(), Constants.kElevatorHoldSlot);
     }
 
-    public void setTargetPosition(double targetPos, int slotID){
-        master.set(ControlMode.Position, targetPos, slotID);
+    public void setTargetPosition(double targetHeight, int slotID){
+        master.set(ControlMode.Position, inchesToSensorUnits(targetHeight), slotID);
     }
 
     public enum SystemState{
@@ -103,8 +103,6 @@ public class Elevator extends SubsystemBase{
     }
 
     public void update(double currPos){
-        if(isTriggered() && !isCalibrated()){
-        }
         SystemState newState = SystemState.HOLD;
         switch(currentState){
             case HOLD:
@@ -133,34 +131,34 @@ public class Elevator extends SubsystemBase{
     }
 
     private SystemState handleHold(){
-        setTargetPosition(m_closedLoopTarget, Constants.kElevatorHoldSlot);
+        setTargetPosition(getHeight(), Constants.kElevatorHoldSlot);
         return defaultStateTransfer();
     }
 
     private SystemState handleFastUp(){
         if(isCalibrated){
-
+            setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastUpSlot);
+            return SystemState.FAST_UP;
         }
-        setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastUpSlot);
-        return SystemState.FAST_UP;
+        return defaultStateTransfer();
     }
 
     private SystemState handleFastDown(){
         if(isCalibrated){
-
+            setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastDownSlot);
+            return SystemState.FAST_DOWN;
         }
-        setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastDownSlot);
-        return SystemState.FAST_DOWN;
+        return defaultStateTransfer();
     }
 
     private SystemState handleManualControlUp(){
         setOpenLoop(Constants.kElevatorUpManualPower);
-        return SystemState.MANUAL_UP;
+        return defaultStateTransfer();
     }
 
-    private SystemState handleManualControlDown(){
+    private SystemState handleManualControlDown() {
         setOpenLoop(Constants.kElevatorDownManualPower);
-        return SystemState.MANUAL_DOWN;
+        return defaultStateTransfer();
     }
 
     private void setWantedState(WantedState wantedState){
@@ -190,7 +188,7 @@ public class Elevator extends SubsystemBase{
                 break;
             case HOLD:
                 if(stateChanged) {
-                    m_closedLoopTarget = getEncoderValue();
+                    m_closedLoopTarget = getHeight();
                 }
                 m_usingClosedLoop = true;
                 break;
@@ -216,10 +214,10 @@ public class Elevator extends SubsystemBase{
                 rv = SystemState.HOLD;
                 break;
         }
-        if(m_closedLoopTarget > getEncoderValue() && m_usingClosedLoop) {
+        if(m_closedLoopTarget > getHeight() && m_usingClosedLoop) {
             rv = SystemState.FAST_UP;
         }
-        else if (m_closedLoopTarget < getEncoderValue() && m_usingClosedLoop){
+        else if (m_closedLoopTarget < getHeight() && m_usingClosedLoop){
             rv = SystemState.FAST_DOWN;
         }
         return rv;
@@ -233,8 +231,16 @@ public class Elevator extends SubsystemBase{
         return !hallEffect.get();
     }
 
-    public int getEncoderValue() {
+    public double getHeight() {
         return master.getSelectedSensorPosition(0);
+    }
+
+    public double sensorUnitsToInches(double sensorUnits){
+        return sensorUnits*Constants.kElevatorEncoderScalingFactor;
+    }
+
+    public double inchesToSensorUnits(double inches){
+        return inches/Constants.kElevatorEncoderScalingFactor;
     }
 
     @Override

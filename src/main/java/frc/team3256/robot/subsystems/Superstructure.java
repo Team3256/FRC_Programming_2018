@@ -12,6 +12,10 @@ public class Superstructure implements Loop {
     private ElevatorCarriage carriage;
     private Compressor compressor;
 
+    private SystemState currentState;
+    private WantedState wantedState;
+    private boolean stateChanged;
+
     private static Superstructure getInstance(){
         return instance == null ? instance = new Superstructure() : instance;
     }
@@ -28,6 +32,7 @@ public class Superstructure implements Loop {
 
     public enum SystemState{
         STOWED_AND_IDLE,
+        HOLDING_POSITION,
         INTAKING,
         EXHAUSTING,
         UNJAMMING,
@@ -37,7 +42,7 @@ public class Superstructure implements Loop {
     }
 
     public enum WantedState{
-        WANTS_TO_STOW_AND_IDLE,
+        WANTS_TO_STOW,
         WANTS_TO_INTAKE_CUBE,
         WANTS_TO_EXHAUST_CUBE,
         WANTS_TO_UNJAM_CUBE,
@@ -47,8 +52,11 @@ public class Superstructure implements Loop {
         WANTS_TO_SCORE_LOW_SCALE,
         WANTS_TO_SCORE_MID_SCALE,
         WANTS_TO_SCORE_HIGH_SCALE,
-        WANTS_TO_SPIT_BALL,
-        WANTS_TO_TOGGLE_SQUEEZE
+        WANTS_TO_SPIT_BALL_FORWARD,
+        WANTS_TO_SPIT_BALL_REVERSE,
+        WANTS_TO_TOGGLE_SQUEEZE,
+        WANTS_TO_MANUAL_RAISE,
+        WANTS_TO_MANUAL_LOWER
     }
 
     @Override
@@ -58,11 +66,34 @@ public class Superstructure implements Loop {
 
     @Override
     public void update(double timestamp) {
-
+        SystemState newState;
+        switch(currentState){
+            case STOWED_AND_IDLE:
+                break;
+            case HOLDING_POSITION:
+                break;
+            case INTAKING:
+                break;
+            case EXHAUSTING:
+                break;
+            case UNJAMMING:
+                break;
+            case RAISING_ELEVATOR:
+                break;
+            case LOWERING_ELEVATOR:
+                break;
+            case SCORING:
+                break;
+        }
     }
 
     @Override
     public void end(double timestamp) {
 
     }
+
+    public void setWantedState(WantedState wantedState){
+        this.wantedState = wantedState;
+    }
+
 }

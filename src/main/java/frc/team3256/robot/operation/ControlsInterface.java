@@ -12,33 +12,33 @@ public interface ControlsInterface {
     public boolean getLowGear();
 
     //Operator
-    public boolean getIntake();
+    boolean getIntake();
 
-    public boolean getExhaust();
+    boolean getExhaust();
 
-    public boolean unjamIntake();
+    boolean unjamIntake();
 
-    public boolean openIntake();
+    boolean openIntake();
 
-    public boolean deployIntake();
+    boolean deployIntake();
 
-    public boolean stowIntake();
+    boolean stowIntake();
 
-    public boolean scoreFront();
+    boolean scoreFront();
 
-    public boolean scoreRear();
+    boolean scoreRear();
 
-    public boolean switchPresetLow();
+    boolean switchPreset();
 
-    public boolean switchPresetHigh();
+    boolean scalePresetLow();
 
-    public boolean scalePresetLow();
+    boolean scalePresetMid();
 
-    public boolean scalePresetHigh();
+    boolean scalePresetHigh();
 
-    public double manualElevatorUp();
+    double manualElevatorUp();
 
-    public double manualElevatorDown();
+    double manualElevatorDown();
 
-    public boolean manualSqueezeCarriage();
+    boolean manualSqueezeCarriage();
 }

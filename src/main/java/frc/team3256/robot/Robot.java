@@ -93,8 +93,6 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void autonomousPeriodic() {
-        System.out.println("Left: " + driveTrain.getLeftDistance());
-        System.out.println("Right: " + driveTrain.getRightDistance());
     }
 
     @Override

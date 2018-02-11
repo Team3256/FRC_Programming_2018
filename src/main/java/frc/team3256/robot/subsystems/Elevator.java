@@ -4,7 +4,6 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.team3256.lib.hardware.TalonUtil;
@@ -13,10 +12,11 @@ import frc.team3256.robot.Constants;
 public class Elevator extends SubsystemBase{
 
     private TalonSRX master, slaveOne, slaveTwo, slaveThree;
-    private DigitalInput hallEffect, topBumper, bottomBumper;
+    private DigitalInput hallEffect;
 
     private SystemState currentState;
     private WantedState wantedState;
+
     private boolean isCalibrated = false;
     private boolean stateChanged;
 
@@ -30,8 +30,6 @@ public class Elevator extends SubsystemBase{
 
     private Elevator() {
         hallEffect = new DigitalInput(Constants.kHallEffectPort);
-        topBumper = new DigitalInput(Constants.kTopBumperPort);
-        bottomBumper = new DigitalInput(Constants.kBottomBumperPort);
 
         master = TalonUtil.generateGenericTalon(Constants.kElevatorMaster);
         slaveOne = TalonUtil.generateSlaveTalon(Constants.kElevatorSlaveOne, Constants.kElevatorMaster);
@@ -55,7 +53,6 @@ public class Elevator extends SubsystemBase{
         master.config_kP(Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownP, 0);
         master.config_kI(Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownI, 0);
         master.config_kD(Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownD, 0);
-
     }
 
     public void setOpenLoop(double power){
@@ -108,8 +105,10 @@ public class Elevator extends SubsystemBase{
                 break;
             case MANUAL_UP:
                 newState = handleManualControlUp();
+                break;
             case MANUAL_DOWN:
                 newState = handleManualControlDown();
+                break;
         }
         //State Transfer
         if(newState != currentState){
@@ -228,10 +227,6 @@ public class Elevator extends SubsystemBase{
     public void setTargetPosition(double targetPositionInches) {
 
     }
-
-    public boolean topBumperTriggered() { return topBumper.get(); }
-
-    public boolean bottomBumperTriggered() { return bottomBumper.get(); }
 
     @Override
     public void outputToDashboard() {

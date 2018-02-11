@@ -75,8 +75,8 @@ public class PIDController {
         if(output >= 0){
             output = Math.min(maxPower, Math.max(output, minPower));
         }
-        else{
-            output = Math.max(-minPower, Math.min(-output, -maxPower));
+        else if (output < 0){
+            output = Math.max(minPower, Math.min(output, maxPower));
         }
 
         //Returns the output

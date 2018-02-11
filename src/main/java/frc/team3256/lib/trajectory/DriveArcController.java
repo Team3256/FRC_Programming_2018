@@ -14,7 +14,7 @@ public class DriveArcController {
     private Trajectory trajectoryCurveFollow;
     private double feedForwardValueLead, feedBackValueLead, feedForwardValueFollow, feedBackValueFollow, followOutput, leadOutput, adjustment, targetAngle, radius;
     private PIDController pidController = new PIDController();
-    private double kGyroP, kGyroI, kGyroD;
+    private double kGyroP, kGyroI, kGyroD, angle;
 
     public void setGains(double kP, double kI, double kD, double kV, double kA, double kGyroP, double kGyroI, double kGyroD) {
         this.kP = kP;
@@ -54,9 +54,6 @@ public class DriveArcController {
     }
 
     public DrivePower updateCalculations(double currPosLead, double currPosFollow, double currAngle) {
-        if (curr_segment == 0) {
-            pidController.setGains(kGyroP,kGyroI,kGyroD);
-        }
         if (!isFinished()){
             Trajectory.Point leadPoint = trajectoryCurveLead.getCurrPoint(curr_segment);
             Trajectory.Point followPoint = trajectoryCurveFollow.getCurrPoint(curr_segment);
@@ -64,15 +61,19 @@ public class DriveArcController {
             feedBackValueLead = calculateFeedBack(leadPoint.getPos(), currPosLead, leadPoint.getVel());
             feedForwardValueFollow = calculateFeedForward(followPoint.getVel(), leadPoint.getAcc());
             feedBackValueFollow = calculateFeedBack(followPoint.getPos(), currPosFollow, followPoint.getVel());
-            System.out.println(PID);
             followOutput = feedBackValueFollow + feedForwardValueFollow;
             leadOutput = feedBackValueLead + feedForwardValueLead;
-            targetAngle = ((leadPoint.getPos()+followPoint.getPos())/2)/radius;
+            targetAngle = (((leadPoint.getPos()+followPoint.getPos())/2)/radius)*180/Math.PI;
             pidController.setTargetPosition(targetAngle);
             pidController.setMinMaxOutput(-1, 1);
             adjustment = pidController.update(currAngle);
-            leadOutput -= adjustment;
-            followOutput += adjustment;
+            System.out.println("Lead Path Error: " + (((radius+(Constants.kRobotTrack/2))*angle) - currPosLead));
+            System.out.println("Follow Path Error: " + (((radius-(Constants.kRobotTrack/2))*angle) - currPosFollow));
+            System.out.println("Adjustment: " + adjustment);
+            System.out.println("Target: " + targetAngle);
+            System.out.println("Curr Angle: " + currAngle);
+            leadOutput += adjustment;
+            followOutput -= adjustment;
             curr_segment++;
             followOutput = Util.clip(followOutput, -1, 1);
             leadOutput = Util.clip(leadOutput, -1, 1);
@@ -86,15 +87,16 @@ public class DriveArcController {
     }
 
     public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius) {
+        angle = (degrees * Math.PI)/180;
         radius = turnRadius;
         TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator(Constants.kCurveTrajectoryMaxAccel, Constants.kCurveTrajectoryCruiseVelocity, Constants.kControlLoopPeriod);
         trajectoryCurveGenerator.generateTrajectoryCurve(startVel, endVel, degrees, turnRadius);
         this.trajectoryCurveLead = trajectoryCurveGenerator.getLeadPath();
         this.trajectoryCurveFollow = trajectoryCurveGenerator.getFollowPath();
+        pidController.setGains(kGyroP,kGyroI,kGyroD);
     }
 
     public void resetTrajectory(){
         curr_segment = 0;
     }
 }
-

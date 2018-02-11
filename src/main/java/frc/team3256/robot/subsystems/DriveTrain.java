@@ -296,7 +296,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
             setOpenLoop(0, 0);
             return;
         }
-        System.out.println("Updating....");
+        //System.out.println("Updating....");
         DrivePower output = driveStraightController.update(getAverageDistance(), getAngle().degrees());
         leftMaster.set(ControlMode.PercentOutput, output.getLeft());
         rightMaster.set(ControlMode.PercentOutput, output.getRight());

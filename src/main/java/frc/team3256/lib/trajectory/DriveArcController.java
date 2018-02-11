@@ -67,8 +67,8 @@ public class DriveArcController {
             pidController.setTargetPosition(targetAngle);
             pidController.setMinMaxOutput(-1, 1);
             adjustment = pidController.update(currAngle);
-            System.out.println("Lead Path Error: " + ((2*Math.PI*radius+(Constants.kRobotTrack/2)*(angle/360)) - currPosLead));
-            System.out.println("Follow Path Error: " + ((2*Math.PI*radius-(Constants.kRobotTrack/2)*(angle/360)) - currPosFollow));
+            System.out.println("Lead Path Error: " + (((radius+(Constants.kRobotTrack/2))*angle) - currPosLead));
+            System.out.println("Follow Path Error: " + (((radius-(Constants.kRobotTrack/2))*angle) - currPosFollow));
             System.out.println("Adjustment: " + adjustment);
             System.out.println("Target: " + targetAngle);
             System.out.println("Curr Angle: " + currAngle);
@@ -87,7 +87,7 @@ public class DriveArcController {
     }
 
     public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius) {
-        angle = (degrees * 180)/Math.PI;
+        angle = (degrees * Math.PI)/180;
         radius = turnRadius;
         TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator(Constants.kCurveTrajectoryMaxAccel, Constants.kCurveTrajectoryCruiseVelocity, Constants.kControlLoopPeriod);
         trajectoryCurveGenerator.generateTrajectoryCurve(startVel, endVel, degrees, turnRadius);

@@ -33,6 +33,7 @@ public class FollowTrajectoryAction implements Action {
     public void start() {
         drive.setHighGear(true);
         drive.resetDriveStraightController();
-        drive.configureDriveStraight(startVel, endVel, distance + drive.getAverageDistance(), initialAngle);
+        drive.resetEncoders();
+        drive.configureDriveStraight(startVel, endVel, distance, initialAngle); //add + drive.getAverageDistance() later..for now it's relative
     }
 }

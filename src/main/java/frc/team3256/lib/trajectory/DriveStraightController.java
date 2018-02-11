@@ -15,7 +15,6 @@ public class DriveStraightController {
     private double leftOutput, rightOutput, feedForwardValue, feedBackValue, initialAngle, adjustment;
     private PIDController pidController = new PIDController();
     private boolean reversed = false;
-    private boolean isInitialSet = false;
 
     public void setGains(double kP, double kI, double kD, double kV, double kA, double kStraightP, double kStraightI, double kStraightD) {
         this.kP = kP;
@@ -56,8 +55,7 @@ public class DriveStraightController {
     }
 
     public DrivePower update(double currPos, double currAngle) {
-        if (curr_segment == 0 && !isInitialSet){
-            initialAngle = currAngle;
+        if (curr_segment == 0){
             pidController.setTargetPosition(initialAngle);
             pidController.setMinMaxOutput(-1, 1);
         }
@@ -77,7 +75,6 @@ public class DriveStraightController {
             System.out.println("adjustment: " + adjustment);
             leftOutput += adjustment;
             rightOutput -= adjustment;
-
             if (reversed){
                 leftOutput *= -1.0;
                 rightOutput *= -1.0;
@@ -101,10 +98,8 @@ public class DriveStraightController {
             reversed = true;
             this.trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, Math.abs(distance));
         } else {
-            initialAngle = angle;
-            isInitialSet = true;
             this.trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, distance);
         }
-
+        initialAngle = angle;
     }
 }

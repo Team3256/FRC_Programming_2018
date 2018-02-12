@@ -386,7 +386,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
     public void configurePurePursuit(Path path) {
         purePursuitTracker.setPath(path);
-        purePursuitTracker.setLoopTime();
     }
 
     public void resetDriveStraightController() {

@@ -20,7 +20,6 @@ public class PurePursuitAction implements Action {
 
     @Override
     public void update() {
-
     }
 
     @Override

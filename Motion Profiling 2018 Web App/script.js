@@ -1,20 +1,17 @@
 var ftToPixelsScale = 14;
-
 var fieldWidth = 74; //in feet
 var fieldHeight = 30; //in feet
 var robotWidth = 40/12; //in feet
 var robotHeight = 35/12; //in feet
 var width = fieldWidth * ftToPixelsScale; //in pixels
 var height = fieldHeight * ftToPixelsScale; //in pixels
-var pointRadius = 4; //in pixels
-
 var pointRadius = 5; //in pixels
-
+var modalText = "";
 var ctx;
 var image;
 var imageFlipped;
 var isFlipped = false;
-var prevVel = 0;
+var modalTitle = "";
 
 var startPositions = {
     "center": [10, 14],
@@ -22,9 +19,12 @@ var startPositions = {
     "right": [10, 6],
 }
 
-
 var kEpsilon = 1E-9;
 var waypoints = [];
+
+$(function() {
+    $('.modal').fadeOut(0);
+});
 
 function chooseStart(position) {
     startPos = startPositions[position];
@@ -38,8 +38,6 @@ function chooseStart(position) {
     addPoint(startX, startY);
     update();
 }
-
-
 
 class Translation {
 	constructor(x, y) {
@@ -118,11 +116,6 @@ class Waypoint {
     draw() {
         this.coordinates.draw();
     }
-
-
-    /*toString() {
-        return "sWaywaypoints.add(new Waypoint("+this.coordinates.x+","+this.coordinates.y+","+this.radius+","+this.velocity+"));";
-    }*/
 }
 
 class Line {
@@ -136,8 +129,7 @@ class Line {
 
         this.start = pointA.coordinates.translate(scaledA);
         this.end = pointB.coordinates.translate(scaledB);
-
-
+        this.length = Translation.diff(this.start, this.end).norm();
     }
 
     checkValid() {
@@ -172,9 +164,13 @@ class Line {
         var y_intC = -slopeC * c.x + c.y;
         var x = (y_intC - y_intA)/(slopeA - slopeC);
         var y = (slopeA * x) + y_intA;
+        if (diffC.x == 0) {
+            var diffAC = Translation.diff(a, c);
+            x = c.x;
+            y = a.y + slopeA * diffAC.x;
+        }
         return new Translation(x,y);
     }
-
 }
 
 class Arc {
@@ -183,18 +179,13 @@ class Arc {
         this.lineB = lineB;
         var perpA = lineA.end.translate(lineA.slope.perp());
         var perpB = lineB.start.translate(lineB.slope.perp());
+
         this.center = Line.intersect(lineA.end, perpA, lineB.start, perpB);
         this.radius = Translation.diff(lineA.end, this.center).norm();
 
         this.sTrans = Translation.diff(this.center, this.lineA.end);
         this.eTrans = Translation.diff(this.center, this.lineB.start);
         this.sAngle, this.eAngle;
-
-        /*draws the center of arcs
-        if(Translation.diff(this.lineA.end, this.lineB.start).norm() > 0) {
-            this.center.draw("blue");
-        }
-        */
 
         if(Translation.cross(this.sTrans, this.eTrans) > 0) {
             this.eAngle = -Math.atan2(this.sTrans.y, this.sTrans.x);
@@ -203,8 +194,6 @@ class Arc {
             this.sAngle = -Math.atan2(this.sTrans.y, this.sTrans.x);
             this.eAngle = -Math.atan2(this.eTrans.y, this.eTrans.x);
         }
-        this.calcVel = lineA.vel * (lineA.slope.norm()/length());
-        waypoints.push(new Waypoint(this.sTrans.x, this.sTrans.y, vel, radius, desc));
     }
 
     draw() {
@@ -214,27 +203,13 @@ class Arc {
 
         ctx.stroke();
     }
-/*
-    fill() {
-        this.lineA.fill();
-        this.lineB.fill();
-        var sTrans = Translation.diff(this.center, this.lineA.end);
-        var eTrans = Translation.diff(this.center, this.lineB.start);
-        var sAngle = (Translation.cross(sTrans, eTrans) > 0) ? sTrans.angle : eTrans.angle;
-        var angle = Translation.angle(sTrans, eTrans);
-        var length = angle * this.radius;
-        for(var i=0; i<length; i+=this.radius/100) {
-            //drawRotatedRect(this.center.translate(new Translation(this.radius*Math.cos(sAngle-i/length*angle),-this.radius*Math.sin(sAngle-i/length*angle))), robotHeight, robotWidth, sAngle-i/length*angle+Math.PI/2, null, pathFillColor, true);
-        }
-    }
-    */
 
     getTurnAngle() {
         return ((this.sAngle - this.eAngle)*180)/Math.PI * -1;
     }
 
     length() {
-        return Math.PI * this.radius * (getTurnAngle()/180);
+        return Math.PI * this.radius * (this.getTurnAngle()/180);
     }
 
 }
@@ -244,7 +219,6 @@ function deletePoint(index) {
 }
 
 function addPoint(cx, cy) {
-    prevPoint = waypoints[waypoints.length-1].coordinates;
 
 	$('tbody').append('<tr>'
 		+'<td class="hoverable"><input class="x number_cell" value="'+(cx)+'"></td>'
@@ -282,7 +256,6 @@ function fitSizeToText(input) {
 }
 
 function addEventListeners() {
-
     row = $($('tbody').children('tr')[waypoints.length]);
 
     row.find('td').keyup(function() {
@@ -299,6 +272,10 @@ function addEventListeners() {
         $(this).parent().parent().remove();
         update();
     });
+
+    $(".trajectoryName").keyup(function() {
+        modalTitle = $(this).val();
+    })
 
     row.find('.hoverable').hover(
         function() {
@@ -327,25 +304,30 @@ function update() {
         var radius = parseFloat($(row.find('.radius')).val()) || 0;
         waypoints.push(new Waypoint(x, y, vel, radius, desc));
     })
+    modalText = "";
     for (var point in waypoints) {
-    waypoints[point].coordinates.draw();
+        waypoints[point].coordinates.draw();
+        if (point > 1) {
+            var line1 = new Line(waypoints[point], waypoints[point - 1]);
+            var line2 = new Line(waypoints[point - 1], waypoints[point - 2]);
+            var arc = new Arc(line1, line2);
+            arc.draw();
+            var angle = arc.getTurnAngle();
+            var radius = arc.radius;
+            modalText += "runAction(new FollowArcTrajectoryAction(" + waypoints[point].vel + ", " + waypoints[point].vel + ", " + (Math.round(radius*10)/10) + ", " + (Math.round(angle*10)/10) + "));<br />";
+        }
         if (point > 0) {
             var line = new Line(waypoints[point - 1], waypoints[point]);
             line.draw();
+            var distance = line.length;
+            modalText += "runAction(new FollowTrajectoryAction(" + waypoints[point-1].vel + ", " + waypoints[point].vel + ", " + (Math.round(distance*10)/10) + "));<br />";
             if (!line.checkValid()) {
                 $($('tbody').children('tr')[point - 1]).addClass('redBox');
             } else {
                 $($('tbody').children('tr')[point - 1]).removeClass('redBox');
             }
-            if (point > 1) {
-                var line1 = new Line(waypoints[point], waypoints[point - 1]);
-                var line2 = new Line(waypoints[point - 1], waypoints[point - 2]);
-                var arc = new Arc(line1, line2);
-                arc.draw();
-            }
         }
     }
-
 }
 
 function fieldClicked(event){
@@ -364,48 +346,14 @@ function chooseStart(position) {
     update();
 }
 
-
-function setModalContents() {
-    var modalText = "";
-    var arcPath = false;
-    var distance = 0;
-    var angle = 0;
-    var radius = 0;
-
-    for (var index in waypoints) {
-        if (index > 0) {
-            var line = new Line(waypoints[index - 1], waypoints[index]);
-            distance = line.slope.norm();
-            if (index > 1) {
-                var line1 = new Line(waypoints[index], waypoints[index - 1]);
-                var line2 = new Line(waypoints[index - 1], waypoints[index - 2]);
-                var arc = new Arc(line1, line2);
-                angle = arc.getTurnAngle();
-                radius = arc.radius;
-                arcPath = true;
-            }
-
-            if(!arcPath) {
-                modalText += "runAction(new FollowTrajectoryAction(" + waypoints[index-1].vel + ", " + waypoints[index].vel + ", " + (Math.round(distance*10)/10) + "));<br />";
-            }
-            else {
-                modalText += "runAction(new FollowArcTrajectoryAction(" + waypoints[index-1].vel + ", " + waypoints[index].vel + ", " + (Math.round(radius*10)/10) + ", " + (Math.round(angle*10)/10) + "));<br />";
-            }
-        }
-    }
-
+function displayConfiguration() {
+    $('.modal').fadeIn(500);
+    $("#modalTitle").html(modalTitle);
     $("#trajectoryPath").html(modalText);
 }
 
-function displayConfiguration() {
-    //var title = ($("#title").val().length > 0) ? $("#title").val() : "Left Auto";
-    $('.modal').css({"z-index": "5", "opacity": "1"});
-    $("#modalTitle").html("Auto");
-    setModalContents();
-}
-
 function hideConfiguration() {
-    $('.modal').css({"z-index": "-5", "opacity": "-1"});
+    $('.modal').fadeOut(500);
 }
 
 function init() {

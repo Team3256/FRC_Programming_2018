@@ -17,7 +17,7 @@
     <img src="gorilla_metals_logo.jpg" class="logo">
     <title>Warrior Path</title>
 	<h1 id="title">Welcome to the 2018 PowerUp Season Motion Profiling Tool for Team 3256!</h1>
-	<br>
+    <input placeholder="Title" class="trajectoryName">
 	<canvas id="field"></canvas>
     <br>
     <div class="button_container">
@@ -47,8 +47,11 @@
         </tbody>
     </table>
     <div class="modal">
-        <span class="close" onclick="hideConfiguration()">✕</span>
-        <span id="modalTitle">MODAL TITLE</span>
+        <div class="headerContainer">
+            <div id="modalTitle">MODAL TITLE</div>
+            <span class="close" onclick="hideConfiguration()">✕</span>
+        </div>
+
         <span id="trajectoryPath">TRAJECTORY</span>
     </div>
     <span id="text_width_calc">Text width placeholder</span>

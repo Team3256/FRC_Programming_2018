@@ -329,11 +329,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
             setOpenLoop(0, 0);
             return;
         }
-
         Kinematics.DriveVelocity output = Kinematics.inverseKinematics(purePursuitTracker.update(PoseEstimator.getInstance().getPose().getTranslation()), Constants.kRobotTrack, Constants.kScrubFactor);
         leftMaster.set(ControlMode.Velocity, output.left);
         rightMaster.set(ControlMode.Velocity, output.right);
-
     }
 
     public void setHighGear(boolean highGear) {
@@ -385,6 +383,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public void configurePurePursuit(Path path) {
+        if (controlMode != DriveControlMode.PURE_PURSUIT){
+            controlMode = DriveControlMode.PURE_PURSUIT;
+        }
         purePursuitTracker.setPath(path);
     }
 

@@ -122,9 +122,10 @@ public class Constants {
     public static final double kRightIntakePower = 0;
     public static final double kIntakeExhaustPower = 0;
     public static final double kUnjamMaxDuration = 100.0/1000.0;
-    public static final int kCarriageReceivePower = 0;
-    public static final int kCarriageScoreForwardPower = 0;
-    public static final int kCarriageScoreBackwardPower = -0;
+    public static final double kCarriageReceivePower = 0;
+    public static final double kCarriageSecurePower = 0;
+    public static final double kCarriageScoreForwardPower = 0;
+    public static final double kCarriageScoreBackwardPower = -0;
 
     public static final double kScoreForwardMotorPower = 0;
     public static final double kScoreBackwardMotorPower = -0;

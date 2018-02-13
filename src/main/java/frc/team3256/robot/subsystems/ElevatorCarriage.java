@@ -1,6 +1,8 @@
 package frc.team3256.robot.subsystems;
 
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.VictorSP;
 import frc.team3256.lib.Loop;
 import frc.team3256.robot.Constants;
@@ -13,6 +15,7 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
     private SystemState currentState;
     private WantedState wantedState;
     private boolean stateChanged;
+    private double startTime;
 
 
     private static ElevatorCarriage elevatorCarriage;
@@ -29,6 +32,7 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
 
     public enum SystemState {
         RECEIVING_FROM_INTAKE, //Self-explanatory
+        SECURING_CUBE, //Runs motors at a smaller power after receiving the cube to secure the cube
         SCORING_FORWARD, //Run rollers forward
         SCORING_BACKWARD, //Run rollers backward
         SQUEEZING_IDLE, //Actuators squeeze cube in place
@@ -38,6 +42,8 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
     public enum WantedState {
         //Operator -> Whenever no buttons are pressed
         WANTS_TO_RECEIVE,
+        //Condition -> After receiving cube
+        WANTS_TO_SECURE_CUBE,
         //Operator -> Score forward button
         WANTS_TO_SCORE_FORWARD,
         //Operator -> Score backward button
@@ -60,6 +66,9 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
         switch(currentState){
             case RECEIVING_FROM_INTAKE:
                 newState = handleReceiveFromIntake();
+                break;
+            case SECURING_CUBE:
+                newState = handleSecureCube();
                 break;
             case SCORING_FORWARD:
                 newState = handleScoreForward();
@@ -92,7 +101,7 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
         //If we have a cube, then we squeeze
         if (hasCube()){
             runMotors(0);
-            return SystemState.SQUEEZING_IDLE;
+            return SystemState.SECURING_CUBE;
         }
         runMotors(Constants.kCarriageReceivePower);
         return defaultStateTransfer();
@@ -128,11 +137,25 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
         return defaultStateTransfer();
     }
 
+    private SystemState handleSecureCube(){
+        if(stateChanged){
+            startTime = Timer.getFPGATimestamp();
+            squeeze();
+        }
+        if((Timer.getFPGATimestamp() - startTime) < 3){
+            runMotors(Constants.kCarriageSecurePower);
+        }
+        return defaultStateTransfer();
+    }
+
     //default WantedState -> SystemState
     private SystemState defaultStateTransfer(){
         switch(wantedState){
             case WANTS_TO_RECEIVE:
                 return SystemState.RECEIVING_FROM_INTAKE;
+
+            case WANTS_TO_SECURE_CUBE:
+                return SystemState.SECURING_CUBE;
 
             case WANTS_TO_SCORE_FORWARD:
                 return SystemState.SCORING_FORWARD;

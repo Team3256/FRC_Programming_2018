@@ -3,13 +3,13 @@ package frc.team3256.robot.operation;
 public interface ControlsInterface {
 
     //Driver
-    public double getThrottle();
+    double getThrottle();
 
-    public double getTurn();
+    double getTurn();
 
-    public boolean getQuickTurn();
+    boolean getQuickTurn();
 
-    public boolean getLowGear();
+    boolean getLowGear();
 
     //Operator
     boolean getIntake();

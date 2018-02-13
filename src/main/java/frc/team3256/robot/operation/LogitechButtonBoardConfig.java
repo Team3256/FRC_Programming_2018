@@ -43,17 +43,12 @@ public class LogitechButtonBoardConfig implements ControlsInterface{
     }
 
     @Override
-    public boolean openIntake() {
+    public boolean togglePivot() {
         return false;
     }
 
     @Override
-    public boolean deployIntake() {
-        return false;
-    }
-
-    @Override
-    public boolean stowIntake() {
+    public boolean toggleFlop() {
         return false;
     }
 

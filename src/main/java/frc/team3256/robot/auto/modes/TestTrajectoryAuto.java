@@ -2,6 +2,7 @@ package frc.team3256.robot.auto.modes;
 
 import frc.team3256.robot.auto.AutoModeBase;
 import frc.team3256.robot.auto.AutoModeEndedException;
+import frc.team3256.robot.auto.actions.FollowArcTrajectoryAction;
 import frc.team3256.robot.auto.actions.FollowTrajectoryAction;
 import frc.team3256.robot.auto.actions.WaitAction;
 import frc.team3256.robot.subsystems.DriveTrain;

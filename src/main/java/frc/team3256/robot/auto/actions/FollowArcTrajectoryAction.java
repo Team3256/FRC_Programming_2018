@@ -1,7 +1,5 @@
-
 package frc.team3256.robot.auto.actions;
-
-        import frc.team3256.robot.subsystems.DriveTrain;
+import frc.team3256.robot.subsystems.DriveTrain;
 
 public class FollowArcTrajectoryAction implements Action {
 

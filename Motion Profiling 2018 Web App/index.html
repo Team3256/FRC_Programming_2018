@@ -15,14 +15,17 @@
     <img src="bae_systems.png" class="logo">
     <img src="cisco_logo.png" class="logo">
     <img src="gorilla_metals_logo.jpg" class="logo">
-    <title>Motion Profiling 2018</title>
+    <title>Warrior Path</title>
 	<h1 id="title">Welcome to the 2018 PowerUp Season Motion Profiling Tool for Team 3256!</h1>
-	<br>
+    <input placeholder="Title" class="trajectoryName">
 	<canvas id="field"></canvas>
     <br>
     <div class="button_container">
-	    <button onclick="addPoint()">Add Point</button>
-        <button onclick="saveConfiguration()">Save Configuration</button>
+        <button onclick="displayConfiguration()">Display Trajectory Path</button>
+        <button onclick="invertField()">Invert Field</button>
+        <button onclick="chooseStart('left')">Left Auto</button>
+        <button onclick="chooseStart('center')">Center Auto</button>
+        <button onclick="chooseStart('right')">Right Auto</button>
     </div>
     <table>
         <thead>
@@ -35,14 +38,22 @@
         </thead>
         <tbody>
             <tr>
-                <td class="hoverable"><input class="x number_cell" value="10"></td>
-                <td class="hoverable"><input class="y number_cell" value="5"></td>
+                <td class="hoverable"><input class="x number_cell"></td>
+                <td class="hoverable"><input class="y number_cell"></td>
                 <td class="hoverable"><div class="vel number_cell">0</div></td>
                 <td class="hoverable"><div class="radius number_cell">0</div></td>
                 <td class="hoverable"><input placeholder="Description" class="desc"></td>
             </tr>
         </tbody>
     </table>
+    <div class="modal">
+        <div class="headerContainer">
+            <div id="modalTitle">MODAL TITLE</div>
+            <span class="close" onclick="hideConfiguration()">✕</span>
+        </div>
+
+        <span id="trajectoryPath">TRAJECTORY</span>
+    </div>
     <span id="text_width_calc">Text width placeholder</span>
 
 </body>

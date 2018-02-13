@@ -190,7 +190,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
         purePursuitTracker.setLoopTime(Constants.kControlLoopPeriod);
         purePursuitTracker.setPathCompletionTolerance(Constants.pathCompletionTolerance);
-
     }
 
     public double getLeftDistance() {

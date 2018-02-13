@@ -24,7 +24,9 @@ public class PurePursuitTrackerTest {
         p.addSegment(new Line(48, 12, 72, 12, 10, 10, 15));
 
 
-        PurePursuitTracker pursuit = new PurePursuitTracker(p, 1.0);
+        PurePursuitTracker pursuit = new PurePursuitTracker();
+        pursuit.setPath(p);
+        pursuit.setLoopTime(Constants.kControlLoopPeriod);
         Translation robotCoordinates = new Translation(15, 3);
         Twist command = pursuit.update(robotCoordinates);
 

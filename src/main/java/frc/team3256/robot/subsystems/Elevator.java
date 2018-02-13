@@ -161,7 +161,7 @@ public class Elevator extends SubsystemBase{
         return defaultStateTransfer();
     }
 
-    private void setWantedState(WantedState wantedState){
+    public void setWantedState(WantedState wantedState){
         this.wantedState = wantedState;
     }
 

@@ -129,6 +129,8 @@ public class Constants {
 
     public static final double kScoreForwardMotorPower = 0;
     public static final double kScoreBackwardMotorPower = -0;
+    public static final double kScoreForwardHeight = 0;
+    public static final double kScoreBackwardHeight = 0;
 
     public static final double kElevatorUpManualPower = 0.0;
     public static final double kElevatorDownManualPower = 0.0;

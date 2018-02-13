@@ -18,11 +18,9 @@ public interface ControlsInterface {
 
     boolean unjamIntake();
 
-    boolean openIntake();
+    boolean togglePivot();
 
-    boolean deployIntake();
-
-    boolean stowIntake();
+    boolean toggleFlop();
 
     boolean scoreFront();
 
@@ -31,8 +29,6 @@ public interface ControlsInterface {
     boolean switchPreset();
 
     boolean scalePresetLow();
-
-    boolean scalePresetMid();
 
     boolean scalePresetHigh();
 

@@ -5,17 +5,18 @@ import frc.team3256.robot.subsystems.DriveTrain;
 public class FollowTrajectoryAction implements Action {
 
     private DriveTrain drive = DriveTrain.getInstance();
-    private double startVel, endVel, distance;
+    private double startVel, endVel, distance, initialAngle;
 
-    public FollowTrajectoryAction(double startVel, double endVel, double distance) {
+    public FollowTrajectoryAction(double startVel, double endVel, double distance, double initialAngle) {
         this.startVel = startVel;
         this.endVel = endVel;
         this.distance = distance;
+        this.initialAngle = initialAngle;
     }
 
     @Override
     public boolean isFinished() {
-        return drive.isTrajectoryFinished();
+        return drive.isDriveStraightFinished();
     }
 
     @Override
@@ -25,13 +26,14 @@ public class FollowTrajectoryAction implements Action {
     @Override
     public void done() {
         drive.setOpenLoop(0,0);
-        System.out.println("Finished....");
+        drive.resetDriveStraightController();
     }
 
     @Override
     public void start() {
-        drive.configureDistanceTrajectory(startVel, endVel, distance);
-        System.out.println("Started...");
-        drive.updateDistanceTrajectory();
+        drive.setHighGear(true);
+        drive.resetDriveStraightController();
+        drive.resetEncoders();
+        drive.configureDriveStraight(startVel, endVel, distance, initialAngle); //add + drive.getAverageDistance() later..for now it's relative
     }
 }

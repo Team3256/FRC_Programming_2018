@@ -1,39 +1,32 @@
 package frc.team3256.lib.path;
 
-import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Translation;
+import frc.team3256.robot.Constants;
 
 public class Line extends Segment{
 
     private Translation slope;
+    private double dt;
 
-    /**
-     * @param startX X-Coordinate of the starting position
-     * @param startY Y-Coordinate of the starting position
-     * @param endX X-Coordinate of the ending position
-     * @param endY Y-Coordinate of the ending position
-     */
-    public Line(double startX, double startY, double endX, double endY){
+    public Line(double startX, double startY, double endX, double endY, double goalVel, double maxAccel, double maxVel){
         type = Type.LINE;
         start = new Translation(startX, startY);
         end = new Translation(endX, endY);
         slope = new Translation(start, end);
+        this.goalVel = goalVel;
+        this.maxAccel = maxAccel;
+        this.maxVel = maxVel;
     }
 
-    /**
-     * @param startX X-Coordinate of the starting position
-     * @param startY Y-Coordinate of the starting position
-     * @param endX X-Coordinate of the ending position
-     * @param endY Y-Coordinate of the ending position
-     * @param startVel starting velocity
-     * @param accel acceleration
-     */
-    public Line(double startX, double startY, double endX, double endY, double startVel, double accel){
-        this(startX, startY, endX, endY);
-        this.startVel = startVel;
-        this.accel = accel;
-        this.endVel = Math.sqrt(Math.pow(startVel, 2) + 2 * accel * getLength());
+    public Line(double startX, double startY, double endX, double endY){
+        this(startX, startY, endX, endY, 0.0, 0.0, 0.0);
     }
+
+    @Override
+    public void setLoopTime(double dt) {
+        this.dt = dt;
+    }
+
 
     /**
      * @return type of the segment, in this case a line
@@ -136,5 +129,16 @@ public class Line extends Segment{
     @Override
     public double getRemainingDistance(Translation closestPoint){
         return getLength() - getCurrDistanceTraveled(closestPoint);
+    }
+
+    @Override
+    public double checkVelocity(Translation closestPoint, double prevVelocity) {
+        double remainingDistance = getRemainingDistance(closestPoint);
+        double outputVelFromEnd = Math.sqrt(Math.pow(goalVel, 2.0)-2*maxAccel*remainingDistance);
+        double outputVel = prevVelocity + maxAccel * Constants.kControlLoopPeriod;
+        outputVelFromEnd = Double.isNaN(outputVelFromEnd) ? outputVel : outputVelFromEnd;
+        outputVel = Math.min(outputVel, outputVelFromEnd);
+        outputVel = Math.min(outputVel, maxVel);
+        return outputVel;
     }
 }

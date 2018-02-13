@@ -9,9 +9,9 @@ public abstract class Segment {
     protected Type type = null;
     protected Translation start = null;
     protected Translation end = null;
-    protected double startVel = 0;
-    protected double endVel = 0;
-    protected double accel = 0;
+    protected double goalVel = 0;
+    protected double maxAccel = 0;
+    protected double maxVel = 0;
 
     //Type of segment: is this an arc or a line?
     public enum Type{
@@ -20,6 +20,9 @@ public abstract class Segment {
     }
 
     //Methods that are common to both types of segments
+
+    public abstract void setLoopTime(double dt);
+
     public abstract Type getType();
 
     public abstract Translation getStartPoint();
@@ -38,9 +41,5 @@ public abstract class Segment {
 
     public abstract double getRemainingDistance(Translation closestPoint);
 
-    public double getVelocity(Translation closestPoint) {
-        double currDistanceTraveled = getCurrDistanceTraveled(closestPoint);
-        double currVelocity = Math.sqrt(Math.pow(startVel, 2) + 2 * accel * currDistanceTraveled);
-        return currVelocity;
-    }
+    public abstract double checkVelocity(Translation closestPoint, double prevVelocity);
 }

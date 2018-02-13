@@ -1,8 +1,13 @@
 package frc.team3256.lib.path;
 
 import frc.team3256.lib.math.Translation;
+import frc.team3256.lib.math.Twist;
+import frc.team3256.robot.Constants;
 import org.junit.Test;
-import org.opencv.core.Mat;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -14,42 +19,44 @@ public class PurePursuitTrackerTest {
     public void testArcToSegment() {
 
         Path p = new Path();
-        p.addSegment(new Line(0, 0, 24, 24));
-        p.addSegment(new Arc(24, 24, 48,24, 36, 12));
+        p.addSegment(new Line(0, 0, 24, 24, 120.0, 20.0, 250.0));
+        p.addSegment(new Arc(24, 24, 48,24, 36, 24, 120.0, 20.0, 250.0));
+        p.addSegment(new Line(48, 12, 72, 12, 10, 10, 15));
 
-        PurePursuitTracker pursuit = new PurePursuitTracker(p);
-        Translation lookaheadPoint = new Translation(9, 9);
+
+        PurePursuitTracker pursuit = new PurePursuitTracker();
+        pursuit.setPath(p);
+        pursuit.setLoopTime(Constants.kControlLoopPeriod);
         Translation robotCoordinates = new Translation(15, 3);
-        PurePursuitTracker.Command command = pursuit.update(lookaheadPoint, robotCoordinates);
-        assertEquals(command.delta.dx(), 0, kEpsilon);
-        assertEquals(command.delta.dy(), Math.PI * 3.0 * Math.sqrt(2), kEpsilon);
-        assertEquals(command.delta.dtheta(), -Math.PI, kEpsilon);
+        Twist command = pursuit.update(robotCoordinates);
 
-
+        assertEquals(command.dy(), 0, kEpsilon);
+        assertEquals(command.dx(), 20.0 * Constants.kControlLoopPeriod, kEpsilon);
+        assertEquals(command.dtheta(), 20.0 * Constants.kControlLoopPeriod / (6*Math.sqrt(2)), kEpsilon);
 
         robotCoordinates = new Translation(9, 3);
-        command = pursuit.update(lookaheadPoint, robotCoordinates);
-        assertEquals(command.delta.dx(), 0.0, kEpsilon);
-        assertEquals(command.delta.dy(), Math.PI * 1.5 * Math.sqrt(2), kEpsilon);
-        assertEquals(command.delta.dtheta(), -Math.PI / 2.0, kEpsilon);
-
+        command = pursuit.update(robotCoordinates);
+        assertEquals(command.dy(), 0.0, kEpsilon);
+        assertEquals(command.dx(), 2 * 20.0 * Constants.kControlLoopPeriod, kEpsilon);
+        assertEquals(command.dtheta(), 2 * 20.0 * Constants.kControlLoopPeriod / (3* Math.sqrt(2)), kEpsilon);
 
         robotCoordinates = new Translation(3, 9);
-        command = pursuit.update(lookaheadPoint, robotCoordinates);
-        assertEquals(command.delta.dx(), 0.0, kEpsilon);
-        assertEquals(command.delta.dy(), Math.PI * 1.5 * Math.sqrt(2), kEpsilon);
-        assertEquals(command.delta.dtheta(), - Math.PI / 2.0, kEpsilon);
+        command = pursuit.update(robotCoordinates);
+        assertEquals(command.dy(), 0.0, kEpsilon);
+        assertEquals(command.dx(), 3 * 20.0 * Constants.kControlLoopPeriod, kEpsilon);
+        assertEquals(command.dtheta(), -3 * 20.0 * Constants.kControlLoopPeriod / (3* Math.sqrt(2)), kEpsilon);
 
-        robotCoordinates = new Translation(48, 0);
-        lookaheadPoint = new Translation(24, 24);
-        command = pursuit.update(lookaheadPoint, robotCoordinates);
+        robotCoordinates = new Translation(23.999, 23.999);
+        pursuit.update(robotCoordinates);
 
-        robotCoordinates = new Translation(48,28);
-        lookaheadPoint = new Translation(48,24);
-        command = pursuit.update(lookaheadPoint,robotCoordinates);
-        assertEquals(command.delta.dx(), 0.0, kEpsilon);
-        assertEquals(command.delta.dy(), Math.PI * Math.sqrt(2), kEpsilon);
-        assertEquals(command.delta.dtheta(), - Math.PI / 2.0, kEpsilon);
+        robotCoordinates = new Translation(48.2, 24);
+        pursuit.update(robotCoordinates);
+
+        robotCoordinates = new Translation(50, 5);
+        command = pursuit.update(robotCoordinates);
+        assertEquals(command.dy(), 0.0, kEpsilon);
+        assertEquals(command.dx(), 5 * 20.0  * Constants.kControlLoopPeriod, kEpsilon);
+
 
     }
 }

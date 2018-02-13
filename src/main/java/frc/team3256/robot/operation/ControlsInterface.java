@@ -3,42 +3,38 @@ package frc.team3256.robot.operation;
 public interface ControlsInterface {
 
     //Driver
-    public double getThrottle();
+    double getThrottle();
 
-    public double getTurn();
+    double getTurn();
 
-    public boolean getQuickTurn();
+    boolean getQuickTurn();
 
-    public boolean getLowGear();
+    boolean getLowGear();
 
     //Operator
-    public boolean getIntake();
+    boolean getIntake();
 
-    public boolean getExhaust();
+    boolean getExhaust();
 
-    public boolean unjamIntake();
+    boolean unjamIntake();
 
-    public boolean openIntake();
+    boolean togglePivot();
 
-    public boolean deployIntake();
+    boolean toggleFlop();
 
-    public boolean stowIntake();
+    boolean scoreFront();
 
-    public boolean scoreFront();
+    boolean scoreRear();
 
-    public boolean scoreRear();
+    boolean switchPreset();
 
-    public boolean switchPresetLow();
+    boolean scalePresetLow();
 
-    public boolean switchPresetHigh();
+    boolean scalePresetHigh();
 
-    public boolean scalePresetLow();
+    double manualElevatorUp();
 
-    public boolean scalePresetHigh();
+    double manualElevatorDown();
 
-    public double manualElevatorUp();
-
-    public double manualElevatorDown();
-
-    public boolean manualSqueezeCarriage();
+    boolean manualSqueezeCarriage();
 }

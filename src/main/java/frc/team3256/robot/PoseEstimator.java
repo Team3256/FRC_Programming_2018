@@ -9,6 +9,7 @@ import frc.team3256.robot.subsystems.DriveTrain;
 
 public class PoseEstimator implements Loop {
 
+    private static PoseEstimator instance;
     private Twist velocity;
     private RigidTransform pose;
     private RigidTransform prevPose;
@@ -16,8 +17,12 @@ public class PoseEstimator implements Loop {
     private double prevRightDist = 0;
     private DriveTrain driveTrain = DriveTrain.getInstance();
 
-    public PoseEstimator(){
+    private PoseEstimator(){
         reset(new RigidTransform());
+    }
+
+    public static PoseEstimator getInstance(){
+        return instance == null ? instance = new PoseEstimator() : instance;
     }
 
     public RigidTransform getPose() {

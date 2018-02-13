@@ -2,6 +2,7 @@ package frc.team3256.lib.path;
 
 import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Translation;
+import frc.team3256.robot.Constants;
 
 public class Arc extends Segment{
 
@@ -9,16 +10,9 @@ public class Arc extends Segment{
     private Translation centerToStart, centerToEnd;
     private double radius;
     private Rotation angle;
+    private double dt;
 
-    /**
-     * @param startX X-Coordinate of the starting position
-     * @param startY Y-Coordinate of the starting position
-     * @param endX X-Coordinate of the ending position
-     * @param endY Y-Coordinate of the ending position
-     * @param centerX X-Coordinate of the circle
-     * @param centerY X-Coordinate of the circle
-     */
-    public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY){
+    public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY, double goalVel, double maxAccel, double maxVel){
         type = Type.ARC;
         start = new Translation(startX, startY);
         end = new Translation(endX, endY);
@@ -26,26 +20,31 @@ public class Arc extends Segment{
         centerToStart = new Translation(center, start);
         centerToEnd = new Translation(center, end);
         angle = centerToStart.getAngle(centerToEnd);
+
+        this.goalVel = goalVel;
+        this.maxAccel = maxAccel;
+        this.maxVel = maxVel;
+
         //This should not be possible. We are using constant-curvature arcs.
         //If this ever occurs, then one (or more) of the parameters were passed in incorrectly
-        if (centerToStart.norm() - centerToEnd.norm() > 10E-9){
-
+        if (Math.abs(centerToStart.norm() - centerToEnd.norm()) > 10E-9){
             System.out.println("ERROR: THIS ARC IS NOT CONSTANT_CURVATURE");
             System.out.println("START: " + start);
             System.out.println("END: " + end);
             System.out.println("CENTER: " + center + "\n");
-
             radius = Double.NaN;
         }
         else radius = centerToStart.norm();
     }
 
 
-    public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY, double startVel, double accel){
-        this(startX, startY, endX, endY, centerX, centerY);
-        this.startVel = startVel;
-        this.accel = accel;
-        this.endVel = Math.sqrt(Math.pow(startVel, 2) + 2 * accel * getLength());
+    public Arc(double startX, double startY, double endX, double endY, double centerX, double centerY){
+        this(startX, startY, endX, endY, centerX, centerY, 0.0, 0.0, 0.0);
+    }
+
+    @Override
+    public void setLoopTime(double dt) {
+        this.dt = dt;
     }
 
     @Override
@@ -112,7 +111,7 @@ public class Arc extends Segment{
 
     @Override
     public Translation getDirection(Translation lookaheadPoint) {
-        Translation lookaheadToTarget = new Translation(center, lookaheadPoint).rotate(Rotation.fromDegrees(90));
+        Translation lookaheadToTarget = new Translation(center, lookaheadPoint).rotate(Rotation.fromDegrees(-90));
         return (lookaheadToTarget.scale(1/lookaheadToTarget.norm()));
     }
 
@@ -148,5 +147,16 @@ public class Arc extends Segment{
     @Override
     public double getRemainingDistance(Translation closestPoint) {
         return getLength() - getCurrDistanceTraveled(closestPoint);
+    }
+
+    @Override
+    public double checkVelocity(Translation closestPoint, double prevVelocity) {
+        double remainingDistance = getRemainingDistance(closestPoint);
+        double outputVelFromEnd = Math.sqrt(Math.pow(goalVel, 2.0)-2*maxAccel*remainingDistance);
+        double outputVel = prevVelocity + maxAccel * Constants.kControlLoopPeriod;
+        outputVelFromEnd = Double.isNaN(outputVelFromEnd) ? outputVel : outputVelFromEnd;
+        outputVel = Math.min(outputVel, outputVelFromEnd);
+        outputVel = Math.min(outputVel, maxVel);
+        return outputVel;
     }
 }

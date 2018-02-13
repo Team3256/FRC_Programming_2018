@@ -18,6 +18,7 @@ public class TurnInPlaceAction implements Action {
 
     @Override
     public void update() {
+
     }
 
     @Override
@@ -27,6 +28,6 @@ public class TurnInPlaceAction implements Action {
 
     @Override
     public void start() {
-        drive.setTurnInPlaceSetpoint(degrees);
+        drive.setTurnInPlaceSetpoint(degrees + drive.getAngle().degrees());
     }
 }

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.VictorSP;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.SharpIR;
 import frc.team3256.robot.Constants;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 public class Intake extends SubsystemBase implements Loop{
 
@@ -45,12 +46,8 @@ public class Intake extends SubsystemBase implements Loop{
         WANTS_TO_UNJAM,
         //Operator -> Whenever no buttons are pressed
         IDLE,
-        //Operator -> Deploy button
-        WANTS_TO_DEPLOY,
-        //Operator -> Stow button
-        WANTS_TO_STOW,
-        //Operator -> Open button
-        WANTS_TO_OPEN
+        WANTS_TO_TOGGLE_PIVOT,
+        WANTS_TO_TOGGLE_FLOP,
     }
 
 
@@ -243,32 +240,37 @@ public class Intake extends SubsystemBase implements Loop{
                     return SystemState.STOWED_OPEN;
                 }
 
-            //if we want to deploy, check if we are currently open or closed, then set the respective state
-            case WANTS_TO_DEPLOY:
-                //if we are currently open, return DEPLOYED_OPEN
-                if (currentState == SystemState.STOWED_OPEN || currentState == SystemState.DEPLOYED_OPEN){
+                //Toggles stowed & deployed
+            case WANTS_TO_TOGGLE_PIVOT:
+                if(currentState == SystemState.STOWED_OPEN){
                     return SystemState.DEPLOYED_OPEN;
                 }
-                //otherwise, we are currently closed, so return DEPLOYED_CLOSED
-                else return SystemState.DEPLOYED_CLOSED;
-
-            //if we want to stow, check if we are currently open or closed, then set the respective state
-            case WANTS_TO_STOW:
-                //if we are currently open, return STOWED_OPEN
-                if (currentState == SystemState.DEPLOYED_OPEN || currentState == SystemState.STOWED_OPEN){
+                else if(currentState == SystemState.DEPLOYED_OPEN){
                     return SystemState.STOWED_OPEN;
                 }
-                //otherwise, we are currently closed, so return STOWED_CLOSED
-                else return SystemState.STOWED_CLOSED;
+                else if(currentState == SystemState.STOWED_CLOSED){
+                    return SystemState.DEPLOYED_CLOSED;
+                }
+                else if(currentState == SystemState.DEPLOYED_CLOSED || currentState == SystemState.INTAKING ||
+                        currentState == SystemState.EXHAUSTING || currentState == SystemState.UNJAMMING){
+                    return SystemState.STOWED_CLOSED;
+                }
 
-            //if we want to open the intake, we need to check which state we are currently in
-            case WANTS_TO_OPEN:
-                //if we are currently stowed, then set the state to STOWED_OPEN (we want to open the intake while stowed)
-                if (currentState == SystemState.STOWED_CLOSED || currentState == SystemState.STOWED_OPEN){
+                //Toggles opened and closed
+            case WANTS_TO_TOGGLE_FLOP:
+                if(currentState == SystemState.DEPLOYED_OPEN){
+                    return SystemState.DEPLOYED_CLOSED;
+                }
+                else if(currentState == SystemState.DEPLOYED_CLOSED || currentState == SystemState.INTAKING ||
+                        currentState == SystemState.EXHAUSTING || currentState == SystemState.UNJAMMING){
+                    return SystemState.DEPLOYED_OPEN;
+                }
+                else if(currentState == SystemState.STOWED_CLOSED){
                     return SystemState.STOWED_OPEN;
                 }
-                //otherwise, we are currently deployed, so set the state to DEPLOYED_OPEN
-                else return SystemState.DEPLOYED_OPEN;
+                else if(currentState == SystemState.STOWED_OPEN){
+                    return SystemState.STOWED_CLOSED;
+                }
 
             //default: Safest position (Intake is stowed inside the robot)
             default:

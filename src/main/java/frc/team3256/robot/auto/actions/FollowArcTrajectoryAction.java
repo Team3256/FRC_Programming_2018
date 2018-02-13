@@ -1,5 +1,4 @@
 package frc.team3256.robot.auto.actions;
-
 import frc.team3256.robot.subsystems.DriveTrain;
 
 public class FollowArcTrajectoryAction implements Action {
@@ -16,7 +15,7 @@ public class FollowArcTrajectoryAction implements Action {
 
     @Override
     public boolean isFinished() {
-        return drive.isArcTrajectoryFinished();
+        return drive.isArcControllerFinished();
     }
 
     @Override
@@ -25,14 +24,16 @@ public class FollowArcTrajectoryAction implements Action {
 
     @Override
     public void done() {
-        drive.setOpenLoop(0,0);
+       // drive.setOpenLoop(0,0);
         System.out.println("Finished....");
+        drive.resetDriveArcController();
     }
 
     @Override
     public void start() {
-        drive.configureArcTrajectory(startVel, endVel, angle, radius);
+        drive.configureDriveArc(startVel, endVel, angle, radius);
         System.out.println("Started...");
-        drive.updateArcTrajectory();
+        drive.resetDriveArcController();
+        drive.resetEncoders();
     }
 }

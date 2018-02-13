@@ -1,10 +1,10 @@
 package frc.team3256.lib.hardware;
 
-import com.ctre.phoenix.motorcontrol.ControlFrame;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatusFrame;
+import com.ctre.phoenix.ErrorCode;
+import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import edu.wpi.first.wpilibj.DriverStation;
+import frc.team3256.robot.Constants;
 
 /**
  * Utility class to generate talon objects
@@ -45,7 +45,12 @@ public class TalonUtil{
         talon.overrideLimitSwitchesEnable(false);
         //no ramping on default
         talon.configOpenloopRamp(0,10);
+        talon.configNominalOutputReverse(-1.0/12.0, 10);
+        talon.configPeakOutputForward(1.0, 10);
+        talon.configPeakOutputReverse(-1.0, 10);
         talon.configClosedloopRamp(0, 10);
+        //set minimum and maximum voltage output for talons
+        talon.configNominalOutputForward(1.0/12.0, 10);
         return talon;
     }
 
@@ -82,7 +87,30 @@ public class TalonUtil{
         //no ramping on default
         talon.configOpenloopRamp(0, 10);
         talon.configClosedloopRamp(0, 10);
+        //set minimum and maximum voltage output for talons
+        talon.configNominalOutputForward(1.0/12.0, 10);
+        talon.configNominalOutputReverse(-1.0/12.0, 10);
+        talon.configPeakOutputForward(1.0, 10);
+        talon.configPeakOutputReverse(-1.0, 10);
         return talon;
     }
 
+    public void setPIDGains(TalonSRX talon, int slot, double kP, double kI, double kD, double kF){
+        talon.config_kP(slot, kP, 0);
+        talon.config_kI(slot, kI, 0);
+        talon.config_kD(slot, kD, 0);
+        talon.config_kF(slot, kF, 0);
+    }
+
+    public void configMagEncoder(TalonSRX talon){
+        if (talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)!= ErrorCode.OK){
+            DriverStation.reportError("DID NOT DETECT MAG ENCODER ON TALON " + talon.getDeviceID(), false);
+        }
+        talon.getStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*Constants.kControlLoopPeriod));
+    }
+
+    public void setCurrentLimit(TalonSRX talon, int peakAmps, int continuousAmps, int continuousDuration){
+        talon.configPeakCurrentLimit(peakAmps, 0);
+        talon.configContinuousCurrentLimit(continuousAmps, continuousDuration);
+    }
 }

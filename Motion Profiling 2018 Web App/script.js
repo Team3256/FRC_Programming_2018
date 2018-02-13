@@ -24,6 +24,7 @@ var waypoints = [];
 
 $(function() {
     $('.modal').fadeOut(0);
+    $('body').fadeOut(0);
 });
 
 function chooseStart(position) {
@@ -373,6 +374,7 @@ function init() {
         var field = document.getElementById('field');
         field.addEventListener('mousedown', fieldClicked, false);
         update();
+        $('body').fadeIn(0);
     }
 	addEventListeners();
 }

@@ -25,19 +25,15 @@ public class Superstructure extends SubsystemBase implements Loop{
     }
 
     public enum SystemState {
-        STOWED_OPEN,
-        STOWED_CLOSED,
-        DEPLOYED_OPEN,
-        DEPLOYED_CLOSED,
         HOLDING_POSITION,
         INTAKING,
         EXHAUSTING,
         UNJAMMING,
         RAISING_ELEVATOR_MANUAL,
         LOWERING_ELEVATOR_MANUAL,
-        SCORING_SWITCH,
-        SCORING_LOW,
-        SCORING_HIGH,
+        SWITCH_POSITION,
+        LOW_SCALE_POSITION,
+        HIGH_SCALE_POSITION,
         SCORING_FORWARD,
         SCORING_BACKWARD
     }
@@ -46,39 +42,25 @@ public class Superstructure extends SubsystemBase implements Loop{
         WANTS_TO_INTAKE,
         WANTS_TO_EXHAUST,
         WANTS_TO_UNJAM,
-        WANTS_TO_TOGGLE_PIVOT,
-        WANTS_TO_TOGGLE_FLOP,
         WANTS_TO_SCORE_SWITCH,
         WANTS_TO_SCORE_LOW_SCALE,
         WANTS_TO_SCORE_HIGH_SCALE,
         WANTS_TO_SCORE_FORWARD,
         WANTS_TO_SCORE_BACKWARD,
         WANTS_TO_SQUEEZE,
-        WANTS_TO_RAISE,
-        WANTS_TO_LOWER
+        WANTS_TO_RAISE_MANUAL,
+        WANTS_TO_LOWER_MANUAL
     }
 
     @Override
     public void init(double timestamp){
-        currentState = SystemState.STOWED_CLOSED;
+        currentState = SystemState.HOLDING_POSITION;
         stateChanged = true;
     }
 
     @Override
     public void update(double timestamp) {
         switch (currentState) {
-            case STOWED_OPEN:
-                newState = handleStowedOpen();
-                break;
-            case STOWED_CLOSED: default:
-                newState = handleStowedClosed();
-                break;
-            case DEPLOYED_OPEN:
-                newState = handleDeployedOpen();
-                break;
-            case DEPLOYED_CLOSED:
-                newState = handleDeployedClosed();
-                break;
             case HOLDING_POSITION:
                 newState = handleHoldingPosition();
                 break;
@@ -97,13 +79,13 @@ public class Superstructure extends SubsystemBase implements Loop{
             case LOWERING_ELEVATOR_MANUAL:
                 newState = handleManualLower();
                 break;
-            case SCORING_SWITCH:
+            case SWITCH_POSITION:
                 newState = handleScoreSwitch();
                 break;
-            case SCORING_LOW:
+            case LOW_SCALE_POSITION:
                 newState = handleScoreLow();
                 break;
-            case SCORING_HIGH:
+            case HIGH_SCALE_POSITION:
                 newState = handleScoreHigh();
                 break;
             case SCORING_FORWARD:
@@ -118,30 +100,6 @@ public class Superstructure extends SubsystemBase implements Loop{
             stateChanged = true;
         }
         else stateChanged = false;
-    }
-
-    private SystemState handleStowedOpen() {
-        intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
-        intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
-        return defaultStateTransfer();
-    }
-
-    private SystemState handleStowedClosed() {
-        intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
-        intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
-        return defaultStateTransfer();
-    }
-
-    private SystemState handleDeployedOpen() {
-        intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
-        intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
-        return defaultStateTransfer();
-    }
-
-    private SystemState handleDeployedClosed(){
-        intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
-        intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
-        return defaultStateTransfer();
     }
 
     private SystemState handleHoldingPosition() {
@@ -163,6 +121,7 @@ public class Superstructure extends SubsystemBase implements Loop{
 
     private SystemState handleExhaust() {
         if (stateChanged) {
+            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
             intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
         }
         intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
@@ -220,44 +179,14 @@ public class Superstructure extends SubsystemBase implements Loop{
             case WANTS_TO_UNJAM:
                 return SystemState.UNJAMMING;
 
-            case WANTS_TO_TOGGLE_PIVOT:
-                if(currentState == SystemState.STOWED_OPEN){
-                    return SystemState.DEPLOYED_OPEN;
-                }
-                else if (currentState == SystemState.STOWED_CLOSED){
-                    return SystemState.DEPLOYED_CLOSED;
-                }
-                else if (currentState == SystemState.DEPLOYED_OPEN){
-                    return SystemState.STOWED_OPEN;
-                }
-                else if (currentState == SystemState.DEPLOYED_CLOSED || currentState == SystemState.INTAKING ||
-                        currentState == SystemState.EXHAUSTING || currentState == SystemState.UNJAMMING){
-                    return SystemState.STOWED_CLOSED;
-                }
-
-            case WANTS_TO_TOGGLE_FLOP:
-                if (currentState == SystemState.STOWED_OPEN){
-                    return SystemState.STOWED_CLOSED;
-                }
-                else if (currentState == SystemState.STOWED_CLOSED){
-                    return SystemState.STOWED_OPEN;
-                }
-                else if (currentState == SystemState.DEPLOYED_OPEN){
-                    return SystemState.DEPLOYED_CLOSED;
-                }
-                else if (currentState == SystemState.DEPLOYED_CLOSED || currentState == SystemState.INTAKING ||
-                        currentState == SystemState.EXHAUSTING || currentState == SystemState.UNJAMMING){
-                    return SystemState.DEPLOYED_OPEN;
-                }
-
             case WANTS_TO_SCORE_SWITCH:
-                return SystemState.SCORING_SWITCH;
+                return SystemState.SWITCH_POSITION;
 
             case WANTS_TO_SCORE_LOW_SCALE:
-                return SystemState.SCORING_LOW;
+                return SystemState.LOW_SCALE_POSITION;
 
             case WANTS_TO_SCORE_HIGH_SCALE:
-                return SystemState.SCORING_HIGH;
+                return SystemState.HIGH_SCALE_POSITION;
 
             case WANTS_TO_SCORE_FORWARD:
                 return SystemState.SCORING_FORWARD;
@@ -268,14 +197,14 @@ public class Superstructure extends SubsystemBase implements Loop{
             case WANTS_TO_SQUEEZE:
                 return SystemState.HOLDING_POSITION;
 
-            case WANTS_TO_RAISE:
+            case WANTS_TO_RAISE_MANUAL:
                 return SystemState.RAISING_ELEVATOR_MANUAL;
 
-            case WANTS_TO_LOWER:
+            case WANTS_TO_LOWER_MANUAL:
                 return SystemState.LOWERING_ELEVATOR_MANUAL;
 
             default:
-                return SystemState.STOWED_CLOSED;
+                return SystemState.HOLDING_POSITION;
         }
     }
 

@@ -80,12 +80,12 @@ class Translation {
 
 	draw(color) {
 		var color = color || "#f72c1c";
+		ctx.lineWidth = 0;
 		ctx.beginPath();
 		ctx.arc(this.getX(), this.getY(), pointRadius, 0, 2*Math.PI, false);
 		ctx.fillStyle = color;
 		ctx.strokeStyle = color;
 		ctx.fill();
-		ctx.lineWidth = 0;
 		ctx.stroke();
 	}
 
@@ -151,7 +151,7 @@ class Line {
         ctx.lineTo(this.end.getX(), this.end.getY());
 
         ctx.strokeStyle = color;
-		ctx.lineWidth = 3;
+		ctx.lineWidth = robotWidth;
 
         ctx.stroke();
     }
@@ -165,10 +165,14 @@ class Line {
         var y_intC = -slopeC * c.x + c.y;
         var x = (y_intC - y_intA)/(slopeA - slopeC);
         var y = (slopeA * x) + y_intA;
+        var diffAC = Translation.diff(a, c);
         if (diffC.x == 0) {
-            var diffAC = Translation.diff(a, c);
             x = c.x;
             y = a.y + slopeA * diffAC.x;
+        }
+        if (diffA.x == 0) {
+            x = a.x;
+            y = c.y - slopeC * diffAC.x;
         }
         return new Translation(x,y);
     }
@@ -201,8 +205,9 @@ class Arc {
         ctx.strokeStyle="white";
         ctx.beginPath();
         ctx.arc(this.center.getX(), this.center.getY(), this.radius*inchesToPixelsScale, this.sAngle, this.eAngle);
-
+        ctx.lineWidth = robotWidth;
         ctx.stroke();
+        ctx.lineWidth = 0;
     }
 
     getTurnAngle() {
@@ -315,13 +320,22 @@ function update() {
             arc.draw();
             var angle = arc.getTurnAngle();
             var radius = arc.radius;
-            modalText += "runAction(new FollowArcTrajectoryAction(" + waypoints[point].vel + ", " + waypoints[point].vel + ", " + (Math.round(radius*10)/10) + ", " + (Math.round(angle*10)/10) + "));<br />";
+            modalText += "runAction(new FollowArcTrajectoryAction(";
+            modalText += waypoints[point].vel + ", " + waypoints[point].vel + ", ";
+            modalText += (Math.round(radius)) + ", " + (Math.round(angle)) + "));";
+            if(waypoints[point-1].desc != ""){
+                modalText += ("   // " + waypoints[point-1].desc);
+            }
+            modalText += "<br />";
         }
         if (point > 0) {
             var line = new Line(waypoints[point - 1], waypoints[point]);
             line.draw();
             var distance = line.length;
-            modalText += "runAction(new FollowTrajectoryAction(" + waypoints[point-1].vel + ", " + waypoints[point].vel + ", " + (Math.round(distance*10)/10) + "));<br />";
+            modalText += "runAction(new FollowTrajectoryAction(";
+            modalText += waypoints[point-1].vel + ", " + waypoints[point].vel + ", ";
+            modalText += (Math.round(distance)) + "));"
+            modalText += "<br />";
             if (!line.checkValid()) {
                 $($('tbody').children('tr')[point - 1]).addClass('redBox');
             } else {
@@ -332,8 +346,8 @@ function update() {
 }
 
 function fieldClicked(event){
-    cx = Math.round((event.offsetX/inchesToPixelsScale)*10)/10;
-    cy = Math.round((30-event.offsetY/inchesToPixelsScale)*10)/10;
+    cx = Math.round((event.offsetX/inchesToPixelsScale));
+    cy = Math.round((fieldHeight-event.offsetY/inchesToPixelsScale));
     addPoint(cx, cy);
 }
 

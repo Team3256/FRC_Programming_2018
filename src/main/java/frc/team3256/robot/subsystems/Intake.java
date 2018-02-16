@@ -5,10 +5,8 @@ import edu.wpi.first.wpilibj.VictorSP;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.SharpIR;
 import frc.team3256.robot.Constants;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
-public class Intake extends SubsystemBase implements Loop{
-
+public class Intake extends SubsystemBase implements Loop {
     private VictorSP leftIntake, rightIntake;
     private DoubleSolenoid flopperActuator, pivotActuator;
     private SharpIR ballDetector;
@@ -50,8 +48,7 @@ public class Intake extends SubsystemBase implements Loop{
         WANTS_TO_TOGGLE_FLOP,
     }
 
-
-    private Intake(){
+    private Intake() {
         leftIntake = new VictorSP(Constants.kLeftIntakePort); //port to be determined
         rightIntake = new VictorSP(Constants.kRightIntakePort);
         flopperActuator = new DoubleSolenoid(Constants.kIntakeFlopForward, Constants.kIntakeFlopReverse);
@@ -98,7 +95,8 @@ public class Intake extends SubsystemBase implements Loop{
         }
         //State transfer
         if (newState != currentState){
-            System.out.println("\tPREV_STATE:" + previousState + "\tCURR_STATE:" + currentState + "\tNEW_STATE:" + newState);
+            System.out.println("\tPREV_STATE:" + previousState + "\tCURR_STATE:" + currentState +
+                    "\tNEW_STATE:" + newState);
             previousState = currentState;
             currentState = newState;
             stateChanged = true;

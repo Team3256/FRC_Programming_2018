@@ -1,10 +1,10 @@
-var ftToPixelsScale = 14;
-var fieldWidth = 74; //in feet
-var fieldHeight = 30; //in feet
-var robotWidth = 40/12; //in feet
-var robotHeight = 35/12; //in feet
-var width = fieldWidth * ftToPixelsScale; //in pixels
-var height = fieldHeight * ftToPixelsScale; //in pixels
+var inchesToPixelsScale = 14 / 12;
+var fieldWidth = 74 * 12;
+var fieldHeight = 30 * 12;
+var robotWidth = 40;
+var robotHeight = 35;
+var width = fieldWidth * inchesToPixelsScale; //in pixels
+var height = fieldHeight * inchesToPixelsScale; //in pixels
 var pointRadius = 5; //in pixels
 var modalText = "";
 var ctx;
@@ -14,9 +14,9 @@ var isFlipped = false;
 var modalTitle = "";
 
 var startPositions = {
-    "center": [10, 14],
-    "left": [10, 24],
-    "right": [10, 6],
+    "center": [10 * 12, 14 * 12],
+    "left": [10 * 12, 24 * 12],
+    "right": [10 * 12, 6 * 12],
 }
 
 var kEpsilon = 1E-9;
@@ -67,11 +67,11 @@ class Translation {
 	}
 
     getX() {
-		return this.x*ftToPixelsScale;
+		return this.x*inchesToPixelsScale;
 	}
 
 	getY() {
-		return height - this.y*ftToPixelsScale;
+		return height - this.y*inchesToPixelsScale;
 	}
 
 	getAngle() {
@@ -200,7 +200,7 @@ class Arc {
     draw() {
         ctx.strokeStyle="white";
         ctx.beginPath();
-        ctx.arc(this.center.getX(), this.center.getY(), this.radius*ftToPixelsScale, this.sAngle, this.eAngle);
+        ctx.arc(this.center.getX(), this.center.getY(), this.radius*inchesToPixelsScale, this.sAngle, this.eAngle);
 
         ctx.stroke();
     }
@@ -332,8 +332,8 @@ function update() {
 }
 
 function fieldClicked(event){
-    cx = Math.round((event.offsetX/ftToPixelsScale)*10)/10;
-    cy = Math.round((30-event.offsetY/ftToPixelsScale)*10)/10;
+    cx = Math.round((event.offsetX/inchesToPixelsScale)*10)/10;
+    cy = Math.round((30-event.offsetY/inchesToPixelsScale)*10)/10;
     addPoint(cx, cy);
 }
 

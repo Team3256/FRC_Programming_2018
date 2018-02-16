@@ -93,7 +93,7 @@ public class Elevator extends SubsystemBase{
 
     public enum WantedState{
         HIGH_SCALE,
-        MID_SCALE,
+        //MID_SCALE,
         LOW_SCALE,
         HOLD,
         SWITCH,
@@ -174,12 +174,12 @@ public class Elevator extends SubsystemBase{
                 }
                 m_usingClosedLoop = true;
                 break;
-            case MID_SCALE:
+            /*case MID_SCALE:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kMidScalePreset;
                 }
                 m_usingClosedLoop = true;
-                break;
+                break;*/
             case LOW_SCALE:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kLowScalePreset;

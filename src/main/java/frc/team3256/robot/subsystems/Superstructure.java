@@ -1,6 +1,9 @@
 package frc.team3256.robot.subsystems;
 
-public class Superstructure {
+import frc.team3256.lib.Loop;
+
+
+public class Superstructure extends SubsystemBase implements Loop{
 
     private static Superstructure instance;
 
@@ -9,36 +12,39 @@ public class Superstructure {
     private ElevatorCarriage carriage;
 
     private SystemState currentState;
+    private SystemState newState;
     private WantedState wantedState;
     private boolean stateChanged;
 
-    private static Superstructure getInstance(){
+    private static Superstructure getInstance() {
         return instance == null ? instance = new Superstructure() : instance;
     }
 
-    private Superstructure(){
+    private Superstructure() {
         intake = Intake.getInstance();
         elevator = Elevator.getInstance();
         carriage = ElevatorCarriage.getInstance();
     }
 
-    public enum SystemState{
+    public enum SystemState {
         STOWED_OPEN,
         STOWED_CLOSED,
         DEPLOYED_OPEN,
         DEPLOYED_CLOSED,
-        STOWED_AND_IDLE,
         HOLDING_POSITION,
         INTAKING,
         EXHAUSTING,
         UNJAMMING,
         RAISING_ELEVATOR,
         LOWERING_ELEVATOR,
-        SCORING
+        SCORING_SWITCH,
+        SCORING_LOW,
+        SCORING_HIGH,
+        SCORING_FORWARD,
+        SCORING_BACKWARD
     }
 
-    public enum WantedState{
-        WANTS_TO_STOW,
+    public enum WantedState {
         WANTS_TO_INTAKE,
         WANTS_TO_EXHAUST,
         WANTS_TO_UNJAM,
@@ -54,114 +60,159 @@ public class Superstructure {
         WANTS_TO_LOWER
     }
 
+    @Override
+    public void init(double timestamp){
+        currentState = SystemState.
+    }
 
-    public void update(){
-        SystemState newState;
-        switch(currentState){
+    @Override
+    public void update(double timestamp) {
+        switch (currentState) {
             case STOWED_OPEN:
+                newState = handleStowedOpen();
                 break;
             case STOWED_CLOSED:
+                newState = handleStowedClosed();
                 break;
             case DEPLOYED_OPEN:
+                newState = handleDeployedOpen();
                 break;
             case DEPLOYED_CLOSED:
-                break;
-            case STOWED_AND_IDLE:
+                newState = handleDeployedClosed();
                 break;
             case HOLDING_POSITION:
+                newState = handleHoldingPosition();
                 break;
             case INTAKING:
+                newState = handleIntake();
                 break;
             case EXHAUSTING:
+                newState = handleExhaust();
                 break;
             case UNJAMMING:
+                newState = handleUnjam();
                 break;
             case RAISING_ELEVATOR:
+                newState = handleRaise();
                 break;
             case LOWERING_ELEVATOR:
+                newState = handleLower();
                 break;
-            case SCORING:
+            case SCORING_SWITCH:
+                newState = handleScoreSwitch();
+                break;
+            case SCORING_LOW:
+                newState = handleScoreLow();
+                break;
+            case SCORING_HIGH:
+                newState = handleScoreHigh();
+                break;
+            case SCORING_FORWARD:
+                newState = handleScoreForward();
+                break;
+            case SCORING_BACKWARD:
+                newState = handleScoreBackward();
                 break;
         }
-
+        if (newState != currentState){
+            currentState = newState;
+            stateChanged = true;
+        }
+        else stateChanged = false;
     }
 
-    private SystemState handleStowedOpen(){
-        if (stateChanged){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
-        }
+    private SystemState handleStowedOpen() {
+        intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
+        intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
         return defaultStateTransfer();
     }
 
-    private SystemState handleStowedClosed(){
-        if (stateChanged){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
-        }
+    private SystemState handleStowedClosed() {
+        intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
+        intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
         return defaultStateTransfer();
     }
 
-    private SystemState handleDeployedOpen(){
-        if (stateChanged){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
-        }
+    private SystemState handleDeployedOpen() {
+        intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
+        intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
         return defaultStateTransfer();
     }
 
-    private SystemState handleStowedAndIdle(){
-        if (stateChanged){
-            intake.setWantedState(Intake.WantedState.IDLE);
-        }
+    private SystemState handleDeployedClosed(){
+        intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
+        intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
         return defaultStateTransfer();
     }
 
-    private SystemState handleHoldingPosition(){
-        if (stateChanged){
-            elevator.setWantedState(Elevator.WantedState.HOLD);
+    private SystemState handleHoldingPosition() {
+        if (stateChanged) {
             carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
+        elevator.setWantedState(Elevator.WantedState.HOLD);
         return defaultStateTransfer();
     }
 
-    private SystemState handleIntake(){
-        if (stateChanged){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
+    private SystemState handleIntake() {
+        if (stateChanged) {
             elevator.setWantedState(Elevator.WantedState.INTAKE_POS);
             carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_RECEIVE);
         }
+        intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
         return defaultStateTransfer();
     }
 
-    private SystemState handleExhaust(){
-        if (stateChanged){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
+    private SystemState handleExhaust() {
+        if (stateChanged) {
+            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
         }
+        intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
         return defaultStateTransfer();
     }
 
-    private SystemState handleUnjam(){
-        if (stateChanged){
+    private SystemState handleUnjam() {
             intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
-        }
         return defaultStateTransfer();
     }
 
-    private SystemState handleRaise(){
-        if (stateChanged){
+    private SystemState handleRaise() {
             elevator.setWantedState(Elevator.WantedState.MANUAL_UP);
-        }
+
         return defaultStateTransfer();
     }
 
+    private SystemState handleLower() {
+            elevator.setWantedState(Elevator.WantedState.MANUAL_DOWN);
+        return defaultStateTransfer();
+    }
 
+    private SystemState handleScoreSwitch() {
+            elevator.setWantedState(Elevator.WantedState.SWITCH);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleScoreLow() {
+            elevator.setWantedState(Elevator.WantedState.LOW_SCALE);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleScoreHigh(){
+            elevator.setWantedState(Elevator.WantedState.HIGH_SCALE);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleScoreForward() {
+            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_FORWARD);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleScoreBackward(){
+            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_BACKWARD);
+        return defaultStateTransfer();
+    }
 
     private SystemState defaultStateTransfer(){
         switch(wantedState){
-            case WANTS_TO_STOW:
-                return SystemState.STOWED_AND_IDLE;
-
             case WANTS_TO_INTAKE:
                 return SystemState.INTAKING;
 
@@ -202,19 +253,19 @@ public class Superstructure {
                 }
 
             case WANTS_TO_SCORE_SWITCH:
-                return SystemState.SCORING;
+                return SystemState.SCORING_SWITCH;
 
             case WANTS_TO_SCORE_LOW_SCALE:
-                return SystemState.SCORING;
+                return SystemState.SCORING_LOW;
 
             case WANTS_TO_SCORE_HIGH_SCALE:
-                return SystemState.SCORING;
+                return SystemState.SCORING_HIGH;
 
             case WANTS_TO_SCORE_FORWARD:
-                return SystemState.SCORING;
+                return SystemState.SCORING_FORWARD;
 
             case WANTS_TO_SCORE_BACKWARD:
-                return SystemState.SCORING;
+                return SystemState.SCORING_BACKWARD;
 
             case WANTS_TO_SQUEEZE:
                 return SystemState.HOLDING_POSITION;
@@ -226,12 +277,32 @@ public class Superstructure {
                 return SystemState.LOWERING_ELEVATOR;
 
             default:
-                return SystemState.STOWED_AND_IDLE;
+                return SystemState.STOWED_CLOSED;
         }
-
     }
+
     public void setWantedState(WantedState wantedState){
         this.wantedState = wantedState;
+    }
+
+    @Override
+    public void end(double timestamp) {
+
+    }
+
+    @Override
+    public void outputToDashboard() {
+
+    }
+
+    @Override
+    public void selfTest() {
+
+    }
+
+    @Override
+    public void zeroSensors() {
+
     }
 
 }

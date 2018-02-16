@@ -2,9 +2,7 @@ package frc.team3256.robot.subsystems;
 
 import frc.team3256.lib.Loop;
 
-
 public class Superstructure extends SubsystemBase implements Loop{
-
     private static Superstructure instance;
 
     private Intake intake;
@@ -35,8 +33,8 @@ public class Superstructure extends SubsystemBase implements Loop{
         INTAKING,
         EXHAUSTING,
         UNJAMMING,
-        RAISING_ELEVATOR,
-        LOWERING_ELEVATOR,
+        RAISING_ELEVATOR_MANUAL,
+        LOWERING_ELEVATOR_MANUAL,
         SCORING_SWITCH,
         SCORING_LOW,
         SCORING_HIGH,
@@ -62,7 +60,8 @@ public class Superstructure extends SubsystemBase implements Loop{
 
     @Override
     public void init(double timestamp){
-        currentState = SystemState.
+        currentState = SystemState.STOWED_CLOSED;
+        stateChanged = true;
     }
 
     @Override
@@ -71,7 +70,7 @@ public class Superstructure extends SubsystemBase implements Loop{
             case STOWED_OPEN:
                 newState = handleStowedOpen();
                 break;
-            case STOWED_CLOSED:
+            case STOWED_CLOSED: default:
                 newState = handleStowedClosed();
                 break;
             case DEPLOYED_OPEN:
@@ -92,11 +91,11 @@ public class Superstructure extends SubsystemBase implements Loop{
             case UNJAMMING:
                 newState = handleUnjam();
                 break;
-            case RAISING_ELEVATOR:
-                newState = handleRaise();
+            case RAISING_ELEVATOR_MANUAL:
+                newState = handleManualRaise();
                 break;
-            case LOWERING_ELEVATOR:
-                newState = handleLower();
+            case LOWERING_ELEVATOR_MANUAL:
+                newState = handleManualLower();
                 break;
             case SCORING_SWITCH:
                 newState = handleScoreSwitch();
@@ -171,17 +170,16 @@ public class Superstructure extends SubsystemBase implements Loop{
     }
 
     private SystemState handleUnjam() {
-            intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
+        intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
         return defaultStateTransfer();
     }
 
-    private SystemState handleRaise() {
-            elevator.setWantedState(Elevator.WantedState.MANUAL_UP);
-
+    private SystemState handleManualRaise() {
+        elevator.setWantedState(Elevator.WantedState.MANUAL_UP);
         return defaultStateTransfer();
     }
 
-    private SystemState handleLower() {
+    private SystemState handleManualLower() {
             elevator.setWantedState(Elevator.WantedState.MANUAL_DOWN);
         return defaultStateTransfer();
     }
@@ -271,10 +269,10 @@ public class Superstructure extends SubsystemBase implements Loop{
                 return SystemState.HOLDING_POSITION;
 
             case WANTS_TO_RAISE:
-                return SystemState.RAISING_ELEVATOR;
+                return SystemState.RAISING_ELEVATOR_MANUAL;
 
             case WANTS_TO_LOWER:
-                return SystemState.LOWERING_ELEVATOR;
+                return SystemState.LOWERING_ELEVATOR_MANUAL;
 
             default:
                 return SystemState.STOWED_CLOSED;

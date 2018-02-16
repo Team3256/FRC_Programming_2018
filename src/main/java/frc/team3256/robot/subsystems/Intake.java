@@ -221,7 +221,7 @@ public class Intake extends SubsystemBase implements Loop {
                 return SystemState.UNJAMMING;
 
             case IDLE:
-                //if we are intaking, exhausting, unjaming, or already deployed and closed, the intake is closed,
+                //if we are intaking, exhausting, unjamming, or already deployed and closed, the intake is closed,
                 //so we want the next state to be DEPLOYED_CLOSED
                 if (currentState == SystemState.EXHAUSTING || currentState == SystemState.INTAKING ||
                         currentState == SystemState.UNJAMMING || currentState == SystemState.DEPLOYED_CLOSED){

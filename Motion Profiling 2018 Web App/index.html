@@ -22,6 +22,7 @@
     <br>
     <div class="button_container">
         <button onclick="displayConfiguration()">Display Trajectory Path</button>
+        <button onclick="displayPurePursuitConfiguration()">Display Pure Pursuit Path</button>
         <button onclick="invertField()">Invert Field</button>
         <button onclick="chooseStart('left')">Left Auto</button>
         <button onclick="chooseStart('center')">Center Auto</button>
@@ -53,6 +54,14 @@
         </div>
 
         <span id="trajectoryPath">TRAJECTORY</span>
+    </div>
+    <div class="purePursuitModal">
+        <div class="headerContainer">
+            <div id="purePursuitModalTitle">PURE PURSUIT MODAL TITLE</div>
+            <span class="closePurePursuit" onclick="hidePurePursuitConfiguration()">✕</span>
+        </div>
+
+        <span id="purePursuitPath">PURE PURSUIT</span>
     </div>
     <span id="text_width_calc">Text width placeholder</span>
 

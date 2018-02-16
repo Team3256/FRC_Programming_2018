@@ -7,6 +7,9 @@ var width = fieldWidth * inchesToPixelsScale; //in pixels
 var height = fieldHeight * inchesToPixelsScale; //in pixels
 var pointRadius = 5; //in pixels
 var modalText = "";
+var modalPurePursuitText = "";
+var count = 0;
+var countToString = "";
 var ctx;
 var image;
 var imageFlipped;
@@ -24,6 +27,7 @@ var waypoints = [];
 
 $(function() {
     $('.modal').fadeOut(0);
+    $('.purePursuitModal').fadeOut(0);
     $('body').fadeOut(0);
 });
 
@@ -311,9 +315,12 @@ function update() {
         waypoints.push(new Waypoint(x, y, vel, radius, desc));
     })
     modalText = "";
+    modalPurePursuitText = "";
+    count = 0;
     for (var point in waypoints) {
         waypoints[point].coordinates.draw();
         if (point > 1) {
+            count ++;
             var line1 = new Line(waypoints[point], waypoints[point - 1]);
             var line2 = new Line(waypoints[point - 1], waypoints[point - 2]);
             var arc = new Arc(line1, line2);
@@ -327,8 +334,16 @@ function update() {
                 modalText += ("   // " + waypoints[point-1].desc);
             }
             modalText += "<br />";
+            //var countToString = String.fromCharCode(65 + count);
+            modalPurePursuitText += "PathGenerator.Waypoint " + count + " = new PathGenerator.Waypoint(" + waypoints[point].coordinates.x + ", " + waypoints[point].coordinates.y + ", " + (Math.round(radius)) + ", " + waypoints[point].vel + ");"
+            modalPurePursuitText += "<br />";
         }
+        var updateCount = true;
         if (point > 0) {
+            if(point == 1){
+                updateCount = false;
+            }
+            else{count++;}
             var line = new Line(waypoints[point - 1], waypoints[point]);
             line.draw();
             var distance = line.length;
@@ -341,6 +356,10 @@ function update() {
             } else {
                 $($('tbody').children('tr')[point - 1]).removeClass('redBox');
             }
+            //var countToString = String.fromCharCode(65 + count);
+            modalPurePursuitText += "PathGenerator.Waypoint " + count + " = new PathGenerator.Waypoint(" + waypoints[point].coordinates.x+ ", " + waypoints[point].coordinates.y + ", " + (Math.round(waypoints[point].radius)) + ", " + waypoints[point].vel + ");"
+            modalPurePursuitText += "<br />";
+            if(!updateCount){count++;}
         }
     }
 }
@@ -367,13 +386,24 @@ function displayConfiguration() {
     $("#trajectoryPath").html(modalText);
 }
 
+function displayPurePursuitConfiguration() {
+    $('.purePursuitModal').fadeIn(500);
+    $("#purePursuitModalTitle").html(modalTitle);
+    $("#purePursuitPath").html(modalPurePursuitText);
+}
+
 function hideConfiguration() {
     $('.modal').fadeOut(500);
+}
+
+function hidePurePursuitConfiguration() {
+    $('.purePursuitModal').fadeOut(500);
 }
 
 function init() {
 	$('#field').css("width", width);
 	hideConfiguration();
+	hidePurePursuitConfiguration();
 	ctx = document.getElementById('field').getContext('2d');
     ctx.canvas.width = width;
     ctx.canvas.height = height;

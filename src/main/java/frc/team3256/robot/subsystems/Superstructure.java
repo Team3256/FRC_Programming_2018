@@ -180,32 +180,32 @@ public class Superstructure extends SubsystemBase implements Loop{
     }
 
     private SystemState handleManualLower() {
-            elevator.setWantedState(Elevator.WantedState.MANUAL_DOWN);
+        elevator.setWantedState(Elevator.WantedState.MANUAL_DOWN);
         return defaultStateTransfer();
     }
 
     private SystemState handleScoreSwitch() {
-            elevator.setWantedState(Elevator.WantedState.SWITCH);
+        elevator.setWantedState(Elevator.WantedState.SWITCH);
         return defaultStateTransfer();
     }
 
     private SystemState handleScoreLow() {
-            elevator.setWantedState(Elevator.WantedState.LOW_SCALE);
+        elevator.setWantedState(Elevator.WantedState.LOW_SCALE);
         return defaultStateTransfer();
     }
 
     private SystemState handleScoreHigh(){
-            elevator.setWantedState(Elevator.WantedState.HIGH_SCALE);
+        elevator.setWantedState(Elevator.WantedState.HIGH_SCALE);
         return defaultStateTransfer();
     }
 
     private SystemState handleScoreForward() {
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_FORWARD);
+        carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_FORWARD);
         return defaultStateTransfer();
     }
 
     private SystemState handleScoreBackward(){
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_BACKWARD);
+        carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_BACKWARD);
         return defaultStateTransfer();
     }
 

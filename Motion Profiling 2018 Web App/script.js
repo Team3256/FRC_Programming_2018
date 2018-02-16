@@ -331,7 +331,7 @@ function update() {
             modalText += waypoints[point].vel + ", " + waypoints[point].vel + ", ";
             modalText += (Math.round(radius)) + ", " + (Math.round(angle)) + "));";
             if(waypoints[point-1].desc != ""){
-                modalText += ("   // " + waypoints[point-1].desc);
+                modalText += ("   //" + waypoints[point-1].desc);
             }
             modalText += "<br />";
             //var countToString = String.fromCharCode(65 + count);
@@ -340,10 +340,11 @@ function update() {
         }
         var updateCount = true;
         if (point > 0) {
-            if(point == 1){
+            /*if(point == 1){
                 updateCount = false;
             }
-            else{count++;}
+            else{count++;}*/
+            count++;
             var line = new Line(waypoints[point - 1], waypoints[point]);
             line.draw();
             var distance = line.length;
@@ -359,7 +360,7 @@ function update() {
             //var countToString = String.fromCharCode(65 + count);
             modalPurePursuitText += "PathGenerator.Waypoint " + count + " = new PathGenerator.Waypoint(" + waypoints[point].coordinates.x+ ", " + waypoints[point].coordinates.y + ", " + (Math.round(waypoints[point].radius)) + ", " + waypoints[point].vel + ");"
             modalPurePursuitText += "<br />";
-            if(!updateCount){count++;}
+            //if(!updateCount){count++;}
         }
     }
 }

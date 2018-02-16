@@ -168,11 +168,6 @@ input, input:focus {
     right: 10px;
 }
 
-.closePurePursuit {
-    position: absolute;
-    right: 10px;
-}
-
 .headerContainer {
     background-color: #0d0087;
     position: absolute;

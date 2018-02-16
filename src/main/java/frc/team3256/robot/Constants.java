@@ -16,7 +16,7 @@ public class Constants {
     public static final int kIntakeFlopForward = 5;
     public static final int kIntakeFlopReverse = 6;
     public static final int kCarriageSqueezeForward = 2;
-    public static final int kCarriageSqueezeReverse = 8;
+    public static final int kCarriageSqueezeReverse = 1;
     public static final int kShifterForward = 7;
     public static final int kShifterReverse = 0;
 
@@ -116,8 +116,8 @@ public class Constants {
     public static final int kElevatorFastDownD = 0;
 
     //Presets:
-    public static final double kIntakeSharpIRMaxVoltage = 12.0;
-    public static final double kIntakeSharpIRMinVoltage = 2.0;
+    public static final double kIntakeSharpIRMaxVoltage = 5.0;
+    public static final double kIntakeSharpIRMinVoltage = 0.0;
     public static final double kLeftIntakePower = 0;
     public static final double kRightIntakePower = 0;
     public static final double kIntakeExhaustPower = 0;

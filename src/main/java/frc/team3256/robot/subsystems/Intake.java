@@ -157,6 +157,7 @@ public class Intake extends SubsystemBase implements Loop {
             deployIntake();
             closeFlopper();
         }
+        setIntake(0,0);
         return defaultStateTransfer();
     }
 
@@ -165,6 +166,7 @@ public class Intake extends SubsystemBase implements Loop {
             deployIntake();
             openFlopper();
         }
+        setIntake(0,0);
         return defaultStateTransfer();
     }
 
@@ -173,6 +175,7 @@ public class Intake extends SubsystemBase implements Loop {
             stowIntake();
             closeFlopper();
         }
+        setIntake(0,0);
         return defaultStateTransfer();
     }
 
@@ -181,6 +184,7 @@ public class Intake extends SubsystemBase implements Loop {
             stowIntake();
             openFlopper();
         }
+        setIntake(0,0);
         return defaultStateTransfer();
     }
 

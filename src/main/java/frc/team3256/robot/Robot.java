@@ -77,6 +77,7 @@ public class Robot extends IterativeRobot {
         prevA = A;
         */
         motorTwo.set(OI.getLeftY());
+        motorThree.set(OI.getLeftY());
     }
 
     @Override

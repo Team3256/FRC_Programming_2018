@@ -118,9 +118,9 @@ public class Constants {
     //Presets:
     public static final double kIntakeSharpIRMaxVoltage = 5.0;
     public static final double kIntakeSharpIRMinVoltage = 0.0;
-    public static final double kLeftIntakePower = 0;
-    public static final double kRightIntakePower = 0;
-    public static final double kIntakeExhaustPower = 0;
+    public static final double kLeftIntakePower = 0.75;
+    public static final double kRightIntakePower = 0.6;
+    public static final double kIntakeExhaustPower = 0.6;
     public static final double kUnjamMaxDuration = 100.0/1000.0;
     public static final double kCarriageReceivePower = 0;
     public static final double kCarriageSecurePower = 0;

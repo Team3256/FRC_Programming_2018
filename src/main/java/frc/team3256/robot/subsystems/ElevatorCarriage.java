@@ -204,12 +204,14 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
 
     @Override
     public void outputToDashboard() {
+        /*
         SmartDashboard.putString("Current State: ", currentState.toString());
         SmartDashboard.putString("Wanted State: ", wantedState.toString());
         SmartDashboard.putBoolean("State Changed? ", stateChanged);
         SmartDashboard.putNumber("Left Motor Power: ", rollerLeft.getSpeed());
         SmartDashboard.putNumber("Right Motor Power: ", rollerRight.getSpeed());
         SmartDashboard.putString("Solenoid State: ", squeezeSolenoid.get().toString());
+        */
     }
 
     @Override

@@ -206,7 +206,8 @@ public class Intake extends SubsystemBase implements Loop {
     }
 
     public boolean hasCube(){
-        return ballDetector.isTriggered();
+        return false;
+        //return ballDetector.isTriggered();
     }
 
     //default WantedState -> SystemState
@@ -284,6 +285,7 @@ public class Intake extends SubsystemBase implements Loop {
 
     @Override
     public void outputToDashboard() {
+        /*
         SmartDashboard.putString("Current State: ", currentState.toString());
         SmartDashboard.putString("Wanted State: ", wantedState.toString());
         SmartDashboard.putString("Previous State: ", previousState.toString());
@@ -293,6 +295,7 @@ public class Intake extends SubsystemBase implements Loop {
         SmartDashboard.putString("Flopper State: ", flopperActuator.get().toString());
         SmartDashboard.putString("Pivot State: ", pivotActuator.get().toString());
         SmartDashboard.putBoolean("Cube detected? ", ballDetector.isTriggered());
+        */
     }
 
     @Override

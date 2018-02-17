@@ -249,6 +249,7 @@ public class Elevator extends SubsystemBase{
 
     @Override
     public void outputToDashboard() {
+        /*
         SmartDashboard.putString("Current State: ", currentState.toString());
         SmartDashboard.putString("Wanted State: ", wantedState.toString());
         SmartDashboard.putBoolean("State Changed? ", stateChanged);
@@ -259,7 +260,7 @@ public class Elevator extends SubsystemBase{
         SmartDashboard.putNumber("Closed Loop Target: ", m_closedLoopTarget);
         SmartDashboard.putBoolean("Using Closed Loop? ", m_usingClosedLoop);
         SmartDashboard.putBoolean("Hall effect? ", hallEffect.get());
-
+        */
     }
 
     @Override

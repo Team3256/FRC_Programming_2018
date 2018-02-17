@@ -114,6 +114,25 @@ public class Robot extends IterativeRobot {
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
         driveTrain.setOpenLoop(power);
         driveTrain.setHighGear(!shiftDown);
+        if (controlsInterface.unjamIntake()){
+            intake.setIntake(0.5, 0.5);
+        }
+        else if (controlsInterface.getIntake()){
+            System.out.println("INTAKE");
+            //intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
+            intake.setIntake(-Constants.kLeftIntakePower, -Constants.kRightIntakePower);
+        }
+        else if (controlsInterface.getExhaust()){
+            System.out.println("OUTTAKE");
+            //intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
+            intake.setIntake(0.5, 0.5);
+        }
+        else{
+            System.out.println("IDLE");
+            intake.setIntake(0, 0);
+            //intake.setWantedState(Intake.WantedState.IDLE);
+        }
+        /*
         if (controlsInterface.getIntake()){
             intake.setIntake(0.5,0.5);
         }
@@ -146,16 +165,18 @@ public class Robot extends IterativeRobot {
         }
         else
             carriage.runMotors(0);
-            */
+        */
+
     }
 
     @Override
     public void testPeriodic() {
     }
 
-    public void allPeriodic(){
-        subsystemManager.outputToDashboard();
-        enabledLooper.outputToDashboard();
-        disabledLooper.outputToDashboard();
+    @Override
+    public void robotPeriodic(){
+        //subsystemManager.outputToDashboard();
+        //enabledLooper.outputToDashboard();
+        //disabledLooper.outputToDashboard();
     }
 }

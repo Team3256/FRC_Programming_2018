@@ -30,17 +30,17 @@ public class DualLogitechConfig implements ControlsInterface{
 
     @Override
     public boolean getIntake() {
-        return false;
+        return manipulator.getRawAxis(3) > 0.25;
     }
 
     @Override
     public boolean getExhaust() {
-        return false;
+        return manipulator.getRawAxis(2) > 0.25;
     }
 
     @Override
     public boolean unjamIntake(){
-        return false;
+        return getIntake() && getExhaust();
     }
 
     @Override

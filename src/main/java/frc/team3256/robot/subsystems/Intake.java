@@ -280,6 +280,7 @@ public class Intake extends SubsystemBase implements Loop {
         this.wantedState = wantedState;
     }
 
+
     @Override
     public void outputToDashboard() {
 

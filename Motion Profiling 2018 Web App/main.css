@@ -97,7 +97,7 @@ input, input:focus {
     width: 100%;
 }
 
-.modal {
+.modal, .purePursuitModal {
     position: fixed;
     width: 1000px;
     min-height: 100px;
@@ -109,19 +109,7 @@ input, input:focus {
     height: 100%;
 }
 
-.purePursuitModal {
-    position: fixed;
-    width: 1000px;
-    min-height: 100px;
-    top: 100px;
-    left: 0; right: 0;
-    margin: 0 auto;
-    opacity: 1;
-    background-color: #D3D3D3;
-    height: 100%;
-}
-
-#modalTitle {
+#modalTitle, #purePursuitModalTitle {
     font-size: 30px;
     border: none;
     border-bottom: none;
@@ -129,28 +117,7 @@ input, input:focus {
     text-align: center;
 }
 
-#purePursuitModalTitle {
-    font-size: 30px;
-    border: none;
-    border-bottom: none;
-    color: white;
-    text-align: center;
-}
-
-#trajectoryPath {
-    position: absolute;
-    display: inline-block;
-    margin-top: 20px;
-    line-height: 150%;
-    font-size: 17px;
-    border: none;
-    color: black;
-    top: 50px;
-    text-align: left;
-    left: 10px;
-}
-
-#purePursuitPath {
+#trajectoryPath, #purePursuitPath {
     position: absolute;
     display: inline-block;
     margin-top: 20px;

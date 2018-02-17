@@ -9,6 +9,7 @@ import frc.team3256.lib.hardware.ADXRS453_Calibrator;
 import frc.team3256.robot.auto.AutoModeBase;
 import frc.team3256.robot.auto.AutoModeChooser;
 import frc.team3256.robot.auto.AutoModeExecuter;
+import frc.team3256.robot.auto.actions.WaitAction;
 import frc.team3256.robot.auto.modes.*;
 import frc.team3256.robot.operation.ControlsInterface;
 import frc.team3256.robot.operation.DualLogitechConfig;
@@ -110,76 +111,39 @@ public class Robot extends IterativeRobot {
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
         driveTrain.setOpenLoop(power);
         driveTrain.setHighGear(!shiftDown);
-
-        //Intake unjam, intake, and exhaust
-        if(controlsInterface.unjamIntake()){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_RECEIVE);
-            elevator.setWantedState(Elevator.WantedState.INTAKE_POS);
-        }
-        else if (controlsInterface.getIntake()){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_RECEIVE);
-            elevator.setWantedState(Elevator.WantedState.INTAKE_POS);
+        if (controlsInterface.getIntake()){
+            intake.setIntake(0.5,0.5);
         }
         else if (controlsInterface.getExhaust()){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_RECEIVE);
-            elevator.setWantedState(Elevator.WantedState.INTAKE_POS);
+            intake.setIntake(-0.5, -0.5);
         }
-        else{
-            intake.setWantedState(Intake.WantedState.IDLE);
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+        else
+            intake.setIntake(0,0);
+        /*
+        if (controlsInterface.manualSqueezeCarriage()){
+            carriage.squeeze();
         }
+        else
+            carriage.open();
 
-        //Intake toggle pivot & flop
-        if(controlsInterface.togglePivot()){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
-        }
-        else if(controlsInterface.toggleFlop()){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
-        }
-        else{
-            intake.setWantedState(Intake.WantedState.IDLE);
-        }
-
-        //Elevator manuals & presets
         if (controlsInterface.manualElevatorUp() > 0.25){
-            elevator.setWantedState(Elevator.WantedState.MANUAL_UP);
+            elevator.setOpenLoop(0.5);
         }
-        else if(controlsInterface.manualElevatorDown() > 0.25){
-            elevator.setWantedState(Elevator.WantedState.MANUAL_DOWN);
+        else if (controlsInterface.manualElevatorDown() > 0.25){
+            elevator.setOpenLoop(-0.5);
         }
-        else if(controlsInterface.switchPreset()){
-            elevator.setWantedState(Elevator.WantedState.SWITCH);
-        }
-        else if(controlsInterface.scalePresetLow()){
-            elevator.setWantedState(Elevator.WantedState.LOW_SCALE);
-        }
-        else if(controlsInterface.scalePresetHigh()){
-            elevator.setWantedState(Elevator.WantedState.HIGH_SCALE);
-        }
-        else{
-            elevator.setWantedState(Elevator.WantedState.HOLD);
-        }
+        else
+            elevator.setOpenLoop(0);
 
-        //ElevatorCarriage squeeze & scoring
-        if(controlsInterface.manualSqueezeCarriage()){
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
-        }
-
-        if(controlsInterface.scoreFront()){
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_FORWARD);
+        if (controlsInterface.scoreFront()){
+            carriage.runMotors(0.5);
         }
         else if (controlsInterface.scoreRear()){
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_BACKWARD);
+            carriage.runMotors(-0.5);
         }
-        else{
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
-        }
-
-
-        //System.out.println("LEFT ENCODER: " + driveTrain.getLeftVelocity() + "RIGHT ENCODER: " + driveTrain.getRightVelocity());
+        else
+            carriage.runMotors(0);
+            */
     }
 
     @Override

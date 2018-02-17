@@ -2,6 +2,7 @@ package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.SharpIR;
 import frc.team3256.robot.Constants;
@@ -199,7 +200,7 @@ public class Intake extends SubsystemBase implements Loop {
        pivotActuator.set(DoubleSolenoid.Value.kReverse);
     }
 
-    private void setIntake(double left, double right){
+    public void setIntake(double left, double right){
        leftIntake.set(left);
        rightIntake.set(-right);
     }
@@ -283,7 +284,15 @@ public class Intake extends SubsystemBase implements Loop {
 
     @Override
     public void outputToDashboard() {
-
+        SmartDashboard.putString("Current State: ", currentState.toString());
+        SmartDashboard.putString("Wanted State: ", wantedState.toString());
+        SmartDashboard.putString("Previous State: ", previousState.toString());
+        SmartDashboard.putBoolean("State Changed? ", stateChanged);
+        SmartDashboard.putNumber("Left Motor Power: ", leftIntake.getSpeed());
+        SmartDashboard.putNumber("Right Motor Power: ", rightIntake.getSpeed());
+        SmartDashboard.putString("Flopper State: ", flopperActuator.get().toString());
+        SmartDashboard.putString("Pivot State: ", pivotActuator.get().toString());
+        SmartDashboard.putBoolean("Cube detected? ", ballDetector.isTriggered());
     }
 
     @Override

@@ -14,9 +14,9 @@ public class TestArcTrajectoryAuto extends AutoModeBase {
         double startTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
         runAction(new FollowTrajectoryAction(0, 130, 5, 0));
         double currVel = DriveTrain.getInstance().getAverageVelocity();
-        runAction(new FollowArcTrajectoryAction(currVel, 130, 30, 90));
+        runAction(new FollowArcTrajectoryAction(currVel, 110, 30, 90));
         currVel = DriveTrain.getInstance().getAverageVelocity();
-        runAction(new FollowTrajectoryAction(currVel,130,30, 90));
+        runAction(new FollowTrajectoryAction(currVel,96,30, 90));
         System.out.println(edu.wpi.first.wpilibj.Timer.getFPGATimestamp()-startTime);
 
         //runAction(new FollowArcTrajectoryAction(90, 90, 48, 90));

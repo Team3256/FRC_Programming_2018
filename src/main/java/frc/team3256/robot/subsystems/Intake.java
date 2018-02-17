@@ -10,7 +10,7 @@ import frc.team3256.robot.Constants;
 public class Intake extends SubsystemBase implements Loop {
     private VictorSP leftIntake, rightIntake;
     private DoubleSolenoid flopperActuator, pivotActuator;
-    private SharpIR ballDetector;
+    private SharpIR cubeDetector;
 
     private SystemState currentState;
     private SystemState previousState;
@@ -54,7 +54,7 @@ public class Intake extends SubsystemBase implements Loop {
         rightIntake = new VictorSP(Constants.kRightIntakePort);
         flopperActuator = new DoubleSolenoid(Constants.kIntakeFlopForward, Constants.kIntakeFlopReverse);
         pivotActuator = new DoubleSolenoid(Constants.kIntakePivotForward, Constants.kIntakePivotReverse);
-        ballDetector = new SharpIR(Constants.kIntakeSharpIR, Constants.kIntakeSharpIRMinVoltage, Constants.kIntakeSharpIRMaxVoltage);
+        cubeDetector = new SharpIR(Constants.kIntakeSharpIR, Constants.kIntakeSharpIRMinVoltage, Constants.kIntakeSharpIRMaxVoltage);
     }
 
     public static Intake getInstance(){
@@ -211,7 +211,7 @@ public class Intake extends SubsystemBase implements Loop {
 
     public boolean hasCube(){
         return false;
-        //return ballDetector.isTriggered();
+        //return cubeDetector.isTriggered();
     }
 
     //default WantedState -> SystemState
@@ -298,7 +298,7 @@ public class Intake extends SubsystemBase implements Loop {
         SmartDashboard.putNumber("Right Motor Power: ", rightIntake.getSpeed());
         SmartDashboard.putString("Flopper State: ", flopperActuator.get().toString());
         SmartDashboard.putString("Pivot State: ", pivotActuator.get().toString());
-        SmartDashboard.putBoolean("Cube detected? ", ballDetector.isTriggered());
+        SmartDashboard.putBoolean("Cube detected? ", cubeDetector.isTriggered());
         */
     }
 

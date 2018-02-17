@@ -47,7 +47,7 @@ public class Robot extends IterativeRobot {
         disabledLooper.addLoops(gyroCalibrator);
         //enabled looper -> control loop for subsystems
         enabledLooper = new Looper(Constants.kControlLoopPeriod);
-        enabledLooper.addLoops(driveTrain, poseEstimator);
+        enabledLooper.addLoops(driveTrain, poseEstimator, intake);
 
         subsystemManager = new SubsystemManager();
         subsystemManager.addSubsystems(driveTrain);
@@ -115,22 +115,23 @@ public class Robot extends IterativeRobot {
         driveTrain.setOpenLoop(power);
         driveTrain.setHighGear(!shiftDown);
         if (controlsInterface.unjamIntake()){
-            intake.setIntake(0.5, 0.5);
+            //intake.setIntake(0.5, 0.5);
+            intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
         }
         else if (controlsInterface.getIntake()){
             System.out.println("INTAKE");
-            //intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
-            intake.setIntake(-Constants.kLeftIntakePower, -Constants.kRightIntakePower);
+            intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
+            //intake.setIntake(-Constants.kLeftIntakePower, -Constants.kRightIntakePower);
         }
         else if (controlsInterface.getExhaust()){
             System.out.println("OUTTAKE");
-            //intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
-            intake.setIntake(0.5, 0.5);
+            intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
+            //intake.setIntake(0.5, 0.5);
         }
         else{
             System.out.println("IDLE");
-            intake.setIntake(0, 0);
-            //intake.setWantedState(Intake.WantedState.IDLE);
+            //intake.setIntake(0, 0);
+            intake.setWantedState(Intake.WantedState.IDLE);
         }
         /*
         if (controlsInterface.getIntake()){

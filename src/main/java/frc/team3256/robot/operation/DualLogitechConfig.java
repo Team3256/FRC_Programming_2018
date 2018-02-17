@@ -44,13 +44,11 @@ public class DualLogitechConfig implements ControlsInterface{
     }
 
     @Override
-    public boolean togglePivot() {
-        return false;
-    }
+    public boolean togglePivot() { return manipulator.getRawButton(4); }
 
     @Override
     public boolean toggleFlop(){
-        return false;
+        return manipulator.getRawButton(1);
     }
 
     @Override

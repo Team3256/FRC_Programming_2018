@@ -11,11 +11,11 @@ import frc.team3256.lib.hardware.ADXRS453_Calibrator;
 import frc.team3256.robot.auto.AutoModeBase;
 import frc.team3256.robot.auto.AutoModeChooser;
 import frc.team3256.robot.auto.AutoModeExecuter;
-import frc.team3256.robot.auto.actions.WaitAction;
 import frc.team3256.robot.auto.modes.*;
 import frc.team3256.robot.operation.ControlsInterface;
 import frc.team3256.robot.operation.DualLogitechConfig;
 import frc.team3256.robot.subsystems.*;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 public class Robot extends IterativeRobot {
 
@@ -31,6 +31,11 @@ public class Robot extends IterativeRobot {
     ControlsInterface controlsInterface;
     AutoModeExecuter autoModeExecuter;
     AutoModeChooser autoModeChooser;
+
+    double counter = 0;
+
+    boolean prevPivot = false;
+    boolean prevFlop = false;
 
     @Override
     public void robotInit() {
@@ -111,6 +116,10 @@ public class Robot extends IterativeRobot {
         double turn = controlsInterface.getTurn();
         boolean quickTurn = controlsInterface.getQuickTurn();
         boolean shiftDown = controlsInterface.getLowGear();
+
+        boolean flop = controlsInterface.toggleFlop();
+        boolean pivot = controlsInterface.togglePivot();
+
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
         driveTrain.setOpenLoop(power);
         driveTrain.setHighGear(!shiftDown);
@@ -119,20 +128,36 @@ public class Robot extends IterativeRobot {
             intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
         }
         else if (controlsInterface.getIntake()){
-            System.out.println("INTAKE");
             intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
             //intake.setIntake(-Constants.kLeftIntakePower, -Constants.kRightIntakePower);
         }
         else if (controlsInterface.getExhaust()){
-            System.out.println("OUTTAKE");
             intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
             //intake.setIntake(0.5, 0.5);
         }
+        else if(flop && !prevFlop){
+            counter++;
+            //System.out.println("HELLOOOO\n\n\n\n\n\n\n\n");
+            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
+        }
+        else if(pivot && !prevPivot){
+            //System.out.println("HELLOOOO\n\n\n\n\n\n\n\n");
+            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
+        }
         else{
-            System.out.println("IDLE");
             //intake.setIntake(0, 0);
             intake.setWantedState(Intake.WantedState.IDLE);
         }
+
+        System.out.println("CURRENT STATE: " + intake.getCurrentState().toString());
+        System.out.println("WANTED STATE: " + intake.getWantedState().toString());
+        System.out.println("FLOP: " + flop);
+        System.out.println("PREVFLOP: " + prevFlop);
+        System.out.println("COUNTER:" + counter);
+
+        prevFlop = flop;
+        prevPivot = pivot;
+
         /*
         if (controlsInterface.getIntake()){
             intake.setIntake(0.5,0.5);

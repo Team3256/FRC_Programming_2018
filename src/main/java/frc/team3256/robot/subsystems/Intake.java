@@ -2,7 +2,6 @@ package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.SharpIR;
 import frc.team3256.robot.Constants;
@@ -15,9 +14,13 @@ public class Intake extends SubsystemBase implements Loop {
     private SystemState currentState;
     private SystemState previousState;
     private WantedState wantedState;
+    private WantedState prevWantedState;
     private boolean stateChanged;
+    private boolean wantedStateChanged = true;
     private double unjamTimeStart;
     private SystemState unjamPreviousState;
+
+    private boolean firstRun = true;
 
     private double kLeftIntakePower = Constants.kLeftIntakePower;
     private double kRightIntakePower = Constants.kRightIntakePower;
@@ -65,11 +68,25 @@ public class Intake extends SubsystemBase implements Loop {
     public void init(double timestamp) {
         currentState = SystemState.STOWED_CLOSED;
         previousState = SystemState.STOWED_CLOSED;
+        prevWantedState = WantedState.IDLE;
+        wantedState = WantedState.IDLE;
         stateChanged = true;
     }
 
-     @Override
+    @Override
     public void update(double timestamp) {
+        if (firstRun) {
+            wantedStateChanged = true;
+            firstRun = false;
+        }
+        else if (prevWantedState != wantedState){
+            System.out.println("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP \n\n\n\n\n\n\n\n\n\n\n");
+            wantedStateChanged = true;
+            prevWantedState = wantedState;
+        }
+        else wantedStateChanged = false;
+
+        if (!wantedStateChanged) return;
         SystemState newState;
         switch(currentState) {
             case INTAKING:
@@ -105,6 +122,7 @@ public class Intake extends SubsystemBase implements Loop {
         else stateChanged = false;
      }
 
+
     @Override
     public void end(double timestamp) {
 
@@ -121,7 +139,7 @@ public class Intake extends SubsystemBase implements Loop {
             return SystemState.DEPLOYED_CLOSED;
         }
         else{
-            setIntake(kLeftIntakePower, kRightIntakePower);
+            setIntake(-kLeftIntakePower, -kRightIntakePower);
         }
         return defaultStateTransfer();
     }
@@ -286,6 +304,14 @@ public class Intake extends SubsystemBase implements Loop {
         this.wantedState = wantedState;
     }
 
+    public SystemState getCurrentState(){
+        return currentState;
+    }
+
+    public WantedState getWantedState(){
+        System.out.println("Wanted State Changed: " + wantedStateChanged);
+        return wantedState;
+    }
 
     @Override
     public void outputToDashboard() {

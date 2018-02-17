@@ -195,13 +195,16 @@ class Arc {
         this.sTrans = Translation.diff(this.center, this.lineA.end);
         this.eTrans = Translation.diff(this.center, this.lineB.start);
         this.sAngle, this.eAngle;
+        this.clockwise;
 
         if(Translation.cross(this.sTrans, this.eTrans) > 0) {
             this.eAngle = -Math.atan2(this.sTrans.y, this.sTrans.x);
             this.sAngle = -Math.atan2(this.eTrans.y, this.eTrans.x);
+            this.clockwise = -1;
         } else {
             this.sAngle = -Math.atan2(this.sTrans.y, this.sTrans.x);
             this.eAngle = -Math.atan2(this.eTrans.y, this.eTrans.x);
+            this.clockwise = 1;
         }
     }
 
@@ -213,8 +216,12 @@ class Arc {
         ctx.stroke();
     }
 
+    getDirection() {
+        return this.clockwise;
+    }
+
     getTurnAngle() {
-        return ((this.sAngle - this.eAngle)*180)/Math.PI * -1;
+        return ((this.eAngle - this.sAngle)*180)/Math.PI * this.getDirection();
     }
 
     length() {
@@ -434,4 +441,8 @@ function init() {
         $('body').fadeIn(0);
     }
 	addEventListeners();
+	chooseStart("left");
+	addPoint(500, 50);
+	addPoint(500, 150);
+	addPoint(700, 150);
 }

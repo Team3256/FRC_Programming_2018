@@ -441,8 +441,4 @@ function init() {
         $('body').fadeIn(0);
     }
 	addEventListeners();
-	chooseStart("left");
-	addPoint(500, 50);
-	addPoint(500, 150);
-	addPoint(700, 150);
 }

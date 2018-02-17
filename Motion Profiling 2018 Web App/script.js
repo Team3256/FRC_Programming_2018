@@ -1,8 +1,8 @@
 var inchesToPixelsScale = 14 / 12;
 var fieldWidth = 74 * 12;
 var fieldHeight = 30 * 12;
-var robotWidth = 40;
-var robotHeight = 35;
+var robotWidth = 34;
+var robotHeight = 55.008;
 var width = fieldWidth * inchesToPixelsScale; //in pixels
 var height = fieldHeight * inchesToPixelsScale; //in pixels
 var pointRadius = 10; //in pixels

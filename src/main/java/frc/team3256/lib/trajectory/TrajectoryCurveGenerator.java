@@ -1,20 +1,21 @@
 package frc.team3256.lib.trajectory;
 
+import frc.team3256.robot.Constants;
+
 import java.util.ArrayList;
 
 public class TrajectoryCurveGenerator {
 
-    public double robotTrack = 2.4*12.0; //inches
+    private double robotTrack; //inches
 
     TrajectoryGenerator trajectoryGenerator;
     Trajectory leadPath;
     Trajectory followPath;
 
-    public TrajectoryCurveGenerator(double acc, double maxVel, double dt){
+    public TrajectoryCurveGenerator(double acc, double maxVel, double dt, double robotTrack){
         trajectoryGenerator = new TrajectoryGenerator(acc, maxVel, dt);
+        this.robotTrack = robotTrack;
     }
-
-    boolean right;
 
     public void generateTrajectoryCurve(double startVel, double endVel, double degrees, double turnRadius){
         double arcLeadLength = 2 * (turnRadius + (robotTrack * 0.5)) * Math.PI * (degrees/360);
@@ -32,9 +33,8 @@ public class TrajectoryCurveGenerator {
     }
 
     public static void main (String [] args){
-        TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator(144, 144, 0.005);
-        trajectoryCurveGenerator.generateTrajectoryCurve(0, 0, 90, 36);
-
+        TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator(144, 144, 0.005, Constants.kRobotTrack);
+        trajectoryCurveGenerator.generateTrajectoryCurve(108, 108, 90, 12);
     }
 
 }

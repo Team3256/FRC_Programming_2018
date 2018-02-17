@@ -1,5 +1,6 @@
 package frc.team3256.lib.trajectory;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Util;
 import frc.team3256.lib.control.PIDController;
@@ -53,7 +54,7 @@ public class DriveArcController {
         return PID;
     }
 
-    public DrivePower updateCalculations(double currPosLead, double currPosFollow, double currAngle) {
+    public DrivePower updateCalculations(double currPosLead, double currPosFollow, double currAngle, double currVel) {
         if (!isFinished()){
             Trajectory.Point leadPoint = trajectoryCurveLead.getCurrPoint(curr_segment);
             Trajectory.Point followPoint = trajectoryCurveFollow.getCurrPoint(curr_segment);
@@ -69,6 +70,7 @@ public class DriveArcController {
             adjustment = pidController.update(currAngle);
             System.out.println("Lead Path Error: " + (((radius+(Constants.kRobotTrack/2))*angle) - currPosLead));
             System.out.println("Follow Path Error: " + (((radius-(Constants.kRobotTrack/2))*angle) - currPosFollow));
+            SmartDashboard.putNumber("LEAD VEL ERROR", leadPoint.getVel() - currVel);
             System.out.println("Adjustment: " + adjustment);
             System.out.println("Target: " + targetAngle);
             System.out.println("Curr Angle: " + currAngle);
@@ -89,7 +91,7 @@ public class DriveArcController {
     public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius) {
         angle = (degrees * Math.PI)/180;
         radius = turnRadius;
-        TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator(Constants.kCurveTrajectoryMaxAccel, Constants.kCurveTrajectoryCruiseVelocity, Constants.kControlLoopPeriod);
+        TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator(Constants.kCurveTrajectoryMaxAccel, Constants.kCurveTrajectoryCruiseVelocity, Constants.kControlLoopPeriod, Constants.kRobotTrack);
         trajectoryCurveGenerator.generateTrajectoryCurve(startVel, endVel, degrees, turnRadius);
         this.trajectoryCurveLead = trajectoryCurveGenerator.getLeadPath();
         this.trajectoryCurveFollow = trajectoryCurveGenerator.getFollowPath();

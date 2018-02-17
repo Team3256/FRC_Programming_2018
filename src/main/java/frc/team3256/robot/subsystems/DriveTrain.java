@@ -113,7 +113,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         setOpenLoop(0, 0);
     }
 
-    public DriveTrain() {
+    private DriveTrain() {
         controlMode = DriveControlMode.OPEN_LOOP;
         // create talon objects
         leftMaster = TalonUtil.generateGenericTalon(Constants.kLeftDriveMaster);
@@ -218,7 +218,11 @@ public class DriveTrain extends SubsystemBase implements Loop {
      */
     public double getRightVelocity(){
         //return rightMaster.getSelectedSensorVelocity(0);
-        return sensorUnitsToInches(rightMaster.getSelectedSensorVelocity(0))/Constants.kDriveEncoderScalingFactor;
+        return sensorUnitsToInchesPerSec(rightMaster.getSelectedSensorVelocity(0))/Constants.kDriveEncoderScalingFactor;
+    }
+
+    public double getAverageVelocity(){
+        return (getLeftVelocity() + getRightVelocity())/2.0;
     }
 
     //TODO: test these methods
@@ -349,12 +353,12 @@ public class DriveTrain extends SubsystemBase implements Loop {
         }
 
         if (angle >= 0) {
-            output = driveArcController.updateCalculations(getRightDistance(), getLeftDistance(), getAngle().degrees());
+            output = driveArcController.updateCalculations(getRightDistance(), getLeftDistance(), getAngle().degrees(), getAverageVelocity());
             leftMaster.set(ControlMode.PercentOutput, output.getRight());
             rightMaster.set(ControlMode.PercentOutput, output.getLeft());
         }
         else {
-            output = driveArcController.updateCalculations(getLeftDistance(), getRightDistance(), getAngle().degrees());
+            output = driveArcController.updateCalculations(getLeftDistance(), getRightDistance(), getAngle().degrees(), getAverageVelocity());
             leftMaster.set(ControlMode.PercentOutput, output.getLeft());
             rightMaster.set(ControlMode.PercentOutput, output.getRight());
         }

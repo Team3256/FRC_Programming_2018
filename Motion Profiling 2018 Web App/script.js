@@ -5,7 +5,7 @@ var robotWidth = 40;
 var robotHeight = 35;
 var width = fieldWidth * inchesToPixelsScale; //in pixels
 var height = fieldHeight * inchesToPixelsScale; //in pixels
-var pointRadius = 5; //in pixels
+var pointRadius = 10; //in pixels
 var modalText = "";
 var modalPurePursuitText = "";
 var count = 0;
@@ -84,13 +84,13 @@ class Translation {
 
 	draw(color) {
 		var color = color || "#f72c1c";
-		ctx.lineWidth = 0;
 		ctx.beginPath();
+		ctx.lineWidth = 0;
 		ctx.arc(this.getX(), this.getY(), pointRadius, 0, 2*Math.PI, false);
 		ctx.fillStyle = color;
 		ctx.strokeStyle = color;
 		ctx.fill();
-		ctx.stroke();
+		//ctx.stroke();
 	}
 
 	static diff(a, b) {
@@ -118,8 +118,8 @@ class Waypoint {
         this.desc = desc;
     }
 
-    draw() {
-        this.coordinates.draw();
+    draw(color) {
+        this.coordinates.draw(color);
     }
 }
 
@@ -147,8 +147,8 @@ class Line {
         return true;
     }
 
-    draw() {
-		var color = "#2dc65b";
+    draw(color) {
+		var color = color || "#2dc65b";
         ctx.strokeStyle = color;
         ctx.beginPath();
         ctx.moveTo(this.start.getX(), this.start.getY());
@@ -205,13 +205,12 @@ class Arc {
         }
     }
 
-    draw() {
-        ctx.strokeStyle="white";
+    draw(color) {
+        ctx.strokeStyle="white" || color;
         ctx.beginPath();
         ctx.arc(this.center.getX(), this.center.getY(), this.radius*inchesToPixelsScale, this.sAngle, this.eAngle);
         ctx.lineWidth = robotWidth;
         ctx.stroke();
-        ctx.lineWidth = 0;
     }
 
     getTurnAngle() {
@@ -226,6 +225,17 @@ class Arc {
 
 function deletePoint(index) {
     $('tr')[index].remove();
+}
+
+function getGradient(min, max, curr) {
+    var startColor = [255, 255, 0];
+    var endColor = [255, 0, 0];
+    var currColor = [0, 0, 0];
+    var spot = (curr - min)/(max - min);
+    for (var i in startColor) {
+        currColor[i] = startColor[i] + (endColor[i]-startColor[i]) * spot;
+    }
+    return "rgb("+currColor.toString()+")";
 }
 
 function addPoint(cx, cy) {
@@ -318,7 +328,7 @@ function update() {
     modalPurePursuitText = "";
     waypointsString = "";
     for (var point in waypoints) {
-        waypoints[point].coordinates.draw();
+        waypoints[point].coordinates.draw(getGradient(0, 100, waypoints[point].vel));
         if (point > 1) {
             var line1 = new Line(waypoints[point], waypoints[point - 1]);
             var line2 = new Line(waypoints[point - 1], waypoints[point - 2]);
@@ -352,9 +362,12 @@ function update() {
         var countToString = String.fromCharCode(97+parseInt(point));
         var coordinates = waypoints[point].coordinates;
         modalPurePursuitText += "PathGenerator.Waypoint " + countToString + " = new PathGenerator.Waypoint(";
-        modalPurePursuitText += coordinates.x + ", " + coordinates.y + ", " + (Math.round(waypoints[point].radius)) + ", " + waypoints[point].vel + ");"
+        modalPurePursuitText += coordinates.x + ", " + coordinates.y + ", " + (Math.round(waypoints[point].radius)) + ", " + waypoints[point].vel + ");";
+        if(waypoints[point].desc != ""){
+            modalPurePursuitText += ("   //" + waypoints[point].desc);
+        }
         modalPurePursuitText += "<br />";
-        waypointsString += countToString
+        waypointsString += countToString;
         if (point < waypoints.length - 1) {
             waypointsString += ", ";
         }

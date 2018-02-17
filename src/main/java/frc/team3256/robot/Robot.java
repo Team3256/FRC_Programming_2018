@@ -2,6 +2,8 @@ package frc.team3256.robot;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Looper;
 import frc.team3256.lib.control.TeleopDriveController;
@@ -96,6 +98,7 @@ public class Robot extends IterativeRobot {
     public void disabledPeriodic() {
         //System.out.println("Left: " + driveTrain.getLeftDistance());
         //System.out.println("Right: " + driveTrain.getRightDistance());
+        SmartDashboard.putNumber("CurrTime", Timer.getFPGATimestamp());
     }
 
     @Override

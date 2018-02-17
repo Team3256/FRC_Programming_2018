@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Kinematics;
 import frc.team3256.lib.Loop;
@@ -359,6 +360,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
         }
         else {
             output = driveArcController.updateCalculations(getLeftDistance(), getRightDistance(), getAngle().degrees(), getAverageVelocity());
+            SmartDashboard.putNumber("Left Output", output.getLeft());
+            SmartDashboard.putNumber("Right Output", output.getRight());
             leftMaster.set(ControlMode.PercentOutput, output.getLeft());
             rightMaster.set(ControlMode.PercentOutput, output.getRight());
         }

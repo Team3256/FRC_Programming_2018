@@ -5,6 +5,7 @@ import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Util;
 import frc.team3256.lib.control.PIDController;
 import frc.team3256.robot.Constants;
+import org.opencv.core.Mat;
 
 public class DriveArcController {
 
@@ -16,6 +17,7 @@ public class DriveArcController {
     private double feedForwardValueLead, feedBackValueLead, feedForwardValueFollow, feedBackValueFollow, followOutput, leadOutput, adjustment, targetAngle, radius;
     private PIDController pidController = new PIDController();
     private double kGyroP, kGyroI, kGyroD, angle;
+    private boolean inverseTurn = false;
 
     public void setGains(double kP, double kI, double kD, double kV, double kA, double kGyroP, double kGyroI, double kGyroD) {
         this.kP = kP;
@@ -67,7 +69,12 @@ public class DriveArcController {
             targetAngle = (((leadPoint.getPos()+followPoint.getPos())/2)/radius)*180/Math.PI;
             pidController.setTargetPosition(targetAngle);
             pidController.setMinMaxOutput(-1, 1);
-            adjustment = pidController.update(currAngle);
+            if (!inverseTurn) {
+                adjustment = pidController.update(currAngle);
+            }
+            else {
+                adjustment = pidController.update(-currAngle);
+            }
             System.out.println("Lead Path Error: " + (((radius+(Constants.kRobotTrack/2))*angle) - currPosLead));
             System.out.println("Follow Path Error: " + (((radius-(Constants.kRobotTrack/2))*angle) - currPosFollow));
             SmartDashboard.putNumber("LEAD VEL ERROR", leadPoint.getVel() - currVel);
@@ -89,8 +96,10 @@ public class DriveArcController {
     }
 
     public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius) {
+        if (degrees < 0){inverseTurn = true;}
         angle = (degrees * Math.PI)/180;
         radius = turnRadius;
+        degrees = Math.abs(degrees);
         TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator(Constants.kCurveTrajectoryMaxAccel, Constants.kCurveTrajectoryCruiseVelocity, Constants.kControlLoopPeriod, Constants.kRobotTrack);
         trajectoryCurveGenerator.generateTrajectoryCurve(startVel, endVel, degrees, turnRadius);
         this.trajectoryCurveLead = trajectoryCurveGenerator.getLeadPath();

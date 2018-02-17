@@ -14,7 +14,7 @@ public class Superstructure extends SubsystemBase implements Loop{
     private WantedState wantedState;
     private boolean stateChanged;
 
-    private static Superstructure getInstance() {
+    public static Superstructure getInstance() {
         return instance == null ? instance = new Superstructure() : instance;
     }
 
@@ -35,7 +35,7 @@ public class Superstructure extends SubsystemBase implements Loop{
         LOW_SCALE_POSITION,
         HIGH_SCALE_POSITION,
         SCORING_FORWARD,
-        SCORING_BACKWARD
+        SCORING_BACKWARD,
     }
 
     public enum WantedState {
@@ -49,7 +49,7 @@ public class Superstructure extends SubsystemBase implements Loop{
         WANTS_TO_SCORE_BACKWARD,
         WANTS_TO_SQUEEZE,
         WANTS_TO_RAISE_MANUAL,
-        WANTS_TO_LOWER_MANUAL
+        WANTS_TO_LOWER_MANUAL,
     }
 
     @Override

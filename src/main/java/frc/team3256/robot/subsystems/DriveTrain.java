@@ -19,6 +19,7 @@ import frc.team3256.lib.path.PurePursuitTracker;
 import frc.team3256.lib.trajectory.*;
 import frc.team3256.robot.Constants;
 import frc.team3256.robot.PoseEstimator;
+import frc.team3256.robot.auto.actions.WaitAction;
 
 public class DriveTrain extends SubsystemBase implements Loop {
 
@@ -470,6 +471,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
         //Return negative value of the gyro, because the gyro returns
         return Rotation.fromDegrees(-gyro.getAngle());
     }
+
+
 
     public DriveControlMode getMode(){
         return controlMode;

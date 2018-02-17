@@ -3,6 +3,7 @@ package frc.team3256.robot.subsystems;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.Loop;
 import frc.team3256.robot.Constants;
 
@@ -203,7 +204,12 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
 
     @Override
     public void outputToDashboard() {
-
+        SmartDashboard.putString("Current State: ", currentState.toString());
+        SmartDashboard.putString("Wanted State: ", wantedState.toString());
+        SmartDashboard.putBoolean("State Changed? ", stateChanged);
+        SmartDashboard.putNumber("Left Motor Power: ", rollerLeft.getSpeed());
+        SmartDashboard.putNumber("Right Motor Power: ", rollerRight.getSpeed());
+        SmartDashboard.putString("Solenoid State: ", squeezeSolenoid.get().toString());
     }
 
     @Override

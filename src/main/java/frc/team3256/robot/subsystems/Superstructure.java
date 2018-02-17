@@ -1,5 +1,6 @@
 package frc.team3256.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.Loop;
 
 public class Superstructure extends SubsystemBase implements Loop{
@@ -219,7 +220,10 @@ public class Superstructure extends SubsystemBase implements Loop{
 
     @Override
     public void outputToDashboard() {
-
+        SmartDashboard.putString("Current State: ", currentState.toString());
+        SmartDashboard.putString("New State: ", newState.toString());
+        SmartDashboard.putString("Wanted State: ", wantedState.toString());
+        SmartDashboard.putBoolean("State Changed? ", stateChanged);
     }
 
     @Override

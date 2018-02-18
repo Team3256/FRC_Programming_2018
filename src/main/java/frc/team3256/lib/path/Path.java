@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Path {
 
-    private ArrayList<Segment> segments;
+    public ArrayList<Segment> segments;
     private double segmentCompletionTolerance = 0.01;
 
     public Path(){

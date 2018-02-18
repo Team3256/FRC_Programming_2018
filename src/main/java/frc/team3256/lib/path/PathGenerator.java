@@ -13,6 +13,7 @@ public class PathGenerator {
         Translation position;
         double radius;
         double vel;
+        double arcLength;
 
         public Waypoint(double x, double y, double radius, double vel){
             this.position = new Translation(x, y);
@@ -24,12 +25,15 @@ public class PathGenerator {
             this(x, y, radius, 0.0);
         }
 
+        public void setArcLength(double arcLength) {
+            this.arcLength = arcLength;
+        }
     }
 
     public static class LineGenerator{
         Waypoint a, b;
         Translation start, end, slope;
-        double vel;
+        double endVel;
 
         public LineGenerator(Waypoint a, Waypoint b){
             this.a = a;
@@ -38,15 +42,17 @@ public class PathGenerator {
             //determine the start and end points of this segment:
             //if this line is connected to an arc, then this line needs to be shorter
             //so we adjust the start and end points respectively
-            this.start = a.position.translate(slope.scale(a.radius/slope.norm()));
-            this.end = b.position.translate(slope.scale(-1.0*b.radius/slope.norm()));
-            this.vel = b.vel;
+            Translation startDiff = slope.scale(a.radius/slope.norm());
+            Translation endDiff = slope.scale(-1.0*b.radius/slope.norm());
+            this.start = a.position.translate(startDiff);
+            this.end = b.position.translate(endDiff);
+            // this.vel = ?
         }
 
         private void addToPath(Path path){
             double len = new Translation(start, end).norm();
             if (len > 1E-9){
-                path.addSegment(new Line(start.x(), start.y(), end.x(), end.y(), vel, 2.0, 250));
+                path.addSegment(new Line(start.x(), start.y(), end.x(), end.y(), endVel, 2.0, 250));
             }
         }
     }
@@ -55,6 +61,8 @@ public class PathGenerator {
         LineGenerator a, b;
         Translation center;
         double radius;
+        double endVel;
+        Waypoint centerPoint;
 
         public ArcGenerator(LineGenerator a, LineGenerator b){
             this.a = a;
@@ -63,20 +71,27 @@ public class PathGenerator {
             RigidTransform normalLineOne = new RigidTransform(a.end, new Rotation(a.slope).normal());
             RigidTransform normalLineTwo = new RigidTransform(b.start, new Rotation(b.slope).normal());
             this.center = normalLineOne.intersection(normalLineTwo);
+
+            double angle = Math.abs(normalLineOne.getRotation().radians() - normalLineTwo.getRotation().radians());
             this.radius = new Translation(center, a.end).norm();
+
+            this.centerPoint.setArcLength(angle * radius);
+
         }
 
         public ArcGenerator(Waypoint a, Waypoint b, Waypoint c){
             this(new LineGenerator(a, b), new LineGenerator(b, c));
+            this.centerPoint = b;
         }
 
         public void addToPath(Path path){
             a.addToPath(path);
             if (radius > 1E-9 && radius < 1E9){
                 path.addSegment(new Arc(a.end.x(), a.end.y(), b.start.x(), b.start.y(),
-                        center.x(), center.y()));
+                        center.x(), center.y(), this.endVel, 2.0, 250));
             }
         }
+
     }
 
     public static Path generate(List<Waypoint> waypoints){

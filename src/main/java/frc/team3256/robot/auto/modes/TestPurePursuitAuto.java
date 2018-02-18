@@ -13,7 +13,7 @@ public class TestPurePursuitAuto extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
         PathGenerator.Waypoint one = new PathGenerator.Waypoint(0, 0, 0, 0);
-        PathGenerator.Waypoint two = new PathGenerator.Waypoint(12, 0, 0, 10);
+        PathGenerator.Waypoint two = new PathGenerator.Waypoint(12, 0, 0, 50);
         Path path = PathGenerator.generate(Arrays.asList(one, two));
         runAction(new PurePursuitAction(path));
     }

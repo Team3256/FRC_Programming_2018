@@ -67,10 +67,14 @@ public class PathGeneratorTest {
 
         PathGenerator.Waypoint one = new PathGenerator.Waypoint(0, 0, 0);
         PathGenerator.Waypoint two = new PathGenerator.Waypoint(0, 10, 5*Math.sqrt(2));
-        PathGenerator.Waypoint three = new PathGenerator.Waypoint(10, 10, 0);
-        List<PathGenerator.Waypoint> waypointList = Arrays.asList(one, two, three);
+        PathGenerator.Waypoint three = new PathGenerator.Waypoint(10, 10, 5*Math.sqrt(2));
+        PathGenerator.Waypoint four = new PathGenerator.Waypoint(10, 0, 0);
+        List<PathGenerator.Waypoint> waypointList = Arrays.asList(one, two, three, four);
         Path path = PathGenerator.generate(waypointList);
-        assertEquals(path.getLength(), 3, kEpsilon);
+        for (Segment p : path.segments) {
+            System.out.println(p.goalVel);
+        }
+        assertEquals(path.getLength(), 5, kEpsilon);
     }
 
 

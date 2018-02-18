@@ -221,7 +221,13 @@ class Arc {
     }
 
     getTurnAngle() {
-        return ((this.eAngle - this.sAngle)*180)/Math.PI * this.getDirection();
+        var angle = ((this.eAngle - this.sAngle)*180)/Math.PI * this.getDirection();
+        if (angle < -180) {
+            angle += 360;
+        } else if (angle > 180) {
+            angle -= 360;
+        }
+        return angle;
     }
 
     length() {

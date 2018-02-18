@@ -1,6 +1,7 @@
 package frc.team3256.lib.trajectory;
 
 import frc.team3256.robot.Constants;
+import frc.team3256.robot.PoseEstimator;
 
 import java.util.ArrayList;
 
@@ -34,7 +35,8 @@ public class TrajectoryCurveGenerator {
 
     public static void main (String [] args){
         TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator(144, 144, 0.005, Constants.kRobotTrack);
-        trajectoryCurveGenerator.generateTrajectoryCurve(108, 108, 90, 12);
+        trajectoryCurveGenerator.generateTrajectoryCurve(0, 0, 90, 48);
+        System.out.println(trajectoryCurveGenerator.getFollowPath());
     }
 
 }

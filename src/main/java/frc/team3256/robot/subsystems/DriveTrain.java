@@ -374,10 +374,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
             controlMode = DriveControlMode.DRIVE_ARC;
         }
         setHighGear(true);
-        leftMaster.configNominalOutputForward(1.0/12.0, 0);
-        rightMaster.configNominalOutputForward(1.0/12.0, 0);
-        leftSlave.configNominalOutputForward(1.0/12.0, 0);
-        rightSlave.configNominalOutputForward(1.0/12.0, 0);
+        leftMaster.configNominalOutputForward(2.0/12.0, 0);
+        rightMaster.configNominalOutputForward(2.0/12.0, 0);
+        leftSlave.configNominalOutputForward(2.0/12.0, 0);
+        rightSlave.configNominalOutputForward(2.0/12.0, 0);
         updateDriveArc();
     }
 

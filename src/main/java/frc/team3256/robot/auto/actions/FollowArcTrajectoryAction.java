@@ -24,7 +24,7 @@ public class FollowArcTrajectoryAction implements Action {
 
     @Override
     public void done() {
-       // drive.setOpenLoop(0,0);
+        drive.setOpenLoop(0,0);
         System.out.println("Finished....");
         drive.resetDriveArcController();
     }

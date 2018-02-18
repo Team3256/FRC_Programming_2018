@@ -57,7 +57,7 @@ public class Trajectory {
         String rv = "";
         rv += "Pos,Vel,Accel,Time\n";
         for(Point p : points){
-            rv += p.pos + "," + p.vel + "," + p.acc + "," + p.time + "\n";
+            rv += p.pos + "," + p.time + "\n";
         }
         return rv;
     }

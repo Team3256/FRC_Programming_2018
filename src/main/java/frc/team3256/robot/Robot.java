@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.DrivePower;
+import frc.team3256.lib.Loop;
 import frc.team3256.lib.Looper;
 import frc.team3256.lib.control.TeleopDriveController;
 import frc.team3256.lib.hardware.ADXRS453_Calibrator;
@@ -55,8 +56,8 @@ public class Robot extends IterativeRobot {
         gyroCalibrator = new ADXRS453_Calibrator(driveTrain.getGyro());
 
         //disabled looper -> recalibrate gyro
-        disabledLooper = new Looper(Constants.kSlowLoopPeriod);
-        disabledLooper.addLoops(gyroCalibrator);
+        disabledLooper = new Looper(Constants.kControlLoopPeriod);
+        disabledLooper.addLoops(/*gyroCalibrator*/ poseEstimator);
         //enabled looper -> control loop for subsystems
         enabledLooper = new Looper(Constants.kControlLoopPeriod);
         enabledLooper.addLoops(driveTrain, poseEstimator, intake);
@@ -89,7 +90,7 @@ public class Robot extends IterativeRobot {
 
         autoModeExecuter = new AutoModeExecuter();
         //AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        AutoModeBase autoMode = new TestArcTrajectoryAuto();
+        AutoModeBase autoMode = new TestPurePursuitAuto();
         autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
         autoModeExecuter.setAutoMode(autoMode);
         autoModeExecuter.start();
@@ -111,6 +112,8 @@ public class Robot extends IterativeRobot {
         //System.out.println("Left: " + driveTrain.getLeftDistance());
         //System.out.println("Right: " + driveTrain.getRightDistance());
         SmartDashboard.putNumber("CurrTime", Timer.getFPGATimestamp());
+        System.out.println("Measure Period:       " + disabledLooper.getMeasuredPeriod());
+        System.out.println("Pose: " + poseEstimator.getPose());
     }
 
     @Override

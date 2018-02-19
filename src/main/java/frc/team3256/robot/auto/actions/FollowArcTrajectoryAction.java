@@ -26,11 +26,11 @@ public class FollowArcTrajectoryAction implements Action {
     public void done() {
         drive.setOpenLoop(0,0);
         System.out.println("Finished....");
-        drive.resetDriveArcController();
     }
 
     @Override
     public void start() {
+        drive.resetDriveArcController();
         drive.configureDriveArc(startVel, endVel, angle, radius);
         System.out.println("Started...");
         drive.resetDriveArcController();

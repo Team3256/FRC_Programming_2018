@@ -27,7 +27,6 @@ var waypoints = [];
 
 $(function() {
     $('.modal').fadeOut(0);
-    $('.purePursuitModal').fadeOut(0);
     $('body').fadeOut(0);
 });
 
@@ -414,32 +413,27 @@ function chooseStart(position) {
 function displayConfiguration() {
     $('.modal').fadeIn(500);
     $("#modalTitle").html(modalTitle);
-    $("#trajectoryPath").val(modalText);
+    $("#pathCode").val(modalText);
 }
 
 function displayPurePursuitConfiguration() {
-    $('.purePursuitModal').fadeIn(500);
-    $("#purePursuitModalTitle").html(modalTitle);
-    $("#purePursuitPath").html(modalPurePursuitText);
+    $('.modal').fadeIn(500);
+    $("#modalTitle").html(modalTitle);
+    $("#pathCode").val(modalPurePursuitText);
 }
 
 function hideConfiguration() {
     $('.modal').fadeOut(500);
 }
 
-function hidePurePursuitConfiguration() {
-    $('.purePursuitModal').fadeOut(500);
-}
-
 function copyToClipboard() {
-    $('#trajectoryPath').select();
+    $('#pathCode').select();
     document.execCommand("Copy");
 }
 
 function init() {
 	$('#field').css("width", width);
 	hideConfiguration();
-	hidePurePursuitConfiguration();
 	ctx = document.getElementById('field').getContext('2d');
     ctx.canvas.width = width;
     ctx.canvas.height = height;

@@ -74,11 +74,11 @@ public class Constants {
     public static final double kStraightD = 0.0;
 
     //Trajectory Curve Gains
-    public static final double kCurveTrajectoryP = 0.0006; //0.006
+    public static final double kCurveTrajectoryP = 0.0; //0.006
     public static final double kCurveTrajectoryI = 0.0;
     public static final double kCurveTrajectoryD = 0.0;
-    public static final double kCurveTrajectoryV = 1.0/300.0;//1.0/300.0
-    public static final double kCurveP = 0.08;//0.04
+    public static final double kCurveTrajectoryV = 1.0/325.0;//1.0/300.0
+    public static final double kCurveP = 0.07;//0.04
     public static final double kCurveI = 0.0; //0.001
     public static final double kCurveTrajectoryA = 0;
     public static final double kCurveD = 0.0;
@@ -86,17 +86,12 @@ public class Constants {
     public static final double kCurveTrajectoryCruiseVelocity = 10.0*12.0;
 
     //Drive Velocity
-    public static final double kLeftDriveVelocityP = 0.3;
-    public static final double kLeftDriveVelocityI = 0.0003;
-    public static final double kLeftDriveVelocityD = 6.5;
-    public static final double kLeftDriveVelocityF = 0.214;
-    public static final int kLeftDriveVelocityIZone = 0;//72
-    public static final double kRightDriveVelocityP = 0.3;
-    public static final double kRightDriveVelocityI = 0.0005;
-    public static final double kRightDriveVelocityD = 6;
-    public static final double kRightDriveVelocityF = 0.214;
-    public static final int kRightDriveVelocityIZone = 0;//72
-    public static final int kDriveVelocityProfile = 1;
+    public static final double kDriveVelocityP = 0.0;//0.3
+    public static final double kDriveVelocityI = 0.0;//0.0003
+    public static final double kDriveVelocityD = 0.0;//6.5
+    public static final double kDriveVelocityF = 0.0355;//0.214
+    public static final int kDriveVelocityIZone = 0;//72 //0
+    public static final int kDriveVelocityProfile = 1; //1
 
     //Pure Pursuit
     public static final double pathCompletionTolerance = 0.1;

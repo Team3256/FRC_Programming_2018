@@ -83,7 +83,7 @@ public class Robot extends IterativeRobot {
 
         autoModeExecuter = new AutoModeExecuter();
         //AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        AutoModeBase autoMode = new TestPurePursuitAuto();
+        AutoModeBase autoMode = new TestArcTrajectoryAuto();
         autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
         autoModeExecuter.setAutoMode(autoMode);
         autoModeExecuter.start();
@@ -93,7 +93,7 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         disabledLooper.stop();
         enabledLooper.start();
-        //driveTrain.setVelocitySetpoint(0,0);
+        driveTrain.setVelocitySetpoint(0,0);
     }
 
     @Override
@@ -104,9 +104,11 @@ public class Robot extends IterativeRobot {
     public void disabledPeriodic() {
         //System.out.println("Left: " + driveTrain.getLeftDistance());
         //System.out.println("Right: " + driveTrain.getRightDistance());
-        SmartDashboard.putNumber("CurrTime", Timer.getFPGATimestamp());
-        System.out.println("Measure Period:       " + disabledLooper.getMeasuredPeriod());
-        System.out.println("Pose: " + poseEstimator.getPose());
+        //SmartDashboard.putNumber("CurrTime", Timer.getFPGATimestamp());
+        //System.out.println("Measure Period:       " + disabledLooper.getMeasuredPeriod());
+        //System.out.println("Pose: " + poseEstimator.getPose());
+        //System.out.println("Left Encoder: " + driveTrain.inchesToSensorUnits(driveTrain.getLeftDistance()));
+        //System.out.println("Right Encoder:            " + driveTrain.inchesToSensorUnits(driveTrain.getRightDistance()));
     }
 
     @Override
@@ -115,6 +117,9 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
+        System.out.println(driveTrain.getMode());
+        SmartDashboard.putNumber("Velocity",(driveTrain.getLeftVelocityError()+driveTrain.getRightVelocityError())/2);
+
         double throttle = controlsInterface.getThrottle();
         double turn = controlsInterface.getTurn();
         boolean quickTurn = controlsInterface.getQuickTurn();
@@ -125,7 +130,7 @@ public class Robot extends IterativeRobot {
 
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
         driveTrain.setOpenLoop(power);
-        driveTrain.setHighGear(!shiftDown);
+        driveTrain.setHighGear(!shiftDown);/*
         if (controlsInterface.unjamIntake()){
             //intake.setIntake(0.5, 0.5);
             intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);

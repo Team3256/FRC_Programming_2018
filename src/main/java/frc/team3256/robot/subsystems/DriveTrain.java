@@ -21,6 +21,7 @@ import frc.team3256.lib.trajectory.*;
 import frc.team3256.robot.Constants;
 import frc.team3256.robot.PoseEstimator;
 import frc.team3256.robot.auto.actions.WaitAction;
+import frc.team3256.robot.operation.LogitechButtonBoardConfig;
 
 public class DriveTrain extends SubsystemBase implements Loop {
 
@@ -79,21 +80,14 @@ public class DriveTrain extends SubsystemBase implements Loop {
             case OPEN_LOOP:
                 //Fall through, all driver/manipulator input is handled in TeleopPeriodic
                 break;
-            case VELOCITY:
-                /*
-                double left = ControlsInterface.getTankLeft();
-                double right = ControlsInterface.getTankRight();
-                DrivePower power = TeleopDriveController.tankDrive(left, right);
-                //System.out.println("MOTOR OUTPUT" + leftMaster.getOutputVoltage()/leftMaster.getBusVoltage());
-                //System.out.println("MOTOR SPEED " + leftMaster.getSpeed());
-                System.out.println("LEFT ERROR: " + getLeftVelocityError());
-                System.out.println("RIGHT ERROR" + getRightVelocityError());
-                SmartDashboard.putNumber("LEFT ERROR", getLeftVelocityError());
-                SmartDashboard.putNumber("RIGHT ERROR", getRightVelocityError());
-                updateVelocitySetpoint(power.getLeft()*Constants.kMaxVelocityHighGearInPerSec
-                                , power.getRight()*Constants.kMaxVelocityHighGearInPerSec);
-                */
-                break;
+            /*case VELOCITY:
+                double power = new LogitechButtonBoardConfig().getThrottle();
+                if (Math.abs(power) <= 0.2){power = 0;}
+                power*=12.0*12.0;
+                SmartDashboard.putNumber("REQUESTED VEL", power);
+                SmartDashboard.putNumber("ACTUAL VEL", getAverageVelocity());
+                //updateVelocitySetpoint(power, power);
+                break;*/
             case DRIVE_STRAIGHT:
                 updateDriveStraight();
                 break;
@@ -143,17 +137,18 @@ public class DriveTrain extends SubsystemBase implements Loop {
         shifter = new DoubleSolenoid(Constants.kShifterForward, Constants.kShifterReverse);
 
         //load gains
-        leftMaster.config_kP(Constants.kDriveVelocityProfile, Constants.kLeftDriveVelocityP, 0);
-        leftMaster.config_kI(Constants.kDriveVelocityProfile, Constants.kLeftDriveVelocityI, 0);
-        leftMaster.config_kD(Constants.kDriveVelocityProfile, Constants.kLeftDriveVelocityD, 0);
-        leftMaster.config_kF(Constants.kDriveVelocityProfile, Constants.kLeftDriveVelocityF, 0);
-        leftMaster.config_IntegralZone(Constants.kDriveVelocityProfile, Constants.kLeftDriveVelocityIZone, 0);
-        rightMaster.config_kP(Constants.kDriveVelocityProfile, Constants.kRightDriveVelocityP, 0);
-        rightMaster.config_kI(Constants.kDriveVelocityProfile, Constants.kRightDriveVelocityI, 0);
-        rightMaster.config_kD(Constants.kDriveVelocityProfile, Constants.kRightDriveVelocityD, 0);
-        rightMaster.config_kF(Constants.kDriveVelocityProfile, Constants.kRightDriveVelocityF, 0);
-        rightMaster.config_IntegralZone(Constants.kDriveVelocityProfile, Constants.kRightDriveVelocityIZone, 0);
+        leftMaster.config_kP(Constants.kDriveVelocityProfile, Constants.kDriveVelocityP, 0);
+        leftMaster.config_kI(Constants.kDriveVelocityProfile, Constants.kDriveVelocityI, 0);
+        leftMaster.config_kD(Constants.kDriveVelocityProfile, Constants.kDriveVelocityD, 0);
+        leftMaster.config_kF(Constants.kDriveVelocityProfile, Constants.kDriveVelocityF, 0);
+        leftMaster.config_IntegralZone(Constants.kDriveVelocityProfile, Constants.kDriveVelocityIZone, 0);
+        rightMaster.config_kP(Constants.kDriveVelocityProfile, Constants.kDriveVelocityP, 0);
+        rightMaster.config_kI(Constants.kDriveVelocityProfile, Constants.kDriveVelocityI, 0);
+        rightMaster.config_kD(Constants.kDriveVelocityProfile, Constants.kDriveVelocityD, 0);
+        rightMaster.config_kF(Constants.kDriveVelocityProfile, Constants.kDriveVelocityF, 0);
+        rightMaster.config_IntegralZone(Constants.kDriveVelocityProfile, Constants.kDriveVelocityIZone, 0);
 
+        /*
         leftMaster.config_kP(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicP, 0);
         leftMaster.config_kI(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicI, 0);
         leftMaster.config_kD(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicD, 0);
@@ -175,6 +170,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kTurnLowGearMotionMagicAcceleration),
             0);
 
+*/
         leftMaster.setSensorPhase(false);
         rightMaster.setSensorPhase(false);
 
@@ -254,6 +250,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         if (controlMode != DriveControlMode.VELOCITY){
             controlMode = DriveControlMode.VELOCITY;
         }
+        setHighGear(true);
         updateVelocitySetpoint(setpoint_left, setpoint_right);
     }
 
@@ -263,6 +260,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
      * @param right_velocity right velocity setpoint in inches/sec
      */
     public void updateVelocitySetpoint(double left_velocity, double right_velocity){
+        System.out.println("BYEBYEBYEBYEBYEBYE");
         //if we aren't in the velocity control mode, then something is messed up, so set motors to 0 for safety
         if (controlMode != DriveControlMode.VELOCITY){
             System.out.println("ERROR: We should be in the velocity mode");
@@ -270,9 +268,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
             rightMaster.set(ControlMode.PercentOutput, 0);
             return;
         }
+        System.out.println("HIHIHIHIHIHIHIHIHIHIHIHIHIHIHI");
         //otherwise, update the talons with the new velocity setpoint
-        leftMaster.set(ControlMode.Velocity, inchesPerSecToSensorUnits(left_velocity));
-        rightMaster.set(ControlMode.Velocity, inchesPerSecToSensorUnits(right_velocity));
+        leftMaster.set(ControlMode.Velocity, inchesPerSecToSensorUnits(left_velocity), Constants.kDriveVelocityProfile);
+        rightMaster.set(ControlMode.Velocity, inchesPerSecToSensorUnits(right_velocity), Constants.kDriveVelocityProfile);
     }
 
 
@@ -374,7 +373,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
             controlMode = DriveControlMode.DRIVE_ARC;
         }
         setHighGear(true);
-        leftMaster.configNominalOutputForward(2.0/12.0, 0);
+        leftMaster.configNominalOutputForward(.0/12.0, 0);
         rightMaster.configNominalOutputForward(2.0/12.0, 0);
         leftSlave.configNominalOutputForward(2.0/12.0, 0);
         rightSlave.configNominalOutputForward(2.0/12.0, 0);

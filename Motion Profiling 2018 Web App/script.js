@@ -337,24 +337,26 @@ function update() {
         var radius = parseFloat($(row.find('.radius')).val()) || 0;
         waypoints.push(new Waypoint(x, y, vel, radius, desc));
     })
-    modalText = "";
+    modalText = "double currVel = 0.0; <br />";
     modalPurePursuitText = "";
     waypointsString = "";
     for (var point in waypoints) {
+        var angle = 0;
         waypoints[point].coordinates.draw(getGradient(0, 100, waypoints[point].vel));
         if (point > 1) {
             var line1 = new Line(waypoints[point], waypoints[point - 1]);
             var line2 = new Line(waypoints[point - 1], waypoints[point - 2]);
             var arc = new Arc(line1, line2);
             arc.draw();
-            var angle = arc.getTurnAngle();
+            angle = arc.getTurnAngle();
             var radius = arc.radius;
             modalText += "runAction(new FollowArcTrajectoryAction(";
-            modalText += waypoints[point].vel + ", " + waypoints[point].vel + ", ";
+            modalText += "currVel, " + waypoints[point].vel + ", ";
             modalText += (Math.round(radius)) + ", " + (Math.round(angle)) + "));";
             if(waypoints[point-1].desc != ""){
                 modalText += ("   //" + waypoints[point-1].desc);
             }
+            modalText += "<br />currVel = DriveTrain.getInstance().getAverageVelocity();"
             modalText += "<br />";
         }
         var updateCount = true;
@@ -363,8 +365,11 @@ function update() {
             line.draw();
             var distance = line.length;
             modalText += "runAction(new FollowTrajectoryAction(";
-            modalText += waypoints[point-1].vel + ", " + waypoints[point].vel + ", ";
-            modalText += (Math.round(distance)) + "));"
+            modalText += "currVel, " + waypoints[point].vel + ", ";
+            modalText += (Math.round(distance)) + ", " + (Math.round(angle)) + "));"
+            if(point < waypoints.length - 1) {
+                modalText += "<br />currVel = DriveTrain.getInstance().getAverageVelocity();"
+            }
             modalText += "<br />";
             if (!line.checkValid()) {
                 $($('tbody').children('tr')[point - 1]).addClass('redBox');

@@ -9,8 +9,8 @@ import frc.team3256.robot.subsystems.DriveTrain;
 public class CenterLeftSwitchAuto extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
-        double currVel;
-        runAction(new FollowTrajectoryAction(0, 110, 24,0));
+        double currVel = 0.0;
+        runAction(new FollowTrajectoryAction(currVel, 110, 24,0));
         currVel = DriveTrain.getInstance().getAverageVelocity();
         runAction(new FollowArcTrajectoryAction(currVel, 96, 65, 34));
         currVel = DriveTrain.getInstance().getAverageVelocity();

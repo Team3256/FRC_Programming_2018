@@ -337,7 +337,7 @@ function update() {
         var radius = parseFloat($(row.find('.radius')).val()) || 0;
         waypoints.push(new Waypoint(x, y, vel, radius, desc));
     })
-    modalText = "double currVel = 0.0; <br />";
+    modalText = "double currVel = 0.0; \n";
     modalPurePursuitText = "";
     waypointsString = "";
     for (var point in waypoints) {
@@ -356,8 +356,8 @@ function update() {
             if(waypoints[point-1].desc != ""){
                 modalText += ("   //" + waypoints[point-1].desc);
             }
-            modalText += "<br />currVel = DriveTrain.getInstance().getAverageVelocity();"
-            modalText += "<br />";
+            modalText += "\ncurrVel = DriveTrain.getInstance().getAverageVelocity();"
+            modalText += "\n";
         }
         var updateCount = true;
         if (point > 0) {
@@ -368,9 +368,9 @@ function update() {
             modalText += "currVel, " + waypoints[point].vel + ", ";
             modalText += (Math.round(distance)) + ", " + (Math.round(angle)) + "));"
             if(point < waypoints.length - 1) {
-                modalText += "<br />currVel = DriveTrain.getInstance().getAverageVelocity();"
+                modalText += "\ncurrVel = DriveTrain.getInstance().getAverageVelocity();"
             }
-            modalText += "<br />";
+            modalText += "\n";
             if (!line.checkValid()) {
                 $($('tbody').children('tr')[point - 1]).addClass('redBox');
             } else {
@@ -384,14 +384,14 @@ function update() {
         if(waypoints[point].desc != ""){
             modalPurePursuitText += ("   //" + waypoints[point].desc);
         }
-        modalPurePursuitText += "<br />";
+        modalPurePursuitText += "\n";
         waypointsString += countToString;
         if (point < waypoints.length - 1) {
             waypointsString += ", ";
         }
     }
     modalPurePursuitText += "Path path = PathGenerator.generate(Arrays.asList(" + waypointsString;
-    modalPurePursuitText += ")); <br />";
+    modalPurePursuitText += ")); \n";
     modalPurePursuitText += "runAction(new PurePursuitAction(path));";
 }
 
@@ -414,7 +414,7 @@ function chooseStart(position) {
 function displayConfiguration() {
     $('.modal').fadeIn(500);
     $("#modalTitle").html(modalTitle);
-    $("#trajectoryPath").html(modalText);
+    $("#trajectoryPath").val(modalText);
 }
 
 function displayPurePursuitConfiguration() {
@@ -429,6 +429,11 @@ function hideConfiguration() {
 
 function hidePurePursuitConfiguration() {
     $('.purePursuitModal').fadeOut(500);
+}
+
+function copyToClipboard() {
+    $('#trajectoryPath').select();
+    document.execCommand("Copy");
 }
 
 function init() {

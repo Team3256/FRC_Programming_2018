@@ -47,8 +47,10 @@ public class PoseEstimator implements Loop {
 
     @Override
     public void update(double timestamp) {
-        double deltaLeftDist = driveTrain.getLeftDistance() - prevLeftDist;
-        double deltaRightDist = driveTrain.getRightDistance() - prevRightDist;
+        double leftDist = driveTrain.getLeftDistance();
+        double rightDist = driveTrain.getRightDistance();
+        double deltaLeftDist = leftDist - prevLeftDist;
+        double deltaRightDist = rightDist - prevRightDist;
         Rotation deltaHeading = prevPose.getRotation().inverse().rotate(driveTrain.getAngle());
         //Use encoders + gyro to determine our velocity
         velocity = Kinematics.forwardKinematics(deltaLeftDist, deltaRightDist,
@@ -56,9 +58,12 @@ public class PoseEstimator implements Loop {
         //use velocity to determine our pose
         pose = Kinematics.integrateForwardKinematics(prevPose, velocity);
         //update for next iteration
-        prevLeftDist = driveTrain.getLeftDistance();
-        prevRightDist = driveTrain.getRightDistance();
+        prevLeftDist = leftDist;
+        prevRightDist = rightDist;
         prevPose = pose;
+        System.out.println("Pose:  " + pose);
+        System.out.println("Left Distance: " + leftDist);
+        System.out.println("Right Distance: " + rightDist);
     }
 
     @Override

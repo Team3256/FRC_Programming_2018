@@ -1,5 +1,6 @@
 package frc.team3256.robot;
 
+import com.sun.xml.internal.bind.v2.TODO;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -14,6 +15,7 @@ import frc.team3256.robot.auto.AutoModeBase;
 import frc.team3256.robot.auto.AutoModeChooser;
 import frc.team3256.robot.auto.AutoModeExecuter;
 import frc.team3256.robot.auto.modes.*;
+import frc.team3256.robot.gamedata.GameDataAccessor;
 import frc.team3256.robot.operation.ControlsInterface;
 import frc.team3256.robot.operation.DualLogitechConfig;
 import frc.team3256.robot.subsystems.*;
@@ -40,6 +42,8 @@ public class Robot extends IterativeRobot {
 
     boolean prevPivot = false;
     boolean prevFlop = false;
+
+    boolean autoSet = false;
 
     @Override
     public void robotInit() {
@@ -89,8 +93,15 @@ public class Robot extends IterativeRobot {
         enabledLooper.start();
 
         autoModeExecuter = new AutoModeExecuter();
-        //AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        AutoModeBase autoMode = new TestPurePursuitAuto();
+        AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
+
+
+        if(GameDataAccessor.dataFound() && !autoSet){
+            autoMode = GameDataAccessor.getAutoMode();
+            autoSet = true;
+        }
+
+        // AutoModeBase autoMode = new TestPurePursuitAuto();
         autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
         autoModeExecuter.setAutoMode(autoMode);
         autoModeExecuter.start();
@@ -117,7 +128,14 @@ public class Robot extends IterativeRobot {
     }
 
     @Override
-    public void autonomousPeriodic() {
+    public void autonomousPeriodic(){
+        if(GameDataAccessor.dataFound() && !autoSet) {
+            autoModeExecuter.setAutoMode(GameDataAccessor.getAutoMode());
+            autoSet = true;
+        } else {
+            autoModeExecuter.setAutoMode(new DoNothingAuto());
+        }
+        autoModeExecuter.start();
     }
 
     @Override

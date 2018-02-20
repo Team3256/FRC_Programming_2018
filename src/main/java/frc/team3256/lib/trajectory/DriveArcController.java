@@ -75,12 +75,16 @@ public class DriveArcController {
             else {
                 adjustment = pidController.update(-currAngle);
             }
-            System.out.println("Lead Path Error: " + (((radius+(Constants.kRobotTrack/2))*angle) - currPosLead));
-            System.out.println("Follow Path Error: " + (((radius-(Constants.kRobotTrack/2))*angle) - currPosFollow));
-            SmartDashboard.putNumber("LEAD VEL ERROR", leadPoint.getVel() - currVel);
-            System.out.println("Adjustment: " + adjustment);
-            System.out.println("Target: " + targetAngle);
-            System.out.println("Curr Angle: " + currAngle);
+            SmartDashboard.putNumber("Lead Path Error", (((radius+(Constants.kRobotTrack/2))*angle) - currPosLead));
+            SmartDashboard.putNumber("Follow Path Error", (((radius-(Constants.kRobotTrack/2))*angle) - currPosFollow));
+            SmartDashboard.putNumber("Expected Lead Path", ((radius+(Constants.kRobotTrack/2))*angle));
+            SmartDashboard.putNumber("Expected Follow Path", ((radius-(Constants.kRobotTrack/2))*angle));
+            SmartDashboard.putNumber("Lead Position", currPosLead);
+            SmartDashboard.putNumber("Follow Position", currPosFollow);
+            //SmartDashboard.putNumber("LEAD VEL ERROR", leadPoint.getVel() - currVel);
+            SmartDashboard.putNumber("Adjustment", adjustment);
+            //System.out.println("Target: " + targetAngle);
+            SmartDashboard.putNumber("Curr Angle", currAngle);
             leadOutput += adjustment;
             followOutput -= adjustment;
             curr_segment++;

@@ -81,14 +81,14 @@ public class DriveTrain extends SubsystemBase implements Loop {
             case OPEN_LOOP:
                 //Fall through, all driver/manipulator input is handled in TeleopPeriodic
                 break;
-            /*case VELOCITY:
+            case VELOCITY:
                 double power = new LogitechButtonBoardConfig().getThrottle();
                 if (Math.abs(power) <= 0.2){power = 0;}
                 power*=12.0*12.0;
                 SmartDashboard.putNumber("REQUESTED VEL", power);
                 SmartDashboard.putNumber("ACTUAL VEL", getAverageVelocity());
                 //updateVelocitySetpoint(power, power);
-                break;*/
+                break;
             case DRIVE_STRAIGHT:
                 updateDriveStraight();
                 break;

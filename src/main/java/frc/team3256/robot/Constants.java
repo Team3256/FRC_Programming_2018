@@ -25,9 +25,9 @@ public class Constants {
     public static final int kLeftDriveSlave = 5;
     public static final int kRightDriveMaster = 3;
     public static final int kRightDriveSlave = 2;
-    public static final int kElevatorMaster = 0;
+    public static final int kElevatorMaster = 6;
     public static final int kElevatorSlaveOne = 1;
-    public static final int kElevatorSlaveTwo = 6;
+    public static final int kElevatorSlaveTwo = 0;
     public static final int kElevatorSlaveThree = 7;
 
     //DIO

@@ -463,8 +463,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
         return Rotation.fromDegrees(-gyro.getAngle());
     }
 
-
-
     public DriveControlMode getMode(){
         return controlMode;
     }

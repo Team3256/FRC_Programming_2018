@@ -7,14 +7,11 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.InterruptHandlerFunction;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.robot.Constants;
 
-import java.awt.peer.LabelPeer;
-
-public class Elevator extends SubsystemBase{
+public class Elevator extends SubsystemBase implements Loop{
 
     private TalonSRX master, slaveOne, slaveTwo, slaveThree;
     private DigitalInput hallEffect;
@@ -37,10 +34,10 @@ public class Elevator extends SubsystemBase{
         @Override
         public void interruptFired(int interruptAssertedMask, Elevator param) {
             if (!isCalibrated){
-                master.setSelectedSensorPosition((int)Constants.kHomeHeight, 0, 0);
+                master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kHomeHeight), 0, 0);
                 isCalibrated = true;
                 hallEffect.disableInterrupts();
-                System.out.println("TRIGGERING");
+                System.out.println("TRIGGERING\n\n\n\n\n\n");
             }
         }
     };
@@ -73,6 +70,16 @@ public class Elevator extends SubsystemBase{
         master.config_kP(Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownP, 0);
         master.config_kI(Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownI, 0);
         master.config_kD(Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownD, 0);
+
+        master.configPeakOutputForward(3.0/12.0, 0);
+        master.configPeakOutputReverse(-3.0/12.0,0);
+        slaveOne.configPeakOutputForward(3.0/12.0, 0);
+        slaveOne.configPeakOutputReverse(-3.0/12.0,0);
+        slaveTwo.configPeakOutputForward(3.0/12.0, 0);
+        slaveTwo.configPeakOutputReverse(-3.0/12.0,0);
+        slaveThree.configPeakOutputForward(3.0/12.0, 0);
+        slaveThree.configPeakOutputReverse(-3.0/12.0,0);
+
     }
 
     public void setOpenLoop(double power){
@@ -85,7 +92,8 @@ public class Elevator extends SubsystemBase{
     }
 
     public void setTargetPosition(double targetHeight, int slotID){
-        master.set(ControlMode.Position, inchesToSensorUnits(targetHeight), slotID);
+        if (!isCalibrated)return;
+        master.set(ControlMode.Position, heightToSensorUnits(targetHeight), slotID);
     }
 
     public enum SystemState{
@@ -107,7 +115,13 @@ public class Elevator extends SubsystemBase{
         INTAKE_POS,
     }
 
-    public void update(double currPos){
+    @Override
+    public void init(double timestamp) {
+
+    }
+
+    @Override
+    public void update(double timestamp){
         SystemState newState = SystemState.HOLD;
         switch(currentState){
             case HOLD:
@@ -133,6 +147,11 @@ public class Elevator extends SubsystemBase{
             stateChanged = true;
         }
         else stateChanged = false;
+    }
+
+    @Override
+    public void end(double timestamp) {
+
     }
 
     private SystemState handleHold(){
@@ -164,6 +183,14 @@ public class Elevator extends SubsystemBase{
     private SystemState handleManualControlDown() {
         setOpenLoop(Constants.kElevatorDownManualPower);
         return defaultStateTransfer();
+    }
+
+    private double heightToSensorUnits(double inches) {
+        return (inches/Constants.kElevatorPulleyDiameter)*4096*Constants.kElevatorGearRatio;
+    }
+
+    private double sensorUnitsToHeight(double ticks) {
+        return (ticks/4096)*Constants.kElevatorPulleyDiameter/Constants.kElevatorGearRatio;
     }
 
     public void setWantedState(WantedState wantedState){
@@ -237,15 +264,7 @@ public class Elevator extends SubsystemBase{
     }
 
     public double getHeight() {
-        return master.getSelectedSensorPosition(0);
-    }
-
-    public double sensorUnitsToInches(double sensorUnits){
-        return sensorUnits*Constants.kElevatorEncoderScalingFactor;
-    }
-
-    public double inchesToSensorUnits(double inches){
-        return inches/Constants.kElevatorEncoderScalingFactor;
+        return sensorUnitsToHeight(master.getSelectedSensorPosition(0));
     }
 
     @Override

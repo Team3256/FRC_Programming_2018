@@ -135,7 +135,10 @@ public class Constants {
     public static final double kSwitchPreset = 0.0;
     public static final double kIntakePreset = 0.0;
     public static final double kStowPreset = 0.0;
-    public static final double kHomeHeight = 0.0;
+    public static final double kHomeHeight = 8.746;//measured in inches
+    public static final double kElevatorScalingFactor = 0.0;
+    public static final double kElevatorPulleyDiameter = 1.353*Math.PI;
+    public static final double kElevatorGearRatio = 36.0/24.0;
 
     //Game Data:
     public static final int kSwitchIndex = 0;

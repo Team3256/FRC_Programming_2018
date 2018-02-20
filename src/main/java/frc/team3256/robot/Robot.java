@@ -106,7 +106,7 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         disabledLooper.stop();
         enabledLooper.start();
-        //driveTrain.setVelocitySetpoint(0,0);
+        driveTrain.setVelocitySetpoint(0,0);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-        double throttle = controlsInterface.getThrottle();
+        /*double throttle = controlsInterface.getThrottle();
         double turn = controlsInterface.getTurn();
         boolean quickTurn = controlsInterface.getQuickTurn();
         boolean shiftDown = controlsInterface.getLowGear();
@@ -209,8 +209,8 @@ public class Robot extends IterativeRobot {
             carriage.runMotors(0);
         */
 
-        System.out.println("CURRENT STATE: " + intake.getCurrentState());
-        System.out.println("WANTED STATE: " + intake.getWantedState());
+        //System.out.println("CURRENT STATE: " + intake.getCurrentState());
+        //System.out.println("WANTED STATE: " + intake.getWantedState());
     }
 
     @Override

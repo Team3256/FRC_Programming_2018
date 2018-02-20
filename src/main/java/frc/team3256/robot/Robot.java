@@ -142,14 +142,19 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-
+        System.out.println("MODE: " + elevator.getTalonControlMode());
         driveTrain.setOpenLoop(0,0);
         double throttle = controlsInterface.getThrottle();
 
-        if (Math.abs(throttle) < 0.25) throttle = 0;
-
-        elevator.setOpenLoop(throttle);
         System.out.println("HEIGHT:" + elevator.getHeight());
+
+        if (controlsInterface.toggleFlop()){
+            elevator.setTargetPosition(20,Constants.kElevatorFastUpSlot);
+        }
+        else{
+            if (Math.abs(throttle) < 0.05) throttle = 0;
+            elevator.setOpenLoop(throttle);
+        }
 
         /*
         System.out.println(driveTrain.getMode());

@@ -98,17 +98,17 @@ public class Constants {
 
     //Elevator Gains
     public static final int kElevatorHoldSlot = 0;
-    public static final int kElevatorHoldP = 0;
-    public static final int kElevatorHoldI = 0;
-    public static final int kElevatorHoldD = 0;
+    public static final double kElevatorHoldP = 0;
+    public static final double kElevatorHoldI = 0;
+    public static final double kElevatorHoldD = 0;
     public static final int kElevatorFastUpSlot = 1;
-    public static final int kElevatorFastUpP = 0;
-    public static final int kElevatorFastUpI = 0;
-    public static final int kElevatorFastUpD = 0;
+    public static final double kElevatorFastUpP = 0.01;
+    public static final double kElevatorFastUpI = 0;
+    public static final double kElevatorFastUpD = 0;
     public static final int kElevatorFastDownSlot = 2;
-    public static final int kElevatorFastDownP = 0;
-    public static final int kElevatorFastDownI = 0;
-    public static final int kElevatorFastDownD = 0;
+    public static final double kElevatorFastDownP = 0;
+    public static final double kElevatorFastDownI = 0;
+    public static final double kElevatorFastDownD = 0;
 
     //Presets:
     public static final double kIntakeSharpIRMaxVoltage = 5.0;
@@ -139,6 +139,8 @@ public class Constants {
     public static final double kElevatorScalingFactor = 0.0;
     public static final double kElevatorPulleyDiameter = 1.353*Math.PI;
     public static final double kElevatorGearRatio = 36.0/24.0;
+    public static final double kElevatorMaxHeight = 30.0;
+    public static final double kElevatorMinHeight = 8.25;
 
     //Game Data:
     public static final int kSwitchIndex = 0;

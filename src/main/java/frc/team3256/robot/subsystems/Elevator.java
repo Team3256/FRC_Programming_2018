@@ -3,6 +3,7 @@ package frc.team3256.robot.subsystems;
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -36,8 +37,10 @@ public class Elevator extends SubsystemBase implements Loop{
             if (!isCalibrated){
                 master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kHomeHeight), 0, 0);
                 isCalibrated = true;
-                hallEffect.disableInterrupts();
+                master.configForwardSoftLimitEnable(true, 0);
+                master.configReverseSoftLimitEnable(true, 0);
                 System.out.println("TRIGGERING\n\n\n\n\n\n");
+                hallEffect.disableInterrupts();
             }
         }
     };
@@ -71,14 +74,28 @@ public class Elevator extends SubsystemBase implements Loop{
         master.config_kI(Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownI, 0);
         master.config_kD(Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownD, 0);
 
-        master.configPeakOutputForward(3.0/12.0, 0);
-        master.configPeakOutputReverse(-3.0/12.0,0);
-        slaveOne.configPeakOutputForward(3.0/12.0, 0);
-        slaveOne.configPeakOutputReverse(-3.0/12.0,0);
-        slaveTwo.configPeakOutputForward(3.0/12.0, 0);
-        slaveTwo.configPeakOutputReverse(-3.0/12.0,0);
-        slaveThree.configPeakOutputForward(3.0/12.0, 0);
-        slaveThree.configPeakOutputReverse(-3.0/12.0,0);
+        //voltage limiting
+
+        master.configPeakOutputForward(4.0/12.0, 0);
+        master.configPeakOutputReverse(-4.0/12.0,0);
+        slaveOne.configPeakOutputForward(4.0/12.0, 0);
+        slaveOne.configPeakOutputReverse(-4.0/12.0,0);
+        slaveTwo.configPeakOutputForward(4.0/12.0, 0);
+        slaveTwo.configPeakOutputReverse(-4.0/12.0,0);
+        slaveThree.configPeakOutputForward(4.0/12.0, 0);
+        slaveThree.configPeakOutputReverse(-4.0/12.0,0);
+
+        //soft limits
+
+        master.configForwardSoftLimitThreshold((int)(heightToSensorUnits(Constants.kElevatorMaxHeight)), 0);
+        master.configReverseSoftLimitThreshold((int)(heightToSensorUnits(Constants.kElevatorMinHeight)), 0);
+        master.configForwardSoftLimitEnable(false, 0);
+        master.configReverseSoftLimitEnable(false,0);
+
+        master.setNeutralMode(NeutralMode.Coast);
+        slaveOne.setNeutralMode(NeutralMode.Coast);
+        slaveTwo.setNeutralMode(NeutralMode.Coast);
+        slaveThree.setNeutralMode(NeutralMode.Coast);
 
     }
 
@@ -93,7 +110,8 @@ public class Elevator extends SubsystemBase implements Loop{
 
     public void setTargetPosition(double targetHeight, int slotID){
         if (!isCalibrated)return;
-        master.set(ControlMode.Position, heightToSensorUnits(targetHeight), slotID);
+        System.out.println("OUTPUT VOLTAGE: " + master.getMotorOutputVoltage());
+        master.set(ControlMode.Position, (int)heightToSensorUnits(targetHeight), slotID);
     }
 
     public enum SystemState{
@@ -186,11 +204,11 @@ public class Elevator extends SubsystemBase implements Loop{
     }
 
     private double heightToSensorUnits(double inches) {
-        return (inches/Constants.kElevatorPulleyDiameter)*4096*Constants.kElevatorGearRatio;
+        return (inches/Constants.kElevatorPulleyDiameter)*4096.0*Constants.kElevatorGearRatio;
     }
 
     private double sensorUnitsToHeight(double ticks) {
-        return (ticks/4096)*Constants.kElevatorPulleyDiameter/Constants.kElevatorGearRatio;
+        return (ticks/4096.0)*Constants.kElevatorPulleyDiameter/Constants.kElevatorGearRatio;
     }
 
     public void setWantedState(WantedState wantedState){
@@ -291,5 +309,13 @@ public class Elevator extends SubsystemBase implements Loop{
     @Override
     public void zeroSensors() {
 
+    }
+
+    public ControlMode getTalonControlMode(){
+        return master.getControlMode();
+    }
+
+    public double getClosedLoopError(){
+        return master.getClosedLoopError(0);
     }
 }

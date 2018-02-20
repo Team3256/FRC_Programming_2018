@@ -48,7 +48,7 @@ public class DualLogitechConfig implements ControlsInterface{
 
     @Override
     public boolean toggleFlop(){
-        return driver.getRawButton(1);
+        return manipulator.getRawButton(1);
     }
 
     @Override

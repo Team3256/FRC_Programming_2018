@@ -111,7 +111,8 @@ public class Elevator extends SubsystemBase implements Loop{
     public void setTargetPosition(double targetHeight, int slotID){
         if (!isCalibrated)return;
         System.out.println("OUTPUT VOLTAGE: " + master.getMotorOutputVoltage());
-        master.set(ControlMode.Position, (int)heightToSensorUnits(targetHeight), slotID);
+        master.set(ControlMode.Position, (int)heightToSensorUnits(targetHeight), 0);
+        master.selectProfileSlot(Constants.kElevatorFastUpSlot, 0);
     }
 
     public enum SystemState{

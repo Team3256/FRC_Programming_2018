@@ -62,7 +62,7 @@ public class Robot extends IterativeRobot {
         disabledLooper.addLoops(gyroCalibrator, poseEstimator);
         //enabled looper -> control loop for subsystems
         enabledLooper = new Looper(Constants.kControlLoopPeriod);
-        enabledLooper.addLoops(driveTrain, poseEstimator);
+        enabledLooper.addLoops(driveTrain, poseEstimator, intake);
 
         subsystemManager = new SubsystemManager();
         subsystemManager.addSubsystems(driveTrain, intake);
@@ -140,10 +140,10 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-        /*
-        System.out.println("MODE: " + elevator.getTalonControlMode());
+
+        //System.out.println("MODE: " + elevator.getTalonControlMode());
         driveTrain.setOpenLoop(0,0);
-        double throttle = controlsInterface.getThrottle();
+        /*double throttle = controlsInterface.getThrottle();
 
         System.out.println("HEIGHT:" + elevator.getHeight());
 
@@ -159,42 +159,41 @@ public class Robot extends IterativeRobot {
         System.out.println(driveTrain.getMode());
         SmartDashboard.putNumber("Velocity",(driveTrain.getLeftVelocityError()+driveTrain.getRightVelocityError())/2);
 
-*/
 
         double throttle = controlsInterface.getThrottle();
         double turn = controlsInterface.getTurn();
         boolean quickTurn = controlsInterface.getQuickTurn();
-        boolean shiftDown = controlsInterface.getLowGear();
+        boolean shiftDown = controlsInterface.getLowGear();*/
 
 
         boolean flop = controlsInterface.toggleFlop();
         boolean pivot = controlsInterface.togglePivot();
 
-                    DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
+        /*DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
             driveTrain.setOpenLoop(power);
-            driveTrain.setHighGear(!shiftDown);
-            if (controlsInterface.unjamIntake()){
-                intake.setIntake(0.5, 0.5);
-            //intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
+            driveTrain.setHighGear(!shiftDown);*/
+        if (controlsInterface.unjamIntake()){
+                //intake.setIntake(0.5, 0.5);
+                intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
         }
         else if (controlsInterface.getIntake()){
-            //intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
-            intake.setIntake(-Constants.kLeftIntakePower, -Constants.kRightIntakePower);
+            intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
+            //intake.setIntake(-Constants.kLeftIntakePower, -Constants.kRightIntakePower);
         }
         else if (controlsInterface.getExhaust()){
-            //intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
-            intake.setIntake(0.5, 0.5);
+            intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
+            //intake.setIntake(0.5, 0.5);
         }
         else if(flop && !prevFlop){
             counter++;
-            //intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
+            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
         }
         else if(pivot && !prevPivot){
-            //intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
+            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
         }
         else{
-            //intake.setWantedState(Intake.WantedState.IDLE);
-            intake.setIntake(0, 0);
+            intake.setWantedState(Intake.WantedState.IDLE);
+            //intake.setIntake(0, 0);
         }
 
         prevFlop = flop;
@@ -235,6 +234,8 @@ public class Robot extends IterativeRobot {
             carriage.runMotors(0);
         */
 
+        System.out.println("CURRENT STATE: " + intake.getCurrentState());
+        System.out.println("WANTED STATE: " + intake.getWantedState());
     }
 
     @Override

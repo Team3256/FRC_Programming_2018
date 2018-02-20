@@ -49,7 +49,7 @@ public class LogitechButtonBoardConfig implements ControlsInterface{
 
     @Override
     public boolean toggleFlop() {
-        return false;
+        return manipulator.getRawButton(1);
     }
 
     @Override

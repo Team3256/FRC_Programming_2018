@@ -126,6 +126,7 @@ public class Robot extends IterativeRobot {
         //System.out.println("Pose: " + poseEstimator.getPose());
         //System.out.println("Left Encoder: " + driveTrain.inchesToSensorUnits(driveTrain.getLeftDistance()));
         //System.out.println("Right Encoder:            " + driveTrain.inchesToSensorUnits(driveTrain.getRightDistance()));
+        System.out.println(driveTrain.getAverageDistance());
     }
 
     @Override

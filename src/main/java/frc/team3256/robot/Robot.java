@@ -122,6 +122,8 @@ public class Robot extends IterativeRobot {
         //System.out.println("Pose: " + poseEstimator.getPose());
         //System.out.println("Left Encoder: " + driveTrain.inchesToSensorUnits(driveTrain.getLeftDistance()));
         //System.out.println("Right Encoder:            " + driveTrain.inchesToSensorUnits(driveTrain.getRightDistance()));
+        System.out.println("Voltage: " + intake.getVoltage());
+        System.out.println("Is Triggered: " + intake.hasCube());
 
     }
 
@@ -149,6 +151,7 @@ public class Robot extends IterativeRobot {
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
             driveTrain.setOpenLoop(power);
             driveTrain.setHighGear(!shiftDown);
+
 
 
 
@@ -209,8 +212,8 @@ public class Robot extends IterativeRobot {
             carriage.runMotors(0);
         */
 
-        System.out.println("CURRENT STATE: " + intake.getCurrentState());
-        System.out.println("WANTED STATE: " + intake.getWantedState());
+        //System.out.println("CURRENT STATE: " + intake.getCurrentState());
+        //System.out.println("WANTED STATE: " + intake.getWantedState());
     }
 
     @Override

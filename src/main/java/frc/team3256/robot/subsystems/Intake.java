@@ -1,5 +1,6 @@
 package frc.team3256.robot.subsystems;
 
+import com.sun.corba.se.impl.orbutil.closure.Constant;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
 import frc.team3256.lib.Loop;
@@ -59,6 +60,9 @@ public class Intake extends SubsystemBase implements Loop {
         flopperActuator = new DoubleSolenoid(Constants.kIntakeFlopForward, Constants.kIntakeFlopReverse);
         pivotActuator = new DoubleSolenoid(Constants.kIntakePivotForward, Constants.kIntakePivotReverse);
         cubeDetector = new SharpIR(Constants.kIntakeSharpIR, Constants.kIntakeSharpIRMinVoltage, Constants.kIntakeSharpIRMaxVoltage);
+
+        leftIntake.setInverted(true);
+        rightIntake.setInverted(true);
     }
 
     public static Intake getInstance(){
@@ -139,7 +143,7 @@ public class Intake extends SubsystemBase implements Loop {
             return SystemState.DEPLOYED_CLOSED;
         }
         else{
-            setIntake(-kLeftIntakePower, -kRightIntakePower);
+            setIntake(kLeftIntakePower, kRightIntakePower);
         }
         return defaultStateTransfer();
     }
@@ -228,8 +232,7 @@ public class Intake extends SubsystemBase implements Loop {
     }
 
     public boolean hasCube(){
-        return false;
-        //return cubeDetector.isTriggered();
+        return cubeDetector.isTriggered();
     }
 
     //default WantedState -> SystemState
@@ -316,6 +319,18 @@ public class Intake extends SubsystemBase implements Loop {
 
     public WantedState getWantedState(){
         return wantedState;
+    }
+
+    public SharpIR getCubeDetector() {
+        return cubeDetector;
+    }
+
+    public double getDistance(){
+        return cubeDetector.getDistance();
+    }
+
+    public double getVoltage(){
+        return cubeDetector.getAvgVoltage();
     }
 
     @Override

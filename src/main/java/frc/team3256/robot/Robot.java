@@ -58,8 +58,8 @@ public class Robot extends IterativeRobot {
         gyroCalibrator = new ADXRS453_Calibrator(driveTrain.getGyro());
 
         //disabled looper -> recalibrate gyro
-        disabledLooper = new Looper(Constants.kControlLoopPeriod);
-        disabledLooper.addLoops(/*gyroCalibrator*/ poseEstimator);
+        disabledLooper = new Looper(Constants.kSlowLoopPeriod);
+        disabledLooper.addLoops(gyroCalibrator, poseEstimator);
         //enabled looper -> control loop for subsystems
         enabledLooper = new Looper(Constants.kControlLoopPeriod);
         enabledLooper.addLoops(driveTrain, poseEstimator);
@@ -71,8 +71,7 @@ public class Robot extends IterativeRobot {
         controlsInterface = new DualLogitechConfig();
 
         autoModeChooser = new AutoModeChooser();
-        autoModeChooser.addAutoModes(new TestTurnInPlaceAuto(), new TestTrajectoryAuto());
-        autoModeChooser.addAutoModes(new DoNothingAuto());
+        autoModeChooser.addAutoModes(new DoNothingAuto(), new TestTurnInPlaceAuto(), new TestTrajectoryAuto());
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
@@ -80,7 +79,6 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledInit() {
-        driveTrain.resetEncoders();
         enabledLooper.stop();
         disabledLooper.start();
     }

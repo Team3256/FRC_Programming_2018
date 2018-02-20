@@ -9,7 +9,6 @@ public class Constants {
     public static final int kCarriageRollerLeft = 7;
     public static final int kCarriageRollerRight = 8;
 
-
     //Solenoids
     public static final int kIntakePivotForward = 5;
     public static final int kIntakePivotReverse = 2;
@@ -32,8 +31,6 @@ public class Constants {
 
     //DIO
     public static final int kHallEffectPort = 0;
-    public static final int kTopBumperPort = 1;
-    public static final int kBottomBumperPort = 2;
 
     //Analog Inputs
     public static final int kIntakeSharpIR = 0;
@@ -43,8 +40,11 @@ public class Constants {
     public static final double kRobotTrack = 25.146; //25.146
     public static final double kScrubFactor = 1.0;
     public static final double kWheelDiameter = 6.045;
-    public static final double kDriveEncoderScalingFactor = 3.0*60.0/24.0;
-    public static final double kElevatorEncoderScalingFactor = 1.0;
+    public static final double kDriveEncoderScalingFactor = 3.0*60.0/24.0; //3:1 GR on Encoder Stage, plus 60:24 GR on third stage
+    public static final double kElevatorPulleyDiameter = 1.353*Math.PI;
+    public static final double kElevatorGearRatio = 36.0/24.0;
+    public static final double kElevatorMaxHeight = 45.0;
+    public static final double kElevatorMinHeight = 8.25;
 
     //Control Loop Parameters:
     //Looping period
@@ -136,11 +136,7 @@ public class Constants {
     public static final double kIntakePreset = 0.0;
     public static final double kStowPreset = 0.0;
     public static final double kHomeHeight = 8.746;//measured in inches
-    public static final double kElevatorScalingFactor = 0.0;
-    public static final double kElevatorPulleyDiameter = 1.353*Math.PI;
-    public static final double kElevatorGearRatio = 36.0/24.0;
-    public static final double kElevatorMaxHeight = 45.0;
-    public static final double kElevatorMinHeight = 8.25;
+
 
     //Game Data:
     public static final int kSwitchIndex = 0;

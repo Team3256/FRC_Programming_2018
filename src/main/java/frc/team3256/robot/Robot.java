@@ -96,7 +96,7 @@ public class Robot extends IterativeRobot {
 
         // AutoModeBase autoMode = new TestPurePursuitAuto();
         //AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        AutoModeBase autoModeTest = new TestArcTrajectoryAuto();
+        AutoModeBase autoModeTest = new TestPurePursuitAuto();
         autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
         autoModeExecuter.setAutoMode(autoModeTest);
         autoModeExecuter.start();
@@ -127,6 +127,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void autonomousPeriodic(){
+        /*
         if(GameDataAccessor.dataFound() && !autoSet) {
             autoModeExecuter.setAutoMode(GameDataAccessor.getAutoMode());
             autoSet = true;
@@ -134,6 +135,8 @@ public class Robot extends IterativeRobot {
             autoModeExecuter.setAutoMode(new DoNothingAuto());
         }
         autoModeExecuter.start();
+        */
+        System.out.println("DRIVE MODE: " + driveTrain.getMode());
     }
 
     @Override

@@ -20,7 +20,6 @@ import frc.team3256.lib.path.PurePursuitTracker;
 import frc.team3256.lib.trajectory.*;
 import frc.team3256.robot.Constants;
 import frc.team3256.robot.PoseEstimator;
-import frc.team3256.robot.auto.actions.WaitAction;
 import frc.team3256.robot.operation.LogitechButtonBoardConfig;
 
 public class DriveTrain extends SubsystemBase implements Loop {
@@ -178,7 +177,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         driveArcController.setLoopTime(Constants.kControlLoopPeriod);
 
         purePursuitTracker.setLoopTime(Constants.kControlLoopPeriod);
-        purePursuitTracker.setPathCompletionTolerance(Constants.pathCompletionTolerance);
+        purePursuitTracker.setTolerances(Constants.kPathCompletionTolerance, Constants.kErrorFromPathTolerance);
     }
 
     public double getLeftDistance() {
@@ -326,6 +325,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
     private void updatePurePursuit() {
         if (controlMode != DriveControlMode.PURE_PURSUIT) {
+            System.out.println("ERROR, WE ARE NOT IN PURE PURSUIT MODE");
             return;
         }
         if (purePursuitTracker.isFinished()) {
@@ -333,8 +333,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
             return;
         }
         Kinematics.DriveVelocity output = Kinematics.inverseKinematics(purePursuitTracker.update(PoseEstimator.getInstance().getPose().getTranslation()), Constants.kRobotTrack, Constants.kScrubFactor);
-        leftMaster.set(ControlMode.Velocity, output.left);
-        rightMaster.set(ControlMode.Velocity, output.right);
+        System.out.println(output.left + "\t" + output.right);
+        leftMaster.set(ControlMode.Velocity, inchesPerSecToSensorUnits(output.left));
+        rightMaster.set(ControlMode.Velocity, inchesPerSecToSensorUnits(output.right));
     }
 
     public void setHighGear(boolean highGear) {
@@ -389,6 +390,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
     public void configurePurePursuit(Path path) {
         if (controlMode != DriveControlMode.PURE_PURSUIT){
+            leftMaster.selectProfileSlot(Constants.kDriveVelocityProfile, 0);
+            rightMaster.selectProfileSlot(Constants.kDriveVelocityProfile, 0);
             controlMode = DriveControlMode.PURE_PURSUIT;
         }
         purePursuitTracker.setPath(path);

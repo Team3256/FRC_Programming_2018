@@ -42,10 +42,6 @@ public class Arc extends Segment{
         this(startX, startY, endX, endY, centerX, centerY, 0.0, 0.0, 0.0);
     }
 
-    @Override
-    public void setLoopTime(double dt) {
-        this.dt = dt;
-    }
 
     @Override
     public Type getType() {

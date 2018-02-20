@@ -4,6 +4,7 @@ import frc.team3256.lib.math.RigidTransform;
 import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Translation;
 import frc.team3256.lib.math.Twist;
+import frc.team3256.lib.trajectory.Trajectory;
 
 import java.util.Optional;
 
@@ -12,7 +13,7 @@ public class PurePursuitTracker {
     private boolean reachedEnd = false;
     private Path path;
     private final double kEpsilon = 1E-9;
-    private double pathCompletionTolerance;
+    private double pathCompletionTolerance, errorFromPathTolerance;
     private Twist prevOutput = new Twist(0,0,0);
     private double dt;
 
@@ -23,8 +24,9 @@ public class PurePursuitTracker {
         this.path = path;
     }
 
-    public void setPathCompletionTolerance(double pathCompletionTolerance) {
+    public void setTolerances(double pathCompletionTolerance, double errorFromPathTolerance) {
         this.pathCompletionTolerance = pathCompletionTolerance;
+        this.errorFromPathTolerance = errorFromPathTolerance;
     }
 
     public void setLoopTime(double dt) {
@@ -39,8 +41,12 @@ public class PurePursuitTracker {
         }
     }
 
-    public Optional<Arc> getArcToSegment(Segment s, Translation lookaheadPoint, Translation robotCoordinates) {
-        int direction = getDirection(lookaheadPoint, robotCoordinates);
+    public Optional<Arc> getArcToSegment(Translation robotCoordinates, Path.PathUpdate p) {
+        int direction = getDirection(p.lookaheadPoint, robotCoordinates);
+
+        Segment s = p.currSegment;
+        Translation lookaheadPoint = p.lookaheadPoint;
+
         int lookaheadSlopeDirection = (int) Math.signum(s.getDirection(lookaheadPoint).direction().radians());
 
         Translation lookaheadPointToCenter = s.getDirection(lookaheadPoint).rotate(Rotation.fromDegrees(90.0 * direction * lookaheadSlopeDirection));
@@ -57,7 +63,7 @@ public class PurePursuitTracker {
         if (center.norm() == Double.POSITIVE_INFINITY) {
             center = robotCoordinates.translate(robotToCenter);
         }
-        if (robotToCenter.norm() < kEpsilon) { //allowed error from path
+        if (robotToCenter.norm() < kEpsilon || p.distanceToPath < errorFromPathTolerance) {
             //Cross track error is 0, so no arc (just continue driving straight)
             return Optional.empty();
         }
@@ -78,20 +84,31 @@ public class PurePursuitTracker {
         }
         Segment s = pathUpdate.currSegment;
         //Calculate arc to get us back on path
-        Optional<Arc> optionalArc = getArcToSegment(s, pathUpdate.lookaheadPoint, robotCoordinates);
+        Optional<Arc> optionalArc = getArcToSegment(robotCoordinates, pathUpdate);
         //calculate linear and angular velocities
         double vel, angularVel;
         vel = s.checkVelocity(pathUpdate.closestPoint, prevOutput.dx());
         Twist rv;
+
         //If we have an arc
+        Arc arc;
         if (optionalArc.isPresent()){
-            Arc arc = optionalArc.get();
+            arc = optionalArc.get();
             double direction = Math.signum(arc.getDirection(pathUpdate.lookaheadPoint).direction().radians());
-            angularVel = vel /arc.getRadius();
+            angularVel = vel/arc.getRadius();
+            rv = new Twist(vel, 0, angularVel*direction);
+        }
+        else if(s.type == Segment.Type.ARC) {
+            arc = (Arc) s;
+            double direction = Math.signum(arc.getDirection(pathUpdate.lookaheadPoint).direction().radians());
+            angularVel = vel/arc.getRadius();
             rv = new Twist(vel, 0, angularVel*direction);
         }
         //Otherwise, we are on track, so only return a linear velocity
-        else rv = new Twist(vel, 0, 0);
+        else {
+            rv = new Twist(vel, 0, 0);
+        }
+
         prevOutput = rv;
         return rv;
     }

@@ -22,11 +22,6 @@ public class Line extends Segment{
         this(startX, startY, endX, endY, 0.0, 0.0, 0.0);
     }
 
-    @Override
-    public void setLoopTime(double dt) {
-        this.dt = dt;
-    }
-
 
     /**
      * @return type of the segment, in this case a line

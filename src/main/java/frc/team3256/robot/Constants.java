@@ -94,7 +94,9 @@ public class Constants {
     public static final int kDriveVelocityProfile = 1; //1
 
     //Pure Pursuit
-    public static final double pathCompletionTolerance = 0.1;
+    public static final double kPathCompletionTolerance = 0.01;
+    public static final double kErrorFromPathTolerance = 0.01;
+    public static final double kLookaheadDistance = 5.0;
 
     //Elevator Gains
     public static final int kElevatorHoldSlot = 0;

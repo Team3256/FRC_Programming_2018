@@ -1,6 +1,8 @@
 package frc.team3256.lib.path;
 
 import frc.team3256.lib.math.Translation;
+import frc.team3256.robot.Constants;
+
 import java.util.ArrayList;
 
 public class Path {
@@ -28,6 +30,8 @@ public class Path {
         Segment currSegment;
         //closest point
         Translation closestPoint;
+        //lookahead distance
+        double lookaheadDistance = Constants.kLookaheadDistance;
     }
 
     public int getLength() {
@@ -70,7 +74,7 @@ public class Path {
         */
 
         //determine lookahead point
-        rv.lookaheadPoint = currSegment.getLookAheadPoint(rv.distanceToPath, closestPoint);
+        rv.lookaheadPoint = currSegment.getLookAheadPoint(rv.lookaheadDistance + rv.distanceToPath, closestPoint);
 
         for (Segment s : segments) {
             rv.remainingDistance += s.getLength();

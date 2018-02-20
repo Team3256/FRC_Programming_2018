@@ -36,6 +36,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private DriveArcController driveArcController = new DriveArcController();
     private PurePursuitTracker purePursuitTracker = new PurePursuitTracker();
 
+    public static TalonUtil talonUtil = new TalonUtil();
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
     }
@@ -137,29 +138,17 @@ public class DriveTrain extends SubsystemBase implements Loop {
         shifter = new DoubleSolenoid(Constants.kShifterForward, Constants.kShifterReverse);
 
         //load gains
-        leftMaster.config_kP(Constants.kDriveVelocityProfile, Constants.kDriveVelocityP, 0);
-        leftMaster.config_kI(Constants.kDriveVelocityProfile, Constants.kDriveVelocityI, 0);
-        leftMaster.config_kD(Constants.kDriveVelocityProfile, Constants.kDriveVelocityD, 0);
-        leftMaster.config_kF(Constants.kDriveVelocityProfile, Constants.kDriveVelocityF, 0);
-        leftMaster.config_IntegralZone(Constants.kDriveVelocityProfile, Constants.kDriveVelocityIZone, 0);
-        rightMaster.config_kP(Constants.kDriveVelocityProfile, Constants.kDriveVelocityP, 0);
-        rightMaster.config_kI(Constants.kDriveVelocityProfile, Constants.kDriveVelocityI, 0);
-        rightMaster.config_kD(Constants.kDriveVelocityProfile, Constants.kDriveVelocityD, 0);
-        rightMaster.config_kF(Constants.kDriveVelocityProfile, Constants.kDriveVelocityF, 0);
-        rightMaster.config_IntegralZone(Constants.kDriveVelocityProfile, Constants.kDriveVelocityIZone, 0);
+        talonUtil.setPIDGains(leftMaster, Constants.kDriveVelocityProfile, Constants.kDriveVelocityP,
+                Constants.kDriveVelocityI, Constants.kDriveVelocityD, Constants.kDriveVelocityF);
+        talonUtil.setPIDGains(rightMaster, Constants.kDriveVelocityProfile, Constants.kDriveVelocityP,
+                Constants.kDriveVelocityI, Constants.kDriveVelocityD, Constants.kDriveVelocityF);
+
 
         /*
-        leftMaster.config_kP(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicP, 0);
-        leftMaster.config_kI(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicI, 0);
-        leftMaster.config_kD(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicD, 0);
-        leftMaster.config_kF(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicF, 0);
-        leftMaster.config_IntegralZone(Constants.kTurnMotionMagicProfile, (int)(Constants.kTurnLowGearIZone), 0);
-        rightMaster.config_kP(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicP, 0);
-        rightMaster.config_kI(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicI, 0);
-        rightMaster.config_kD(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicD, 0);
-        rightMaster.config_kF(Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicF, 0);
-        rightMaster.config_IntegralZone(Constants.kTurnMotionMagicProfile, (int)(Constants.kTurnLowGearIZone), 0);
-
+        talonUtil.setPIDGains(leftMaster, Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicP,
+                Constants.kTurnLowGearMotionMagicI, Constants.kTurnLowGearMotionMagicD, Constants.kTurnLowGearMotionMagicF);
+        talonUtil.setPIDGains(rightMaster, Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicP,
+                Constants.kTurnLowGearMotionMagicI, Constants.kTurnLowGearMotionMagicD, Constants.kTurnLowGearMotionMagicF);
 
         leftMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kTurnLowGearMotionMagicCruiseVelocity),
             0);

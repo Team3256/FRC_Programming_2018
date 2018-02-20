@@ -87,9 +87,9 @@ public class Intake extends SubsystemBase implements Loop {
         else wantedStateChanged = false;
 
         if (!wantedStateChanged && wantsToToggle) return;
-        SystemState newState;
-        switch(currentState) {
-            case INTAKING:
+            SystemState newState;
+            switch(currentState) {
+                case INTAKING:
                 newState = handleIntake();
                 break;
             case EXHAUSTING:

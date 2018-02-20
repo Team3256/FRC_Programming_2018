@@ -36,8 +36,6 @@ public class Robot extends IterativeRobot {
 
     Compressor compressor;
 
-    double counter = 0;
-
     boolean prevPivot = false;
     boolean prevFlop = false;
 
@@ -140,52 +138,30 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-
-        //System.out.println("MODE: " + elevator.getTalonControlMode());
-        driveTrain.setOpenLoop(0,0);
-        /*double throttle = controlsInterface.getThrottle();
-
-        System.out.println("HEIGHT:" + elevator.getHeight());
-
-        if (controlsInterface.toggleFlop()){
-            elevator.setTargetPosition(30,Constants.kElevatorFastUpSlot);
-        }
-        else{
-            if (Math.abs(throttle) < 0.05) throttle = 0;
-            elevator.setOpenLoop(throttle);
-        }
-
-
-        System.out.println(driveTrain.getMode());
-        SmartDashboard.putNumber("Velocity",(driveTrain.getLeftVelocityError()+driveTrain.getRightVelocityError())/2);
-
-
         double throttle = controlsInterface.getThrottle();
         double turn = controlsInterface.getTurn();
         boolean quickTurn = controlsInterface.getQuickTurn();
-        boolean shiftDown = controlsInterface.getLowGear();*/
-
+        boolean shiftDown = controlsInterface.getLowGear();
 
         boolean flop = controlsInterface.toggleFlop();
         boolean pivot = controlsInterface.togglePivot();
 
-        /*DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
+        DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
             driveTrain.setOpenLoop(power);
-            driveTrain.setHighGear(!shiftDown);*/
+            driveTrain.setHighGear(!shiftDown);
+
+
+
         if (controlsInterface.unjamIntake()){
-                //intake.setIntake(0.5, 0.5);
                 intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
         }
         else if (controlsInterface.getIntake()){
             intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
-            //intake.setIntake(-Constants.kLeftIntakePower, -Constants.kRightIntakePower);
         }
         else if (controlsInterface.getExhaust()){
             intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
-            //intake.setIntake(0.5, 0.5);
         }
         else if(flop && !prevFlop){
-            counter++;
             intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
         }
         else if(pivot && !prevPivot){
@@ -193,7 +169,6 @@ public class Robot extends IterativeRobot {
         }
         else{
             intake.setWantedState(Intake.WantedState.IDLE);
-            //intake.setIntake(0, 0);
         }
 
         prevFlop = flop;
@@ -207,7 +182,7 @@ public class Robot extends IterativeRobot {
             intake.setIntake(-0.5, -0.5);
         }
         else
-            intake.setIntake(0,0);
+            intake.setIntake(0,0);*/
         /*
         if (controlsInterface.manualSqueezeCarriage()){
             carriage.squeeze();

@@ -71,7 +71,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         leftMaster.setSelectedSensorPosition(0, 0,0);
         rightMaster.setSelectedSensorPosition(0, 0,0);
         gyro.reset();
-        //setHighGear(true);
+        setHighGear(true);
     }
 
     @Override

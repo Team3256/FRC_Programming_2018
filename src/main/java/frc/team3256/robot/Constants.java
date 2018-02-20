@@ -16,8 +16,8 @@ public class Constants {
     public static final int kIntakeFlopReverse = 6;
     public static final int kCarriageSqueezeForward = 4;
     public static final int kCarriageSqueezeReverse = 3;
-    public static final int kShifterForward = 7;
-    public static final int kShifterReverse = 0;
+    public static final int kShifterForward = 0;
+    public static final int kShifterReverse = 7;
 
     //CAN
     public static final int kLeftDriveMaster = 4;

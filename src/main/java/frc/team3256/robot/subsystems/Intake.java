@@ -215,11 +215,11 @@ public class Intake extends SubsystemBase implements Loop {
     }
 
     private void deployIntake(){
-       pivotActuator.set(DoubleSolenoid.Value.kForward);
+       pivotActuator.set(DoubleSolenoid.Value.kReverse);
     }
 
     private void stowIntake(){
-       pivotActuator.set(DoubleSolenoid.Value.kReverse);
+       pivotActuator.set(DoubleSolenoid.Value.kForward);
     }
 
     public void setIntake(double left, double right){

@@ -12,10 +12,10 @@ public class Constants {
     //Solenoids
     public static final int kIntakePivotForward = 5;
     public static final int kIntakePivotReverse = 2;
-    public static final int kIntakeFlopForward = 1;
-    public static final int kIntakeFlopReverse = 6;
-    public static final int kCarriageSqueezeForward = 4;
-    public static final int kCarriageSqueezeReverse = 3;
+    public static final int kIntakeFlopForward = 6;
+    public static final int kIntakeFlopReverse = 1;
+    public static final int kCarriageSqueezeForward = 3;
+    public static final int kCarriageSqueezeReverse = 4;
     public static final int kShifterForward = 0;
     public static final int kShifterReverse = 7;
 

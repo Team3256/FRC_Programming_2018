@@ -76,14 +76,14 @@ public class Elevator extends SubsystemBase implements Loop{
 
         //voltage limiting
 
-        master.configPeakOutputForward(4.0/12.0, 0);
-        master.configPeakOutputReverse(-4.0/12.0,0);
-        slaveOne.configPeakOutputForward(4.0/12.0, 0);
-        slaveOne.configPeakOutputReverse(-4.0/12.0,0);
-        slaveTwo.configPeakOutputForward(4.0/12.0, 0);
-        slaveTwo.configPeakOutputReverse(-4.0/12.0,0);
-        slaveThree.configPeakOutputForward(4.0/12.0, 0);
-        slaveThree.configPeakOutputReverse(-4.0/12.0,0);
+        master.configPeakOutputForward(6.0/12.0, 0);
+        master.configPeakOutputReverse(-6.0/12.0,0);
+        slaveOne.configPeakOutputForward(6.0/12.0, 0);
+        slaveOne.configPeakOutputReverse(-6.0/12.0,0);
+        slaveTwo.configPeakOutputForward(6.0/12.0, 0);
+        slaveTwo.configPeakOutputReverse(-6.0/12.0,0);
+        slaveThree.configPeakOutputForward(6.0/12.0, 0);
+        slaveThree.configPeakOutputReverse(-6.0/12.0,0);
 
         //soft limits
 
@@ -92,14 +92,15 @@ public class Elevator extends SubsystemBase implements Loop{
         master.configForwardSoftLimitEnable(false, 0);
         master.configReverseSoftLimitEnable(false,0);
 
-        master.setNeutralMode(NeutralMode.Coast);
-        slaveOne.setNeutralMode(NeutralMode.Coast);
-        slaveTwo.setNeutralMode(NeutralMode.Coast);
-        slaveThree.setNeutralMode(NeutralMode.Coast);
+        master.setNeutralMode(NeutralMode.Brake);
+        slaveOne.setNeutralMode(NeutralMode.Brake);
+        slaveTwo.setNeutralMode(NeutralMode.Brake);
+        slaveThree.setNeutralMode(NeutralMode.Brake);
 
     }
 
     public void setOpenLoop(double power){
+        tempflag = false;
         master.set(ControlMode.PercentOutput, power);
     }
 
@@ -108,11 +109,16 @@ public class Elevator extends SubsystemBase implements Loop{
         setTargetPosition(getHeight(), Constants.kElevatorHoldSlot);
     }
 
+    boolean tempflag = false;
+
     public void setTargetPosition(double targetHeight, int slotID){
         if (!isCalibrated)return;
         System.out.println("OUTPUT VOLTAGE: " + master.getMotorOutputVoltage());
+        if (!tempflag) {
+            master.selectProfileSlot(slotID, 0);
+            tempflag = true;
+        }
         master.set(ControlMode.Position, (int)heightToSensorUnits(targetHeight), 0);
-        master.selectProfileSlot(Constants.kElevatorFastUpSlot, 0);
     }
 
     public enum SystemState{

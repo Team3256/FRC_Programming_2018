@@ -149,7 +149,7 @@ public class Robot extends IterativeRobot {
         System.out.println("HEIGHT:" + elevator.getHeight());
 
         if (controlsInterface.toggleFlop()){
-            elevator.setTargetPosition(20,Constants.kElevatorFastUpSlot);
+            elevator.setTargetPosition(30,Constants.kElevatorFastUpSlot);
         }
         else{
             if (Math.abs(throttle) < 0.05) throttle = 0;

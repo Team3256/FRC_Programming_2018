@@ -102,7 +102,7 @@ public class Constants {
     public static final double kElevatorHoldI = 0;
     public static final double kElevatorHoldD = 0;
     public static final int kElevatorFastUpSlot = 1;
-    public static final double kElevatorFastUpP = 0.01;
+    public static final double kElevatorFastUpP = 0.075;
     public static final double kElevatorFastUpI = 0;
     public static final double kElevatorFastUpD = 0;
     public static final int kElevatorFastDownSlot = 2;
@@ -139,7 +139,7 @@ public class Constants {
     public static final double kElevatorScalingFactor = 0.0;
     public static final double kElevatorPulleyDiameter = 1.353*Math.PI;
     public static final double kElevatorGearRatio = 36.0/24.0;
-    public static final double kElevatorMaxHeight = 30.0;
+    public static final double kElevatorMaxHeight = 45.0;
     public static final double kElevatorMinHeight = 8.25;
 
     //Game Data:

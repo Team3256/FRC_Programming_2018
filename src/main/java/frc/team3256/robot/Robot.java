@@ -149,6 +149,8 @@ public class Robot extends IterativeRobot {
         if (Math.abs(throttle) < 0.25) throttle = 0;
 
         elevator.setOpenLoop(throttle);
+        System.out.println("HEIGHT:" + elevator.getHeight());
+
         /*
         System.out.println(driveTrain.getMode());
         SmartDashboard.putNumber("Velocity",(driveTrain.getLeftVelocityError()+driveTrain.getRightVelocityError())/2);

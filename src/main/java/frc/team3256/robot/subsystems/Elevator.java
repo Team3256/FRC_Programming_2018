@@ -40,6 +40,7 @@ public class Elevator extends SubsystemBase{
                 master.setSelectedSensorPosition((int)Constants.kHomeHeight, 0, 0);
                 isCalibrated = true;
                 hallEffect.disableInterrupts();
+                System.out.println("TRIGGERING");
             }
         }
     };

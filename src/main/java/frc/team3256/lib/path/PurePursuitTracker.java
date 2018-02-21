@@ -13,7 +13,7 @@ public class PurePursuitTracker {
     private boolean reachedEnd = false;
     private Path path;
     private final double kEpsilon = 1E-9;
-    private double pathCompletionTolerance, errorFromPathTolerance;
+    private double pathCompletionTolerance, lookaheadDistance;
     private Twist prevOutput = new Twist(0,0,0);
     private double dt;
 
@@ -24,9 +24,12 @@ public class PurePursuitTracker {
         this.path = path;
     }
 
-    public void setTolerances(double pathCompletionTolerance, double errorFromPathTolerance) {
+    public void setPathCompletionTolerance(double pathCompletionTolerance) {
         this.pathCompletionTolerance = pathCompletionTolerance;
-        this.errorFromPathTolerance = errorFromPathTolerance;
+    }
+
+    public void setLookaheadDistance(double lookaheadDistance) {
+        this.lookaheadDistance = lookaheadDistance;
     }
 
     public void setLoopTime(double dt) {
@@ -63,7 +66,7 @@ public class PurePursuitTracker {
         if (center.norm() == Double.POSITIVE_INFINITY) {
             center = robotCoordinates.translate(robotToCenter);
         }
-        if (robotToCenter.norm() < kEpsilon || p.distanceToPath < errorFromPathTolerance) {
+        if (Math.abs(lookaheadPointToRobot.norm() - lookaheadPoint.norm()) < kEpsilon) {
             //Cross track error is 0, so no arc (just continue driving straight)
             return Optional.empty();
         }
@@ -74,7 +77,7 @@ public class PurePursuitTracker {
 
     public Twist update(Translation robotCoordinates) {
         //Update path
-        Path.PathUpdate pathUpdate = path.update(robotCoordinates);
+        Path.PathUpdate pathUpdate = path.update(robotCoordinates, lookaheadDistance);
         //Check if we are done
         if(pathUpdate.remainingDistance < pathCompletionTolerance) {
             reachedEnd = true;
@@ -94,12 +97,6 @@ public class PurePursuitTracker {
         Arc arc;
         if (optionalArc.isPresent()){
             arc = optionalArc.get();
-            double direction = Math.signum(arc.getDirection(pathUpdate.lookaheadPoint).direction().radians());
-            angularVel = vel/arc.getRadius();
-            rv = new Twist(vel, 0, angularVel*direction);
-        }
-        else if(s.type == Segment.Type.ARC) {
-            arc = (Arc) s;
             double direction = Math.signum(arc.getDirection(pathUpdate.lookaheadPoint).direction().radians());
             angularVel = vel/arc.getRadius();
             rv = new Twist(vel, 0, angularVel*direction);

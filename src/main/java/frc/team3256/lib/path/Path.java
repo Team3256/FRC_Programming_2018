@@ -31,14 +31,14 @@ public class Path {
         //closest point
         Translation closestPoint;
         //lookahead distance
-        double lookaheadDistance = Constants.kLookaheadDistance;
+        double lookaheadDistance;
     }
 
     public int getLength() {
         return segments.size();
     }
 
-    public PathUpdate update(Translation robotCoordinates){
+    public PathUpdate update(Translation robotCoordinates, double lookaheadDistance){
         PathUpdate rv = new PathUpdate();
         Segment currSegment = segments.get(0);
 

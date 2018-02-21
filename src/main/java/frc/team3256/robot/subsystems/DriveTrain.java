@@ -177,7 +177,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
         driveArcController.setLoopTime(Constants.kControlLoopPeriod);
 
         purePursuitTracker.setLoopTime(Constants.kControlLoopPeriod);
-        purePursuitTracker.setTolerances(Constants.kPathCompletionTolerance, Constants.kErrorFromPathTolerance);
+        purePursuitTracker.setPathCompletionTolerance(Constants.kPathCompletionTolerance);
+        purePursuitTracker.setLookaheadDistance(Constants.kLookaheadDistance);
     }
 
     public double getLeftDistance() {

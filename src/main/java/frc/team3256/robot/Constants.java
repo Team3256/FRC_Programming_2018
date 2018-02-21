@@ -137,6 +137,7 @@ public class Constants {
     public static final double kIntakePreset = 0.0;
     public static final double kStowPreset = 0.0;
     public static final double kHomeHeight = 8.746;//measured in inches
+    public static final double kCompHomeHeight = 8.5;//measured in inches
 
 
     //Game Data:

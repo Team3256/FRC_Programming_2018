@@ -232,7 +232,7 @@ public class Intake extends SubsystemBase implements Loop {
     }
 
     public boolean hasCube(){
-        return cubeDetector.isTriggered();
+        return false;//cubeDetector.isTriggered();
     }
 
     //default WantedState -> SystemState

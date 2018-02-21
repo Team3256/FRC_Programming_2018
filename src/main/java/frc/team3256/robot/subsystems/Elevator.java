@@ -35,9 +35,9 @@ public class Elevator extends SubsystemBase implements Loop{
         @Override
         public void interruptFired(int interruptAssertedMask, Elevator param) {
             if (!isCalibrated){
-                master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kHomeHeight), 0, 0);
+                master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kCompHomeHeight), 0, 0);
                 isCalibrated = true;
-                master.configForwardSoftLimitEnable(true, 0);
+                master.configForwardSoftLimitEnable(false, 0);
                 master.configReverseSoftLimitEnable(true, 0);
                 System.out.println("TRIGGERING\n\n\n\n\n\n");
                 hallEffect.disableInterrupts();

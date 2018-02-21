@@ -52,7 +52,7 @@ public class DualLogitechConfig implements ControlsInterface{
 
     //Manipulator: Button Y
     @Override
-    public boolean togglePivot() { return manipulator.getRawButton(4); }
+    public boolean togglePivot() { return driver.getRawButton(4); }
 
     //Manipulator: Button A
     @Override
@@ -63,7 +63,7 @@ public class DualLogitechConfig implements ControlsInterface{
     //Driver:
     @Override
     public boolean scoreFront(){
-        return false;
+        return manipulator.getRawButton(6);
     }
 
     //Driver:

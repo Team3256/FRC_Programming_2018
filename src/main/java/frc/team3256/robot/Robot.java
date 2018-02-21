@@ -106,7 +106,7 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         disabledLooper.stop();
         enabledLooper.start();
-        driveTrain.setVelocitySetpoint(0,0);
+        //driveTrain.setVelocitySetpoint(0,0);
     }
 
     @Override
@@ -157,7 +157,15 @@ public class Robot extends IterativeRobot {
         driveTrain.setOpenLoop(power);
         driveTrain.setHighGear(!shiftDown); */
 
-        System.out.println("HAS CUBE --------------------" + intake.hasCube());
+        /*System.out.println("HAS CUBE --------------------" + intake.hasCube());
+
+        if (controlsInterface.scoreFront()){
+            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_RECEIVE);
+        }
+
+        if (controlsInterface.manualSqueezeCarriage()){
+            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+        }
 
         if (controlsInterface.unjamIntake()){
                 intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
@@ -165,6 +173,7 @@ public class Robot extends IterativeRobot {
 
         else if (controlsInterface.getIntake()){
             intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
+            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_OPEN);
         }
 
         else if (controlsInterface.getExhaust()){
@@ -174,8 +183,8 @@ public class Robot extends IterativeRobot {
         else if(flop && !prevFlop){
             intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
         }
-
-        else if(pivot && !prevPivot){
+        */
+        if(pivot && !prevPivot){
             intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
         }
 
@@ -185,18 +194,17 @@ public class Robot extends IterativeRobot {
 
         prevFlop = flop;
         prevPivot = pivot;
+        /*
+        //double throttle = controlsInterface.getThrottle();
 
-        /*double throttle = controlsInterface.getThrottle();
-
-        if (controlsInterface.scalePresetLow()){
+        */if (controlsInterface.scalePresetLow()){
             elevator.setTargetPosition(40,Constants.kElevatorFastUpSlot);
         }
         else {
             if (Math.abs(throttle) < 0.05)throttle = 0;
             elevator.setOpenLoop(throttle);
-        } */
-
-
+        }
+        /*
         if (controlsInterface.getIntake()){
             intake.setIntake(0.5,0.5);
         }

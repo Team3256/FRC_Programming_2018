@@ -6,8 +6,8 @@ public class Constants {
     //PWM
     public static final int kLeftIntakePort = 0;
     public static final int kRightIntakePort = 1;
-    public static final int kCarriageRollerLeft = 7;
-    public static final int kCarriageRollerRight = 8;
+    public static final int kCarriageRollerLeft = 2;
+    public static final int kCarriageRollerRight = 3;
 
     //Solenoids
     public static final int kIntakePivotForward = 5;
@@ -115,12 +115,12 @@ public class Constants {
     //Presets:
     public static final double kIntakeSharpIRMaxVoltage = 3.3;
     public static final double kIntakeSharpIRMinVoltage = 2.5;
-    public static final double kLeftIntakePower = 0.75;
-    public static final double kRightIntakePower = 0.6;
+    public static final double kLeftIntakePower = 0.75;//0.75
+    public static final double kRightIntakePower = 0.6;//0.6
     public static final double kIntakeExhaustPower = -0.6;
     public static final double kUnjamMaxDuration = 1000.0/1000.0;
-    public static final double kCarriageReceivePower = 0;
-    public static final double kCarriageSecurePower = 0;
+    public static final double kCarriageReceivePower = 0.8;
+    public static final double kCarriageSecurePower = 0.4;
     public static final double kCarriageScoreForwardPower = 0;
     public static final double kCarriageScoreBackwardPower = -0;
 

@@ -103,10 +103,10 @@ public class Elevator extends SubsystemBase implements Loop{
         master.configForwardSoftLimitEnable(false, 0);
         master.configReverseSoftLimitEnable(false,0);
 
-        master.setNeutralMode(NeutralMode.Coast);
-        slaveOne.setNeutralMode(NeutralMode.Coast);
-        slaveTwo.setNeutralMode(NeutralMode.Coast);
-        slaveThree.setNeutralMode(NeutralMode.Coast);
+        master.setNeutralMode(NeutralMode.Brake);
+        slaveOne.setNeutralMode(NeutralMode.Brake);
+        slaveTwo.setNeutralMode(NeutralMode.Brake);
+        slaveThree.setNeutralMode(NeutralMode.Brake);
 
     }
 

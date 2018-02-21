@@ -37,7 +37,7 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
         SCORING_BACKWARD, //Run rollers backward
         SQUEEZING_IDLE, //Actuators squeeze cube in place
         OPEN_IDLE //Actuators stay open
-    }
+}
 
     public enum WantedState {
         //Operator -> Whenever no buttons are pressed

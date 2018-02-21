@@ -21,8 +21,6 @@ public abstract class Segment {
 
     //Methods that are common to both types of segments
 
-    public abstract void setLoopTime(double dt);
-
     public abstract Type getType();
 
     public abstract Translation getStartPoint();

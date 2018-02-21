@@ -20,7 +20,6 @@ import frc.team3256.lib.path.PurePursuitTracker;
 import frc.team3256.lib.trajectory.*;
 import frc.team3256.robot.Constants;
 import frc.team3256.robot.PoseEstimator;
-import frc.team3256.robot.auto.actions.WaitAction;
 import frc.team3256.robot.operation.LogitechButtonBoardConfig;
 
 public class DriveTrain extends SubsystemBase implements Loop {
@@ -88,7 +87,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
                 power*=12.0*12.0;
                 SmartDashboard.putNumber("REQUESTED VEL", power);
                 SmartDashboard.putNumber("ACTUAL VEL", getAverageVelocity());
-                //updateVelocitySetpoint(power, power);
+                SmartDashboard.putNumber("Vel ERROR", (getLeftVelocityError()+getRightVelocityError())/2);
+                updateVelocitySetpoint(power, power);
                 break;
             case DRIVE_STRAIGHT:
                 updateDriveStraight();
@@ -177,15 +177,15 @@ public class DriveTrain extends SubsystemBase implements Loop {
         driveArcController.setLoopTime(Constants.kControlLoopPeriod);
 
         purePursuitTracker.setLoopTime(Constants.kControlLoopPeriod);
-        purePursuitTracker.setPathCompletionTolerance(Constants.pathCompletionTolerance);
+        purePursuitTracker.setTolerances(Constants.kPathCompletionTolerance, Constants.kErrorFromPathTolerance);
     }
 
     public double getLeftDistance() {
-        return sensorUnitsToInches(leftMaster.getSelectedSensorPosition(0)/Constants.kDriveEncoderScalingFactor);
+        return sensorUnitsToInches(leftMaster.getSelectedSensorPosition(0));
     }
 
     public double getRightDistance() {
-        return sensorUnitsToInches(rightMaster.getSelectedSensorPosition(0)/Constants.kDriveEncoderScalingFactor);
+        return sensorUnitsToInches(rightMaster.getSelectedSensorPosition(0));
     }
 
     public double getAverageDistance(){
@@ -197,7 +197,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
      */
     public double getLeftVelocity(){
         //return leftMaster.getSelectedSensorVelocity(0);
-        return sensorUnitsToInchesPerSec(leftMaster.getSelectedSensorVelocity(0))/Constants.kDriveEncoderScalingFactor;
+        return sensorUnitsToInchesPerSec(leftMaster.getSelectedSensorVelocity(0));
     }
 
     /**
@@ -205,7 +205,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
      */
     public double getRightVelocity(){
         //return rightMaster.getSelectedSensorVelocity(0);
-        return sensorUnitsToInchesPerSec(rightMaster.getSelectedSensorVelocity(0))/Constants.kDriveEncoderScalingFactor;
+        return sensorUnitsToInchesPerSec(rightMaster.getSelectedSensorVelocity(0));
     }
 
     public double getAverageVelocity(){
@@ -238,9 +238,15 @@ public class DriveTrain extends SubsystemBase implements Loop {
      */
     public void setVelocitySetpoint(double setpoint_left, double setpoint_right){
         if (controlMode != DriveControlMode.VELOCITY){
+            setHighGear(true);
+            leftMaster.enableVoltageCompensation(true);
+            rightMaster.enableVoltageCompensation(true);
+            leftSlave.enableVoltageCompensation(true);
+            rightSlave.enableVoltageCompensation(true);
+            leftMaster.selectProfileSlot(Constants.kDriveVelocityProfile,0);
+            rightMaster.selectProfileSlot(Constants.kDriveVelocityProfile, 0);
             controlMode = DriveControlMode.VELOCITY;
         }
-        setHighGear(true);
         updateVelocitySetpoint(setpoint_left, setpoint_right);
     }
 
@@ -250,7 +256,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
      * @param right_velocity right velocity setpoint in inches/sec
      */
     public void updateVelocitySetpoint(double left_velocity, double right_velocity){
-        System.out.println("BYEBYEBYEBYEBYEBYE");
         //if we aren't in the velocity control mode, then something is messed up, so set motors to 0 for safety
         if (controlMode != DriveControlMode.VELOCITY){
             System.out.println("ERROR: We should be in the velocity mode");
@@ -258,7 +263,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
             rightMaster.set(ControlMode.PercentOutput, 0);
             return;
         }
-        System.out.println("HIHIHIHIHIHIHIHIHIHIHIHIHIHIHI");
         //otherwise, update the talons with the new velocity setpoint
         leftMaster.set(ControlMode.Velocity, inchesPerSecToSensorUnits(left_velocity), Constants.kDriveVelocityProfile);
         rightMaster.set(ControlMode.Velocity, inchesPerSecToSensorUnits(right_velocity), Constants.kDriveVelocityProfile);
@@ -272,6 +276,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
      */
     public void setOpenLoop(double leftPower, double rightPower) {
         if (controlMode != DriveControlMode.OPEN_LOOP){
+            leftMaster.enableVoltageCompensation(false);
+            rightMaster.enableVoltageCompensation(false);
+            leftSlave.enableVoltageCompensation(false);
+            rightSlave.enableVoltageCompensation(false);
             controlMode = DriveControlMode.OPEN_LOOP;
         }
         leftMaster.set(ControlMode.PercentOutput, leftPower);
@@ -317,6 +325,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
     private void updatePurePursuit() {
         if (controlMode != DriveControlMode.PURE_PURSUIT) {
+            System.out.println("ERROR, WE ARE NOT IN PURE PURSUIT MODE");
             return;
         }
         if (purePursuitTracker.isFinished()) {
@@ -324,8 +333,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
             return;
         }
         Kinematics.DriveVelocity output = Kinematics.inverseKinematics(purePursuitTracker.update(PoseEstimator.getInstance().getPose().getTranslation()), Constants.kRobotTrack, Constants.kScrubFactor);
-        leftMaster.set(ControlMode.Velocity, output.left);
-        rightMaster.set(ControlMode.Velocity, output.right);
+        System.out.println(output.left + "\t" + output.right);
+        leftMaster.set(ControlMode.Velocity, inchesPerSecToSensorUnits(output.left));
+        rightMaster.set(ControlMode.Velocity, inchesPerSecToSensorUnits(output.right));
     }
 
     public void setHighGear(boolean highGear) {
@@ -380,6 +390,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
     public void configurePurePursuit(Path path) {
         if (controlMode != DriveControlMode.PURE_PURSUIT){
+            leftMaster.selectProfileSlot(Constants.kDriveVelocityProfile, 0);
+            rightMaster.selectProfileSlot(Constants.kDriveVelocityProfile, 0);
             controlMode = DriveControlMode.PURE_PURSUIT;
         }
         purePursuitTracker.setPath(path);
@@ -440,7 +452,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
     //Sensor units for velocity are encoder units per 100 ms
     public double inchesPerSecToSensorUnits(double inchesPerSec){
-        return inchesToSensorUnits(inchesPerSec)/10.0;
+        return inchesToSensorUnits(inchesPerSec)/10.0*Constants.kDriveEncoderScalingFactor;
     }
 
     public double inchesPerSec2ToSensorUnits(double inchesPerSec2){
@@ -448,7 +460,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public double sensorUnitsToInches(double sensorUnits){
-        return (sensorUnits*Math.PI*Constants.kWheelDiameter)/4096;
+        return (sensorUnits*Math.PI*Constants.kWheelDiameter)/4096/Constants.kDriveEncoderScalingFactor;
     }
 
     public double sensorUnitsToInchesPerSec(double sensorUnits){

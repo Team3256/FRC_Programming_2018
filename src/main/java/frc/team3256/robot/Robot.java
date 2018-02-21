@@ -96,7 +96,7 @@ public class Robot extends IterativeRobot {
 
         // AutoModeBase autoMode = new TestPurePursuitAuto();
         //AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        AutoModeBase autoModeTest = new TestArcTrajectoryAuto();
+        AutoModeBase autoModeTest = new TestPurePursuitAuto();
         autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
         autoModeExecuter.setAutoMode(autoModeTest);
         autoModeExecuter.start();
@@ -106,7 +106,7 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         disabledLooper.stop();
         enabledLooper.start();
-        //driveTrain.setVelocitySetpoint(0,0);
+        driveTrain.setVelocitySetpoint(0,0);
     }
 
     @Override
@@ -129,6 +129,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void autonomousPeriodic(){
+        /*
         if(GameDataAccessor.dataFound() && !autoSet) {
             autoModeExecuter.setAutoMode(GameDataAccessor.getAutoMode());
             autoSet = true;
@@ -136,22 +137,25 @@ public class Robot extends IterativeRobot {
             autoModeExecuter.setAutoMode(new DoNothingAuto());
         }
         autoModeExecuter.start();
+        */
+        System.out.println("DRIVE MODE: " + driveTrain.getMode());
     }
 
     @Override
     public void teleopPeriodic() {
         driveTrain.setOpenLoop(0,0);
         double throttle = controlsInterface.getThrottle();
+        /*double throttle = controlsInterface.getThrottle();
         double turn = controlsInterface.getTurn();
         boolean quickTurn = controlsInterface.getQuickTurn();
         boolean shiftDown = controlsInterface.getLowGear();
-
+        */
         boolean flop = controlsInterface.toggleFlop();
         boolean pivot = controlsInterface.togglePivot();
-
+        /*
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
         driveTrain.setOpenLoop(power);
-        driveTrain.setHighGear(!shiftDown);
+        driveTrain.setHighGear(!shiftDown); */
 
         System.out.println("HAS CUBE --------------------" + intake.hasCube());
 
@@ -192,7 +196,7 @@ public class Robot extends IterativeRobot {
             elevator.setOpenLoop(throttle);
         } */
 
-        /*
+
         if (controlsInterface.getIntake()){
             intake.setIntake(0.5,0.5);
         }

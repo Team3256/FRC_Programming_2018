@@ -43,6 +43,7 @@ public class PoseEstimator implements Loop {
     public void init(double timestamp) {
         prevLeftDist = driveTrain.getLeftDistance();
         prevRightDist = driveTrain.getRightDistance();
+        reset(new RigidTransform());
     }
 
     @Override
@@ -61,6 +62,7 @@ public class PoseEstimator implements Loop {
         prevLeftDist = leftDist;
         prevRightDist = rightDist;
         prevPose = pose;
+        //System.out.println("Pose:   " + pose);
     }
 
     @Override

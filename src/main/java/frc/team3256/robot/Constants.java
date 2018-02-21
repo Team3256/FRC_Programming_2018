@@ -86,15 +86,17 @@ public class Constants {
     public static final double kCurveTrajectoryCruiseVelocity = 10.0*12.0;
 
     //Drive Velocity
-    public static final double kDriveVelocityP = 0.0;//0.3
+    public static final double kDriveVelocityP = 0.03;//0.3
     public static final double kDriveVelocityI = 0.0;//0.0003
     public static final double kDriveVelocityD = 0.0;//6.5
-    public static final double kDriveVelocityF = 0.0355;//0.214
+    public static final double kDriveVelocityF = 0.0387;//0.214
     public static final int kDriveVelocityIZone = 0;//72 //0
     public static final int kDriveVelocityProfile = 1; //1
 
     //Pure Pursuit
-    public static final double pathCompletionTolerance = 0.1;
+    public static final double kPathCompletionTolerance = 0.01;
+    public static final double kErrorFromPathTolerance = 0.01;
+    public static final double kLookaheadDistance = 5.0;
 
     //Elevator Gains
     public static final int kElevatorHoldSlot = 0;

@@ -37,11 +37,7 @@ public class PurePursuitTracker {
     }
 
     public static int getDirection(Translation lookaheadPoint, Translation robotCoordinates) {
-        if (lookaheadPoint.cross(robotCoordinates) > 0.0) {
-            return 1;
-        } else {
-            return -1;
-        }
+        return lookaheadPoint.cross(robotCoordinates) > 0.0 ? 1 : -1;
     }
 
     public Optional<Arc> getArcToSegment(Translation robotCoordinates, Path.PathUpdate p) {

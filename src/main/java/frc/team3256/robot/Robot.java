@@ -122,8 +122,8 @@ public class Robot extends IterativeRobot {
         //System.out.println("Pose: " + poseEstimator.getPose());
         //System.out.println("Left Encoder: " + driveTrain.inchesToSensorUnits(driveTrain.getLeftDistance()));
         //System.out.println("Right Encoder:            " + driveTrain.inchesToSensorUnits(driveTrain.getRightDistance()));
-        System.out.println("Voltage: " + intake.getVoltage());
-        System.out.println("Is Triggered: " + intake.hasCube());
+        //System.out.println("Voltage: " + intake.getVoltage());
+        //System.out.println("Is Triggered: " + intake.hasCube());
 
     }
 
@@ -140,6 +140,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
+        driveTrain.setOpenLoop(0,0);
         double throttle = controlsInterface.getThrottle();
         double turn = controlsInterface.getTurn();
         boolean quickTurn = controlsInterface.getQuickTurn();
@@ -149,33 +150,47 @@ public class Robot extends IterativeRobot {
         boolean pivot = controlsInterface.togglePivot();
 
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
-            driveTrain.setOpenLoop(power);
-            driveTrain.setHighGear(!shiftDown);
+        driveTrain.setOpenLoop(power);
+        driveTrain.setHighGear(!shiftDown);
 
-
-
+        System.out.println("HAS CUBE --------------------" + intake.hasCube());
 
         if (controlsInterface.unjamIntake()){
                 intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
         }
+
         else if (controlsInterface.getIntake()){
             intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
         }
+
         else if (controlsInterface.getExhaust()){
             intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
         }
+
         else if(flop && !prevFlop){
             intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
         }
+
         else if(pivot && !prevPivot){
             intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
         }
+
         else{
             intake.setWantedState(Intake.WantedState.IDLE);
         }
 
         prevFlop = flop;
         prevPivot = pivot;
+
+        /*double throttle = controlsInterface.getThrottle();
+
+        if (controlsInterface.scalePresetLow()){
+            elevator.setTargetPosition(40,Constants.kElevatorFastUpSlot);
+        }
+        else {
+            if (Math.abs(throttle) < 0.05)throttle = 0;
+            elevator.setOpenLoop(throttle);
+        } */
 
         /*
         if (controlsInterface.getIntake()){
@@ -185,7 +200,7 @@ public class Robot extends IterativeRobot {
             intake.setIntake(-0.5, -0.5);
         }
         else
-            intake.setIntake(0,0);*/
+            intake.setIntake(0,0);
         /*
         if (controlsInterface.manualSqueezeCarriage()){
             carriage.squeeze();

@@ -43,7 +43,7 @@ public class Constants {
     public static final double kDriveEncoderScalingFactor = 3.0*60.0/24.0; //3:1 GR on Encoder Stage, plus 60:24 GR on third stage
     public static final double kElevatorPulleyDiameter = 1.353*Math.PI;
     public static final double kElevatorGearRatio = 36.0/24.0;
-    public static final double kElevatorMaxHeight = 45.0;
+    public static final double kElevatorMaxHeight = 48.0;
     public static final double kElevatorMinHeight = 8.25;
 
     //Control Loop Parameters:

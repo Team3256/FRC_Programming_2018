@@ -76,14 +76,25 @@ public class Elevator extends SubsystemBase implements Loop{
 
         //voltage limiting
 
-        master.configPeakOutputForward(6.0/12.0, 0);
-        master.configPeakOutputReverse(-6.0/12.0,0);
-        slaveOne.configPeakOutputForward(6.0/12.0, 0);
-        slaveOne.configPeakOutputReverse(-6.0/12.0,0);
-        slaveTwo.configPeakOutputForward(6.0/12.0, 0);
-        slaveTwo.configPeakOutputReverse(-6.0/12.0,0);
-        slaveThree.configPeakOutputForward(6.0/12.0, 0);
-        slaveThree.configPeakOutputReverse(-6.0/12.0,0);
+        master.configPeakOutputForward(8.0/12.0, 0);
+        master.configPeakOutputReverse(-8.0/12.0,0);
+        slaveOne.configPeakOutputForward(8.0/12.0, 0);
+        slaveOne.configPeakOutputReverse(-8.0/12.0,0);
+        slaveTwo.configPeakOutputForward(8.0/12.0, 0);
+        slaveTwo.configPeakOutputReverse(-8.0/12.0,0);
+        slaveThree.configPeakOutputForward(8.0/12.0, 0);
+        slaveThree.configPeakOutputReverse(-8.0/12.0,0);
+
+
+        master.configNominalOutputForward(0.5/12.0, 0);
+        master.configNominalOutputReverse(-0.5/12.0,0);
+        slaveOne.configNominalOutputForward(0.5/12.0, 0);
+        slaveOne.configNominalOutputReverse(-0.5/12.0,0);
+        slaveTwo.configNominalOutputForward(0.5/12.0, 0);
+        slaveTwo.configNominalOutputReverse(-0.5/12.0,0);
+        slaveThree.configNominalOutputForward(0.5/12.0, 0);
+        slaveThree.configNominalOutputReverse(-0.5/12.0,0);
+
 
         //soft limits
 
@@ -92,10 +103,10 @@ public class Elevator extends SubsystemBase implements Loop{
         master.configForwardSoftLimitEnable(false, 0);
         master.configReverseSoftLimitEnable(false,0);
 
-        master.setNeutralMode(NeutralMode.Brake);
-        slaveOne.setNeutralMode(NeutralMode.Brake);
-        slaveTwo.setNeutralMode(NeutralMode.Brake);
-        slaveThree.setNeutralMode(NeutralMode.Brake);
+        master.setNeutralMode(NeutralMode.Coast);
+        slaveOne.setNeutralMode(NeutralMode.Coast);
+        slaveTwo.setNeutralMode(NeutralMode.Coast);
+        slaveThree.setNeutralMode(NeutralMode.Coast);
 
     }
 

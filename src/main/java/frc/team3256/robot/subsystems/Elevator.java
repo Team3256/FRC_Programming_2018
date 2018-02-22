@@ -1,17 +1,11 @@
 package frc.team3256.robot.subsystems;
 
-import com.ctre.phoenix.ErrorCode;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.sun.org.apache.bcel.internal.classfile.ConstantNameAndType;
-import com.sun.org.apache.bcel.internal.classfile.ConstantString;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.InterruptHandlerFunction;
-import edu.wpi.first.wpilibj.Talon;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.robot.Constants;
@@ -189,6 +183,11 @@ public class Elevator extends SubsystemBase implements Loop{
 
     }
 
+    public boolean atClosedLoopTarget(){
+        if (!m_usingClosedLoop) return false;
+        return (Math.abs(getHeight() - m_closedLoopTarget) < Constants.kElevatorTolerance);
+    }
+
     private SystemState handleHold(){
         setTargetPosition(getHeight(), Constants.kElevatorHoldSlot);
         return defaultStateTransfer();
@@ -196,6 +195,9 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private SystemState handleFastUp(){
         if(isCalibrated){
+            if (atClosedLoopTarget()){
+                return SystemState.HOLD;
+            }
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastUpSlot);
             return SystemState.FAST_UP;
         }
@@ -204,6 +206,9 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private SystemState handleFastDown(){
         if(isCalibrated){
+            if(atClosedLoopTarget()){
+                return SystemState.HOLD;
+            }
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastDownSlot);
             return SystemState.FAST_DOWN;
         }
@@ -241,12 +246,6 @@ public class Elevator extends SubsystemBase implements Loop{
                 }
                 m_usingClosedLoop = true;
                 break;
-            /*case MID_SCALE:
-                if(stateChanged) {
-                    m_closedLoopTarget = Constants.kMidScalePreset;
-                }
-                m_usingClosedLoop = true;
-                break;*/
             case LOW_SCALE:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kLowScalePreset;

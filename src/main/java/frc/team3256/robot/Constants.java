@@ -138,6 +138,10 @@ public class Constants {
     public static final double kStowPreset = 0.0;
     public static final double kHomeHeight = 8.746;//measured in inches
     public static final double kCompHomeHeight = 8.5;//measured in inches
+    public static final double kElevatorRaiseDelayTime = 0.5;
+    public static final double kElevatorScoreRearMinHeight = 0;
+    public static final double kElevatorScoreFrontMinHeight = 0;
+    public static final double kElevatorTolerance = 1.0; //measured in inches
 
 
     //Game Data:

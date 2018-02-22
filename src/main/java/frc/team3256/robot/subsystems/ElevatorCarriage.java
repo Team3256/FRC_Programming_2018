@@ -96,7 +96,7 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
 
     private SystemState handleReceiveFromIntake(){
         if (stateChanged){
-            squeeze();
+            open();
         }
         //If we have a cube, then we squeeze
         if (hasCube()){

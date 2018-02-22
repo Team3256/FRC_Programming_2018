@@ -5,9 +5,13 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.sun.org.apache.bcel.internal.classfile.ConstantNameAndType;
+import com.sun.org.apache.bcel.internal.classfile.ConstantString;
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.InterruptHandlerFunction;
+import edu.wpi.first.wpilibj.Talon;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.robot.Constants;
@@ -56,23 +60,18 @@ public class Elevator extends SubsystemBase implements Loop{
         slaveTwo = TalonUtil.generateSlaveTalon(Constants.kElevatorSlaveTwo, Constants.kElevatorMaster);
         slaveThree = TalonUtil.generateSlaveTalon(Constants.kElevatorSlaveThree, Constants.kElevatorMaster);
 
-        if (master.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0) != ErrorCode.OK){
-            DriverStation.reportError("Mag Encoder on elevator not detected!!!", false);
-        }
+        TalonUtil.configMagEncoder(master);
         master.setSelectedSensorPosition(0, 0, 0);
 
         //configure Hold PID values
-        master.config_kP(Constants.kElevatorHoldSlot, Constants.kElevatorHoldP, 0);
-        master.config_kI(Constants.kElevatorHoldSlot, Constants.kElevatorHoldI, 0);
-        master.config_kD(Constants.kElevatorHoldSlot, Constants.kElevatorHoldD, 0);
+        TalonUtil.setPIDGains(master, Constants.kElevatorHoldSlot, Constants.kElevatorHoldP,
+                Constants.kElevatorHoldI, Constants.kElevatorHoldD, 0);
         //configure FastUp PID values
-        master.config_kP(Constants.kElevatorFastUpSlot, Constants.kElevatorFastUpP, 0);
-        master.config_kI(Constants.kElevatorFastUpSlot, Constants.kElevatorFastUpI, 0);
-        master.config_kD(Constants.kElevatorFastUpSlot, Constants.kElevatorFastUpD, 0);
+        TalonUtil.setPIDGains(master, Constants.kElevatorFastUpSlot, Constants.kElevatorFastUpP,
+                Constants.kElevatorFastUpI, Constants.kElevatorFastUpD, 0);
         //configure FastDown PID values
-        master.config_kP(Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownP, 0);
-        master.config_kI(Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownI, 0);
-        master.config_kD(Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownD, 0);
+        TalonUtil.setPIDGains(master, Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownP,
+                Constants.kElevatorFastDownI, Constants.kElevatorFastDownD, 0);
 
         //voltage limiting
 

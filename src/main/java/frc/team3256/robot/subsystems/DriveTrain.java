@@ -126,13 +126,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.setStatusFramePeriod(StatusFrame.Status_1_General, (int)(1000*Constants.kControlLoopPeriod), 0);
 
         // setup encoders
-        if (leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0) != ErrorCode.OK){
-            DriverStation.reportError("Mag Encoder on Left Master not detected!!!", false);
-        }
-        if (rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0) != ErrorCode.OK) {
-            DriverStation.reportError("Mag Encoder on Right Master not detected!!!", false);
-        }
-
+        TalonUtil.configMagEncoder(leftMaster);
+        TalonUtil.configMagEncoder(rightMaster);
         //gyroscope
         gyro = new ADXRS453_Gyro();
 
@@ -282,10 +277,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
             rightMaster.enableVoltageCompensation(false);
             leftSlave.enableVoltageCompensation(false);
             rightSlave.enableVoltageCompensation(false);
-            leftMaster.setNeutralMode(NeutralMode.Coast);
-            leftSlave.setNeutralMode(NeutralMode.Coast);
-            rightMaster.setNeutralMode(NeutralMode.Coast);
-            rightSlave.setNeutralMode(NeutralMode.Coast);
+            TalonUtil.setCoastMode(leftMaster, leftSlave, rightMaster, rightSlave);
             controlMode = DriveControlMode.OPEN_LOOP;
         }
         leftMaster.set(ControlMode.PercentOutput, leftPower);
@@ -376,13 +368,14 @@ public class DriveTrain extends SubsystemBase implements Loop {
         angle = degrees;
         driveArcController.configureArcTrajectory(startVel, endVel, degrees, turnRadius);
         if (controlMode != DriveControlMode.DRIVE_ARC){
+            setHighGear(true);
+            leftMaster.configNominalOutputForward(2.0/12.0, 0);
+            rightMaster.configNominalOutputForward(2.0/12.0, 0);
+            leftSlave.configNominalOutputForward(2.0/12.0, 0);
+            rightSlave.configNominalOutputForward(2.0/12.0, 0);
+            TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
             controlMode = DriveControlMode.DRIVE_ARC;
         }
-        setHighGear(true);
-        leftMaster.configNominalOutputForward(.0/12.0, 0);
-        rightMaster.configNominalOutputForward(2.0/12.0, 0);
-        leftSlave.configNominalOutputForward(2.0/12.0, 0);
-        rightSlave.configNominalOutputForward(2.0/12.0, 0);
         updateDriveArc();
     }
 
@@ -390,10 +383,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
         driveStraightController.setSetpoint(startVel, endVel, distance, angle);
         if (controlMode != DriveControlMode.DRIVE_STRAIGHT){
             controlMode = DriveControlMode.DRIVE_STRAIGHT;
-            leftMaster.setNeutralMode(NeutralMode.Brake);
-            leftSlave.setNeutralMode(NeutralMode.Brake);
-            rightMaster.setNeutralMode(NeutralMode.Brake);
-            rightSlave.setNeutralMode(NeutralMode.Brake);
+            TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
+            setHighGear(true);
         }
         updateDriveStraight();
     }

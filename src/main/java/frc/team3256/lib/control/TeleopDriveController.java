@@ -35,13 +35,13 @@ public class TeleopDriveController {
     }
 
     //Curvature or Cheesy Drive
-    public static DrivePower curvatureDrive(double throttle, double turn, boolean quickTurn){
-        throttle = handleDeadband(throttle, logitechDeadband);
+    public static DrivePower curvatureDrive(double throttle, double turn, boolean quickTurn, boolean highGear){
         turn = handleDeadband(turn, logitechDeadband);
 
         double angularPower, overPower;
 
         if (quickTurn){
+            highGear = false;
             if (Math.abs(throttle) < kQuickStopThreshold){
                 quickStopAccumulator = (1-kQuickStopAlpha)*quickStopAccumulator + kQuickStopAlpha * clamp(turn) * kQuickStopScalar;
             }
@@ -79,7 +79,7 @@ public class TeleopDriveController {
             left += overPower*(-1.0 - right);
             right = -1.0;
         }
-        return new DrivePower(left, right);
+        return new DrivePower(left, right, highGear);
     }
 
     //Clamps the input value to [-1.0, 1.0]

@@ -149,9 +149,9 @@ public class Robot extends IterativeRobot {
         boolean shiftDown = controlsInterface.getLowGear();
         boolean flop = controlsInterface.toggleFlop();
         boolean pivot = controlsInterface.togglePivot();
-        DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn);
+        DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn, !shiftDown);
         driveTrain.setOpenLoop(power);
-        driveTrain.setHighGear(!shiftDown);
+        driveTrain.setHighGear(power.getHighGear());
 
         //System.out.println("HAS CUBE --------------------" + intake.hasCube());
 

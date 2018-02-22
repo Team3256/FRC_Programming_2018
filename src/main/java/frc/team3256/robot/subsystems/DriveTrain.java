@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Kinematics;
@@ -35,7 +36,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private DriveArcController driveArcController = new DriveArcController();
     private PurePursuitTracker purePursuitTracker = new PurePursuitTracker();
 
-    public static TalonUtil talonUtil = new TalonUtil();
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
     }
@@ -139,9 +139,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
         shifter = new DoubleSolenoid(Constants.kShifterForward, Constants.kShifterReverse);
 
         //load gains
-        talonUtil.setPIDGains(leftMaster, Constants.kDriveVelocityProfile, Constants.kDriveVelocityP,
+        TalonUtil.setPIDGains(leftMaster, Constants.kDriveVelocityProfile, Constants.kDriveVelocityP,
                 Constants.kDriveVelocityI, Constants.kDriveVelocityD, Constants.kDriveVelocityF);
-        talonUtil.setPIDGains(rightMaster, Constants.kDriveVelocityProfile, Constants.kDriveVelocityP,
+        TalonUtil.setPIDGains(rightMaster, Constants.kDriveVelocityProfile, Constants.kDriveVelocityP,
                 Constants.kDriveVelocityI, Constants.kDriveVelocityD, Constants.kDriveVelocityF);
 
 

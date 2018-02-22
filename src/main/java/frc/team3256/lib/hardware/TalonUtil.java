@@ -94,21 +94,21 @@ public class TalonUtil{
         return talon;
     }
 
-    public void setPIDGains(TalonSRX talon, int slot, double kP, double kI, double kD, double kF){
+    public static void setPIDGains(TalonSRX talon, int slot, double kP, double kI, double kD, double kF){
         talon.config_kP(slot, kP, 0);
         talon.config_kI(slot, kI, 0);
         talon.config_kD(slot, kD, 0);
         talon.config_kF(slot, kF, 0);
     }
 
-    public void configMagEncoder(TalonSRX talon){
+    public static void configMagEncoder(TalonSRX talon){
         if (talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)!= ErrorCode.OK){
             DriverStation.reportError("DID NOT DETECT MAG ENCODER ON TALON " + talon.getDeviceID(), false);
         }
         talon.getStatusFramePeriod(StatusFrame.Status_2_Feedback0, (int)(1000*Constants.kControlLoopPeriod));
     }
 
-    public void setCurrentLimit(TalonSRX talon, int peakAmps, int continuousAmps, int continuousDuration){
+    public static void setCurrentLimit(TalonSRX talon, int peakAmps, int continuousAmps, int continuousDuration){
         talon.configPeakCurrentLimit(peakAmps, 0);
         talon.configContinuousCurrentLimit(continuousAmps, continuousDuration);
     }

@@ -372,9 +372,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
         }
     }
 
-    public void configureDriveArc(double startVel, double endVel, double degrees, double turnRadius) {
+    public void configureDriveArc(double startVel, double endVel, double degrees, double turnRadius, boolean backwardsTurn) {
         angle = degrees;
-        driveArcController.configureArcTrajectory(startVel, endVel, degrees, turnRadius);
+        driveArcController.configureArcTrajectory(startVel, endVel, degrees, turnRadius, backwardsTurn);
         if (controlMode != DriveControlMode.DRIVE_ARC){
             controlMode = DriveControlMode.DRIVE_ARC;
         }

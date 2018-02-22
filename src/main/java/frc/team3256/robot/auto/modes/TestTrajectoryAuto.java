@@ -13,7 +13,6 @@ public class TestTrajectoryAuto extends AutoModeBase {
     protected void routine() throws AutoModeEndedException {
         double initialAngle = DriveTrain.getInstance().getAngle().degrees();
         runAction(new FollowTrajectoryAction(0, 0, 60,0));
-        runAction(new WaitAction(3));
         //runAction(new FollowTrajectoryAction(0,0,-5,90));
         System.out.println("Left: " + DriveTrain.getInstance().getLeftDistance());
         System.out.println("Right: " + DriveTrain.getInstance().getRightDistance());

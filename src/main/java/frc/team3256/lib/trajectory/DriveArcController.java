@@ -18,6 +18,7 @@ public class DriveArcController {
     private PIDController pidController = new PIDController();
     private double kGyroP, kGyroI, kGyroD, angle;
     private boolean inverseTurn = false;
+    private boolean backTurn = false;
 
     public void setGains(double kP, double kI, double kD, double kV, double kA, double kGyroP, double kGyroI, double kGyroD) {
         this.kP = kP;
@@ -90,6 +91,10 @@ public class DriveArcController {
             curr_segment++;
             followOutput = Util.clip(followOutput, -1, 1);
             leadOutput = Util.clip(leadOutput, -1, 1);
+            if (backTurn){
+                leadOutput*=-1;
+                followOutput*=-1;
+            }
             return new DrivePower(leadOutput, followOutput);
         }
         return new DrivePower(0,0);
@@ -99,8 +104,9 @@ public class DriveArcController {
         return curr_segment >= trajectoryCurveLead.getLength();
     }
 
-    public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius) {
+    public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius, boolean backwardsTurn) {
         if (degrees < 0){inverseTurn = true;}
+        backTurn = backwardsTurn;
         angle = (degrees * Math.PI)/180;
         radius = turnRadius;
         degrees = Math.abs(degrees);

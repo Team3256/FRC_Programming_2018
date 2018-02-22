@@ -12,11 +12,11 @@ public class CenterRightSwitchAuto extends AutoModeBase {
         double currVel = 0.0;
         runAction(new FollowTrajectoryAction(currVel, 110, 24,0));
         currVel = DriveTrain.getInstance().getAverageVelocity();
-        runAction(new FollowArcTrajectoryAction(currVel, 96, 65, -34));
+        runAction(new FollowArcTrajectoryAction(currVel, 96, 65, -34, false));
         currVel = DriveTrain.getInstance().getAverageVelocity();
         runAction(new FollowTrajectoryAction(currVel, 110, 46,-34));
         currVel = DriveTrain.getInstance().getAverageVelocity();
-        runAction(new FollowArcTrajectoryAction(currVel, 96, 32, 34));
+        runAction(new FollowArcTrajectoryAction(currVel, 96, 32, 34, false));
         currVel = DriveTrain.getInstance().getAverageVelocity();
         runAction(new FollowTrajectoryAction(currVel, 110, 28,34));
     }

@@ -80,7 +80,6 @@ public class DriveStraightController {
                 rightOutput *= -1.0;
             }
             curr_segment++;
-
             leftOutput = Util.clip(leftOutput, -1, 1);
             rightOutput = Util.clip(rightOutput, -1, 1);
             return new DrivePower(leftOutput, rightOutput);
@@ -96,10 +95,8 @@ public class DriveStraightController {
         TrajectoryGenerator trajectoryGenerator = new TrajectoryGenerator(Constants.kDistanceTrajectoryAccel, Constants.kDistanceTrajectoryCruiseVelocity, Constants.kControlLoopPeriod);
         if (distance < 0){
             reversed = true;
-            this.trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, Math.abs(distance));
-        } else {
-            this.trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, distance);
         }
+        this.trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, Math.abs(distance));
         initialAngle = angle;
     }
 }

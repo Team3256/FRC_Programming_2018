@@ -12,13 +12,13 @@ public class TestWebappAuto extends AutoModeBase {
         double startTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
         runAction(new FollowTrajectoryAction(0, 110, 3, 0));
         double currVel = DriveTrain.getInstance().getAverageVelocity();
-        runAction(new FollowArcTrajectoryAction(currVel, 80, 20, 90));
+        runAction(new FollowArcTrajectoryAction(currVel, 80, 20, 90, false));
         currVel = DriveTrain.getInstance().getAverageVelocity();
         runAction(new FollowTrajectoryAction(currVel,110,20, 90));
         //runAction(new WaitAction(1.5));
         currVel = DriveTrain.getInstance().getAverageVelocity();
         //runAction(new WaitAction(2.0));
-        runAction(new FollowArcTrajectoryAction(currVel, 80, 15, -90)); //replace start with currVel
+        runAction(new FollowArcTrajectoryAction(currVel, 80, 15, -90, false)); //replace start with currVel
         currVel = DriveTrain.getInstance().getAverageVelocity();
         runAction(new FollowTrajectoryAction(currVel, 50, 10, -90));
         System.out.println(edu.wpi.first.wpilibj.Timer.getFPGATimestamp()-startTime);

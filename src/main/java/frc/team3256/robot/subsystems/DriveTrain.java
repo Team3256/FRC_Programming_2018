@@ -3,6 +3,7 @@ package frc.team3256.robot.subsystems;
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -281,6 +282,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
             rightMaster.enableVoltageCompensation(false);
             leftSlave.enableVoltageCompensation(false);
             rightSlave.enableVoltageCompensation(false);
+            leftMaster.setNeutralMode(NeutralMode.Coast);
+            leftSlave.setNeutralMode(NeutralMode.Coast);
+            rightMaster.setNeutralMode(NeutralMode.Coast);
+            rightSlave.setNeutralMode(NeutralMode.Coast);
             controlMode = DriveControlMode.OPEN_LOOP;
         }
         leftMaster.set(ControlMode.PercentOutput, leftPower);

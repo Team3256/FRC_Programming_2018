@@ -9,6 +9,9 @@ public class TeleopDriveController {
     private static final double kQuickStopThreshold = 0.2;
     private static final double kQuickStopAlpha = 0.1;
     private static final double kQuickStopScalar = 2.0;
+    private static final double kQuickTurnDeltaLimit = 2.0/1000.0/12.0*20.0;
+
+    private static double prevTurn = 0.0;
 
     //Tank Drive
     public static DrivePower tankDrive(double leftPower, double rightPower) {
@@ -47,6 +50,15 @@ public class TeleopDriveController {
             }
             overPower = 1.0;
             angularPower = turn;
+            if (Math.abs(turn - prevTurn) > kQuickTurnDeltaLimit){
+                //System.out.println("TURN: " + turn);
+                //System.out.println("PREVIOUS TURN: " + prevTurn);
+                if (turn > 0){
+                    angularPower = prevTurn + kQuickTurnDeltaLimit;
+                    //System.out.println("ANGULAR POWER: " + angularPower);
+                }
+                else angularPower = prevTurn - kQuickTurnDeltaLimit;
+            }
         }
         else{
             overPower = 0.0;
@@ -61,6 +73,7 @@ public class TeleopDriveController {
                 quickStopAccumulator = 0.0;
             }
         }
+        prevTurn = turn;
         double left = throttle + angularPower;
         double right = throttle - angularPower;
         if (left > 1.0){

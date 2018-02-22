@@ -71,8 +71,8 @@ public class Intake extends SubsystemBase implements Loop {
 
     @Override
     public void init(double timestamp) {
-        currentState = SystemState.STOWED_CLOSED;
-        previousState = SystemState.STOWED_CLOSED;
+        currentState = SystemState.DEPLOYED_CLOSED;
+        previousState = SystemState.DEPLOYED_CLOSED;
         prevWantedState = WantedState.IDLE;
         wantedState = WantedState.IDLE;
         stateChanged = true;

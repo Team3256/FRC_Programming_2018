@@ -64,6 +64,7 @@ public class DriveStraightController {
             feedForwardValue = calculateFeedForward(point.getVel(), point.getAcc());
             if (reversed){
                 currPos *= -1;
+                currAngle *= -1;
             }
             feedBackValue = calculateFeedBack(point.getPos(), currPos, point.getVel());
             //System.out.println(PID);

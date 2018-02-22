@@ -390,6 +390,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
         driveStraightController.setSetpoint(startVel, endVel, distance, angle);
         if (controlMode != DriveControlMode.DRIVE_STRAIGHT){
             controlMode = DriveControlMode.DRIVE_STRAIGHT;
+            leftMaster.setNeutralMode(NeutralMode.Brake);
+            leftSlave.setNeutralMode(NeutralMode.Brake);
+            rightMaster.setNeutralMode(NeutralMode.Brake);
+            rightSlave.setNeutralMode(NeutralMode.Brake);
         }
         updateDriveStraight();
     }

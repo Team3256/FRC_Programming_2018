@@ -62,14 +62,14 @@ public class Constants {
     public static final int kTurnMotionMagicProfile = 0;
 
     //DriveStraightController Gains
-    public static final double kDistanceTrajectoryP = 0.04;
+    public static final double kDistanceTrajectoryP = 0.08;
     public static final double kDistanceTrajectoryI = 0;
     public static final double kDistanceTrajectoryD = 0;
     public static final double kDistanceTrajectoryV = 1.0/170.0;
     public static final double kDistanceTrajectoryA = 0;
-    public static final double kDistanceTrajectoryAccel = 12.0*12.0;
+    public static final double kDistanceTrajectoryAccel = 10.0*12.0;
     public static final double kDistanceTrajectoryCruiseVelocity = 12.0*12.0;
-    public static final double kStraightP = 0.02;//0.05
+    public static final double kStraightP = 0.01;//0.05
     public static final double kStraightI = 0.0;
     public static final double kStraightD = 0.0;
 

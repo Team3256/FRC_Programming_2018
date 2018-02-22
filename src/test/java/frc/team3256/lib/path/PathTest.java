@@ -1,7 +1,6 @@
 package frc.team3256.lib.path;
 
 import frc.team3256.lib.math.Translation;
-import frc.team3256.robot.subsystems.Intake;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

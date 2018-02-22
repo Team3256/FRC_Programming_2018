@@ -87,8 +87,8 @@ public class TalonUtil{
         talon.configOpenloopRamp(0, 10);
         talon.configClosedloopRamp(0, 10);
         //set minimum and maximum voltage output for talons
-        talon.configNominalOutputForward(1.0/12.0, 10);
-        talon.configNominalOutputReverse(-1.0/12.0, 10);
+        talon.configNominalOutputForward(0, 10);
+        talon.configNominalOutputReverse(0, 10);
         talon.configPeakOutputForward(1.0, 10);
         talon.configPeakOutputReverse(-1.0, 10);
         return talon;
@@ -111,5 +111,17 @@ public class TalonUtil{
     public static void setCurrentLimit(TalonSRX talon, int peakAmps, int continuousAmps, int continuousDuration){
         talon.configPeakCurrentLimit(peakAmps, 0);
         talon.configContinuousCurrentLimit(continuousAmps, continuousDuration);
+    }
+
+    public static void setBrakeMode(TalonSRX... talons){
+        for(TalonSRX talon : talons){
+            talon.setNeutralMode(NeutralMode.Brake);
+        }
+    }
+
+    public static void setCoastMode(TalonSRX... talons){
+        for(TalonSRX talon : talons){
+            talon.setNeutralMode(NeutralMode.Coast);
+        }
     }
 }

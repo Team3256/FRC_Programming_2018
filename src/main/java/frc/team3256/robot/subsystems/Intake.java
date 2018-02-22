@@ -1,6 +1,5 @@
 package frc.team3256.robot.subsystems;
 
-import com.sun.corba.se.impl.orbutil.closure.Constant;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
 import frc.team3256.lib.Loop;
@@ -52,6 +51,7 @@ public class Intake extends SubsystemBase implements Loop {
         IDLE,
         WANTS_TO_TOGGLE_PIVOT,
         WANTS_TO_TOGGLE_FLOP,
+        WANTS_TO_DEPLOY
     }
 
     private Intake() {
@@ -302,7 +302,14 @@ public class Intake extends SubsystemBase implements Loop {
                 else if(currentState == SystemState.STOWED_OPEN){
                     return SystemState.STOWED_CLOSED;
                 }
-
+            case WANTS_TO_DEPLOY:
+                wantsToToggle = false;
+                if(currentState == SystemState.STOWED_OPEN || currentState == SystemState.DEPLOYED_OPEN){
+                    return SystemState.DEPLOYED_OPEN;
+                }
+                else if(currentState == SystemState.STOWED_CLOSED || currentState == SystemState.DEPLOYED_CLOSED){
+                    return SystemState.DEPLOYED_CLOSED;
+                }
             //default: Safest position (Intake is stowed inside the robot)
             default:
                 return SystemState.STOWED_CLOSED;

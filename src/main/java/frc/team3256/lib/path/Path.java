@@ -38,6 +38,10 @@ public class Path {
         return segments.size();
     }
 
+    public PathUpdate update(Translation robotCoordinates) {
+        return this.update(robotCoordinates, 0);
+    }
+
     public PathUpdate update(Translation robotCoordinates, double lookaheadDistance){
         PathUpdate rv = new PathUpdate();
         Segment currSegment = segments.get(0);

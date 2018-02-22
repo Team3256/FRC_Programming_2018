@@ -2,6 +2,7 @@ package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.Loop;
+import frc.team3256.robot.Constants;
 
 public class Superstructure extends SubsystemBase implements Loop{
     private static Superstructure instance;
@@ -14,6 +15,7 @@ public class Superstructure extends SubsystemBase implements Loop{
     private SystemState newState;
     private WantedState wantedState;
     private boolean stateChanged;
+    private double timeWhenStateChanged = 0;
 
     public static Superstructure getInstance() {
         return instance == null ? instance = new Superstructure() : instance;
@@ -81,13 +83,13 @@ public class Superstructure extends SubsystemBase implements Loop{
                 newState = handleManualLower();
                 break;
             case SWITCH_POSITION:
-                newState = handleScoreSwitch();
+                newState = handleScoreSwitch(timestamp);
                 break;
             case LOW_SCALE_POSITION:
-                newState = handleScoreLow();
+                newState = handleScoreScaleLow(timestamp);
                 break;
             case HIGH_SCALE_POSITION:
-                newState = handleScoreHigh();
+                newState = handleScoreScaleHigh(timestamp);
                 break;
             case SCORING_FORWARD:
                 newState = handleScoreForward();
@@ -98,6 +100,7 @@ public class Superstructure extends SubsystemBase implements Loop{
         }
         if (newState != currentState){
             currentState = newState;
+            timeWhenStateChanged = timestamp;
             stateChanged = true;
         }
         else stateChanged = false;
@@ -114,8 +117,8 @@ public class Superstructure extends SubsystemBase implements Loop{
     private SystemState handleIntake() {
         if (stateChanged) {
             elevator.setWantedState(Elevator.WantedState.INTAKE_POS);
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_RECEIVE);
         }
+        carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_RECEIVE);
         intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
         return defaultStateTransfer();
     }
@@ -135,37 +138,69 @@ public class Superstructure extends SubsystemBase implements Loop{
     }
 
     private SystemState handleManualRaise() {
+        if(stateChanged){
+            intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
+            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+        }
         elevator.setWantedState(Elevator.WantedState.MANUAL_UP);
         return defaultStateTransfer();
     }
 
     private SystemState handleManualLower() {
+        if(stateChanged){
+            intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
+            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+        }
         elevator.setWantedState(Elevator.WantedState.MANUAL_DOWN);
         return defaultStateTransfer();
     }
 
-    private SystemState handleScoreSwitch() {
-        elevator.setWantedState(Elevator.WantedState.SWITCH);
+    private SystemState handleScoreSwitch(double currTime) {
+        if (stateChanged){
+            intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
+            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+        }
+        if (currTime - timeWhenStateChanged > Constants.kElevatorRaiseDelayTime){
+            elevator.setWantedState(Elevator.WantedState.SWITCH);
+        }
         return defaultStateTransfer();
     }
 
-    private SystemState handleScoreLow() {
-        elevator.setWantedState(Elevator.WantedState.LOW_SCALE);
+    private SystemState handleScoreScaleLow(double currTime) {
+        if (stateChanged) {
+            intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
+            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+        }
+        if(currTime - timeWhenStateChanged > Constants.kElevatorRaiseDelayTime){
+            elevator.setWantedState(Elevator.WantedState.LOW_SCALE);
+        }
         return defaultStateTransfer();
     }
 
-    private SystemState handleScoreHigh(){
-        elevator.setWantedState(Elevator.WantedState.HIGH_SCALE);
+    private SystemState handleScoreScaleHigh(double currTime){
+        if(stateChanged){
+            intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
+            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+        }
+        if(currTime - timeWhenStateChanged > Constants.kElevatorRaiseDelayTime){
+            elevator.setWantedState(Elevator.WantedState.HIGH_SCALE);
+        }
         return defaultStateTransfer();
     }
 
     private SystemState handleScoreForward() {
-        carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_FORWARD);
+        if(elevator.getHeight() > Constants.kElevatorScoreFrontMinHeight){
+            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_FORWARD);
+        }
+        else carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         return defaultStateTransfer();
     }
 
     private SystemState handleScoreBackward(){
-        carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_BACKWARD);
+        if(elevator.getHeight() > Constants.kElevatorScoreRearMinHeight){
+            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_BACKWARD);
+        }
+        else carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         return defaultStateTransfer();
     }
 

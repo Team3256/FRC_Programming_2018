@@ -1,12 +1,10 @@
 package frc.team3256.robot.subsystems;
 
-import com.ctre.phoenix.ErrorCode;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.InterruptHandlerFunction;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.TalonUtil;
@@ -56,23 +54,18 @@ public class Elevator extends SubsystemBase implements Loop{
         slaveTwo = TalonUtil.generateSlaveTalon(Constants.kElevatorSlaveTwo, Constants.kElevatorMaster);
         slaveThree = TalonUtil.generateSlaveTalon(Constants.kElevatorSlaveThree, Constants.kElevatorMaster);
 
-        if (master.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0) != ErrorCode.OK){
-            DriverStation.reportError("Mag Encoder on elevator not detected!!!", false);
-        }
+        TalonUtil.configMagEncoder(master);
         master.setSelectedSensorPosition(0, 0, 0);
 
         //configure Hold PID values
-        master.config_kP(Constants.kElevatorHoldSlot, Constants.kElevatorHoldP, 0);
-        master.config_kI(Constants.kElevatorHoldSlot, Constants.kElevatorHoldI, 0);
-        master.config_kD(Constants.kElevatorHoldSlot, Constants.kElevatorHoldD, 0);
+        TalonUtil.setPIDGains(master, Constants.kElevatorHoldSlot, Constants.kElevatorHoldP,
+                Constants.kElevatorHoldI, Constants.kElevatorHoldD, 0);
         //configure FastUp PID values
-        master.config_kP(Constants.kElevatorFastUpSlot, Constants.kElevatorFastUpP, 0);
-        master.config_kI(Constants.kElevatorFastUpSlot, Constants.kElevatorFastUpI, 0);
-        master.config_kD(Constants.kElevatorFastUpSlot, Constants.kElevatorFastUpD, 0);
+        TalonUtil.setPIDGains(master, Constants.kElevatorFastUpSlot, Constants.kElevatorFastUpP,
+                Constants.kElevatorFastUpI, Constants.kElevatorFastUpD, 0);
         //configure FastDown PID values
-        master.config_kP(Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownP, 0);
-        master.config_kI(Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownI, 0);
-        master.config_kD(Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownD, 0);
+        TalonUtil.setPIDGains(master, Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownP,
+                Constants.kElevatorFastDownI, Constants.kElevatorFastDownD, 0);
 
         //voltage limiting
 
@@ -190,6 +183,11 @@ public class Elevator extends SubsystemBase implements Loop{
 
     }
 
+    public boolean atClosedLoopTarget(){
+        if (!m_usingClosedLoop) return false;
+        return (Math.abs(getHeight() - m_closedLoopTarget) < Constants.kElevatorTolerance);
+    }
+
     private SystemState handleHold(){
         setTargetPosition(getHeight(), Constants.kElevatorHoldSlot);
         return defaultStateTransfer();
@@ -197,6 +195,9 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private SystemState handleFastUp(){
         if(isCalibrated){
+            if (atClosedLoopTarget()){
+                return SystemState.HOLD;
+            }
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastUpSlot);
             return SystemState.FAST_UP;
         }
@@ -205,6 +206,9 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private SystemState handleFastDown(){
         if(isCalibrated){
+            if(atClosedLoopTarget()){
+                return SystemState.HOLD;
+            }
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastDownSlot);
             return SystemState.FAST_DOWN;
         }
@@ -242,12 +246,6 @@ public class Elevator extends SubsystemBase implements Loop{
                 }
                 m_usingClosedLoop = true;
                 break;
-            /*case MID_SCALE:
-                if(stateChanged) {
-                    m_closedLoopTarget = Constants.kMidScalePreset;
-                }
-                m_usingClosedLoop = true;
-                break;*/
             case LOW_SCALE:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kLowScalePreset;

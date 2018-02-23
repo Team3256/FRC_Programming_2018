@@ -277,7 +277,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
             rightMaster.enableVoltageCompensation(false);
             leftSlave.enableVoltageCompensation(false);
             rightSlave.enableVoltageCompensation(false);
-            TalonUtil.setCoastMode(leftMaster, leftSlave, rightMaster, rightSlave);
+            TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
             controlMode = DriveControlMode.OPEN_LOOP;
         }
         leftMaster.set(ControlMode.PercentOutput, leftPower);

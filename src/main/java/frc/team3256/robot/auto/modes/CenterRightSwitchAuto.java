@@ -16,14 +16,15 @@ public class CenterRightSwitchAuto extends AutoModeBase {
         runAction(new FollowArcTrajectoryAction(currVel, 60, 40, -30, false));
         System.out.println("Initial 45 degree Arc --------------");
         currVel = DriveTrain.getInstance().getAverageVelocity();
-        runAction(new FollowTrajectoryAction(currVel, 60, 70, -30)); //radius 65
+        runAction(new FollowTrajectoryAction(currVel, 60, 60, -30)); //radius 65
         System.out.println("30\" forward -----------------");
         currVel = DriveTrain.getInstance().getAverageVelocity();
         runAction(new FollowArcTrajectoryAction(currVel, 60, 25, 0, false));
         System.out.println("Gyro Angle:   " + DriveTrain.getInstance().getAngle().degrees());
-        currVel = DriveTrain.getInstance().getAverageVelocity();
-        runAction(new FollowTrajectoryAction(currVel, 24, 20, 0));
         DriveTrain.getInstance().setBrake();
+        /*currVel = DriveTrain.getInstance().getAverageVelocity();
+        runAction(new FollowTrajectoryAction(currVel, 24, 20, 0));*/
+        //DriveTrain.getInstance().setBrake();
         System.out.println("Total Time: " + Double.toString(Timer.getFPGATimestamp() - initTime));
     }
 }

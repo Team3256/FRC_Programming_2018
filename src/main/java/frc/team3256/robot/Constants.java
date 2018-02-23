@@ -117,7 +117,7 @@ public class Constants {
     public static final double kLeftIntakePower = 0.55;//0.75
     public static final double kRightIntakePower = 0.55;//0.6
     public static final double kIntakeExhaustPower = -0.6;
-    public static final double kUnjamMaxDuration = 1000.0/1000.0;
+    public static final double kUnjamMaxDuration = 500.0/1000.0;
     public static final double kCarriageReceivePower = 0.8;
     public static final double kCarriageSecurePower = 0.4;
     public static final double kCarriageScoreForwardPower = 0;

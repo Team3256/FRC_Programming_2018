@@ -107,6 +107,8 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         disabledLooper.stop();
         enabledLooper.start();
+        driveTrain.setBrake();
+        driveTrain.configRamp();
         //driveTrain.setVelocitySetpoint(0,0);
     }
 

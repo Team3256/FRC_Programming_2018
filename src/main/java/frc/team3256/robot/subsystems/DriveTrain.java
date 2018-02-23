@@ -284,6 +284,13 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.set(ControlMode.PercentOutput, rightPower);
     }
 
+    public void configRamp(){
+        leftMaster.configOpenloopRamp(1.0, 0);
+        rightMaster.configOpenloopRamp(1.0, 0);
+        leftSlave.configOpenloopRamp(1.0, 0);
+        rightSlave.configOpenloopRamp(1.0, 0);
+    }
+
     public void setBrake(){
         TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
         leftMaster.set(ControlMode.PercentOutput, 0);
@@ -488,4 +495,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
         return controlMode;
     }
 
+    public void setCoastMode(){
+        leftMaster.setNeutralMode(NeutralMode.Coast);
+        rightMaster.setNeutralMode(NeutralMode.Coast);
+        leftSlave.setNeutralMode(NeutralMode.Coast);
+        rightSlave.setNeutralMode(NeutralMode.Coast);
+    }
 }

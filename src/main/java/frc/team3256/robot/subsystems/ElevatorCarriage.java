@@ -24,6 +24,8 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
     private ElevatorCarriage() {
         rollerLeft = new VictorSP(Constants.kCarriageRollerLeft);
         rollerRight = new VictorSP(Constants.kCarriageRollerRight);
+        rollerLeft.setInverted(false);
+        rollerRight.setInverted(true);
         squeezeSolenoid = new DoubleSolenoid(Constants.kCarriageSqueezeForward, Constants.kCarriageSqueezeReverse);
     }
 
@@ -128,6 +130,7 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
         if (stateChanged){
             squeeze();
         }
+        runMotors(0);
         return defaultStateTransfer();
     }
 
@@ -135,6 +138,7 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
         if (stateChanged){
             open();
         }
+        runMotors(0);
         return defaultStateTransfer();
     }
 
@@ -194,7 +198,8 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
     }
 
     public boolean hasCube(){
-        return Intake.getInstance().hasCube();
+        return false;
+        //return Intake.getInstance().hasCube();
     }
 
     @Override

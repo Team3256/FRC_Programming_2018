@@ -61,7 +61,7 @@ public class Robot extends IterativeRobot {
         disabledLooper.addLoops(gyroCalibrator, poseEstimator);
         //enabled looper -> control loop for subsystems
         enabledLooper = new Looper(Constants.kControlLoopPeriod);
-        enabledLooper.addLoops(driveTrain, poseEstimator, intake);
+        enabledLooper.addLoops(driveTrain, poseEstimator, intake, carriage);
 
         subsystemManager = new SubsystemManager();
         subsystemManager.addSubsystems(driveTrain, intake);
@@ -198,6 +198,7 @@ public class Robot extends IterativeRobot {
 
         else{
             intake.setWantedState(Intake.WantedState.IDLE);
+            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_OPEN);
         }
 
         prevFlop = flop;

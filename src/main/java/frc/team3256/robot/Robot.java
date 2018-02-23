@@ -198,7 +198,7 @@ public class Robot extends IterativeRobot {
 
         else{
             intake.setWantedState(Intake.WantedState.IDLE);
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_OPEN);
+            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
 
         prevFlop = flop;

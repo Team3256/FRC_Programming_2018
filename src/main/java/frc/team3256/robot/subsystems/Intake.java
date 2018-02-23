@@ -167,10 +167,10 @@ public class Intake extends SubsystemBase implements Loop {
         if (timestamp - unjamTimeStart > kUnjamMaxDuration){
             return unjamPreviousState;
         }
-        //Otherwise, we can still unjam, so stop the intake and check what the new wanted state is
+        //Otherwise, we can still unjam, so return UNJAMMING state
         else {
-            setIntake(0,0);
-            return defaultStateTransfer();
+            setIntake(Constants.kIntakeExhaustPower,Constants.kIntakeExhaustPower);
+            return SystemState.UNJAMMING;
         }
     }
 

@@ -176,17 +176,22 @@ public class Robot extends IterativeRobot {
 
         else if (controlsInterface.getIntake()){
             intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
-            //carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_OPEN);
+            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_RECEIVE);
         }
 
         else if (controlsInterface.getExhaust()){
             intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
+            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_FORWARD);
         }
 
         else if(flop && !prevFlop){
             intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
         }
 
+        else if(controlsInterface.scoreFront()){
+            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_FORWARD);
+
+        }
         else if(pivot && !prevPivot){
             intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
         }
@@ -206,7 +211,7 @@ public class Robot extends IterativeRobot {
         double elevatorThrottle = controlsInterface.manualElevatorUp();
 
         if (controlsInterface.scoreRear()){
-            elevator.setTargetPosition(30,Constants.kElevatorFastUpSlot);
+            elevator.setTargetPosition(Constants.kHighScalePreset,Constants.kElevatorFastUpSlot);
         }
 
         else if (Math.abs(elevatorThrottle) > 0.1) elevator.setOpenLoop(elevatorThrottle);

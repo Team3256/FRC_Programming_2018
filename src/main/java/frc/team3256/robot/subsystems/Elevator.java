@@ -115,7 +115,7 @@ public class Elevator extends SubsystemBase implements Loop{
 
     boolean tempflag = false;
 
-    private void setTargetPosition(double targetHeight, int slotID){
+    public void setTargetPosition(double targetHeight, int slotID){
         if (!isCalibrated)return;
         System.out.println("OUTPUT VOLTAGE: " + master.getMotorOutputVoltage());
         if (!tempflag) {

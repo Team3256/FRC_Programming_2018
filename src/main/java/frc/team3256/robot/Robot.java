@@ -13,6 +13,7 @@ import frc.team3256.lib.hardware.ADXRS453_Calibrator;
 import frc.team3256.robot.auto.AutoModeBase;
 import frc.team3256.robot.auto.AutoModeChooser;
 import frc.team3256.robot.auto.AutoModeExecuter;
+import frc.team3256.robot.auto.actions.FollowArcTrajectoryAction;
 import frc.team3256.robot.auto.modes.*;
 import frc.team3256.robot.gamedata.GameDataAccessor;
 import frc.team3256.robot.operation.ControlsInterface;
@@ -96,7 +97,7 @@ public class Robot extends IterativeRobot {
 
         // AutoModeBase autoMode = new TestPurePursuitAuto();
         //AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        AutoModeBase autoModeTest = new TestArcTrajectoryAuto();
+        AutoModeBase autoModeTest = new CenterLeftSwitchAuto();
         autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
         autoModeExecuter.setAutoMode(autoModeTest);
         autoModeExecuter.start();

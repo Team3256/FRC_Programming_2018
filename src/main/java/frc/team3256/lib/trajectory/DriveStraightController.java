@@ -72,8 +72,8 @@ public class DriveStraightController {
             leftOutput = feedBackValue + feedForwardValue;
             rightOutput = feedBackValue + feedForwardValue;
             adjustment = -pidController.update(currAngle);
-            System.out.println("curr angle: " + currAngle);
-            System.out.println("adjustment: " + adjustment);
+            //System.out.println("curr angle: " + currAngle);
+            //System.out.println("adjustment: " + adjustment);
             leftOutput += adjustment;
             rightOutput -= adjustment;
             if (reversed){

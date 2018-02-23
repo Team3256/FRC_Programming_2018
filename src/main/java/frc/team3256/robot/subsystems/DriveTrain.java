@@ -284,6 +284,12 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.set(ControlMode.PercentOutput, rightPower);
     }
 
+    public void setBrake(){
+        TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
+        leftMaster.set(ControlMode.PercentOutput, 0);
+        rightMaster.set(ControlMode.PercentOutput, 0);
+    }
+
     public void setOpenLoop(DrivePower power){
         setOpenLoop(power.getLeft(), power.getRight());
     }
@@ -386,6 +392,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
             TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
             setHighGear(true);
         }
+        TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
         updateDriveStraight();
     }
 
@@ -415,7 +422,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public boolean isTurnInPlaceFinished() {
-        double error = Math.abs(degrees - getAngle().degrees());
+        double error = Math.abs(angle - getAngle().degrees());
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
             return true;
         }
@@ -432,7 +439,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public boolean isArcControllerFinished() {
-        return driveArcController.isFinished();
+        return driveArcController.isFinished() || Math.abs(getAngle().degrees() - angle) < 1.0;
     }
 
     public boolean isPurePursuitFinished() {

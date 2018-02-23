@@ -25,8 +25,8 @@ public class FollowTrajectoryAction implements Action {
 
     @Override
     public void done() {
-        drive.setOpenLoop(0,0);
-        drive.resetDriveStraightController();
+        drive.setBrake();
+        //drive.setOpenLoop(0,0);
     }
 
     @Override

@@ -81,13 +81,15 @@ public class DriveArcController {
            // System.out.println("Expected Lead Path   " + ((radius+(Constants.kRobotTrack/2))*(angle)));
             //System.out.println("Expected Follow Path   " + ((radius-(Constants.kRobotTrack/2))*angle));
             //SmartDashboard.putNumber("LEAD VEL ERROR", leadPoint.getVel() - currVel);
-            SmartDashboard.putNumber("Adjustment", adjustment);
+            //SmartDashboard.putNumber("Adjustment", adjustment);
             //System.out.println("Target: " + targetAngle);
+            /*
             SmartDashboard.putNumber("Curr Angle", currAngle);
             System.out.println("EXPECTED END LEAD: " + trajectoryCurveLead.getCurrPoint(curr_segment).getPos());
             System.out.println("Lead Position  " + currPosLead);
             System.out.println("EXPECTED END FOLLOW: " + trajectoryCurveFollow.getCurrPoint(curr_segment).getPos());
             System.out.println("Follow Position    " +  currPosFollow);
+            */
             leadOutput += adjustment;
             followOutput -= adjustment;
             curr_segment++;

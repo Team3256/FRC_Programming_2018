@@ -1,10 +1,6 @@
 package frc.team3256.robot.subsystems;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3256.lib.Loop;
-import frc.team3256.robot.Constants;
-
-public class Superstructure extends SubsystemBase implements Loop{
+public class Superstructure {
     private static Superstructure instance;
 
     private Intake intake;
@@ -55,13 +51,12 @@ public class Superstructure extends SubsystemBase implements Loop{
         WANTS_TO_LOWER_MANUAL,
     }
 
-    @Override
     public void init(double timestamp){
         currentState = SystemState.HOLDING_POSITION;
         stateChanged = true;
     }
 
-    @Override
+    
     public void update(double timestamp) {
         switch (currentState) {
             case HOLDING_POSITION:
@@ -160,7 +155,7 @@ public class Superstructure extends SubsystemBase implements Loop{
             intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
             carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
-        if (currTime - timeWhenStateChanged > Constants.kElevatorRaiseDelayTime){
+        if (currTime - timeWhenStateChanged > 0){
             elevator.setWantedState(Elevator.WantedState.SWITCH);
         }
         return defaultStateTransfer();
@@ -171,7 +166,7 @@ public class Superstructure extends SubsystemBase implements Loop{
             intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
             carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
-        if(currTime - timeWhenStateChanged > Constants.kElevatorRaiseDelayTime){
+        if(currTime - timeWhenStateChanged > 0){
             elevator.setWantedState(Elevator.WantedState.LOW_SCALE);
         }
         return defaultStateTransfer();
@@ -182,14 +177,14 @@ public class Superstructure extends SubsystemBase implements Loop{
             intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
             carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
-        if(currTime - timeWhenStateChanged > Constants.kElevatorRaiseDelayTime){
+        if(currTime - timeWhenStateChanged > 0){
             elevator.setWantedState(Elevator.WantedState.HIGH_SCALE);
         }
         return defaultStateTransfer();
     }
 
     private SystemState handleScoreForward() {
-        if(elevator.getHeight() > Constants.kElevatorScoreFrontMinHeight){
+        if(elevator.getHeight() > 0){
             carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_FORWARD);
         }
         else carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
@@ -197,7 +192,7 @@ public class Superstructure extends SubsystemBase implements Loop{
     }
 
     private SystemState handleScoreBackward(){
-        if(elevator.getHeight() > Constants.kElevatorScoreRearMinHeight){
+        if(elevator.getHeight() > 0){
             carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_BACKWARD);
         }
         else carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
@@ -248,29 +243,7 @@ public class Superstructure extends SubsystemBase implements Loop{
         this.wantedState = wantedState;
     }
 
-    @Override
-    public void end(double timestamp) {
-
+    public SystemState getCurrentState(){
+        return currentState;
     }
-
-
-
-    @Override
-    public void outputToDashboard() {
-        SmartDashboard.putString("Current State: ", currentState.toString());
-        SmartDashboard.putString("New State: ", newState.toString());
-        SmartDashboard.putString("Wanted State: ", wantedState.toString());
-        SmartDashboard.putBoolean("State Changed? ", stateChanged);
-    }
-
-    @Override
-    public void selfTest() {
-
-    }
-
-    @Override
-    public void zeroSensors() {
-
-    }
-
 }

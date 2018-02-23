@@ -26,5 +26,4 @@ public class CenterRightSwitchAuto extends AutoModeBase {
         DriveTrain.getInstance().setBrake();
         System.out.println("Total Time: " + Double.toString(Timer.getFPGATimestamp() - initTime));
     }
-    }
 }

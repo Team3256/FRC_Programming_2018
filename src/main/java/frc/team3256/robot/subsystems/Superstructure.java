@@ -36,6 +36,7 @@ public class Superstructure extends SubsystemBase implements Loop{
         LOWERING_ELEVATOR_MANUAL,
         SWITCH_POSITION,
         LOW_SCALE_POSITION,
+        MID_SCALE_POSITION,
         HIGH_SCALE_POSITION,
         SCORING_FORWARD,
         SCORING_BACKWARD,
@@ -47,6 +48,7 @@ public class Superstructure extends SubsystemBase implements Loop{
         WANTS_TO_UNJAM,
         WANTS_TO_SCORE_SWITCH,
         WANTS_TO_SCORE_LOW_SCALE,
+        WANTS_TO_SCORE_MID_SCALE,
         WANTS_TO_SCORE_HIGH_SCALE,
         WANTS_TO_SCORE_FORWARD,
         WANTS_TO_SCORE_BACKWARD,
@@ -221,6 +223,9 @@ public class Superstructure extends SubsystemBase implements Loop{
             case WANTS_TO_SCORE_LOW_SCALE:
                 return SystemState.LOW_SCALE_POSITION;
 
+            case WANTS_TO_SCORE_MID_SCALE:
+                return SystemState.MID_SCALE_POSITION;
+
             case WANTS_TO_SCORE_HIGH_SCALE:
                 return SystemState.HIGH_SCALE_POSITION;
 
@@ -252,8 +257,6 @@ public class Superstructure extends SubsystemBase implements Loop{
     public void end(double timestamp) {
 
     }
-
-
 
     @Override
     public void outputToDashboard() {

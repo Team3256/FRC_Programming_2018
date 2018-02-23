@@ -33,7 +33,7 @@ public class Elevator extends SubsystemBase implements Loop{
         @Override
         public void interruptFired(int interruptAssertedMask, Elevator param) {
             if (!isCalibrated){
-                master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kCompHomeHeight), 0, 0);
+                master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kHomeHeight), 0, 0);
                 isCalibrated = true;
                 master.configForwardSoftLimitEnable(false, 0);
                 master.configReverseSoftLimitEnable(true, 0);
@@ -115,7 +115,7 @@ public class Elevator extends SubsystemBase implements Loop{
 
     boolean tempflag = false;
 
-    public void setTargetPosition(double targetHeight, int slotID){
+    private void setTargetPosition(double targetHeight, int slotID){
         if (!isCalibrated)return;
         System.out.println("OUTPUT VOLTAGE: " + master.getMotorOutputVoltage());
         if (!tempflag) {

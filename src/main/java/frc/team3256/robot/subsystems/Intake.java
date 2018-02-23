@@ -51,7 +51,8 @@ public class Intake extends SubsystemBase implements Loop {
         IDLE,
         WANTS_TO_TOGGLE_PIVOT,
         WANTS_TO_TOGGLE_FLOP,
-        WANTS_TO_DEPLOY
+        WANTS_TO_DEPLOY,
+        WANTS_TO_STOW
     }
 
     private Intake() {
@@ -309,6 +310,14 @@ public class Intake extends SubsystemBase implements Loop {
                 }
                 else if(currentState == SystemState.STOWED_CLOSED || currentState == SystemState.DEPLOYED_CLOSED){
                     return SystemState.DEPLOYED_CLOSED;
+                }
+            case WANTS_TO_STOW:
+                wantsToToggle = false;
+                if(currentState == SystemState.DEPLOYED_OPEN || currentState == SystemState.STOWED_OPEN){
+                    return SystemState.STOWED_OPEN;
+                }
+                else if(currentState == SystemState.DEPLOYED_CLOSED || currentState == SystemState.STOWED_CLOSED){
+                    return SystemState.STOWED_CLOSED;
                 }
             //default: Safest position (Intake is stowed inside the robot)
             default:

@@ -24,7 +24,7 @@ public class CenterLeftSwitchAuto extends AutoModeBase {
         currVel = DriveTrain.getInstance().getAverageVelocity();
         runAction(new FollowTrajectoryAction(currVel, 24, 20, 0));
         DriveTrain.getInstance().setBrake();
-        System.out.println("Total Time: " + Double.toString(Timer.getFPGATimestamp() - initTime)0);
+        System.out.println("Total Time: " + Double.toString(Timer.getFPGATimestamp() - initTime));
     }
 }
 

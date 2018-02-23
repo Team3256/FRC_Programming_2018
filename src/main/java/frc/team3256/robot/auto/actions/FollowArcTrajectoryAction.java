@@ -33,7 +33,7 @@ public class FollowArcTrajectoryAction implements Action {
     @Override
     public void start() {
         drive.resetDriveArcController();
-        drive.configureDriveArc(startVel, endVel, angle, radius, backTurn);
+        drive.configureDriveArc(startVel, endVel, angle, radius, backTurn, drive.getAngle().degrees());
         System.out.println("Started...");
         drive.resetDriveArcController();
         drive.resetEncoders();

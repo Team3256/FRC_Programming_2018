@@ -97,7 +97,7 @@ public class Robot extends IterativeRobot {
 
         // AutoModeBase autoMode = new TestPurePursuitAuto();
         //AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        AutoModeBase autoModeTest = new CenterRightSwitchAuto();
+        AutoModeBase autoModeTest = new CenterLeftSwitchAuto();
         autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
         autoModeExecuter.setAutoMode(autoModeTest);
         autoModeExecuter.start();

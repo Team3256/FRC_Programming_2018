@@ -108,8 +108,12 @@ public class DriveArcController {
         return curr_segment >= trajectoryCurveLead.getLength();
     }
 
-    public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius, boolean backwardsTurn) {
-        if (degrees < 0){inverseTurn = true;}
+    public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius, boolean backwardsTurn, double currAngle) {
+        if (currAngle < 0){
+            if (degrees <= 0){inverseTurn = true;}
+        }
+        else {if (degrees <= 0){inverseTurn = true;}}
+
         backTurn = backwardsTurn;
         angle = (degrees * Math.PI)/180;
         radius = turnRadius;

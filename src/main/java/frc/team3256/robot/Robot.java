@@ -211,7 +211,7 @@ public class Robot extends IterativeRobot {
         double elevatorThrottle = controlsInterface.manualElevatorUp();
 
         if (controlsInterface.scoreRear()){
-            elevator.setTargetPosition(Constants.kHighScalePreset,Constants.kElevatorFastUpSlot);
+            elevator.setTargetPosition(Constants.kMidScalePreset,Constants.kElevatorFastUpSlot);
         }
 
         else if (Math.abs(elevatorThrottle) > 0.1) elevator.setOpenLoop(elevatorThrottle);

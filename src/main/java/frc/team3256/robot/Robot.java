@@ -3,17 +3,13 @@ package frc.team3256.robot;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.DrivePower;
-import frc.team3256.lib.Loop;
 import frc.team3256.lib.Looper;
 import frc.team3256.lib.control.TeleopDriveController;
 import frc.team3256.lib.hardware.ADXRS453_Calibrator;
 import frc.team3256.robot.auto.AutoModeBase;
 import frc.team3256.robot.auto.AutoModeChooser;
 import frc.team3256.robot.auto.AutoModeExecuter;
-import frc.team3256.robot.auto.actions.FollowArcTrajectoryAction;
 import frc.team3256.robot.auto.modes.*;
 import frc.team3256.robot.gamedata.GameDataAccessor;
 import frc.team3256.robot.operation.ControlsInterface;
@@ -25,7 +21,7 @@ public class Robot extends IterativeRobot {
     DriveTrain driveTrain;
     Intake intake;
     Elevator elevator;
-    ElevatorCarriage carriage;
+    Carriage carriage;
     PoseEstimator poseEstimator;
     Looper disabledLooper;
     Looper enabledLooper;
@@ -51,7 +47,7 @@ public class Robot extends IterativeRobot {
         driveTrain = DriveTrain.getInstance();
         intake = Intake.getInstance();
         elevator = Elevator.getInstance();
-        carriage = ElevatorCarriage.getInstance();
+        carriage = Carriage.getInstance();
 
         poseEstimator = PoseEstimator.getInstance();
         gyroCalibrator = new ADXRS453_Calibrator(driveTrain.getGyro());
@@ -159,29 +155,30 @@ public class Robot extends IterativeRobot {
         //System.out.println("HAS CUBE --------------------" + intake.hasCube());
 
         /*if (controlsInterface.scoreFront()){
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_RECEIVE);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_RECEIVE);
         }
 
         if (controlsInterface.manualSqueezeCarriage()){
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }*/
 
 
         //-----------------------------------------------------------------------
 
 
-        if (controlsInterface.unjamIntake()){
+        if (controlsInterface.getUnjam()){
             intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_OPEN);
         }
 
         else if (controlsInterface.getIntake()){
             intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_RECEIVE);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_RECEIVE);
         }
 
         else if (controlsInterface.getExhaust()){
             intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_FORWARD);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_FORWARD);
         }
 
         else if(flop && !prevFlop){
@@ -189,7 +186,7 @@ public class Robot extends IterativeRobot {
         }
 
         else if(controlsInterface.scoreFront()){
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_FORWARD);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_FORWARD);
 
         }
         else if(pivot && !prevPivot){
@@ -198,7 +195,7 @@ public class Robot extends IterativeRobot {
 
         else{
             intake.setWantedState(Intake.WantedState.IDLE);
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
 
         prevFlop = flop;

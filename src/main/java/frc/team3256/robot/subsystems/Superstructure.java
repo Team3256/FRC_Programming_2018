@@ -9,7 +9,7 @@ public class Superstructure extends SubsystemBase implements Loop{
 
     private Intake intake;
     private Elevator elevator;
-    private ElevatorCarriage carriage;
+    private Carriage carriage;
 
     private SystemState currentState;
     private SystemState newState;
@@ -24,7 +24,7 @@ public class Superstructure extends SubsystemBase implements Loop{
     private Superstructure() {
         intake = Intake.getInstance();
         elevator = Elevator.getInstance();
-        carriage = ElevatorCarriage.getInstance();
+        carriage = Carriage.getInstance();
     }
 
     public enum SystemState {
@@ -110,7 +110,7 @@ public class Superstructure extends SubsystemBase implements Loop{
 
     private SystemState handleHoldingPosition() {
         if (stateChanged) {
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
         elevator.setWantedState(Elevator.WantedState.HOLD);
         return defaultStateTransfer();
@@ -120,7 +120,7 @@ public class Superstructure extends SubsystemBase implements Loop{
         if (stateChanged) {
             elevator.setWantedState(Elevator.WantedState.INTAKE_POS);
         }
-        carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_RECEIVE);
+        carriage.setWantedState(Carriage.WantedState.WANTS_TO_RECEIVE);
         intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
         return defaultStateTransfer();
     }
@@ -142,7 +142,7 @@ public class Superstructure extends SubsystemBase implements Loop{
     private SystemState handleManualRaise() {
         if(stateChanged){
             intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
         elevator.setWantedState(Elevator.WantedState.MANUAL_UP);
         return defaultStateTransfer();
@@ -151,7 +151,7 @@ public class Superstructure extends SubsystemBase implements Loop{
     private SystemState handleManualLower() {
         if(stateChanged){
             intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
         elevator.setWantedState(Elevator.WantedState.MANUAL_DOWN);
         return defaultStateTransfer();
@@ -160,7 +160,7 @@ public class Superstructure extends SubsystemBase implements Loop{
     private SystemState handleScoreSwitch(double currTime) {
         if (stateChanged){
             intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
         if (currTime - timeWhenStateChanged > Constants.kElevatorRaiseDelayTime){
             elevator.setWantedState(Elevator.WantedState.SWITCH);
@@ -171,7 +171,7 @@ public class Superstructure extends SubsystemBase implements Loop{
     private SystemState handleScoreScaleLow(double currTime) {
         if (stateChanged) {
             intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
         if(currTime - timeWhenStateChanged > Constants.kElevatorRaiseDelayTime){
             elevator.setWantedState(Elevator.WantedState.LOW_SCALE);
@@ -182,7 +182,7 @@ public class Superstructure extends SubsystemBase implements Loop{
     private SystemState handleScoreScaleHigh(double currTime){
         if(stateChanged){
             intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
         if(currTime - timeWhenStateChanged > Constants.kElevatorRaiseDelayTime){
             elevator.setWantedState(Elevator.WantedState.HIGH_SCALE);
@@ -192,17 +192,17 @@ public class Superstructure extends SubsystemBase implements Loop{
 
     private SystemState handleScoreForward() {
         if(elevator.getHeight() > Constants.kElevatorScoreFrontMinHeight){
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_FORWARD);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_FORWARD);
         }
-        else carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+        else carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         return defaultStateTransfer();
     }
 
     private SystemState handleScoreBackward(){
         if(elevator.getHeight() > Constants.kElevatorScoreRearMinHeight){
-            carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_BACKWARD);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_BACKWARD);
         }
-        else carriage.setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+        else carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         return defaultStateTransfer();
     }
 

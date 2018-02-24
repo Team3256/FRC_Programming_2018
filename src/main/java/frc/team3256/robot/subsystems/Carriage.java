@@ -1,14 +1,11 @@
 package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.VictorSP;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.Loop;
 import frc.team3256.robot.Constants;
-import frc.team3256.robot.operation.ControlsInterface;
 
-public class ElevatorCarriage extends SubsystemBase implements Loop{
+public class Carriage extends SubsystemBase implements Loop{
 
     private VictorSP rollerLeft, rollerRight;
     private DoubleSolenoid squeezeSolenoid;
@@ -16,12 +13,11 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
     private SystemState currentState;
     private WantedState wantedState;
     private boolean stateChanged;
-    private double startTime;
 
 
-    private static ElevatorCarriage elevatorCarriage;
+    private static Carriage elevatorCarriage;
 
-    private ElevatorCarriage() {
+    private Carriage() {
         rollerLeft = new VictorSP(Constants.kCarriageRollerLeft);
         rollerRight = new VictorSP(Constants.kCarriageRollerRight);
         rollerLeft.setInverted(false);
@@ -29,8 +25,8 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
         squeezeSolenoid = new DoubleSolenoid(Constants.kCarriageSqueezeForward, Constants.kCarriageSqueezeReverse);
     }
 
-    public static ElevatorCarriage getInstance(){
-        return elevatorCarriage == null ? elevatorCarriage = new ElevatorCarriage(): elevatorCarriage;
+    public static Carriage getInstance(){
+        return elevatorCarriage == null ? elevatorCarriage = new Carriage(): elevatorCarriage;
     }
 
     public enum SystemState {

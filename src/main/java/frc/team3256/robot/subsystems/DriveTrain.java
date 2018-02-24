@@ -285,10 +285,12 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public void configRamp(){
-        leftMaster.configOpenloopRamp(1.0, 0);
-        rightMaster.configOpenloopRamp(1.0, 0);
-        leftSlave.configOpenloopRamp(1.0, 0);
-        rightSlave.configOpenloopRamp(1.0, 0);
+        /*
+        leftMaster.configOpenloopRamp(0.5, 0);
+        rightMaster.configOpenloopRamp(0.5, 0);
+        leftSlave.configOpenloopRamp(0.5, 0);
+        rightSlave.configOpenloopRamp(0.5, 0);
+        */
     }
 
     public void setBrake(){

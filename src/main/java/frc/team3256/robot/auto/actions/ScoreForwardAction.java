@@ -1,10 +1,10 @@
 package frc.team3256.robot.auto.actions;
 
-import frc.team3256.robot.subsystems.ElevatorCarriage;
+import frc.team3256.robot.subsystems.Carriage;
 
 public class ScoreForwardAction extends RunOnceAction {
     @Override
     public void runOnce() {
-        ElevatorCarriage.getInstance().setWantedState(ElevatorCarriage.WantedState.WANTS_TO_SCORE_FORWARD);
+        Carriage.getInstance().setWantedState(Carriage.WantedState.WANTS_TO_SCORE_FORWARD);
     }
 }

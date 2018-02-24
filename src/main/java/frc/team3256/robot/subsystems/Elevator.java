@@ -69,14 +69,14 @@ public class Elevator extends SubsystemBase implements Loop{
 
         //voltage limiting
 
-        master.configPeakOutputForward(8.0/12.0, 0);
-        master.configPeakOutputReverse(-8.0/12.0,0);
-        slaveOne.configPeakOutputForward(8.0/12.0, 0);
-        slaveOne.configPeakOutputReverse(-8.0/12.0,0);
-        slaveTwo.configPeakOutputForward(8.0/12.0, 0);
-        slaveTwo.configPeakOutputReverse(-8.0/12.0,0);
-        slaveThree.configPeakOutputForward(8.0/12.0, 0);
-        slaveThree.configPeakOutputReverse(-8.0/12.0,0);
+        master.configPeakOutputForward(3.0/12.0, 0);
+        master.configPeakOutputReverse(-3.0/12.0,0);
+        slaveOne.configPeakOutputForward(3.0/12.0, 0);
+        slaveOne.configPeakOutputReverse(-3.0/12.0,0);
+        slaveTwo.configPeakOutputForward(3.0/12.0, 0);
+        slaveTwo.configPeakOutputReverse(-3.0/12.0,0);
+        slaveThree.configPeakOutputForward(3.0/12.0, 0);
+        slaveThree.configPeakOutputReverse(-3.0/12.0,0);
 
 
         master.configNominalOutputForward(0.5/12.0, 0);

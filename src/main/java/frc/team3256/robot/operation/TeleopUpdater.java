@@ -19,7 +19,7 @@ public class TeleopUpdater {
 
         boolean intake = controls.getIntake();
         boolean exhaust = controls.getExhaust();
-        boolean unjam = controls.unjamIntake();
+        boolean unjam = controls.getUnjam();
 
         boolean scoreFront = controls.scoreFront();
         boolean scoreRear = controls.scoreRear();

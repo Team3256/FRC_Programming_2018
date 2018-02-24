@@ -16,7 +16,7 @@ public interface ControlsInterface {
 
     boolean getExhaust();
 
-    boolean unjamIntake();
+    boolean getUnjam();
 
     boolean togglePivot();
 

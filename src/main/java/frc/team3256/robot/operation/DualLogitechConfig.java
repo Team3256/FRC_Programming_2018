@@ -46,7 +46,7 @@ public class DualLogitechConfig implements ControlsInterface{
 
     //Manipulator: Both Triggers
     @Override
-    public boolean unjamIntake(){
+    public boolean getUnjam(){
         return getIntake() && getExhaust();
     }
 

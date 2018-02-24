@@ -38,7 +38,7 @@ public class LogitechButtonBoardConfig implements ControlsInterface{
     }
 
     @Override
-    public boolean unjamIntake() {
+    public boolean getUnjam() {
         return false;
     }
 

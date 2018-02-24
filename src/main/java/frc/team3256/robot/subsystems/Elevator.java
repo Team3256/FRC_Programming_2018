@@ -1,6 +1,5 @@
 package frc.team3256.robot.subsystems;
 
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -33,12 +32,13 @@ public class Elevator extends SubsystemBase implements Loop{
 
         @Override
         public void interruptFired(int interruptAssertedMask, Elevator param) {
-            if (!isHomed){
+            if (master.getSelectedSensorVelocity(0) < 0){
+                System.out.println("HOMED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kHomeHeight), 0, 0);
                 isHomed = true;
                 master.configForwardSoftLimitEnable(true, 0);
                 master.configReverseSoftLimitEnable(true, 0);
-                hallEffect.disableInterrupts();
+                //hallEffect.disableInterrupts();
             }
         }
     };
@@ -67,13 +67,16 @@ public class Elevator extends SubsystemBase implements Loop{
         TalonUtil.setPIDGains(master, Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownP,
                 Constants.kElevatorFastDownI, Constants.kElevatorFastDownD, 0);
 
+
         //voltage limiting
         TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage/12.0,
                 Constants.kElevatorMaxDownVoltage/12.0, master, slaveOne, slaveTwo, slaveThree);
         TalonUtil.setMinOutput(Constants.kElevatorMinHoldVoltage/12.0,
                 0, master, slaveOne, slaveTwo, slaveThree);
 
-        /*master.configPeakOutputForward(Constants.kElevatorMaxUpVoltage/12.0, 0);
+
+        /*
+        master.configPeakOutputForward(Constants.kElevatorMaxUpVoltage/12.0, 0);
         master.configPeakOutputReverse(Constants.kElevatorMaxDownVoltage/12.0,0);
         slaveOne.configPeakOutputForward(Constants.kElevatorMaxUpVoltage/12.0, 0);
         slaveOne.configPeakOutputReverse(Constants.kElevatorMaxDownVoltage/12.0,0);
@@ -91,6 +94,7 @@ public class Elevator extends SubsystemBase implements Loop{
         slaveTwo.configNominalOutputReverse(0/12.0,0);
         slaveThree.configNominalOutputForward(0.5/12.0, 0);
         slaveThree.configNominalOutputReverse(0/12.0,0);
+
         */
 
 
@@ -101,7 +105,7 @@ public class Elevator extends SubsystemBase implements Loop{
         master.configForwardSoftLimitEnable(false, 0);
         master.configReverseSoftLimitEnable(false,0);
 
-        TalonUtil.setBrakeMode(master, slaveOne, slaveTwo, slaveThree);
+        TalonUtil.setCoastMode(master, slaveOne, slaveTwo, slaveThree);
 
     }
 
@@ -117,18 +121,23 @@ public class Elevator extends SubsystemBase implements Loop{
     boolean tempflag = false;
 
     public void setTargetPosition(double targetHeight, int slotID){
+        System.out.println("IS HOMED: " + isHomed);
         if (!isHomed)return;
         System.out.println("OUTPUT VOLTAGE: " + master.getMotorOutputVoltage());
-        if (!tempflag) {
+        System.out.println("CURR : " + getHeight());
+
+        /*if (!tempflag) {
             master.selectProfileSlot(slotID, 0);
             tempflag = true;
         }
+        */
+        master.selectProfileSlot(slotID, 0);
         master.set(ControlMode.Position, (int)heightToSensorUnits(targetHeight), 0);
     }
 
     public enum SystemState{
-        FAST_UP,
-        FAST_DOWN,
+        CLOSED_LOOP_UP,
+        CLOSED_LOOP_HOLD,
         HOLD,
         MANUAL_UP,
         MANUAL_DOWN,
@@ -165,10 +174,10 @@ public class Elevator extends SubsystemBase implements Loop{
             case HOLD:
                 newState = handleHold();
                 break;
-            case FAST_UP:
+            case CLOSED_LOOP_UP:
                 newState = handleFastUp();
                 break;
-            case FAST_DOWN:
+            case CLOSED_LOOP_HOLD:
                 newState = handleFastDown();
                 break;
             case MANUAL_UP:
@@ -207,9 +216,6 @@ public class Elevator extends SubsystemBase implements Loop{
             if (atClosedLoopTarget()){
                 return SystemState.HOLD;
             }
-            if (stateChanged){
-                master.selectProfileSlot(Constants.kElevatorFastUpSlot, 0);
-            }
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastUpSlot);
             return defaultStateTransfer();
         }
@@ -222,7 +228,7 @@ public class Elevator extends SubsystemBase implements Loop{
                 return SystemState.HOLD;
             }
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastDownSlot);
-            return SystemState.FAST_DOWN;
+            return defaultStateTransfer();
         }
         return defaultStateTransfer();
     }
@@ -294,16 +300,14 @@ public class Elevator extends SubsystemBase implements Loop{
                 }
                 m_usingClosedLoop = true;
                 break;
-            default:
-                rv = SystemState.HOLD;
-                break;
         }
         if(m_closedLoopTarget > getHeight() && m_usingClosedLoop) {
-            rv = SystemState.FAST_UP;
+            rv = SystemState.CLOSED_LOOP_UP;
         }
         else if (m_closedLoopTarget < getHeight() && m_usingClosedLoop){
-            rv = SystemState.FAST_DOWN;
+            rv = SystemState.CLOSED_LOOP_HOLD;
         }
+        else rv = SystemState.HOLD;
         return rv;
     }
 

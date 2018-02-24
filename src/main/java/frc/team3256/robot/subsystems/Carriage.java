@@ -11,7 +11,7 @@ public class Carriage extends SubsystemBase implements Loop{
     private DoubleSolenoid squeezeSolenoid;
 
     private SystemState currentState;
-    private WantedState wantedState;
+    private WantedState wantedState = WantedState.WANTS_TO_SQUEEZE_IDLE;
     private boolean stateChanged;
 
     private static Carriage instance;

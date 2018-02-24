@@ -142,6 +142,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
+
         double throttle = controlsInterface.getThrottle();
         double turn = controlsInterface.getTurn();
         boolean quickTurn = controlsInterface.getQuickTurn();
@@ -165,6 +166,7 @@ public class Robot extends IterativeRobot {
 
         //-----------------------------------------------------------------------
 
+        /*
 
         if (controlsInterface.getUnjam()){
             intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
@@ -201,7 +203,7 @@ public class Robot extends IterativeRobot {
         prevFlop = flop;
         prevPivot = pivot;
 
-
+        */
 
         //-------------------------------------------------------------------------
 
@@ -209,12 +211,16 @@ public class Robot extends IterativeRobot {
         double elevatorThrottle = controlsInterface.manualElevatorUp();
 
         if (controlsInterface.scoreRear()){
-            elevator.setTargetPosition(Constants.kMidScalePreset,Constants.kElevatorFastUpSlot);
+            elevator.setTargetPosition(Constants.kHighScalePreset,Constants.kElevatorFastUpSlot);
         }
-
+        /*
+        else if (controlsInterface.toggleFlop()){
+            elevator.setTargetPosition(Constants.kLowScalePreset, Constants.kElevatorFastUpSlot);
+        }
+        */
         else if (Math.abs(elevatorThrottle) > 0.1) elevator.setOpenLoop(elevatorThrottle);
 
-        else elevator.setOpenLoop(0);
+        else elevator.setTargetPosition(elevator.getHeight(), Constants.kElevatorHoldSlot);
 
         /*if (controlsInterface.scoreFront()){
             carriage.runMotors(0.5);

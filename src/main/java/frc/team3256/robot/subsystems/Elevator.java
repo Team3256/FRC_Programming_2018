@@ -2,6 +2,7 @@ package frc.team3256.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.sun.corba.se.impl.orbutil.closure.Constant;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.InterruptHandlerFunction;
 import frc.team3256.lib.Loop;
@@ -13,8 +14,8 @@ public class Elevator extends SubsystemBase implements Loop{
     private TalonSRX master, slaveOne, slaveTwo, slaveThree;
     private DigitalInput hallEffect;
 
-    private SystemState currentState;
-    private WantedState wantedState;
+    private SystemState currentState = SystemState.HOLD;
+    private WantedState wantedState = WantedState.HOLD;
 
     private boolean isHomed = false;
     private boolean stateChanged;
@@ -74,32 +75,7 @@ public class Elevator extends SubsystemBase implements Loop{
         TalonUtil.setMinOutput(Constants.kElevatorMinHoldVoltage/12.0,
                 0, master, slaveOne, slaveTwo, slaveThree);
 
-
-        /*
-        master.configPeakOutputForward(Constants.kElevatorMaxUpVoltage/12.0, 0);
-        master.configPeakOutputReverse(Constants.kElevatorMaxDownVoltage/12.0,0);
-        slaveOne.configPeakOutputForward(Constants.kElevatorMaxUpVoltage/12.0, 0);
-        slaveOne.configPeakOutputReverse(Constants.kElevatorMaxDownVoltage/12.0,0);
-        slaveTwo.configPeakOutputForward(Constants.kElevatorMaxUpVoltage/12.0, 0);
-        slaveTwo.configPeakOutputReverse(Constants.kElevatorMaxDownVoltage/12.0,0);
-        slaveThree.configPeakOutputForward(Constants.kElevatorMaxUpVoltage/12.0, 0);
-        slaveThree.configPeakOutputReverse(Constants.kElevatorMaxDownVoltage/12.0,0);
-
-
-        master.configNominalOutputForward(0.5/12.0, 0);
-        master.configNominalOutputReverse(0/12.0,0);
-        slaveOne.configNominalOutputForward(0.5/12.0, 0);
-        slaveOne.configNominalOutputReverse(0/12.0,0);
-        slaveTwo.configNominalOutputForward(0.5/12.0, 0);
-        slaveTwo.configNominalOutputReverse(0/12.0,0);
-        slaveThree.configNominalOutputForward(0.5/12.0, 0);
-        slaveThree.configNominalOutputReverse(0/12.0,0);
-
-        */
-
-
         //soft limits
-
         master.configForwardSoftLimitThreshold((int)(heightToSensorUnits(Constants.kElevatorMaxHeight)), 0);
         master.configReverseSoftLimitThreshold((int)(heightToSensorUnits(Constants.kElevatorMinHeight)), 0);
         master.configForwardSoftLimitEnable(false, 0);
@@ -207,12 +183,16 @@ public class Elevator extends SubsystemBase implements Loop{
     }
 
     private SystemState handleHold(){
+        if (stateChanged){
+            master.selectProfileSlot(Constants.kElevatorHoldSlot,0);
+        }
         setTargetPosition(getHeight(), Constants.kElevatorHoldSlot);
         return defaultStateTransfer();
     }
 
     private SystemState handleFastUp(){
         if(isHomed){
+            if (stateChanged){master.selectProfileSlot(Constants.kElevatorFastUpSlot, 0);}
             if (atClosedLoopTarget()){
                 return SystemState.HOLD;
             }
@@ -224,6 +204,7 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private SystemState handleFastDown(){
         if(isHomed){
+            if (stateChanged){master.selectProfileSlot(Constants.kElevatorFastDownSlot, 0);}
             if(atClosedLoopTarget()){
                 return SystemState.HOLD;
             }

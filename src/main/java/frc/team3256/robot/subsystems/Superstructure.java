@@ -34,6 +34,7 @@ public class Superstructure extends SubsystemBase implements Loop{
         UNJAMMING,
         RAISING_ELEVATOR_MANUAL,
         LOWERING_ELEVATOR_MANUAL,
+        INTAKE_POSITION, //-----------
         SWITCH_POSITION,
         LOW_SCALE_POSITION,
         MID_SCALE_POSITION,
@@ -46,6 +47,7 @@ public class Superstructure extends SubsystemBase implements Loop{
         WANTS_TO_INTAKE,
         WANTS_TO_EXHAUST,
         WANTS_TO_UNJAM,
+        WANTS_TO_INTAKE_POSITION, //---------------
         WANTS_TO_SCORE_SWITCH,
         WANTS_TO_SCORE_LOW_SCALE,
         WANTS_TO_SCORE_MID_SCALE,
@@ -68,6 +70,9 @@ public class Superstructure extends SubsystemBase implements Loop{
         switch (currentState) {
             case HOLDING_POSITION:
                 newState = handleHoldingPosition();
+                break;
+            case INTAKE_POSITION:
+                newState = handleIntakePosition();
                 break;
             case INTAKING:
                 newState = handleIntake();
@@ -115,6 +120,18 @@ public class Superstructure extends SubsystemBase implements Loop{
         elevator.setWantedState(Elevator.WantedState.HOLD);
         return defaultStateTransfer();
     }
+
+    // ------------------ CHECK WITH ERIC
+
+    private SystemState handleIntakePosition() {
+        if (stateChanged) {
+            elevator.setWantedState(Elevator.WantedState.INTAKE_POS);
+        }
+        elevator.setWantedState(Elevator.WantedState.HOLD);
+        return defaultStateTransfer();
+    }
+
+    //-------------------------------------------------------------
 
     private SystemState handleIntake() {
         if (stateChanged) {
@@ -228,6 +245,13 @@ public class Superstructure extends SubsystemBase implements Loop{
 
             case WANTS_TO_SCORE_HIGH_SCALE:
                 return SystemState.HIGH_SCALE_POSITION;
+
+            //--------------------------------
+
+            case WANTS_TO_INTAKE_POSITION:
+                return SystemState.INTAKE_POSITION;
+
+            //----------------------------------------
 
             case WANTS_TO_SCORE_FORWARD:
                 return SystemState.SCORING_FORWARD;

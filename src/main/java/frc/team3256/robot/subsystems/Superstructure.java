@@ -163,7 +163,7 @@ public class Superstructure extends SubsystemBase implements Loop{
             carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
         if (currTime - timeWhenStateChanged > Constants.kElevatorRaiseDelayTime){
-            elevator.setWantedState(Elevator.WantedState.SWITCH);
+            elevator.setWantedState(Elevator.WantedState.SWITCH_POS);
         }
         return defaultStateTransfer();
     }
@@ -174,7 +174,7 @@ public class Superstructure extends SubsystemBase implements Loop{
             carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
         if(currTime - timeWhenStateChanged > Constants.kElevatorRaiseDelayTime){
-            elevator.setWantedState(Elevator.WantedState.LOW_SCALE);
+            elevator.setWantedState(Elevator.WantedState.LOW_SCALE_POS);
         }
         return defaultStateTransfer();
     }
@@ -185,7 +185,7 @@ public class Superstructure extends SubsystemBase implements Loop{
             carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
         if(currTime - timeWhenStateChanged > Constants.kElevatorRaiseDelayTime){
-            elevator.setWantedState(Elevator.WantedState.HIGH_SCALE);
+            elevator.setWantedState(Elevator.WantedState.HIGH_SCALE_POS);
         }
         return defaultStateTransfer();
     }

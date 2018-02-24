@@ -2,7 +2,6 @@ package frc.team3256.robot.subsystems;
 
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.InterruptHandlerFunction;
@@ -69,7 +68,6 @@ public class Elevator extends SubsystemBase implements Loop{
                 Constants.kElevatorFastDownI, Constants.kElevatorFastDownD, 0);
 
         //voltage limiting
-
         TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage/12.0,
                 Constants.kElevatorMaxDownVoltage/12.0, master, slaveOne, slaveTwo, slaveThree);
         TalonUtil.setMinOutput(Constants.kElevatorMinHoldVoltage/12.0,
@@ -113,7 +111,6 @@ public class Elevator extends SubsystemBase implements Loop{
     }
 
     public void holdPosition(){
-        //TODO: Make this the absolute position
         setTargetPosition(getHeight(), Constants.kElevatorHoldSlot);
     }
 
@@ -138,14 +135,22 @@ public class Elevator extends SubsystemBase implements Loop{
     }
 
     public enum WantedState{
-        HIGH_SCALE,
-        MID_SCALE,
-        LOW_SCALE,
-        HOLD,
-        SWITCH,
-        MANUAL_UP,
-        MANUAL_DOWN,
+        //Preset when scale is in the other alliance's favor
+        HIGH_SCALE_POS,
+        //Preset when scale is balanced
+        MID_SCALE_POS,
+        //Preset when scale is in our alliance's favor
+        LOW_SCALE_POS,
+        //Preset for the switch
+        SWITCH_POS,
+        //Preset to lower the elevator to intake
         INTAKE_POS,
+        //Manual control going up
+        MANUAL_UP,
+        //Manual control going down
+        MANUAL_DOWN,
+        //Hold position when using manual control
+        HOLD,
     }
 
     @Override
@@ -202,8 +207,11 @@ public class Elevator extends SubsystemBase implements Loop{
             if (atClosedLoopTarget()){
                 return SystemState.HOLD;
             }
+            if (stateChanged){
+                master.selectProfileSlot(Constants.kElevatorFastUpSlot, 0);
+            }
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastUpSlot);
-            return SystemState.FAST_UP;
+            return defaultStateTransfer();
         }
         return defaultStateTransfer();
     }
@@ -244,19 +252,19 @@ public class Elevator extends SubsystemBase implements Loop{
     private SystemState defaultStateTransfer(){
         SystemState rv = SystemState.HOLD;
         switch (wantedState){
-            case HIGH_SCALE:
+            case HIGH_SCALE_POS:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kHighScalePreset;
                 }
                 m_usingClosedLoop = true;
                 break;
-            case MID_SCALE:
+            case MID_SCALE_POS:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kMidScalePreset;
                 }
                 m_usingClosedLoop = true;
                 break;
-            case LOW_SCALE:
+            case LOW_SCALE_POS:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kLowScalePreset;
                 }
@@ -268,7 +276,7 @@ public class Elevator extends SubsystemBase implements Loop{
                 }
                 m_usingClosedLoop = true;
                 break;
-            case SWITCH:
+            case SWITCH_POS:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kSwitchPreset;
                 }

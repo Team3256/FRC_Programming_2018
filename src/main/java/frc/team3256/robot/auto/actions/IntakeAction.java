@@ -22,7 +22,7 @@ public class IntakeAction implements Action {
 
     @Override
     public void start() {
-        Carriage.getInstance().setWantedState(Carriage.WantedState.WANTS_TO_OPEN);
+        Carriage.getInstance().setWantedState(Carriage.WantedState.WANTS_TO_OPEN_IDLE);
         Intake.getInstance().setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
     }
 }

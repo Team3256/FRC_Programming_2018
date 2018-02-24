@@ -168,7 +168,7 @@ public class Robot extends IterativeRobot {
 
         if (controlsInterface.getUnjam()){
             intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
-            carriage.setWantedState(Carriage.WantedState.WANTS_TO_OPEN);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_OPEN_IDLE);
         }
 
         else if (controlsInterface.getIntake()){

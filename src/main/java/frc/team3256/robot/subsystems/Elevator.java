@@ -18,26 +18,27 @@ public class Elevator extends SubsystemBase implements Loop{
     private SystemState currentState;
     private WantedState wantedState;
 
-    private boolean isCalibrated = false;
+    private boolean isHomed = false;
     private boolean stateChanged;
 
     private double m_closedLoopTarget;
     private boolean m_usingClosedLoop;
 
     private static Elevator instance;
+
     public static Elevator getInstance() {
          return instance == null ? instance = new Elevator() : instance;
     }
 
     private InterruptHandlerFunction<Elevator> ihr = new InterruptHandlerFunction<Elevator>() {
+
         @Override
         public void interruptFired(int interruptAssertedMask, Elevator param) {
-            if (!isCalibrated){
+            if (!isHomed){
                 master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kHomeHeight), 0, 0);
-                isCalibrated = true;
-                master.configForwardSoftLimitEnable(false, 0);
+                isHomed = true;
+                master.configForwardSoftLimitEnable(true, 0);
                 master.configReverseSoftLimitEnable(true, 0);
-                System.out.println("TRIGGERING\n\n\n\n\n\n");
                 hallEffect.disableInterrupts();
             }
         }
@@ -116,7 +117,7 @@ public class Elevator extends SubsystemBase implements Loop{
     boolean tempflag = false;
 
     public void setTargetPosition(double targetHeight, int slotID){
-        if (!isCalibrated)return;
+        if (!isHomed)return;
         System.out.println("OUTPUT VOLTAGE: " + master.getMotorOutputVoltage());
         if (!tempflag) {
             master.selectProfileSlot(slotID, 0);
@@ -194,7 +195,7 @@ public class Elevator extends SubsystemBase implements Loop{
     }
 
     private SystemState handleFastUp(){
-        if(isCalibrated){
+        if(isHomed){
             if (atClosedLoopTarget()){
                 return SystemState.HOLD;
             }
@@ -205,7 +206,7 @@ public class Elevator extends SubsystemBase implements Loop{
     }
 
     private SystemState handleFastDown(){
-        if(isCalibrated){
+        if(isHomed){
             if(atClosedLoopTarget()){
                 return SystemState.HOLD;
             }
@@ -295,8 +296,8 @@ public class Elevator extends SubsystemBase implements Loop{
         return rv;
     }
 
-    public boolean isCalibrated(){
-        return isCalibrated;
+    public boolean isHomed(){
+        return isHomed;
     }
 
     public boolean isTriggered(){
@@ -316,7 +317,7 @@ public class Elevator extends SubsystemBase implements Loop{
         SmartDashboard.putNumber("Motor Power: ", master.getMotorOutputVoltage());
         SmartDashboard.putString("Control Modes: ", master.getControlMode().toString() + ", " + slaveOne.getControlMode().toString() +
         slaveTwo.getControlMode().toString() + ", " + slaveThree.getControlMode().toString());
-        SmartDashboard.putBoolean("Is Calibrated? ", isCalibrated);
+        SmartDashboard.putBoolean("Is Calibrated? ", isHomed);
         SmartDashboard.putNumber("Closed Loop Target: ", m_closedLoopTarget);
         SmartDashboard.putBoolean("Using Closed Loop? ", m_usingClosedLoop);
         SmartDashboard.putBoolean("Hall effect? ", hallEffect.get());

@@ -14,19 +14,20 @@ public class Carriage extends SubsystemBase implements Loop{
     private WantedState wantedState;
     private boolean stateChanged;
 
-
-    private static Carriage elevatorCarriage;
+    private static Carriage instance;
 
     private Carriage() {
         rollerLeft = new VictorSP(Constants.kCarriageRollerLeft);
         rollerRight = new VictorSP(Constants.kCarriageRollerRight);
+
+        squeezeSolenoid = new DoubleSolenoid(Constants.kCarriageSqueezeForward, Constants.kCarriageSqueezeReverse);
+
         rollerLeft.setInverted(false);
         rollerRight.setInverted(true);
-        squeezeSolenoid = new DoubleSolenoid(Constants.kCarriageSqueezeForward, Constants.kCarriageSqueezeReverse);
     }
 
     public static Carriage getInstance(){
-        return elevatorCarriage == null ? elevatorCarriage = new Carriage(): elevatorCarriage;
+        return instance == null ? instance = new Carriage(): instance;
     }
 
     public enum SystemState {
@@ -39,7 +40,7 @@ public class Carriage extends SubsystemBase implements Loop{
 }
 
     public enum WantedState {
-        //Operator -> Whenever no buttons are pressed
+        //Operator -> When we are intaking
         WANTS_TO_RECEIVE,
         //Condition -> After receiving cube
         //WANTS_TO_SECURE_CUBE,
@@ -49,8 +50,8 @@ public class Carriage extends SubsystemBase implements Loop{
         WANTS_TO_SCORE_BACKWARD,
         //Operator -> Whenever robot has cube
         WANTS_TO_SQUEEZE_IDLE,
-        //Operator -> Manual open
-        WANTS_TO_OPEN
+        //When we are unjamming, open and idle
+        WANTS_TO_OPEN_IDLE
     }
 
     @Override
@@ -85,7 +86,7 @@ public class Carriage extends SubsystemBase implements Loop{
         }
         //State transfer
         if (newState != currentState){
-            System.out.println("\tCURR_STATE:" + currentState + "\tNEW_STATE:" + newState);
+            System.out.println("CURR_STATE:" + currentState + "\tNEW_STATE:" + newState);
             currentState = newState;
             stateChanged = true;
         }
@@ -167,7 +168,7 @@ public class Carriage extends SubsystemBase implements Loop{
             case WANTS_TO_SQUEEZE_IDLE:
                 return SystemState.SQUEEZING_IDLE;
 
-            case WANTS_TO_OPEN:
+            case WANTS_TO_OPEN_IDLE:
                 return SystemState.OPEN_IDLE;
 
             default:
@@ -180,20 +181,20 @@ public class Carriage extends SubsystemBase implements Loop{
         this.wantedState = wantedState;
     }
 
-    public void squeeze(){
+    private void squeeze(){
         squeezeSolenoid.set(DoubleSolenoid.Value.kForward);
     }
 
-    public void open(){
+    private void open(){
         squeezeSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
 
-    public void runMotors(double power){
+    private void runMotors(double power){
         rollerLeft.set(power);
         rollerRight.set(power);
     }
 
-    public boolean hasCube(){
+    private boolean hasCube(){
         return false;
         //return Intake.getInstance().hasCube();
     }

@@ -117,7 +117,8 @@ public class Constants {
     public static final double kLeftIntakePower = 0.55;//0.75
     public static final double kRightIntakePower = 0.55;//0.6
     public static final double kIntakeExhaustPower = -0.6;
-    public static final double kUnjamMaxDuration = 500.0/1000.0;
+    public static final double kIntakeUnjamPower = -0.3;
+    public static final double kUnjamMaxDuration = 250.0/1000.0;
     public static final double kCarriageReceivePower = 0.8;
     public static final double kCarriageSecurePower = 0.4;
     public static final double kCarriageScoreForwardPower = -0.5;
@@ -125,10 +126,10 @@ public class Constants {
 
     public static final double kElevatorUpManualPower = 0.0;
     public static final double kElevatorDownManualPower = 0.0;
-    public static final double kHighScalePreset = 45; //in inches //48.5 measured
-    public static final double kMidScalePreset = 25.0; //36.5
+    public static final double kHighScalePreset = 50; //in inches //48.5 measured
+    public static final double kMidScalePreset = 40; //36.5
     public static final double kLowScalePreset = 30.0; //30
-    public static final double kSwitchPreset = 25.0;
+    public static final double kSwitchPreset = 15.0;
     public static final double kIntakePreset = 7.5;
     public static final double kStowPreset = 0.0;
     public static final double kHomeHeight = 8.85;//measured in inches
@@ -137,9 +138,9 @@ public class Constants {
     public static final double kElevatorScoreRearMinHeight = 0;
     public static final double kElevatorScoreFrontMinHeight = 0;
     public static final double kElevatorTolerance = 1.0; //measured in inches
-    public static final double kElevatorMaxUpVoltage = 8.0;
-    public static final double kElevatorMaxDownVoltage = -4.0;
-    public static final double kElevatorMinHoldVoltage = 0.5;
+    public static final double kElevatorMaxUpVoltage = 2.0; //8.0
+    public static final double kElevatorMaxDownVoltage = -2.0;//-4.0
+    public static final double kElevatorMinHoldVoltage = 0.5;//0.5
 
 
     //Game Data:

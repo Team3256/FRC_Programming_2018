@@ -166,11 +166,11 @@ public class Robot extends IterativeRobot {
 
         //-----------------------------------------------------------------------
 
-        /*
+
 
         if (controlsInterface.getUnjam()){
             intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
-            carriage.setWantedState(Carriage.WantedState.WANTS_TO_OPEN_IDLE);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_RECEIVE);
         }
 
         else if (controlsInterface.getIntake()){
@@ -203,24 +203,28 @@ public class Robot extends IterativeRobot {
         prevFlop = flop;
         prevPivot = pivot;
 
-        */
 
         //-------------------------------------------------------------------------
 
 
-        double elevatorThrottle = controlsInterface.manualElevatorUp();
+        /*double elevatorThrottle = controlsInterface.manualElevatorUp();
 
         if (controlsInterface.scoreRear()){
             elevator.setTargetPosition(Constants.kHighScalePreset,Constants.kElevatorFastUpSlot);
         }
+
+        // -----------------------------------------------------------------------------
+
         /*
         else if (controlsInterface.toggleFlop()){
             elevator.setTargetPosition(Constants.kLowScalePreset, Constants.kElevatorFastUpSlot);
         }
         */
-        else if (Math.abs(elevatorThrottle) > 0.1) elevator.setOpenLoop(elevatorThrottle);
 
-        else elevator.setTargetPosition(elevator.getHeight(), Constants.kElevatorHoldSlot);
+        //-------------------------------------------------------------------------------
+        /*else if (Math.abs(elevatorThrottle) > 0.1) elevator.setOpenLoop(elevatorThrottle);
+
+        else elevator.setTargetPosition(elevator.getHeight(), Constants.kElevatorHoldSlot);*/
 
         /*if (controlsInterface.scoreFront()){
             carriage.runMotors(0.5);

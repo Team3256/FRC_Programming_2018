@@ -52,7 +52,7 @@ public class DualLogitechConfig implements ControlsInterface{
 
     //Manipulator: Button Y
     @Override
-    public boolean togglePivot() { return manipulator.getRawButton(5); }
+    public boolean togglePivot() { return manipulator.getRawButton(3); }
 
     //Manipulator: Button A
     @Override
@@ -84,7 +84,7 @@ public class DualLogitechConfig implements ControlsInterface{
 
     @Override
     public boolean scalePresetHigh() {
-        return false;
+        return manipulator.getRawButton(2);
     }
 
     @Override

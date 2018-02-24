@@ -2,7 +2,6 @@ package frc.team3256.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.sun.corba.se.impl.orbutil.closure.Constant;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.InterruptHandlerFunction;
 import frc.team3256.lib.Loop;
@@ -86,28 +85,30 @@ public class Elevator extends SubsystemBase implements Loop{
     }
 
     public void setOpenLoop(double power){
-        tempflag = false;
         master.set(ControlMode.PercentOutput, power);
+    }
+
+    public WantedState getWantedState() {
+        return wantedState;
+    }
+
+    public SystemState getCurrentState() {
+        return currentState;
     }
 
     public void holdPosition(){
         setTargetPosition(getHeight(), Constants.kElevatorHoldSlot);
     }
 
-    boolean tempflag = false;
+    public TalonSRX getMaster() {
+        return master;
+    }
 
     public void setTargetPosition(double targetHeight, int slotID){
-        System.out.println("IS HOMED: " + isHomed);
         if (!isHomed)return;
-        System.out.println("OUTPUT VOLTAGE: " + master.getMotorOutputVoltage());
-        System.out.println("CURR : " + getHeight());
-
-        /*if (!tempflag) {
-            master.selectProfileSlot(slotID, 0);
-            tempflag = true;
+        if (stateChanged){
+            master.selectProfileSlot(slotID,0);
         }
-        */
-        master.selectProfileSlot(slotID, 0);
         master.set(ControlMode.Position, (int)heightToSensorUnits(targetHeight), 0);
     }
 
@@ -166,7 +167,6 @@ public class Elevator extends SubsystemBase implements Loop{
         //State Transfer
         if(newState != currentState){
             currentState = newState;
-            System.out.println("\tCURR_STATE:" + currentState + "\tNEW_STATE:" + newState);
             stateChanged = true;
         }
         else stateChanged = false;
@@ -180,6 +180,10 @@ public class Elevator extends SubsystemBase implements Loop{
     public boolean atClosedLoopTarget(){
         if (!m_usingClosedLoop) return false;
         return (Math.abs(getHeight() - m_closedLoopTarget) < Constants.kElevatorTolerance);
+    }
+
+    public double getTargetHeight() {
+        return m_closedLoopTarget;
     }
 
     private SystemState handleHold(){
@@ -237,7 +241,7 @@ public class Elevator extends SubsystemBase implements Loop{
     }
 
     private SystemState defaultStateTransfer(){
-        SystemState rv = SystemState.HOLD;
+        SystemState rv;
         switch (wantedState){
             case HIGH_SCALE_POS:
                 if(stateChanged) {
@@ -258,11 +262,8 @@ public class Elevator extends SubsystemBase implements Loop{
                 m_usingClosedLoop = true;
                 break;
             case HOLD:
-                if(stateChanged) {
-                    m_closedLoopTarget = getHeight();
-                }
-                m_usingClosedLoop = true;
-                break;
+                m_usingClosedLoop = false;
+                return SystemState.HOLD;
             case SWITCH_POS:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kSwitchPreset;
@@ -271,10 +272,10 @@ public class Elevator extends SubsystemBase implements Loop{
                 break;
             case MANUAL_UP:
                 m_usingClosedLoop = false;
-                break;
+                return SystemState.MANUAL_UP;
             case MANUAL_DOWN:
                 m_usingClosedLoop = false;
-                break;
+                return SystemState.MANUAL_DOWN;
             case INTAKE_POS:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kIntakePreset;
@@ -298,6 +299,10 @@ public class Elevator extends SubsystemBase implements Loop{
 
     public boolean isTriggered(){
         return !hallEffect.get();
+    }
+
+    public double getVelocity() {
+        return master.getSelectedSensorVelocity(0);
     }
 
     public double getHeight() {

@@ -125,4 +125,18 @@ public class TalonUtil{
             talon.setNeutralMode(NeutralMode.Coast);
         }
     }
+
+    public static void setPeakOutput(double peakFwd, double peakRev, TalonSRX... talons){
+        for(TalonSRX talon : talons){
+            talon.configPeakOutputForward(peakFwd, 0);
+            talon.configPeakOutputReverse(peakRev, 0);
+        }
+    }
+
+    public static void setMinOutput(double minFwd, double minRev, TalonSRX... talons){
+        for(TalonSRX talon : talons){
+            talon.configNominalOutputForward(minFwd, 0);
+            talon.configNominalOutputReverse(minRev, 0);
+        }
+    }
 }

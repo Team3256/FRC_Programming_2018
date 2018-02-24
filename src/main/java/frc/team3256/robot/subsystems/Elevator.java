@@ -70,24 +70,30 @@ public class Elevator extends SubsystemBase implements Loop{
 
         //voltage limiting
 
-        master.configPeakOutputForward(3.0/12.0, 0);
-        master.configPeakOutputReverse(-3.0/12.0,0);
-        slaveOne.configPeakOutputForward(3.0/12.0, 0);
-        slaveOne.configPeakOutputReverse(-3.0/12.0,0);
-        slaveTwo.configPeakOutputForward(3.0/12.0, 0);
-        slaveTwo.configPeakOutputReverse(-3.0/12.0,0);
-        slaveThree.configPeakOutputForward(3.0/12.0, 0);
-        slaveThree.configPeakOutputReverse(-3.0/12.0,0);
+        TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage/12.0,
+                Constants.kElevatorMaxDownVoltage/12.0, master, slaveOne, slaveTwo, slaveThree);
+        TalonUtil.setMinOutput(Constants.kElevatorMinHoldVoltage/12.0,
+                0, master, slaveOne, slaveTwo, slaveThree);
+
+        /*master.configPeakOutputForward(Constants.kElevatorMaxUpVoltage/12.0, 0);
+        master.configPeakOutputReverse(Constants.kElevatorMaxDownVoltage/12.0,0);
+        slaveOne.configPeakOutputForward(Constants.kElevatorMaxUpVoltage/12.0, 0);
+        slaveOne.configPeakOutputReverse(Constants.kElevatorMaxDownVoltage/12.0,0);
+        slaveTwo.configPeakOutputForward(Constants.kElevatorMaxUpVoltage/12.0, 0);
+        slaveTwo.configPeakOutputReverse(Constants.kElevatorMaxDownVoltage/12.0,0);
+        slaveThree.configPeakOutputForward(Constants.kElevatorMaxUpVoltage/12.0, 0);
+        slaveThree.configPeakOutputReverse(Constants.kElevatorMaxDownVoltage/12.0,0);
 
 
         master.configNominalOutputForward(0.5/12.0, 0);
-        master.configNominalOutputReverse(-0.5/12.0,0);
+        master.configNominalOutputReverse(0/12.0,0);
         slaveOne.configNominalOutputForward(0.5/12.0, 0);
-        slaveOne.configNominalOutputReverse(-0.5/12.0,0);
+        slaveOne.configNominalOutputReverse(0/12.0,0);
         slaveTwo.configNominalOutputForward(0.5/12.0, 0);
-        slaveTwo.configNominalOutputReverse(-0.5/12.0,0);
+        slaveTwo.configNominalOutputReverse(0/12.0,0);
         slaveThree.configNominalOutputForward(0.5/12.0, 0);
-        slaveThree.configNominalOutputReverse(-0.5/12.0,0);
+        slaveThree.configNominalOutputReverse(0/12.0,0);
+        */
 
 
         //soft limits
@@ -97,10 +103,7 @@ public class Elevator extends SubsystemBase implements Loop{
         master.configForwardSoftLimitEnable(false, 0);
         master.configReverseSoftLimitEnable(false,0);
 
-        master.setNeutralMode(NeutralMode.Brake);
-        slaveOne.setNeutralMode(NeutralMode.Brake);
-        slaveTwo.setNeutralMode(NeutralMode.Brake);
-        slaveThree.setNeutralMode(NeutralMode.Brake);
+        TalonUtil.setBrakeMode(master, slaveOne, slaveTwo, slaveThree);
 
     }
 

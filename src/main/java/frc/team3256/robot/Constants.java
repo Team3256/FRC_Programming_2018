@@ -140,6 +140,9 @@ public class Constants {
     public static final double kElevatorScoreRearMinHeight = 0;
     public static final double kElevatorScoreFrontMinHeight = 0;
     public static final double kElevatorTolerance = 1.0; //measured in inches
+    public static final double kElevatorMaxUpVoltage = 6.0;
+    public static final double kElevatorMaxDownVoltage = 3.0;
+    public static final double kElevatorMinHoldVoltage = 0.5;
 
 
     //Game Data:

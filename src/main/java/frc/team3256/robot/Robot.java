@@ -1,6 +1,8 @@
 package frc.team3256.robot;
 
+import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import frc.team3256.lib.DrivePower;
@@ -72,6 +74,9 @@ public class Robot extends IterativeRobot {
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
+
+        //UsbCamera cam1 = CameraServer.getInstance().startAutomaticCapture();
+        //cam1.setResolution(640, 320);
     }
 
     @Override
@@ -125,7 +130,7 @@ public class Robot extends IterativeRobot {
         //System.out.println("Right Encoder:            " + driveTrain.inchesToSensorUnits(driveTrain.getRightDistance()));
         //System.out.println("Voltage: " + intake.getVoltage());
         //System.out.println("Is Triggered: " + intake.hasCube());
-        //System.out.println("Hall Effect Triggered: " + elevator.isTriggered() + "\n" + "Current Velocity: " + elevator.getVelocity());
+        System.out.println("Hall Effect Triggered: " + elevator.isTriggered() + "\n" + "Current Velocity: " + elevator.getVelocity());
 
     }
 
@@ -186,6 +191,14 @@ public class Robot extends IterativeRobot {
             carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_FORWARD);
         }
 
+        else if (controlsInterface.switchPreset()){
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_BACKWARD);
+        }
+
+        else if (controlsInterface.scoreFront()){
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_FORWARD);
+        }
+
         /*else if(flop && !prevFlop){
             intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
         }*/
@@ -228,19 +241,19 @@ public class Robot extends IterativeRobot {
             manualelev = false;
             elevator.setWantedState(Elevator.WantedState.MID_SCALE_POS);
         }
-        else if (controlsInterface.scalePresetHigh()){
+        /*else if (controlsInterface.scalePresetHigh()){
             manualelev = false;
             elevator.setWantedState(Elevator.WantedState.SWITCH_POS);
-        }
+        }*/
 
-        else if(controlsInterface.scoreFront()){
+        else if(controlsInterface.scalePresetHigh()) {
             manualelev = false;
             //carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_FORWARD);
             elevator.setWantedState(Elevator.WantedState.INTAKE_POS);
-
         }
 
-        else elevator.setWantedState(Elevator.WantedState.HOLD);
+        else if (!manualelev)elevator.setWantedState(Elevator.WantedState.HOLD);
+
 
         System.out.println("CURR STATE: " + elevator.getCurrentState() + "\n" + "WANTED STATE: " + elevator.getWantedState());
         System.out.println("OUTPUT VOLTAGE: " + elevator.getMaster().getMotorOutputVoltage());

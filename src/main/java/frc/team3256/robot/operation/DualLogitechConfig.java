@@ -74,7 +74,7 @@ public class DualLogitechConfig implements ControlsInterface{
 
     @Override
     public boolean switchPreset() {
-        return false;
+        return manipulator.getRawButton(5);
     }
 
     @Override

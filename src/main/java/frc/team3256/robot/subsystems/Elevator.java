@@ -33,13 +33,22 @@ public class Elevator extends SubsystemBase implements Loop{
         @Override
         public void interruptFired(int interruptAssertedMask, Elevator param) {
             if (master.getSelectedSensorVelocity(0) < 0){
-                System.out.println("HOMED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kHomeHeight), 0, 0);
+                System.out.println("HOMED ON UPPER SIDE OF CROSSBAR!!!!");
+                master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kTopHomeHeight), 0, 0);
                 isHomed = true;
                 master.configForwardSoftLimitEnable(true, 0);
                 master.configReverseSoftLimitEnable(true, 0);
                 //hallEffect.disableInterrupts();
             }
+            /*
+            else if (master.getSelectedSensorVelocity(0) > 0){
+                System.out.println("HOMED ON LOWER SIDE OF CROSSBAR!!!!");
+                master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kBottomHomeHeight), 0, 0);
+                isHomed = true;
+                master.configForwardSoftLimitEnable(true, 0);
+                master.configReverseSoftLimitEnable(true, 0);
+            }
+            */
         }
     };
 
@@ -114,7 +123,7 @@ public class Elevator extends SubsystemBase implements Loop{
 
     public enum SystemState{
         CLOSED_LOOP_UP,
-        CLOSED_LOOP_HOLD,
+        CLOSED_LOOP_DOWN,
         HOLD,
         MANUAL_UP,
         MANUAL_DOWN,
@@ -154,7 +163,7 @@ public class Elevator extends SubsystemBase implements Loop{
             case CLOSED_LOOP_UP:
                 newState = handleFastUp();
                 break;
-            case CLOSED_LOOP_HOLD:
+            case CLOSED_LOOP_DOWN:
                 newState = handleFastDown();
                 break;
             case MANUAL_UP:
@@ -287,7 +296,7 @@ public class Elevator extends SubsystemBase implements Loop{
             rv = SystemState.CLOSED_LOOP_UP;
         }
         else if (m_closedLoopTarget < getHeight() && m_usingClosedLoop){
-            rv = SystemState.CLOSED_LOOP_HOLD;
+            rv = SystemState.CLOSED_LOOP_DOWN;
         }
         else rv = SystemState.HOLD;
         return rv;

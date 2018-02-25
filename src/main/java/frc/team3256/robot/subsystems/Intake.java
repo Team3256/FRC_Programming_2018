@@ -176,7 +176,7 @@ public class Intake extends SubsystemBase implements Loop {
         }
         //Otherwise, we can still unjam, so return UNJAMMING state
         else {
-            setIntake(Constants.kIntakeUnjamPower,Constants.kIntakeUnjamPower);
+            setIntake(Constants.kIntakeUnjamPower,Constants.kRightIntakePower);
             return SystemState.UNJAMMING;
         }
     }

@@ -43,8 +43,8 @@ public class Constants {
     public static final double kDriveEncoderScalingFactor = 3.0*60.0/24.0; //3:1 GR on Encoder Stage, plus 60:24 GR on third stage
     public static final double kElevatorPulleyDiameter = 1.353*Math.PI;
     public static final double kElevatorGearRatio = 36.0/24.0;
-    public static final double kElevatorMaxHeight = 50.5;
-    public static final double kElevatorMinHeight = 7.5;
+    public static final double kElevatorMaxHeight = 52;
+    public static final double kElevatorMinHeight = 6.0;
 
     //Control Loop Parameters:
     //Looping period
@@ -117,29 +117,30 @@ public class Constants {
     public static final double kLeftIntakePower = 0.55;//0.75
     public static final double kRightIntakePower = 0.55;//0.6
     public static final double kIntakeExhaustPower = -0.6;
-    public static final double kIntakeUnjamPower = -0.3;
-    public static final double kUnjamMaxDuration = 250.0/1000.0;
+    public static final double kIntakeUnjamPower = -0.6;
+    public static final double kUnjamMaxDuration = 15.0/1000.0;
     public static final double kCarriageReceivePower = 0.8;
     public static final double kCarriageSecurePower = 0.4;
     public static final double kCarriageScoreForwardPower = -0.5;
-    public static final double kCarriageScoreBackwardPower = 0;
+    public static final double kCarriageScoreBackwardPower = 0.65;
 
     public static final double kElevatorUpManualPower = 0.15;
     public static final double kElevatorDownManualPower = -0.15;
-    public static final double kHighScalePreset = 50; //in inches //48.5 measured
+    public static final double kHighScalePreset = 51; //in inches //48.5 measured
     public static final double kMidScalePreset = 40; //36.5
     public static final double kLowScalePreset = 30.0; //30
     public static final double kSwitchPreset = 15.0;
     public static final double kIntakePreset = 7.5;
     public static final double kStowPreset = 0.0;
-    public static final double kHomeHeight = 8.85;//measured in inches
+    public static final double kBottomHomeHeight = 7.875;//measured in inches
     public static final double kCompHomeHeight = 8.5;//measured in inches
+    public static final double kTopHomeHeight = 8.85;    //placeholder
     public static final double kElevatorRaiseDelayTime = 0.5;
     public static final double kElevatorScoreRearMinHeight = 0;
     public static final double kElevatorScoreFrontMinHeight = 0;
     public static final double kElevatorTolerance = 1.0; //measured in inches
     public static final double kElevatorMaxUpVoltage = 6.0; //8.0
-    public static final double kElevatorMaxDownVoltage = -3.0;//-4.0
+    public static final double kElevatorMaxDownVoltage = -4.5;//-4.0
     public static final double kElevatorMinHoldVoltage = 0.5;//0.5
 
 

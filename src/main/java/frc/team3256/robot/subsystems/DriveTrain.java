@@ -282,14 +282,15 @@ public class DriveTrain extends SubsystemBase implements Loop {
             rightSlave.enableVoltageCompensation(false);
             TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
             controlMode = DriveControlMode.OPEN_LOOP;
+            enableRamp();
         }
         leftMaster.set(ControlMode.PercentOutput, leftPower);
         rightMaster.set(ControlMode.PercentOutput, rightPower);
     }
 
     public void enableRamp(){
-        leftMaster.configOpenloopRamp(0.5, 0);
-        rightMaster.configOpenloopRamp(0.5, 0);
+        leftMaster.configOpenloopRamp(0.25, 0);
+        rightMaster.configOpenloopRamp(0.25, 0);
     }
     
     public void disableRamp(){

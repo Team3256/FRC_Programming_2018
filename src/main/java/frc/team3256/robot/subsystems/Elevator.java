@@ -40,7 +40,6 @@ public class Elevator extends SubsystemBase implements Loop{
                 master.configReverseSoftLimitEnable(true, 0);
                 //hallEffect.disableInterrupts();
             }
-            /*
             else if (master.getSelectedSensorVelocity(0) > 0){
                 System.out.println("HOMED ON LOWER SIDE OF CROSSBAR!!!!");
                 master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kBottomHomeHeight), 0, 0);
@@ -48,7 +47,6 @@ public class Elevator extends SubsystemBase implements Loop{
                 master.configForwardSoftLimitEnable(true, 0);
                 master.configReverseSoftLimitEnable(true, 0);
             }
-            */
         }
     };
 
@@ -103,10 +101,6 @@ public class Elevator extends SubsystemBase implements Loop{
 
     public SystemState getCurrentState() {
         return currentState;
-    }
-
-    public void holdPosition(){
-        setTargetPosition(getHeight(), Constants.kElevatorHoldSlot);
     }
 
     public TalonSRX getMaster() {

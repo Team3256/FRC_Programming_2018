@@ -33,7 +33,8 @@ public class Intake extends SubsystemBase implements Loop {
     public enum SystemState {
         INTAKING, //running the intake
         EXHAUSTING, //running the intake backwards
-        UNJAMMING, //momentarily reversing the intake to unjam the power cube
+        UNJAMMING_LEFT, //momentarily reversing the intake to unjam the power cube
+        UNJAMMING_RIGHT,
         DEPLOYED_CLOSED, //intake is closed and idle
         DEPLOYED_OPEN, //intake is open and idle
         STOWED_CLOSED, //intake is stowed, idle, and closed
@@ -106,8 +107,11 @@ public class Intake extends SubsystemBase implements Loop {
             case EXHAUSTING:
                 newState = handleExhaust();
                 break;
-            case UNJAMMING:
-                newState = handleUnjam(timestamp);
+            case UNJAMMING_LEFT:
+                newState = handleUnjamLeft(timestamp);
+                break;
+            case UNJAMMING_RIGHT:
+                newState = handleUnjamRight(timestamp);
                 break;
             case DEPLOYED_OPEN:
                 newState = handleDeployedOpen();
@@ -164,7 +168,7 @@ public class Intake extends SubsystemBase implements Loop {
         return defaultStateTransfer();
     }
 
-    private SystemState handleUnjam(double timestamp){
+    private SystemState handleUnjamLeft(double timestamp){
         if (stateChanged){
             unjamTimeStart = timestamp;
             unjamPreviousState = previousState;
@@ -174,10 +178,26 @@ public class Intake extends SubsystemBase implements Loop {
         if (timestamp - unjamTimeStart > kUnjamMaxDuration){
             return unjamPreviousState;
         }
-        //Otherwise, we can still unjam, so return UNJAMMING state
+        //Otherwise, we can still unjam, so return UNJAMMING_LEFT state
         else {
-            setIntake(Constants.kIntakeUnjamPower,Constants.kRightIntakePower);
-            return SystemState.UNJAMMING;
+            setIntake(Constants.kIntakeUnjamPower,Constants.kIntakeUnjamPower);
+            return SystemState.UNJAMMING_LEFT;
+        }
+    }
+
+    private SystemState handleUnjamRight(double timestamp){
+        if (stateChanged){
+            unjamTimeStart = timestamp;
+        }
+        //If we have been unjamming for over the max unjam duration needed
+        //Switch the system state to the state that we were at before unjamming
+        if (timestamp - unjamTimeStart > kUnjamMaxDuration){
+            return unjamPreviousState;
+        }
+        //Otherwise, we can still unjam, so return UNJAMMING_LEFT state
+        else {
+            setIntake(Constants.kLeftIntakePower,Constants.kIntakeUnjamPower);
+            return SystemState.UNJAMMING_RIGHT;
         }
     }
 
@@ -255,14 +275,14 @@ public class Intake extends SubsystemBase implements Loop {
 
             case WANTS_TO_UNJAM:
                 wantsToToggle = false;
-                return SystemState.UNJAMMING;
+                return SystemState.UNJAMMING_LEFT;
 
             case IDLE:
                 wantsToToggle = false;
                 //if we are intaking, exhausting, unjamming, or already deployed and closed, the intake is closed,
                 //so we want the next state to be DEPLOYED_CLOSED
                 if (currentState == SystemState.EXHAUSTING || currentState == SystemState.INTAKING ||
-                        currentState == SystemState.UNJAMMING || currentState == SystemState.DEPLOYED_CLOSED){
+                        currentState == SystemState.UNJAMMING_LEFT || currentState == SystemState.DEPLOYED_CLOSED){
                     return SystemState.DEPLOYED_CLOSED;
                 }
                 //Otherwise, return the respective state that we are in
@@ -289,7 +309,7 @@ public class Intake extends SubsystemBase implements Loop {
                     return SystemState.DEPLOYED_CLOSED;
                 }
                 else if(currentState == SystemState.DEPLOYED_CLOSED || currentState == SystemState.INTAKING ||
-                        currentState == SystemState.EXHAUSTING || currentState == SystemState.UNJAMMING){
+                        currentState == SystemState.EXHAUSTING || currentState == SystemState.UNJAMMING_LEFT){
                     return SystemState.STOWED_CLOSED;
                 }
 
@@ -300,7 +320,7 @@ public class Intake extends SubsystemBase implements Loop {
                     return SystemState.DEPLOYED_CLOSED;
                 }
                 else if(currentState == SystemState.DEPLOYED_CLOSED || currentState == SystemState.INTAKING ||
-                        currentState == SystemState.EXHAUSTING || currentState == SystemState.UNJAMMING){
+                        currentState == SystemState.EXHAUSTING || currentState == SystemState.UNJAMMING_LEFT){
                     return SystemState.DEPLOYED_OPEN;
                 }
                 else if(currentState == SystemState.STOWED_CLOSED){

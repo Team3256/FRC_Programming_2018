@@ -115,11 +115,11 @@ public class Constants {
     //Presets:
     public static final double kIntakeSharpIRMaxVoltage = 3.3;
     public static final double kIntakeSharpIRMinVoltage = 2.5;
-    public static final double kLeftIntakePower = 0.55;//0.75
-    public static final double kRightIntakePower = 0.55;//0.6
+    public static final double kLeftIntakePower = 0.8;//0.75
+    public static final double kRightIntakePower = 0.65;//0.6
     public static final double kIntakeExhaustPower = -0.6;
     public static final double kIntakeUnjamPower = -0.6;
-    public static final double kUnjamMaxDuration = 15.0/1000.0;
+    public static final double kUnjamMaxDuration = 12.0/1000.0;
     public static final double kCarriageReceivePower = 0.8;
     public static final double kCarriageScoreForwardPower = -0.4;
     public static final double kCarriageScoreBackwardPower = 0.65;

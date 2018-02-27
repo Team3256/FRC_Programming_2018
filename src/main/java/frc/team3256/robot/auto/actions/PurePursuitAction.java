@@ -31,7 +31,8 @@ public class PurePursuitAction implements Action {
     @Override
     public void start() {
         drive.configurePurePursuit(path);
-        System.out.println("Started");
+        drive.resetPurePursuit();
         drive.resetEncoders();
+        System.out.println("Started");
     }
 }

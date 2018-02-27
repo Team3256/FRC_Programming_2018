@@ -73,6 +73,11 @@ public class LogitechButtonBoardConfig implements ControlsInterface{
     }
 
     @Override
+    public boolean scalePresetMid() {
+        return false;
+    }
+
+    @Override
     public boolean scalePresetHigh() {
         return false;
     }
@@ -87,8 +92,4 @@ public class LogitechButtonBoardConfig implements ControlsInterface{
         return 0;
     }
 
-    @Override
-    public boolean manualSqueezeCarriage() {
-        return manipulator.getRawButton(5);
-    }
 }

@@ -71,9 +71,6 @@ public class PathGeneratorTest {
         PathGenerator.Waypoint four = new PathGenerator.Waypoint(10, 0, 0, 0);
         List<PathGenerator.Waypoint> waypointList = Arrays.asList(one, two, three, four);
         Path path = PathGenerator.generate(waypointList);
-        for (Segment s : path.segments) {
-            System.out.println(s.goalVel);
-        }
         assertEquals(path.getLength(), 5, kEpsilon);
     }
 

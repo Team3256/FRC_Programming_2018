@@ -100,8 +100,4 @@ public class DualLogitechConfig implements ControlsInterface{
         return manipulator.getRawAxis(1);
     }
 
-    @Override
-    public boolean manualSqueezeCarriage() {
-        return false;
-    }
 }

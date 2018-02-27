@@ -431,6 +431,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public void resetPurePursuit() {
+        purePursuitTracker.reset();
     }
 
     public void resetEncoders() {

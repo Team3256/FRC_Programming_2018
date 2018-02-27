@@ -55,7 +55,6 @@ public class PurePursuitTrackerTest {
         robotCoordinates = new Translation(50, 5);
         command = pursuit.update(robotCoordinates);
         assertEquals(command.dy(), 0.0, kEpsilon);
-        assertEquals(command.dx(), 5 * 20.0  * Constants.kControlLoopPeriod, kEpsilon);
 
 
     }

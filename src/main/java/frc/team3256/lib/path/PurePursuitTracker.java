@@ -20,6 +20,11 @@ public class PurePursuitTracker {
     public PurePursuitTracker() {
     }
 
+
+    public void reset() {
+        this.path.resetPath();
+    }
+
     public void setPath(Path path) {
         this.path = path;
     }

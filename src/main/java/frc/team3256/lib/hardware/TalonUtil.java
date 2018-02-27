@@ -4,6 +4,7 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Talon;
 import frc.team3256.robot.Constants;
 
 /**
@@ -122,6 +123,20 @@ public class TalonUtil{
     public static void setCoastMode(TalonSRX... talons){
         for(TalonSRX talon : talons){
             talon.setNeutralMode(NeutralMode.Coast);
+        }
+    }
+
+    public static void setPeakOutput(double peakFwd, double peakRev, TalonSRX... talons){
+        for(TalonSRX talon : talons){
+            talon.configPeakOutputForward(peakFwd, 0);
+            talon.configPeakOutputReverse(peakRev, 0);
+        }
+    }
+
+    public static void setMinOutput(double minFwd, double minRev, TalonSRX... talons){
+        for(TalonSRX talon : talons){
+            talon.configNominalOutputForward(minFwd, 0);
+            talon.configNominalOutputReverse(minRev, 0);
         }
     }
 }

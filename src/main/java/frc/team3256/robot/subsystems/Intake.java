@@ -33,7 +33,7 @@ public class Intake extends SubsystemBase implements Loop {
     public enum SystemState {
         INTAKING, //running the intake
         EXHAUSTING, //running the intake backwards
-        UNJAMMING, //momentarily stopping the intake to unjam the power cube
+        UNJAMMING, //momentarily reversing the intake to unjam the power cube
         DEPLOYED_CLOSED, //intake is closed and idle
         DEPLOYED_OPEN, //intake is open and idle
         STOWED_CLOSED, //intake is stowed, idle, and closed
@@ -49,20 +49,27 @@ public class Intake extends SubsystemBase implements Loop {
         WANTS_TO_UNJAM,
         //Operator -> Whenever no buttons are pressed
         IDLE,
+        //Operator -> Toggle pivot button
         WANTS_TO_TOGGLE_PIVOT,
+        //Operator -> Toggle flop button
         WANTS_TO_TOGGLE_FLOP,
-        WANTS_TO_DEPLOY
+        //Force deploy for autonomous
+        WANTS_TO_DEPLOY,
+        //Force stow for autonomous
+        WANTS_TO_STOW
     }
 
     private Intake() {
-        leftIntake = new VictorSP(Constants.kLeftIntakePort); //port to be determined
+        leftIntake = new VictorSP(Constants.kLeftIntakePort);
         rightIntake = new VictorSP(Constants.kRightIntakePort);
+
         flopperActuator = new DoubleSolenoid(Constants.kIntakeFlopForward, Constants.kIntakeFlopReverse);
         pivotActuator = new DoubleSolenoid(Constants.kIntakePivotForward, Constants.kIntakePivotReverse);
+
         cubeDetector = new SharpIR(Constants.kIntakeSharpIR, Constants.kIntakeSharpIRMinVoltage, Constants.kIntakeSharpIRMaxVoltage);
 
         leftIntake.setInverted(true);
-        rightIntake.setInverted(true);
+        rightIntake.setInverted(false);
     }
 
     public static Intake getInstance(){
@@ -169,7 +176,7 @@ public class Intake extends SubsystemBase implements Loop {
         }
         //Otherwise, we can still unjam, so return UNJAMMING state
         else {
-            setIntake(Constants.kIntakeExhaustPower,Constants.kIntakeExhaustPower);
+            setIntake(Constants.kIntakeUnjamPower,Constants.kRightIntakePower);
             return SystemState.UNJAMMING;
         }
     }
@@ -228,7 +235,7 @@ public class Intake extends SubsystemBase implements Loop {
 
     public void setIntake(double left, double right){
        leftIntake.set(left);
-       rightIntake.set(-right);
+       rightIntake.set(right);
     }
 
     public boolean hasCube(){
@@ -309,6 +316,14 @@ public class Intake extends SubsystemBase implements Loop {
                 }
                 else if(currentState == SystemState.STOWED_CLOSED || currentState == SystemState.DEPLOYED_CLOSED){
                     return SystemState.DEPLOYED_CLOSED;
+                }
+            case WANTS_TO_STOW:
+                wantsToToggle = false;
+                if(currentState == SystemState.DEPLOYED_OPEN || currentState == SystemState.STOWED_OPEN){
+                    return SystemState.STOWED_OPEN;
+                }
+                else if(currentState == SystemState.DEPLOYED_CLOSED || currentState == SystemState.STOWED_CLOSED){
+                    return SystemState.STOWED_CLOSED;
                 }
             //default: Safest position (Intake is stowed inside the robot)
             default:

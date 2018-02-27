@@ -46,13 +46,13 @@ public class DualLogitechConfig implements ControlsInterface{
 
     //Manipulator: Both Triggers
     @Override
-    public boolean unjamIntake(){
+    public boolean getUnjam(){
         return getIntake() && getExhaust();
     }
 
     //Manipulator: Button Y
     @Override
-    public boolean togglePivot() { return manipulator.getRawButton(5); }
+    public boolean togglePivot() { return manipulator.getRawButton(3); }
 
     //Manipulator: Button A
     @Override
@@ -74,7 +74,7 @@ public class DualLogitechConfig implements ControlsInterface{
 
     @Override
     public boolean switchPreset() {
-        return false;
+        return manipulator.getRawButton(5);
     }
 
     @Override
@@ -83,8 +83,11 @@ public class DualLogitechConfig implements ControlsInterface{
 }
 
     @Override
+    public boolean scalePresetMid() {return driver.getRawButton(42);}
+
+    @Override
     public boolean scalePresetHigh() {
-        return false;
+        return manipulator.getRawButton(2);
     }
 
     @Override

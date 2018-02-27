@@ -1,8 +1,6 @@
 package frc.team3256.robot.subsystems;
 
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.InterruptHandlerFunction;
@@ -15,31 +13,42 @@ public class Elevator extends SubsystemBase implements Loop{
     private TalonSRX master, slaveOne, slaveTwo, slaveThree;
     private DigitalInput hallEffect;
 
-    private SystemState currentState;
-    private WantedState wantedState;
+    private SystemState currentState = SystemState.HOLD;
+    private WantedState wantedState = WantedState.HOLD;
 
-    private boolean isCalibrated = false;
+    private boolean isHomed = false;
     private boolean stateChanged;
 
     private double m_closedLoopTarget;
     private boolean m_usingClosedLoop;
 
     private static Elevator instance;
+
     public static Elevator getInstance() {
          return instance == null ? instance = new Elevator() : instance;
     }
 
     private InterruptHandlerFunction<Elevator> ihr = new InterruptHandlerFunction<Elevator>() {
+
         @Override
         public void interruptFired(int interruptAssertedMask, Elevator param) {
-            if (!isCalibrated){
-                master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kCompHomeHeight), 0, 0);
-                isCalibrated = true;
-                master.configForwardSoftLimitEnable(false, 0);
+            if (master.getSelectedSensorVelocity(0) < 0){
+                System.out.println("HOMED ON UPPER SIDE OF CROSSBAR!!!!");
+                master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kTopHomeHeight), 0, 0);
+                isHomed = true;
+                master.configForwardSoftLimitEnable(true, 0);
                 master.configReverseSoftLimitEnable(true, 0);
-                System.out.println("TRIGGERING\n\n\n\n\n\n");
-                hallEffect.disableInterrupts();
+                //hallEffect.disableInterrupts();
             }
+            /*
+            else if (master.getSelectedSensorVelocity(0) > 0){
+                System.out.println("HOMED ON LOWER SIDE OF CROSSBAR!!!!");
+                master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kBottomHomeHeight), 0, 0);
+                isHomed = true;
+                master.configForwardSoftLimitEnable(true, 0);
+                master.configReverseSoftLimitEnable(true, 0);
+            }
+            */
         }
     };
 
@@ -67,81 +76,76 @@ public class Elevator extends SubsystemBase implements Loop{
         TalonUtil.setPIDGains(master, Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownP,
                 Constants.kElevatorFastDownI, Constants.kElevatorFastDownD, 0);
 
+
         //voltage limiting
-
-        master.configPeakOutputForward(8.0/12.0, 0);
-        master.configPeakOutputReverse(-8.0/12.0,0);
-        slaveOne.configPeakOutputForward(8.0/12.0, 0);
-        slaveOne.configPeakOutputReverse(-8.0/12.0,0);
-        slaveTwo.configPeakOutputForward(8.0/12.0, 0);
-        slaveTwo.configPeakOutputReverse(-8.0/12.0,0);
-        slaveThree.configPeakOutputForward(8.0/12.0, 0);
-        slaveThree.configPeakOutputReverse(-8.0/12.0,0);
-
-
-        master.configNominalOutputForward(0.5/12.0, 0);
-        master.configNominalOutputReverse(-0.5/12.0,0);
-        slaveOne.configNominalOutputForward(0.5/12.0, 0);
-        slaveOne.configNominalOutputReverse(-0.5/12.0,0);
-        slaveTwo.configNominalOutputForward(0.5/12.0, 0);
-        slaveTwo.configNominalOutputReverse(-0.5/12.0,0);
-        slaveThree.configNominalOutputForward(0.5/12.0, 0);
-        slaveThree.configNominalOutputReverse(-0.5/12.0,0);
-
+        TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage/12.0,
+                Constants.kElevatorMaxDownVoltage/12.0, master, slaveOne, slaveTwo, slaveThree);
+        TalonUtil.setMinOutput(Constants.kElevatorMinHoldVoltage/12.0,
+                0, master, slaveOne, slaveTwo, slaveThree);
 
         //soft limits
-
         master.configForwardSoftLimitThreshold((int)(heightToSensorUnits(Constants.kElevatorMaxHeight)), 0);
         master.configReverseSoftLimitThreshold((int)(heightToSensorUnits(Constants.kElevatorMinHeight)), 0);
         master.configForwardSoftLimitEnable(false, 0);
         master.configReverseSoftLimitEnable(false,0);
 
-        master.setNeutralMode(NeutralMode.Brake);
-        slaveOne.setNeutralMode(NeutralMode.Brake);
-        slaveTwo.setNeutralMode(NeutralMode.Brake);
-        slaveThree.setNeutralMode(NeutralMode.Brake);
+        TalonUtil.setCoastMode(master, slaveOne, slaveTwo, slaveThree);
 
     }
 
     public void setOpenLoop(double power){
-        tempflag = false;
         master.set(ControlMode.PercentOutput, power);
     }
 
+    public WantedState getWantedState() {
+        return wantedState;
+    }
+
+    public SystemState getCurrentState() {
+        return currentState;
+    }
+
     public void holdPosition(){
-        //TODO: Make this the absolute position
         setTargetPosition(getHeight(), Constants.kElevatorHoldSlot);
     }
 
-    boolean tempflag = false;
+    public TalonSRX getMaster() {
+        return master;
+    }
 
     public void setTargetPosition(double targetHeight, int slotID){
-        if (!isCalibrated)return;
-        System.out.println("OUTPUT VOLTAGE: " + master.getMotorOutputVoltage());
-        if (!tempflag) {
-            master.selectProfileSlot(slotID, 0);
-            tempflag = true;
+        if (!isHomed)return;
+        if (stateChanged){
+            master.selectProfileSlot(slotID,0);
         }
         master.set(ControlMode.Position, (int)heightToSensorUnits(targetHeight), 0);
     }
 
     public enum SystemState{
-        FAST_UP,
-        FAST_DOWN,
+        CLOSED_LOOP_UP,
+        CLOSED_LOOP_DOWN,
         HOLD,
         MANUAL_UP,
         MANUAL_DOWN,
     }
 
     public enum WantedState{
-        HIGH_SCALE,
-        //MID_SCALE,
-        LOW_SCALE,
-        HOLD,
-        SWITCH,
-        MANUAL_UP,
-        MANUAL_DOWN,
+        //Preset when scale is in the other alliance's favor
+        HIGH_SCALE_POS,
+        //Preset when scale is balanced
+        MID_SCALE_POS,
+        //Preset when scale is in our alliance's favor
+        LOW_SCALE_POS,
+        //Preset for the switch
+        SWITCH_POS,
+        //Preset to lower the elevator to intake
         INTAKE_POS,
+        //Manual control going up
+        MANUAL_UP,
+        //Manual control going down
+        MANUAL_DOWN,
+        //Hold position when using manual control
+        HOLD,
     }
 
     @Override
@@ -156,10 +160,10 @@ public class Elevator extends SubsystemBase implements Loop{
             case HOLD:
                 newState = handleHold();
                 break;
-            case FAST_UP:
+            case CLOSED_LOOP_UP:
                 newState = handleFastUp();
                 break;
-            case FAST_DOWN:
+            case CLOSED_LOOP_DOWN:
                 newState = handleFastDown();
                 break;
             case MANUAL_UP:
@@ -172,7 +176,6 @@ public class Elevator extends SubsystemBase implements Loop{
         //State Transfer
         if(newState != currentState){
             currentState = newState;
-            System.out.println("\tCURR_STATE:" + currentState + "\tNEW_STATE:" + newState);
             stateChanged = true;
         }
         else stateChanged = false;
@@ -188,29 +191,38 @@ public class Elevator extends SubsystemBase implements Loop{
         return (Math.abs(getHeight() - m_closedLoopTarget) < Constants.kElevatorTolerance);
     }
 
+    public double getTargetHeight() {
+        return m_closedLoopTarget;
+    }
+
     private SystemState handleHold(){
+        if (stateChanged){
+            master.selectProfileSlot(Constants.kElevatorHoldSlot,0);
+        }
         setTargetPosition(getHeight(), Constants.kElevatorHoldSlot);
         return defaultStateTransfer();
     }
 
     private SystemState handleFastUp(){
-        if(isCalibrated){
+        if(isHomed){
+            if (stateChanged){master.selectProfileSlot(Constants.kElevatorFastUpSlot, 0);}
             if (atClosedLoopTarget()){
                 return SystemState.HOLD;
             }
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastUpSlot);
-            return SystemState.FAST_UP;
+            return defaultStateTransfer();
         }
         return defaultStateTransfer();
     }
 
     private SystemState handleFastDown(){
-        if(isCalibrated){
+        if(isHomed){
+            if (stateChanged){master.selectProfileSlot(Constants.kElevatorFastDownSlot, 0);}
             if(atClosedLoopTarget()){
                 return SystemState.HOLD;
             }
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastDownSlot);
-            return SystemState.FAST_DOWN;
+            return defaultStateTransfer();
         }
         return defaultStateTransfer();
     }
@@ -238,27 +250,30 @@ public class Elevator extends SubsystemBase implements Loop{
     }
 
     private SystemState defaultStateTransfer(){
-        SystemState rv = SystemState.HOLD;
+        SystemState rv;
         switch (wantedState){
-            case HIGH_SCALE:
+            case HIGH_SCALE_POS:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kHighScalePreset;
                 }
                 m_usingClosedLoop = true;
                 break;
-            case LOW_SCALE:
+            case MID_SCALE_POS:
+                if(stateChanged) {
+                    m_closedLoopTarget = Constants.kMidScalePreset;
+                }
+                m_usingClosedLoop = true;
+                break;
+            case LOW_SCALE_POS:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kLowScalePreset;
                 }
                 m_usingClosedLoop = true;
                 break;
             case HOLD:
-                if(stateChanged) {
-                    m_closedLoopTarget = getHeight();
-                }
-                m_usingClosedLoop = true;
-                break;
-            case SWITCH:
+                m_usingClosedLoop = false;
+                return SystemState.HOLD;
+            case SWITCH_POS:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kSwitchPreset;
                 }
@@ -266,35 +281,37 @@ public class Elevator extends SubsystemBase implements Loop{
                 break;
             case MANUAL_UP:
                 m_usingClosedLoop = false;
-                break;
+                return SystemState.MANUAL_UP;
             case MANUAL_DOWN:
                 m_usingClosedLoop = false;
-                break;
+                return SystemState.MANUAL_DOWN;
             case INTAKE_POS:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kIntakePreset;
                 }
                 m_usingClosedLoop = true;
                 break;
-            default:
-                rv = SystemState.HOLD;
-                break;
         }
         if(m_closedLoopTarget > getHeight() && m_usingClosedLoop) {
-            rv = SystemState.FAST_UP;
+            rv = SystemState.CLOSED_LOOP_UP;
         }
         else if (m_closedLoopTarget < getHeight() && m_usingClosedLoop){
-            rv = SystemState.FAST_DOWN;
+            rv = SystemState.CLOSED_LOOP_DOWN;
         }
+        else rv = SystemState.HOLD;
         return rv;
     }
 
-    public boolean isCalibrated(){
-        return isCalibrated;
+    public boolean isHomed(){
+        return isHomed;
     }
 
     public boolean isTriggered(){
         return !hallEffect.get();
+    }
+
+    public double getVelocity() {
+        return master.getSelectedSensorVelocity(0);
     }
 
     public double getHeight() {
@@ -310,7 +327,7 @@ public class Elevator extends SubsystemBase implements Loop{
         SmartDashboard.putNumber("Motor Power: ", master.getMotorOutputVoltage());
         SmartDashboard.putString("Control Modes: ", master.getControlMode().toString() + ", " + slaveOne.getControlMode().toString() +
         slaveTwo.getControlMode().toString() + ", " + slaveThree.getControlMode().toString());
-        SmartDashboard.putBoolean("Is Calibrated? ", isCalibrated);
+        SmartDashboard.putBoolean("Is Calibrated? ", isHomed);
         SmartDashboard.putNumber("Closed Loop Target: ", m_closedLoopTarget);
         SmartDashboard.putBoolean("Using Closed Loop? ", m_usingClosedLoop);
         SmartDashboard.putBoolean("Hall effect? ", hallEffect.get());

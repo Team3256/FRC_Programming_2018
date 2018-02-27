@@ -1,33 +1,33 @@
 package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.VictorSP;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.Loop;
 import frc.team3256.robot.Constants;
 
-public class ElevatorCarriage extends SubsystemBase implements Loop{
+public class Carriage extends SubsystemBase implements Loop{
 
     private VictorSP rollerLeft, rollerRight;
     private DoubleSolenoid squeezeSolenoid;
 
     private SystemState currentState;
-    private WantedState wantedState;
+    private WantedState wantedState = WantedState.WANTS_TO_SQUEEZE_IDLE;
     private boolean stateChanged;
-    private double startTime;
 
+    private static Carriage instance;
 
-    private static ElevatorCarriage elevatorCarriage;
-
-    private ElevatorCarriage() {
+    private Carriage() {
         rollerLeft = new VictorSP(Constants.kCarriageRollerLeft);
         rollerRight = new VictorSP(Constants.kCarriageRollerRight);
+
         squeezeSolenoid = new DoubleSolenoid(Constants.kCarriageSqueezeForward, Constants.kCarriageSqueezeReverse);
+
+        rollerLeft.setInverted(false);
+        rollerRight.setInverted(true);
     }
 
-    public static ElevatorCarriage getInstance(){
-        return elevatorCarriage == null ? elevatorCarriage = new ElevatorCarriage(): elevatorCarriage;
+    public static Carriage getInstance(){
+        return instance == null ? instance = new Carriage(): instance;
     }
 
     public enum SystemState {
@@ -36,11 +36,12 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
         SCORING_FORWARD, //Run rollers forward
         SCORING_BACKWARD, //Run rollers backward
         SQUEEZING_IDLE, //Actuators squeeze cube in place
-        OPEN_IDLE //Actuators stay open
+        OPEN_IDLE, //Actuators stay open
+        EXHAUSTING
 }
 
     public enum WantedState {
-        //Operator -> Whenever no buttons are pressed
+        //Operator -> When we are intaking
         WANTS_TO_RECEIVE,
         //Condition -> After receiving cube
         //WANTS_TO_SECURE_CUBE,
@@ -50,8 +51,9 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
         WANTS_TO_SCORE_BACKWARD,
         //Operator -> Whenever robot has cube
         WANTS_TO_SQUEEZE_IDLE,
-        //Operator -> Manual open
-        WANTS_TO_OPEN
+        //When we are unjamming, open and idle
+        WANTS_TO_OPEN_IDLE,
+        WANTS_TO_EXHAUST
     }
 
     @Override
@@ -79,6 +81,8 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
             case SQUEEZING_IDLE:
                 newState = handleSqueezeIdle();
                 break;
+            case EXHAUSTING:
+                newState = handleExhaust();
             case OPEN_IDLE: default:
                 newState = handleOpenIdle();
                 break;
@@ -86,7 +90,7 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
         }
         //State transfer
         if (newState != currentState){
-            System.out.println("\tCURR_STATE:" + currentState + "\tNEW_STATE:" + newState);
+            System.out.println("CURR_STATE:" + currentState + "\tNEW_STATE:" + newState);
             currentState = newState;
             stateChanged = true;
         }
@@ -123,10 +127,19 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
         return defaultStateTransfer();
     }
 
+    private SystemState handleExhaust() {
+        if (stateChanged) {
+            squeeze();
+        }
+        runMotors(Constants.kCarriageExhaustPower);
+        return defaultStateTransfer();
+    }
+
     private SystemState handleSqueezeIdle(){
         if (stateChanged){
             squeeze();
         }
+        runMotors(0);
         return defaultStateTransfer();
     }
 
@@ -134,6 +147,7 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
         if (stateChanged){
             open();
         }
+        runMotors(0);
         return defaultStateTransfer();
     }
 
@@ -166,8 +180,11 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
             case WANTS_TO_SQUEEZE_IDLE:
                 return SystemState.SQUEEZING_IDLE;
 
-            case WANTS_TO_OPEN:
+            case WANTS_TO_OPEN_IDLE:
                 return SystemState.OPEN_IDLE;
+
+            case WANTS_TO_EXHAUST:
+                return SystemState.EXHAUSTING;
 
             default:
                 return SystemState.OPEN_IDLE;
@@ -179,21 +196,22 @@ public class ElevatorCarriage extends SubsystemBase implements Loop{
         this.wantedState = wantedState;
     }
 
-    public void squeeze(){
+    private void squeeze(){
         squeezeSolenoid.set(DoubleSolenoid.Value.kForward);
     }
 
-    public void open(){
+    private void open(){
         squeezeSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
 
-    public void runMotors(double power){
+    private void runMotors(double power){
         rollerLeft.set(power);
         rollerRight.set(power);
     }
 
-    public boolean hasCube(){
-        return Intake.getInstance().hasCube();
+    private boolean hasCube(){
+        return false;
+        //return Intake.getInstance().hasCube();
     }
 
     @Override

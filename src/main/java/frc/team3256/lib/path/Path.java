@@ -1,14 +1,14 @@
 package frc.team3256.lib.path;
 
 import frc.team3256.lib.math.Translation;
-import frc.team3256.robot.Constants;
 
 import java.util.ArrayList;
 
 public class Path {
 
-    public ArrayList<Segment> segments;
-    private double segmentCompletionTolerance = 0.01;
+    private ArrayList<Segment> segments;
+    private int currSegmentNumber = 0;
+    private static final double segmentCompletionTolerance = 0.01;
 
     public Path(){
         segments = new ArrayList<>();
@@ -17,6 +17,10 @@ public class Path {
 
     public void addSegment(Segment segment){
         segments.add(segment);
+    }
+
+    public void resetPath() {
+        currSegmentNumber = 0;
     }
 
     public static class PathUpdate{
@@ -44,7 +48,7 @@ public class Path {
 
     public PathUpdate update(Translation robotCoordinates, double lookaheadDistance){
         PathUpdate rv = new PathUpdate();
-        Segment currSegment = segments.get(0);
+        Segment currSegment = segments.get(currSegmentNumber);
 
         Translation closestPoint = currSegment.getClosestPointOnSegment(robotCoordinates);
 
@@ -53,7 +57,7 @@ public class Path {
         if (distanceRemainingOnSegment <= segmentCompletionTolerance) {
             System.out.println("REMOVING SEGMENT");
             System.out.println("remaining distance: " + distanceRemainingOnSegment);
-            segments.remove(0);
+            currSegmentNumber++;
             if (segments.isEmpty()) {
                 return prevPathUpdate;
             }
@@ -80,7 +84,7 @@ public class Path {
         //determine lookahead point
         rv.lookaheadPoint = currSegment.getLookAheadPoint(rv.lookaheadDistance + rv.distanceToPath, closestPoint);
 
-        for (Segment s : segments) {
+        for (Segment s : segments.subList(currSegmentNumber, segments.size())) {
             rv.remainingDistance += s.getLength();
         }
         rv.remainingDistance -= currSegment.getCurrDistanceTraveled(closestPoint);

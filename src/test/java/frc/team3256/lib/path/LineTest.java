@@ -1,6 +1,7 @@
 package frc.team3256.lib.path;
 
 import frc.team3256.lib.math.Translation;
+import frc.team3256.robot.Constants;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -97,6 +98,6 @@ public class LineTest {
     public void testVelocity() {
         Line line = new Line(0, 0, 20, 0, 0, 2, 250);
         Translation closestPoint = new Translation(20, 0);
-        double currVelocity = line.checkVelocity(closestPoint, 50.0);
+        double currVelocity = line.checkVelocity(closestPoint, 50.0, Constants.kControlLoopPeriod);
     }
 }

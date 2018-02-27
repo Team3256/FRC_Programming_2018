@@ -38,5 +38,4 @@ public interface ControlsInterface {
 
     double manualElevatorDown();
 
-    boolean manualSqueezeCarriage();
 }

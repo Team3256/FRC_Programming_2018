@@ -92,8 +92,4 @@ public class LogitechButtonBoardConfig implements ControlsInterface{
         return 0;
     }
 
-    @Override
-    public boolean manualSqueezeCarriage() {
-        return manipulator.getRawButton(5);
-    }
 }

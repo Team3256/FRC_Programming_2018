@@ -20,6 +20,11 @@ public class PurePursuitTracker {
     public PurePursuitTracker() {
     }
 
+
+    public void reset() {
+        this.path.resetPath();
+    }
+
     public void setPath(Path path) {
         this.path = path;
     }
@@ -86,7 +91,7 @@ public class PurePursuitTracker {
         Optional<Arc> optionalArc = getArcToSegment(robotCoordinates, pathUpdate);
         //calculate linear and angular velocities
         double vel, angularVel;
-        vel = s.checkVelocity(pathUpdate.closestPoint, prevOutput.dx());
+        vel = s.checkVelocity(pathUpdate.closestPoint, prevOutput.dx(), dt);
         Twist rv;
 
         //If we have an arc

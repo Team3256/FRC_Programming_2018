@@ -1,7 +1,6 @@
 package frc.team3256.lib.path;
 
 import frc.team3256.lib.math.Translation;
-import frc.team3256.robot.Constants;
 
 public class Line extends Segment{
 
@@ -127,10 +126,10 @@ public class Line extends Segment{
     }
 
     @Override
-    public double checkVelocity(Translation closestPoint, double prevVelocity) {
+    public double checkVelocity(Translation closestPoint, double prevVelocity, double dt) {
         double remainingDistance = getRemainingDistance(closestPoint);
         double outputVelFromEnd = Math.sqrt(Math.pow(goalVel, 2.0)-2*maxAccel*remainingDistance);
-        double outputVel = prevVelocity + maxAccel * Constants.kControlLoopPeriod;
+        double outputVel = prevVelocity + maxAccel * dt;
         outputVelFromEnd = Double.isNaN(outputVelFromEnd) ? outputVel : outputVelFromEnd;
         outputVel = Math.min(outputVel, outputVelFromEnd);
         outputVel = Math.min(outputVel, maxVel);

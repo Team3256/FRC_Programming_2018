@@ -1,7 +1,6 @@
 package frc.team3256.lib.path;
 
 import frc.team3256.lib.math.Translation;
-import frc.team3256.robot.Constants;
 
 import java.util.ArrayList;
 

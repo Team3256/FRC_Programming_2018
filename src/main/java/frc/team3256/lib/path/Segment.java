@@ -39,5 +39,5 @@ public abstract class Segment {
 
     public abstract double getRemainingDistance(Translation closestPoint);
 
-    public abstract double checkVelocity(Translation closestPoint, double prevVelocity);
+    public abstract double checkVelocity(Translation closestPoint, double prevVelocity, double dt);
 }

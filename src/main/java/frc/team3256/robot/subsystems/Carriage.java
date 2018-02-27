@@ -36,7 +36,8 @@ public class Carriage extends SubsystemBase implements Loop{
         SCORING_FORWARD, //Run rollers forward
         SCORING_BACKWARD, //Run rollers backward
         SQUEEZING_IDLE, //Actuators squeeze cube in place
-        OPEN_IDLE //Actuators stay open
+        OPEN_IDLE, //Actuators stay open
+        EXHAUSTING
 }
 
     public enum WantedState {
@@ -51,7 +52,8 @@ public class Carriage extends SubsystemBase implements Loop{
         //Operator -> Whenever robot has cube
         WANTS_TO_SQUEEZE_IDLE,
         //When we are unjamming, open and idle
-        WANTS_TO_OPEN_IDLE
+        WANTS_TO_OPEN_IDLE,
+        WANTS_TO_EXHAUST
     }
 
     @Override
@@ -79,6 +81,8 @@ public class Carriage extends SubsystemBase implements Loop{
             case SQUEEZING_IDLE:
                 newState = handleSqueezeIdle();
                 break;
+            case EXHAUSTING:
+                newState = handleExhaust();
             case OPEN_IDLE: default:
                 newState = handleOpenIdle();
                 break;
@@ -120,6 +124,14 @@ public class Carriage extends SubsystemBase implements Loop{
             squeeze();
         }
         runMotors(Constants.kCarriageScoreBackwardPower);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleExhaust() {
+        if (stateChanged) {
+            squeeze();
+        }
+        runMotors(Constants.kCarriageExhaustPower);
         return defaultStateTransfer();
     }
 
@@ -170,6 +182,9 @@ public class Carriage extends SubsystemBase implements Loop{
 
             case WANTS_TO_OPEN_IDLE:
                 return SystemState.OPEN_IDLE;
+
+            case WANTS_TO_EXHAUST:
+                return SystemState.EXHAUSTING;
 
             default:
                 return SystemState.OPEN_IDLE;

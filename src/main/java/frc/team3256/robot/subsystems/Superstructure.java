@@ -34,7 +34,6 @@ public class Superstructure extends SubsystemBase implements Loop{
         UNJAMMING,
         RAISING_ELEVATOR_MANUAL,
         LOWERING_ELEVATOR_MANUAL,
-        INTAKE_POSITION, //-----------
         SWITCH_POSITION,
         LOW_SCALE_POSITION,
         MID_SCALE_POSITION,
@@ -47,7 +46,6 @@ public class Superstructure extends SubsystemBase implements Loop{
         WANTS_TO_INTAKE,
         WANTS_TO_EXHAUST,
         WANTS_TO_UNJAM,
-        WANTS_TO_INTAKE_POSITION, //---------------
         WANTS_TO_SCORE_SWITCH,
         WANTS_TO_SCORE_LOW_SCALE,
         WANTS_TO_SCORE_MID_SCALE,
@@ -71,9 +69,6 @@ public class Superstructure extends SubsystemBase implements Loop{
             case HOLDING_POSITION:
                 newState = handleHoldingPosition();
                 break;
-            case INTAKE_POSITION:
-                newState = handleIntakePosition();
-                break;
             case INTAKING:
                 newState = handleIntake();
                 break;
@@ -94,6 +89,9 @@ public class Superstructure extends SubsystemBase implements Loop{
                 break;
             case LOW_SCALE_POSITION:
                 newState = handleScoreScaleLow(timestamp);
+                break;
+            case MID_SCALE_POSITION:
+                newState = handleScoreScaleMid(timestamp);
                 break;
             case HIGH_SCALE_POSITION:
                 newState = handleScoreScaleHigh(timestamp);
@@ -121,32 +119,24 @@ public class Superstructure extends SubsystemBase implements Loop{
         return defaultStateTransfer();
     }
 
-    // ------------------ CHECK WITH ERIC
-
-    private SystemState handleIntakePosition() {
-        if (stateChanged) {
-            elevator.setWantedState(Elevator.WantedState.INTAKE_POS);
-        }
-        elevator.setWantedState(Elevator.WantedState.HOLD);
-        return defaultStateTransfer();
-    }
-
-    //-------------------------------------------------------------
-
     private SystemState handleIntake() {
         if (stateChanged) {
+            intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
             elevator.setWantedState(Elevator.WantedState.INTAKE_POS);
         }
-        carriage.setWantedState(Carriage.WantedState.WANTS_TO_RECEIVE);
-        intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
+        if (elevator.getHeight() < Constants.kIntakePreset){ //---------- if at a safe height to intakeeee
+            intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_RECEIVE);
+        }
         return defaultStateTransfer();
     }
 
     private SystemState handleExhaust() {
         if (stateChanged) {
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
+            intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
+            elevator.setWantedState(Elevator.WantedState.INTAKE_POS);
         }
+        carriage.setWantedState(Carriage.WantedState.WANTS_TO_EXHAUST);
         intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
         return defaultStateTransfer();
     }
@@ -192,6 +182,17 @@ public class Superstructure extends SubsystemBase implements Loop{
         }
         if(currTime - timeWhenStateChanged > Constants.kElevatorRaiseDelayTime){
             elevator.setWantedState(Elevator.WantedState.LOW_SCALE_POS);
+        }
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleScoreScaleMid(double currTime){
+        if(stateChanged){
+            intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
+            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+        }
+        if(currTime - timeWhenStateChanged > Constants.kElevatorRaiseDelayTime){
+            elevator.setWantedState(Elevator.WantedState.MID_SCALE_POS);
         }
         return defaultStateTransfer();
     }
@@ -245,13 +246,6 @@ public class Superstructure extends SubsystemBase implements Loop{
 
             case WANTS_TO_SCORE_HIGH_SCALE:
                 return SystemState.HIGH_SCALE_POSITION;
-
-            //--------------------------------
-
-            case WANTS_TO_INTAKE_POSITION:
-                return SystemState.INTAKE_POSITION;
-
-            //----------------------------------------
 
             case WANTS_TO_SCORE_FORWARD:
                 return SystemState.SCORING_FORWARD;

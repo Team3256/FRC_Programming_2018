@@ -136,7 +136,7 @@ public class Robot extends IterativeRobot {
         //System.out.println("Right Encoder:            " + driveTrain.inchesToSensorUnits(driveTrain.getRightDistance()));
         //System.out.println("Voltage: " + intake.getVoltage());
         //System.out.println("Is Triggered: " + intake.hasCube());
-        System.out.println("Hall Effect Triggered: " + elevator.isTriggered() + "\n" + "Current Velocity: " + elevator.getVelocity());
+        //System.out.println("Hall Effect Triggered: " + elevator.isTriggered() + "\n" + "Current Velocity: " + elevator.getVelocity());
 
     }
 

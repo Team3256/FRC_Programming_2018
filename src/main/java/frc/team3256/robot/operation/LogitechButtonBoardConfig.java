@@ -73,6 +73,11 @@ public class LogitechButtonBoardConfig implements ControlsInterface{
     }
 
     @Override
+    public boolean scalePresetMid() {
+        return false;
+    }
+
+    @Override
     public boolean scalePresetHigh() {
         return false;
     }

@@ -289,8 +289,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public void enableRamp(){
-        leftMaster.configOpenloopRamp(0.25, 0);
-        rightMaster.configOpenloopRamp(0.25, 0);
+        leftMaster.configOpenloopRamp(Constants.kRampRate, 0);
+        rightMaster.configOpenloopRamp(Constants.kRampRate, 0);
     }
     
     public void disableRamp(){

@@ -45,6 +45,7 @@ public class Constants {
     public static final double kElevatorGearRatio = 36.0/24.0;
     public static final double kElevatorMaxHeight = 52;
     public static final double kElevatorMinHeight = 6.0;
+    public static final double kRampRate = 0.25;
 
     //Control Loop Parameters:
     //Looping period

@@ -79,8 +79,8 @@ public class Robot extends IterativeRobot {
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
 
-        //UsbCamera cam1 = CameraServer.getInstance().startAutomaticCapture();
-        //cam1.setResolution(640, 320);
+        UsbCamera cam1 = CameraServer.getInstance().startAutomaticCapture();
+        cam1.setResolution(640, 480);
     }
 
     @Override

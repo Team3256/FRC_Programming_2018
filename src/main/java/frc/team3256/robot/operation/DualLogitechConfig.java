@@ -79,11 +79,11 @@ public class DualLogitechConfig implements ControlsInterface{
 
     @Override
     public boolean scalePresetLow() {
-        return driver.getRawButton(1);
+        return false;
 }
 
     @Override
-    public boolean scalePresetMid() {return driver.getRawButton(42);}
+    public boolean scalePresetMid() {return false;}
 
     @Override
     public boolean scalePresetHigh() {

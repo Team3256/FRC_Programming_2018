@@ -15,7 +15,9 @@ import frc.team3256.lib.Kinematics;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.ADXRS453_Gyro;
 import frc.team3256.lib.hardware.TalonUtil;
+import frc.team3256.lib.math.RigidTransform;
 import frc.team3256.lib.math.Rotation;
+import frc.team3256.lib.math.Translation;
 import frc.team3256.lib.math.Twist;
 import frc.team3256.lib.path.Path;
 import frc.team3256.lib.path.PurePursuitTracker;
@@ -272,6 +274,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
      * @param rightPower
      */
     public void setOpenLoop(double leftPower, double rightPower) {
+
         if (controlMode != DriveControlMode.OPEN_LOOP){
             leftMaster.enableVoltageCompensation(false);
             rightMaster.enableVoltageCompensation(false);
@@ -284,13 +287,14 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.set(ControlMode.PercentOutput, rightPower);
     }
 
-    public void configRamp(){
-        /*
+    public void enableRamp(){
         leftMaster.configOpenloopRamp(0.5, 0);
         rightMaster.configOpenloopRamp(0.5, 0);
-        leftSlave.configOpenloopRamp(0.5, 0);
-        rightSlave.configOpenloopRamp(0.5, 0);
-        */
+    }
+    
+    public void disableRamp(){
+        leftMaster.configOpenloopRamp(0,0);
+        rightMaster.configOpenloopRamp(0,0);
     }
 
     public void setBrake(){
@@ -391,6 +395,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
             TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
             controlMode = DriveControlMode.DRIVE_ARC;
         }
+        disableRamp();
         updateDriveArc();
     }
 
@@ -402,6 +407,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
             setHighGear(true);
         }
         TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
+        disableRamp();
         updateDriveStraight();
     }
 
@@ -412,6 +418,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
             controlMode = DriveControlMode.PURE_PURSUIT;
         }
         purePursuitTracker.setPath(path);
+        disableRamp();
+        purePursuitTracker.update(new Translation(0, 0));
     }
 
     public void resetDriveStraightController() {

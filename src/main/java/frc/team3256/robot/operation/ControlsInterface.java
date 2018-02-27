@@ -30,6 +30,8 @@ public interface ControlsInterface {
 
     boolean scalePresetLow();
 
+    boolean scalePresetMid();
+
     boolean scalePresetHigh();
 
     double manualElevatorUp();

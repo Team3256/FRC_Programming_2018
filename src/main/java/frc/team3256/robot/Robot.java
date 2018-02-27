@@ -16,6 +16,7 @@ import frc.team3256.robot.auto.modes.*;
 import frc.team3256.robot.gamedata.GameDataAccessor;
 import frc.team3256.robot.operation.ControlsInterface;
 import frc.team3256.robot.operation.DualLogitechConfig;
+import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.subsystems.*;
 
 public class Robot extends IterativeRobot {
@@ -32,6 +33,7 @@ public class Robot extends IterativeRobot {
     ControlsInterface controlsInterface;
     AutoModeExecuter autoModeExecuter;
     AutoModeChooser autoModeChooser;
+    TeleopUpdater teleopUpdater;
 
     Compressor compressor;
 
@@ -52,6 +54,8 @@ public class Robot extends IterativeRobot {
         intake = Intake.getInstance();
         elevator = Elevator.getInstance();
         carriage = Carriage.getInstance();
+
+        teleopUpdater = new TeleopUpdater();
 
         poseEstimator = PoseEstimator.getInstance();
         gyroCalibrator = new ADXRS453_Calibrator(driveTrain.getGyro());
@@ -90,6 +94,8 @@ public class Robot extends IterativeRobot {
         disabledLooper.stop();
         enabledLooper.start();
 
+
+
         autoModeExecuter = new AutoModeExecuter();
         AutoModeBase autoMode = new TestArcTrajectoryAuto();
 
@@ -111,7 +117,7 @@ public class Robot extends IterativeRobot {
         disabledLooper.stop();
         enabledLooper.start();
         driveTrain.setBrake();
-        driveTrain.configRamp();
+        driveTrain.enableRamp();
         //driveTrain.setVelocitySetpoint(0,0);
     }
 
@@ -160,6 +166,8 @@ public class Robot extends IterativeRobot {
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn, !shiftDown);
         driveTrain.setOpenLoop(power);
         driveTrain.setHighGear(power.getHighGear());
+
+        // teleopUpdater.update();
 
         //System.out.println("HAS CUBE --------------------" + intake.hasCube());
 

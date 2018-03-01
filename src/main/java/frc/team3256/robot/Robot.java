@@ -78,7 +78,7 @@ public class Robot extends IterativeRobot {
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
-        
+
     }
 
     @Override
@@ -223,6 +223,13 @@ public class Robot extends IterativeRobot {
 
         //-------------------------------------------------------------------------
 
+
+
+        if (!elevator.isHomed()){
+            System.out.println("AUTO HOMING");
+            elevator.setWantedState(Elevator.WantedState.HOME);
+            return;
+        }
 
         double elevatorThrottle = controlsInterface.manualElevatorUp();
 

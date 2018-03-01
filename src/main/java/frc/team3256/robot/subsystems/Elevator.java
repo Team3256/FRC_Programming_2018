@@ -317,10 +317,7 @@ public class Elevator extends SubsystemBase implements Loop{
                 m_usingClosedLoop = true;
                 break;
             case HOME:
-                if(stateChanged) {
-                    m_closedLoopTarget = Constants.kTopHomeHeight + 2.0;
-                }
-                m_usingClosedLoop = true;
+                return SystemState.HOMING;
         }
         if(m_closedLoopTarget > getHeight() && m_usingClosedLoop) {
             rv = SystemState.CLOSED_LOOP_UP;
@@ -368,6 +365,10 @@ public class Elevator extends SubsystemBase implements Loop{
     @Override
     public void zeroSensors() {
 
+    }
+
+    public boolean isHomed(){
+        return isHomed;
     }
 
     public ControlMode getTalonControlMode(){

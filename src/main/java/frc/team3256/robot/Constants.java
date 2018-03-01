@@ -127,7 +127,7 @@ public class Constants {
 
     public static final double kElevatorUpManualPower = 0.15;
     public static final double kElevatorDownManualPower = -0.15;
-    public static final double kElevatorUpSlowPower = 0.05;
+    public static final double kElevatorUpSlowPower = 0.2;
     public static final double kHighScalePreset = 51; //in inches //48.5 measured
     public static final double kMidScalePreset = 40; //36.5
     public static final double kLowScalePreset = 30.0; //30

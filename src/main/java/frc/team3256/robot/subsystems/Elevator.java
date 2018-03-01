@@ -203,7 +203,7 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private SystemState handleZeroPower() {
         setOpenLoop(0);
-        return defaultStateTransfer();
+        return SystemState.ZERO_POWER;
     }
 
     private SystemState handleHome(double timestamp) {
@@ -211,13 +211,13 @@ public class Elevator extends SubsystemBase implements Loop{
             homingTimeStart = timestamp;
         }
         if (timestamp - homingTimeStart < Constants.kElevatorHomingUpTime) {
+            if (isHomed) {
+                return SystemState.ZERO_POWER;
+            }
             setOpenLoop(Constants.kElevatorUpSlowPower);
             return SystemState.HOMING;
         }
-        if (isHomed) {
-            return SystemState.ZERO_POWER;
-        }
-        return  SystemState.ZERO_POWER;
+        return SystemState.ZERO_POWER;
     }
 
     private SystemState handleHold(){

@@ -100,6 +100,8 @@ public class Robot extends IterativeRobot {
             autoSet = true;
         }
 
+        intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
+
         // AutoModeBase autoMode = new TestPurePursuitAuto();
         //AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
         AutoModeBase autoModeTest = new CenterLeftSwitchAuto();

@@ -233,7 +233,7 @@ public class Robot extends IterativeRobot {
             elevator.setWantedState(Elevator.WantedState.HOME);
             return;
         }
-        
+
 
         double elevatorThrottle = controlsInterface.manualElevatorUp();
 

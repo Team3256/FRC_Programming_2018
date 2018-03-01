@@ -214,7 +214,10 @@ public class Elevator extends SubsystemBase implements Loop{
             setOpenLoop(Constants.kElevatorUpSlowPower);
             return SystemState.HOMING;
         }
-        return SystemState.ZERO_POWER;
+        if (isHomed) {
+            return SystemState.ZERO_POWER;
+        }
+        return  SystemState.ZERO_POWER;
     }
 
     private SystemState handleHold(){

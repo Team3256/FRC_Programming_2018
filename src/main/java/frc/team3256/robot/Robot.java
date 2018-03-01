@@ -81,6 +81,8 @@ public class Robot extends IterativeRobot {
 
         UsbCamera cam1 = CameraServer.getInstance().startAutomaticCapture();
         cam1.setResolution(640, 480);
+
+        elevator.setWantedState(Elevator.WantedState.HOME);
     }
 
     @Override

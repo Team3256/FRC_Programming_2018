@@ -22,6 +22,8 @@ public class Elevator extends SubsystemBase implements Loop{
     private double m_closedLoopTarget;
     private boolean m_usingClosedLoop;
 
+    private double homingTimeStart;
+
     private static Elevator instance;
 
     public static Elevator getInstance() {
@@ -91,7 +93,7 @@ public class Elevator extends SubsystemBase implements Loop{
 
     }
 
-    public void setOpenLoop(double power){
+    private void setOpenLoop(double power){
         master.set(ControlMode.PercentOutput, power);
     }
 
@@ -107,7 +109,7 @@ public class Elevator extends SubsystemBase implements Loop{
         return master;
     }
 
-    public void setTargetPosition(double targetHeight, int slotID){
+    private void setTargetPosition(double targetHeight, int slotID){
         if (!isHomed)return;
         if (stateChanged){
             master.selectProfileSlot(slotID,0);
@@ -115,12 +117,14 @@ public class Elevator extends SubsystemBase implements Loop{
         master.set(ControlMode.Position, (int)heightToSensorUnits(targetHeight), 0);
     }
 
-    public enum SystemState{
+    private enum SystemState{
         CLOSED_LOOP_UP,
         CLOSED_LOOP_DOWN,
         HOLD,
         MANUAL_UP,
         MANUAL_DOWN,
+        ZERO_POWER,
+        HOMING,
     }
 
     public enum WantedState{
@@ -140,6 +144,8 @@ public class Elevator extends SubsystemBase implements Loop{
         MANUAL_DOWN,
         //Hold position when using manual control
         HOLD,
+        //Go up a bit and then down to home
+        HOME,
     }
 
     @Override
@@ -166,6 +172,12 @@ public class Elevator extends SubsystemBase implements Loop{
             case MANUAL_DOWN:
                 newState = handleManualControlDown();
                 break;
+            case ZERO_POWER:
+                newState = handleZeroPower();
+                break;
+            case HOMING:
+                newState = handleHome(timestamp);
+                break;
         }
         //State Transfer
         if(newState != currentState){
@@ -180,7 +192,7 @@ public class Elevator extends SubsystemBase implements Loop{
 
     }
 
-    public boolean atClosedLoopTarget(){
+    private boolean atClosedLoopTarget(){
         if (!m_usingClosedLoop) return false;
         return (Math.abs(getHeight() - m_closedLoopTarget) < Constants.kElevatorTolerance);
     }
@@ -189,9 +201,28 @@ public class Elevator extends SubsystemBase implements Loop{
         return m_closedLoopTarget;
     }
 
+    private SystemState handleZeroPower() {
+        setOpenLoop(0);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleHome(double timestamp) {
+        if (stateChanged) {
+            homingTimeStart = timestamp;
+        }
+        if (timestamp - homingTimeStart < Constants.kElevatorHomingUpTime) {
+            setOpenLoop(Constants.kElevatorUpSlowPower);
+            return SystemState.HOMING;
+        }
+        return SystemState.ZERO_POWER;
+    }
+
     private SystemState handleHold(){
         if (stateChanged){
             master.selectProfileSlot(Constants.kElevatorHoldSlot,0);
+        }
+        if (getHeight() < Constants.kDropPreset) {
+            return SystemState.ZERO_POWER;
         }
         setTargetPosition(getHeight(), Constants.kElevatorHoldSlot);
         return defaultStateTransfer();
@@ -212,7 +243,7 @@ public class Elevator extends SubsystemBase implements Loop{
     private SystemState handleFastDown(){
         if(isHomed){
             if (stateChanged){master.selectProfileSlot(Constants.kElevatorFastDownSlot, 0);}
-            if(atClosedLoopTarget()){
+            if (atClosedLoopTarget()){
                 return SystemState.HOLD;
             }
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastDownSlot);
@@ -285,6 +316,11 @@ public class Elevator extends SubsystemBase implements Loop{
                 }
                 m_usingClosedLoop = true;
                 break;
+            case HOME:
+                if(stateChanged) {
+                    m_closedLoopTarget = Constants.kTopHomeHeight + 2.0;
+                }
+                m_usingClosedLoop = true;
         }
         if(m_closedLoopTarget > getHeight() && m_usingClosedLoop) {
             rv = SystemState.CLOSED_LOOP_UP;
@@ -294,10 +330,6 @@ public class Elevator extends SubsystemBase implements Loop{
         }
         else rv = SystemState.HOLD;
         return rv;
-    }
-
-    public boolean isHomed(){
-        return isHomed;
     }
 
     public boolean isTriggered(){

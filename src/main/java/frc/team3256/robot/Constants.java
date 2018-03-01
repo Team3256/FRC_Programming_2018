@@ -127,15 +127,18 @@ public class Constants {
 
     public static final double kElevatorUpManualPower = 0.15;
     public static final double kElevatorDownManualPower = -0.15;
+    public static final double kElevatorUpSlowPower = 0.05;
     public static final double kHighScalePreset = 51; //in inches //48.5 measured
     public static final double kMidScalePreset = 40; //36.5
     public static final double kLowScalePreset = 30.0; //30
     public static final double kSwitchPreset = 15.0;
     public static final double kIntakePreset = 7.5;
+    public static final double kDropPreset = 12.0;
     public static final double kBottomHomeHeight = 7.875; //measured in inches
     public static final double kCompHomeHeight = 8.5; //measured in inches
     public static final double kTopHomeHeight = 8.85;    //placeholder
     public static final double kElevatorRaiseDelayTime = 0.5;
+    public static final double kElevatorHomingUpTime = 2.0;
     public static final double kElevatorScoreRearMinHeight = 0;
     public static final double kElevatorScoreFrontMinHeight = 0;
     public static final double kElevatorTolerance = 1.0; //measured in inches

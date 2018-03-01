@@ -79,8 +79,8 @@ public class Robot extends IterativeRobot {
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
 
-        UsbCamera cam1 = CameraServer.getInstance().startAutomaticCapture();
-        cam1.setResolution(640, 480);
+        //UsbCamera cam1 = CameraServer.getInstance().startAutomaticCapture();
+        //cam1.setResolution(640, 480);
     }
 
     @Override
@@ -93,8 +93,6 @@ public class Robot extends IterativeRobot {
     public void autonomousInit() {
         disabledLooper.stop();
         enabledLooper.start();
-
-
 
         autoModeExecuter = new AutoModeExecuter();
         AutoModeBase autoMode = new TestArcTrajectoryAuto();
@@ -263,11 +261,11 @@ public class Robot extends IterativeRobot {
         else if (!manualelev)elevator.setWantedState(Elevator.WantedState.HOLD);
 
 
-        System.out.println("CURR STATE: " + elevator.getCurrentState() + "\n" + "WANTED STATE: " + elevator.getWantedState());
-        System.out.println("OUTPUT VOLTAGE: " + elevator.getMaster().getMotorOutputVoltage());
-        System.out.println("CURR HEIGHT: " + elevator.getHeight());
-        System.out.println("TARGET HEIGHT: " + elevator.getTargetHeight());
-
+        //System.out.println("CURR STATE: " + elevator.getCurrentState() + "\n" + "WANTED STATE: " + elevator.getWantedState());
+        //System.out.println("OUTPUT VOLTAGE: " + elevator.getMaster().getMotorOutputVoltage());
+        //System.out.println("CURR HEIGHT: " + elevator.getHeight());
+        //System.out.println("TARGET HEIGHT: " + elevator.getTargetHeight());
+        System.out.println("VOLTAGE: " + intake.getVoltage());
 
 
         // -----------------------------------------------------------------------------

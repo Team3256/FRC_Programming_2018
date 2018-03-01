@@ -227,11 +227,13 @@ public class Robot extends IterativeRobot {
 
 
 
+
         if (!elevator.isHomed()){
             System.out.println("AUTO HOMING");
             elevator.setWantedState(Elevator.WantedState.HOME);
             return;
         }
+        
 
         double elevatorThrottle = controlsInterface.manualElevatorUp();
 
@@ -268,11 +270,12 @@ public class Robot extends IterativeRobot {
         else if (!manualelev)elevator.setWantedState(Elevator.WantedState.HOLD);
 
 
-        //System.out.println("CURR STATE: " + elevator.getCurrentState() + "\n" + "WANTED STATE: " + elevator.getWantedState());
+        System.out.println("CURR STATE: " + elevator.getCurrentState() + "\n" + "WANTED STATE: " + elevator.getWantedState());
         //System.out.println("OUTPUT VOLTAGE: " + elevator.getMaster().getMotorOutputVoltage());
         //System.out.println("CURR HEIGHT: " + elevator.getHeight());
         //System.out.println("TARGET HEIGHT: " + elevator.getTargetHeight());
         System.out.println("VOLTAGE: " + intake.getVoltage());
+        //System.out.println("HOMED: " + elevator.isHomed());
 
 
         // -----------------------------------------------------------------------------

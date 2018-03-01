@@ -144,7 +144,7 @@ public class Elevator extends SubsystemBase implements Loop{
         MANUAL_DOWN,
         //Hold position when using manual control
         HOLD,
-        //Go up a bit and then down to home
+        //Go up a bit to home, and then drop down...this should be only called when the robot has not been homed yet
         HOME,
     }
 
@@ -203,7 +203,7 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private SystemState handleZeroPower() {
         setOpenLoop(0);
-        return SystemState.ZERO_POWER;
+        return defaultStateTransfer();
     }
 
     private SystemState handleHome(double timestamp) {

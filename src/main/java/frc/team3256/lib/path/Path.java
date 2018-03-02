@@ -57,7 +57,8 @@ public class Path {
         if (distanceRemainingOnSegment <= segmentCompletionTolerance) {
             System.out.println("REMOVING SEGMENT");
             System.out.println("remaining distance: " + distanceRemainingOnSegment);
-            currSegmentNumber++;
+            //currSegmentNumber++;
+            segments.remove(0);
             if (segments.isEmpty()) {
                 return prevPathUpdate;
             }

@@ -420,7 +420,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         }
         purePursuitTracker.setPath(path);
         disableRamp();
-        purePursuitTracker.update(new Translation(0, 0));
+        updatePurePursuit();
     }
 
     public void resetDriveStraightController() {

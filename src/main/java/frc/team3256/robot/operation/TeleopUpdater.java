@@ -26,8 +26,8 @@ public class TeleopUpdater {
         boolean midScalePos = controls.scalePresetMid();
         boolean highScalePos = controls.scalePresetHigh();
 
-        boolean manualRaise = controls.manualElevatorUp() > 0.25;
-        boolean manualLower = controls.manualElevatorDown() > 0.25;
+        boolean manualRaise = controls.manualElevatorUp();
+        boolean manualLower = controls.manualElevatorDown();
 
         //Intake based systems
         if (unjam){
@@ -46,7 +46,7 @@ public class TeleopUpdater {
             intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
         }
 
-        
+
         //Carriage based systems
         if (scoreFront){
             superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_FORWARD);

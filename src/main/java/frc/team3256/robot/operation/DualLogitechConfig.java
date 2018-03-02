@@ -91,13 +91,13 @@ public class DualLogitechConfig implements ControlsInterface{
     }
 
     @Override
-    public double manualElevatorUp() {
-        return -manipulator.getRawAxis(1);
+    public boolean manualElevatorUp() {
+        return false;
     }
 
     @Override
-    public double manualElevatorDown() {
-        return manipulator.getRawAxis(1);
+    public boolean manualElevatorDown() {
+        return false;
     }
 
 }

@@ -48,6 +48,7 @@ public class Path {
 
     public PathUpdate update(Translation robotCoordinates, double lookaheadDistance){
         PathUpdate rv = new PathUpdate();
+        rv.lookaheadDistance = lookaheadDistance;
         Segment currSegment = segments.get(currSegmentNumber);
 
         Translation closestPoint = currSegment.getClosestPointOnSegment(robotCoordinates);

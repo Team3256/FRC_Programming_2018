@@ -29,17 +29,7 @@ public class TeleopUpdater {
         boolean manualRaise = controls.manualElevatorUp() > 0.25;
         boolean manualLower = controls.manualElevatorDown() > 0.25;
 
-
-        if (pivotToggle && !prevPivotToggle){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
-        }
-
-
-        if (flopToggle && !prevFlopToggle){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
-        }
-
-
+        //Intake based systems
         if (unjam){
             superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_UNJAM);
         }
@@ -49,7 +39,15 @@ public class TeleopUpdater {
         else if (exhaust){
             superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_EXHAUST);
         }
+        else if (pivotToggle && !prevPivotToggle){
+            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
+        }
+        else if (flopToggle && !prevFlopToggle){
+            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
+        }
 
+        
+        //Carriage based systems
         if (scoreFront){
             superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_FORWARD);
         }
@@ -62,7 +60,14 @@ public class TeleopUpdater {
         }
 
 
-        if (switchPos){
+        //Elevator based systems
+        if (manualRaise){
+            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_RAISE_MANUAL);
+        }
+        else if (manualLower){
+            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_LOWER_MANUAL);
+        }
+        else if (switchPos){
             superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_SWITCH);
         }
 
@@ -76,15 +81,6 @@ public class TeleopUpdater {
 
         else if (highScalePos){
             superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_HIGH_SCALE);
-        }
-
-
-        if (manualRaise){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_RAISE_MANUAL);
-        }
-
-        else if (manualLower){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_LOWER_MANUAL);
         }
         else{
             superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SQUEEZE_HOLD);

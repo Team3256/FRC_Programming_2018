@@ -58,12 +58,13 @@ public class Path {
         if (distanceRemainingOnSegment <= segmentCompletionTolerance) {
             System.out.println("REMOVING SEGMENT");
             System.out.println("remaining distance: " + distanceRemainingOnSegment);
-            //currSegmentNumber++;
-            segments.remove(0);
+            currSegmentNumber++;
+            //segments.remove(0);
             if (segments.isEmpty()) {
                 return prevPathUpdate;
             }
-            else currSegment = segments.get(0);
+            //else currSegment = segments.get(0);
+            else currSegment = segments.get(currSegmentNumber);
         }
 
         //calculate closest point to robot on path

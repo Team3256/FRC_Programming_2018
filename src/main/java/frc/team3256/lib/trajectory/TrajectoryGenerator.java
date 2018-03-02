@@ -25,7 +25,7 @@ public class TrajectoryGenerator {
         int size = (int)(totalTime/dt);
         Trajectory trajectory = new Trajectory(size);
         double currTime = 0;
-        System.out.println("Cruise Vel: " + cruiseVel);
+        //System.out.println("Cruise Vel: " + cruiseVel);
         for (int i = 0; i < size; i++){
             double currPos, currVel, currAccel;
             if (currTime <= accelTime){

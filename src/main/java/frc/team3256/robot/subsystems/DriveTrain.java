@@ -513,4 +513,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
         leftSlave.setNeutralMode(NeutralMode.Coast);
         rightSlave.setNeutralMode(NeutralMode.Coast);
     }
+
+    public void resetGyro(){
+        gyro.reset();
+    }
 }

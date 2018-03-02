@@ -109,10 +109,10 @@ public class DriveArcController {
     }
 
     public void configureArcTrajectory(double startVel, double endVel, double degrees, double turnRadius, boolean backwardsTurn, double currAngle) {
-        if (currAngle - degrees > 0){inverseTurn = true;}
-
+        if (currAngle >= degrees){inverseTurn = true;}
+        else inverseTurn = false;
         backTurn = backwardsTurn;
-        angle = (degrees * Math.PI)/180;
+        angle = (degrees * Math.PI)/180.0;
         radius = turnRadius;
         degrees = Math.abs(degrees);
         TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator(Constants.kCurveTrajectoryMaxAccel, Constants.kCurveTrajectoryCruiseVelocity, Constants.kControlLoopPeriod, Constants.kRobotTrack);

@@ -85,6 +85,7 @@ public class Robot extends IterativeRobot {
     public void disabledInit() {
         enabledLooper.stop();
         disabledLooper.start();
+        driveTrain.setCoastMode();
     }
 
     @Override
@@ -104,7 +105,7 @@ public class Robot extends IterativeRobot {
 
         // AutoModeBase autoMode = new TestPurePursuitAuto();
         //AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        AutoModeBase autoModeTest = new CenterLeftSwitchAuto();
+        AutoModeBase autoModeTest = new CenterRightSwitchAuto();
         autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
         autoModeExecuter.setAutoMode(autoModeTest);
         autoModeExecuter.start();

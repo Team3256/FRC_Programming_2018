@@ -60,7 +60,7 @@ public class Path {
             System.out.println("remaining distance: " + distanceRemainingOnSegment);
             currSegmentNumber++;
             //segments.remove(0);
-            if (segments.isEmpty()) {
+            if (currSegmentNumber == segments.size()) {
                 return prevPathUpdate;
             }
             //else currSegment = segments.get(0);

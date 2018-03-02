@@ -11,10 +11,11 @@ import frc.team3256.robot.subsystems.Superstructure;
 public class CenterLeftSwitchAuto extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
+        DriveTrain.getInstance().setBrake();
         DriveTrain.getInstance().resetGyro();
         runAction(new DeployIntakeAction());
         if (!Elevator.getInstance().isHomed()){
-            runAction(new AutoHomingAction());
+            //runAction(new AutoHomingAction());
         }
         DriveTrain.getInstance().setBrake();
         double initTime = Timer.getFPGATimestamp();
@@ -22,7 +23,7 @@ public class CenterLeftSwitchAuto extends AutoModeBase {
         double targetAngle = 45.0;
         System.out.println("Angle: " + DriveTrain.getInstance().getAngle());
         runAction(new FollowArcTrajectoryAction(currVel, 24, 42, targetAngle, false));
-        runAction(new RaiseElevatorSwitchAction());
+        //runAction(new RaiseElevatorSwitchAction());
         runAction(new WaitAction(0.6));
         currVel = DriveTrain.getInstance().getAverageVelocity();
         DriveTrain.getInstance().setBrake();
@@ -31,11 +32,11 @@ public class CenterLeftSwitchAuto extends AutoModeBase {
         runAction(new FollowArcTrajectoryAction(currVel, 0.0, 25, 0, false));
         currVel = DriveTrain.getInstance().getAverageVelocity();
         runAction(new FollowTrajectoryAction(currVel, 0.0, 32, 0));
-        runAction(new ScoreForwardAction());
+        //runAction(new ScoreForwardAction());
         runAction(new WaitAction(0.75));
         runAction(new StopScoreAction());
         //runAction(new FollowTrajectoryAction(currVel, 0, -12.0, 0));
-        runAction(new ElevatorIntakePositionAction());
+        //runAction(new ElevatorIntakePositionAction());
         DriveTrain.getInstance().setBrake();
         System.out.println("Total Time: " + Double.toString(Timer.getFPGATimestamp() - initTime));
     }

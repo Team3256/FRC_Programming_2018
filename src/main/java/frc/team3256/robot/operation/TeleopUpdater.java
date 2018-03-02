@@ -40,16 +40,15 @@ public class TeleopUpdater {
         }
 
 
-        if (intakeCom){
+        if (unjam){
+            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_UNJAM);
+        }
+        else if (intakeCom){
             superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_INTAKE);
         }
         else if (exhaust){
             superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_EXHAUST);
         }
-        else if (unjam){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_UNJAM);
-        }
-
 
         if (scoreFront){
             superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_FORWARD);
@@ -57,6 +56,9 @@ public class TeleopUpdater {
 
         else if (scoreRear){
             superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_BACKWARD);
+        }
+        else{
+            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SQUEEZE_HOLD);
         }
 
 
@@ -83,6 +85,9 @@ public class TeleopUpdater {
 
         else if (manualLower){
             superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_LOWER_MANUAL);
+        }
+        else{
+            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SQUEEZE_HOLD);
         }
 
          prevFlopToggle = flopToggle;

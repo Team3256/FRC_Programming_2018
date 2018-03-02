@@ -52,7 +52,7 @@ public class Superstructure extends SubsystemBase implements Loop{
         WANTS_TO_SCORE_HIGH_SCALE,
         WANTS_TO_SCORE_FORWARD,
         WANTS_TO_SCORE_BACKWARD,
-        WANTS_TO_SQUEEZE,
+        WANTS_TO_SQUEEZE_HOLD,
         WANTS_TO_RAISE_MANUAL,
         WANTS_TO_LOWER_MANUAL,
     }
@@ -253,7 +253,7 @@ public class Superstructure extends SubsystemBase implements Loop{
             case WANTS_TO_SCORE_BACKWARD:
                 return SystemState.SCORING_BACKWARD;
 
-            case WANTS_TO_SQUEEZE:
+            case WANTS_TO_SQUEEZE_HOLD:
                 return SystemState.HOLDING_POSITION;
 
             case WANTS_TO_RAISE_MANUAL:

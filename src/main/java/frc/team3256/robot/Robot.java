@@ -84,7 +84,7 @@ public class Robot extends IterativeRobot {
 
         // AutoModeBase autoMode = new TestPurePursuitAuto();
         //AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        AutoModeBase autoModeTest = new RightRobotRightScaleRightSwitchThreeCubeAuto();
+        AutoModeBase autoModeTest = new RightRobotRightSwitchAuto();
         autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
         autoModeExecuter.setAutoMode(autoModeTest);
         autoModeExecuter.start();
@@ -105,7 +105,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledPeriodic() {
-
+        System.out.println("Homed: " + Elevator.getInstance().isHomed());
     }
 
     @Override

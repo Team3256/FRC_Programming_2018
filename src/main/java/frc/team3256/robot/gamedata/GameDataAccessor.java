@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import frc.team3256.robot.Constants;
 import frc.team3256.robot.auto.AutoModeBase;
 import frc.team3256.robot.auto.modes.*;
-import sun.net.sdp.SdpSupport;
 
 public class GameDataAccessor {
     public static String getGameData() { return DriverStation.getInstance().getGameSpecificMessage(); }
@@ -55,7 +54,7 @@ public class GameDataAccessor {
                 return new CrossBaselineAuto();
             }
             else if(getSwitchSide() == Side.LEFT){
-                //return new LeftRobotLeftSwitchAuto(); ← Not an automode yet
+                //return new LeftRobotLeftSwitchAuto(); Not an automode yet
             }
             else if (getSwitchSide() == Side.RIGHT){
                 return new CrossBaselineAuto();
@@ -66,10 +65,10 @@ public class GameDataAccessor {
                 return new CrossBaselineAuto();
             }
             else if (getScaleSide() == Side.LEFT){
-                //return new LeftRobotLeftScaleAuto(); ← Not an automode yet
+                //return new LeftRobotLeftScaleAuto(); Not an automode yet
             }
             else if (getScaleSide() == Side.RIGHT){
-                //return new LeftRobotRightScaleAuto(); ← Not an automode yet
+                //return new LeftRobotRightScaleAuto();  Not an automode yet
             }
         }
         /**

@@ -32,7 +32,7 @@ public class RightRobotRightScaleRightSwitchThreeCubeAuto extends AutoModeBase {
         runAction(new RaiseElevatorHighScaleAction());
         DriveTrain.getInstance().setBrake();
         currVel = DriveTrain.getInstance().getAverageVelocity();
-        runAction(new FollowTrajectoryAction(currVel, 0.0, -5, -23));
+        runAction(new FollowTrajectoryAction(currVel, 0.0, -3, -23));
         runAction(new ScoreBackwardAction());
         runAction(new WaitAction(1.0));
         System.out.println("Total Time: " + Double.toString(Timer.getFPGATimestamp() - initTime));

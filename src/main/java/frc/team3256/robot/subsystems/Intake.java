@@ -11,8 +11,8 @@ public class Intake extends SubsystemBase implements Loop {
     private DoubleSolenoid flopperActuator, pivotActuator;
     private SharpIR cubeDetector;
 
-    private SystemState currentState;
-    private SystemState previousState;
+    private SystemState currentState = SystemState.STOWED_CLOSED;
+    private SystemState previousState = currentState;
     private WantedState wantedState;
     private WantedState prevWantedState;
     private boolean stateChanged;
@@ -78,8 +78,6 @@ public class Intake extends SubsystemBase implements Loop {
 
     @Override
     public void init(double timestamp) {
-        currentState = SystemState.DEPLOYED_CLOSED;
-        previousState = SystemState.DEPLOYED_CLOSED;
         prevWantedState = WantedState.IDLE;
         wantedState = WantedState.IDLE;
         stateChanged = true;

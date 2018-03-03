@@ -1,21 +1,33 @@
 package frc.team3256.robot.operation;
 
+import frc.team3256.lib.DrivePower;
+import frc.team3256.lib.control.TeleopDriveController;
 import frc.team3256.robot.Constants;
 import frc.team3256.robot.subsystems.Carriage;
+import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.robot.subsystems.Intake;
 
 public class TeleopUpdater {
 
-    ControlsInterface controls = new LogitechButtonBoardConfig();
-    
-    Intake m_intake = Intake.getInstance();
-    Elevator m_elevator = Elevator.getInstance();
-    Carriage m_carriage = Carriage.getInstance();
+    private ControlsInterface controls = new LogitechButtonBoardConfig();
 
-    private boolean prevPivotToggle = false, prevFlopToggle = false;
+    private DriveTrain m_drive = DriveTrain.getInstance();
+    private Intake m_intake = Intake.getInstance();
+    private Elevator m_elevator = Elevator.getInstance();
+    private Carriage m_carriage = Carriage.getInstance();
+
+    private boolean prevPivotToggle = false;
+    private boolean prevFlopToggle = false;
+    private boolean isManualControl = false;
 
     public void update(){
+
+        double throttle = controls.getThrottle();
+        double turn = controls.getTurn();
+        boolean quickTurn = controls.getQuickTurn();
+        boolean shiftDown = controls.getLowGear();
+
         boolean pivotToggle = controls.togglePivot();
         boolean flopToggle = controls.toggleFlop();
 
@@ -34,11 +46,18 @@ public class TeleopUpdater {
         boolean manualRaise = controls.manualElevatorUp();
         boolean manualLower = controls.manualElevatorDown();
 
-        //Intake based systems
+        //Driving
+        DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn, !shiftDown);
+        m_drive.setOpenLoop(power);
+        m_drive.setHighGear(power.getHighGear());
+
+        //Intake subsystem
+        //Unjamming is highest priority because it is both intake and exhaust buttons
         if (unjam){
             m_intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
         }
         else if (intake){
+            //only run intake when the elevator is low enough so the carriage can pick up the block
             if (m_elevator.getHeight() < Constants.kIntakePreset + 2.0){
                 m_intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
             }
@@ -57,11 +76,10 @@ public class TeleopUpdater {
         prevFlopToggle = flopToggle;
         prevPivotToggle = pivotToggle;
 
-        //Carriage based systems
+        //Carriage subsystem
         if (scoreFront){
             m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_FORWARD);
         }
-
         else if (scoreRear){
             m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_BACKWARD);
         }
@@ -69,35 +87,45 @@ public class TeleopUpdater {
             m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
 
-        //Elevator based systems
+        //Elevator subsystem
+        //If the elevator is not homed yet, home the elevator
         if (!m_elevator.isHomed()){
-            System.out.println("TeleopUpdater: NOT HOMED!");
-            m_elevator.setWantedState(Elevator.WantedState.HOME);
+            System.out.println("TeleopUpdater: NOT HOMED!...AUTO HOMING");
+            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOME);
         }
 
+        //Manual raising and lowering is highest priority for the elevator
         if (manualRaise){
+            isManualControl = true;
             m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_MANUAL_UP);
         }
         else if (manualLower){
+            isManualControl = true;
             m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_MANUAL_DOWN);
         }
-        else if (switchPos){
+        //For all the presets, make sure we are homed before running them
+        else if (switchPos && m_elevator.isHomed()){
+            isManualControl = false;
             m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_SWITCH_POS);
         }
-
-        else if (lowScalePos){
+        else if (lowScalePos && m_elevator.isHomed()){
+            isManualControl = false;
             m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_LOW_SCALE_POS);
         }
-
-        else if (midScalePos){
+        else if (midScalePos && m_elevator.isHomed()){
+            isManualControl = false;
             m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_MID_SCALE_POS);
         }
-
-        else if (highScalePos){
+        else if (highScalePos && m_elevator.isHomed()){
+            isManualControl = false;
             m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_HIGH_SCALE_POS);
         }
         else{
-            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOLD);
+            //Only hold if we are in manual control
+            //If we are not in manual control, don't hold, the elevator internally will stop at the correct preset height
+            if (isManualControl){
+                m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOLD);
+            }
         }
 
     }

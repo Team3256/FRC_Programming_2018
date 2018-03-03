@@ -1,21 +1,15 @@
 package frc.team3256.robot;
 
-import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Looper;
-import frc.team3256.lib.control.TeleopDriveController;
 import frc.team3256.lib.hardware.ADXRS453_Calibrator;
 import frc.team3256.robot.auto.AutoModeBase;
 import frc.team3256.robot.auto.AutoModeChooser;
 import frc.team3256.robot.auto.AutoModeExecuter;
 import frc.team3256.robot.auto.modes.*;
 import frc.team3256.robot.gamedata.GameDataAccessor;
-import frc.team3256.robot.operation.ControlsInterface;
-import frc.team3256.robot.operation.DualLogitechConfig;
 import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.subsystems.*;
 
@@ -131,8 +125,5 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void robotPeriodic(){
-        //subsystemManager.outputToDashboard();
-        //enabledLooper.outputToDashboard();
-        //disabledLooper.outputToDashboard();
     }
 }

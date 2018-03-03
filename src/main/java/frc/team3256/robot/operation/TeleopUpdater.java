@@ -57,11 +57,13 @@ public class TeleopUpdater {
             m_intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
         }
         else if (intake){
-            //only run intake when the elevator is low enough so the carriage can pick up the block
-            if (m_elevator.getHeight() < Constants.kIntakePreset + 2.0){
+            if (m_elevator.getHeight() > Constants.kIntakePreset + 2.0) {
+                m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_INTAKE_POS);
+                m_intake.setWantedState(Intake.WantedState.IDLE);
+            }
+            else{
                 m_intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
             }
-            else m_intake.setWantedState(Intake.WantedState.IDLE);
         }
         else if (exhaust){
             m_intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
@@ -71,6 +73,9 @@ public class TeleopUpdater {
         }
         else if (flopToggle && !prevFlopToggle){
             m_intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
+        }
+        else {
+            m_intake.setWantedState(Intake.WantedState.IDLE);
         }
 
         prevFlopToggle = flopToggle;
@@ -105,18 +110,22 @@ public class TeleopUpdater {
         }
         //For all the presets, make sure we are homed before running them
         else if (switchPos && m_elevator.isHomed()){
+            m_intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
             isManualControl = false;
             m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_SWITCH_POS);
         }
         else if (lowScalePos && m_elevator.isHomed()){
+            m_intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
             isManualControl = false;
             m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_LOW_SCALE_POS);
         }
         else if (midScalePos && m_elevator.isHomed()){
+            m_intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
             isManualControl = false;
             m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_MID_SCALE_POS);
         }
         else if (highScalePos && m_elevator.isHomed()){
+            m_intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
             isManualControl = false;
             m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_HIGH_SCALE_POS);
         }

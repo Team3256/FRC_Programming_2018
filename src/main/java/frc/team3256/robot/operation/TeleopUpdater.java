@@ -76,28 +76,28 @@ public class TeleopUpdater {
         }
 
         if (manualRaise){
-            m_elevator.setWantedState(Elevator.WantedState.MANUAL_UP);
+            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_MANUAL_UP);
         }
         else if (manualLower){
-            m_elevator.setWantedState(Elevator.WantedState.MANUAL_DOWN);
+            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_MANUAL_DOWN);
         }
         else if (switchPos){
-            m_elevator.setWantedState(Elevator.WantedState.SWITCH_POS);
+            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_SWITCH_POS);
         }
 
         else if (lowScalePos){
-            m_elevator.setWantedState(Elevator.WantedState.LOW_SCALE_POS);
+            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_LOW_SCALE_POS);
         }
 
         else if (midScalePos){
-            m_elevator.setWantedState(Elevator.WantedState.MID_SCALE_POS);
+            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_MID_SCALE_POS);
         }
 
         else if (highScalePos){
-            m_elevator.setWantedState(Elevator.WantedState.HIGH_SCALE_POS);
+            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_HIGH_SCALE_POS);
         }
         else{
-            m_elevator.setWantedState(Elevator.WantedState.HOLD);
+            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOLD);
         }
 
     }

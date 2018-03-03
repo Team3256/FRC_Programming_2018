@@ -63,6 +63,11 @@ public class LogitechButtonBoardConfig implements ControlsInterface{
     }
 
     @Override
+    public boolean getOpenCarriage() {
+        return false;
+    }
+
+    @Override
     public boolean switchPreset() {
         return false;
     }

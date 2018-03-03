@@ -121,8 +121,8 @@ public class Constants {
     public static final double kIntakeUnjamPower = -0.6;
     public static final double kUnjamMaxDuration = 12.0/1000.0;
     public static final double kCarriageReceivePower = 0.8;
-    public static final double kCarriageScoreForwardPower = -0.4;
-    public static final double kCarriageScoreBackwardPower = 0.65;
+    public static final double kCarriageScoreForwardPower = -0.8;
+    public static final double kCarriageScoreBackwardPower = 0.8;
     public static final double kCarriageExhaustPower = -0.75;
 
     public static final double kElevatorUpManualPower = 0.15;

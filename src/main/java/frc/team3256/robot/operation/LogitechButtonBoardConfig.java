@@ -83,13 +83,13 @@ public class LogitechButtonBoardConfig implements ControlsInterface{
     }
 
     @Override
-    public double manualElevatorUp() {
-        return 0;
+    public boolean manualElevatorUp() {
+        return false;
     }
 
     @Override
-    public double manualElevatorDown() {
-        return 0;
+    public boolean manualElevatorDown() {
+        return false;
     }
 
 }

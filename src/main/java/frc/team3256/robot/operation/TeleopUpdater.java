@@ -127,6 +127,5 @@ public class TeleopUpdater {
                 m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOLD);
             }
         }
-
     }
 }

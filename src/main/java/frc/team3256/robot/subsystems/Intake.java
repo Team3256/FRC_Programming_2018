@@ -132,8 +132,7 @@ public class Intake extends SubsystemBase implements Loop {
         }
         else stateChanged = false;
      }
-
-
+     
     @Override
     public void end(double timestamp) {
 

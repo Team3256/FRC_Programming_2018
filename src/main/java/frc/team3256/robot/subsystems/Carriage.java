@@ -32,19 +32,16 @@ public class Carriage extends SubsystemBase implements Loop{
 
     public enum SystemState {
         RECEIVING_FROM_INTAKE, //Self-explanatory
-        //SECURING_CUBE, //Runs motors at a smaller power after receiving the cube to secure the cube
         SCORING_FORWARD, //Run rollers forward
         SCORING_BACKWARD, //Run rollers backward
         SQUEEZING_IDLE, //Actuators squeeze cube in place
         OPEN_IDLE, //Actuators stay open
         EXHAUSTING
-}
+    }
 
     public enum WantedState {
         //Operator -> When we are intaking
         WANTS_TO_RECEIVE,
-        //Condition -> After receiving cube
-        //WANTS_TO_SECURE_CUBE,
         //Operator -> Score forward button
         WANTS_TO_SCORE_FORWARD,
         //Operator -> Score backward button
@@ -69,9 +66,6 @@ public class Carriage extends SubsystemBase implements Loop{
             case RECEIVING_FROM_INTAKE:
                 newState = handleReceiveFromIntake();
                 break;
-            /*case SECURING_CUBE:
-                newState = handleSecureCube();
-                break;*/
             case SCORING_FORWARD:
                 newState = handleScoreForward();
                 break;
@@ -105,7 +99,7 @@ public class Carriage extends SubsystemBase implements Loop{
         //If we have a cube, then we squeeze
         if (hasCube()){
             runMotors(0);
-            return SystemState.SQUEEZING_IDLE; //Previously SecureCube
+            return SystemState.SQUEEZING_IDLE;
         }
         runMotors(Constants.kCarriageReceivePower);
         return defaultStateTransfer();
@@ -151,25 +145,11 @@ public class Carriage extends SubsystemBase implements Loop{
         return defaultStateTransfer();
     }
 
-    /*private SystemState handleSecureCube(){
-        if(stateChanged){
-            startTime = Timer.getFPGATimestamp();
-            squeeze();
-        }
-        if((Timer.getFPGATimestamp() - startTime) < 3){
-            runMotors(Constants.kCarriageSecurePower);
-        }
-        return defaultStateTransfer();
-    }*/
-
     //default WantedState -> SystemState
     private SystemState defaultStateTransfer(){
         switch(wantedState){
             case WANTS_TO_RECEIVE:
                 return SystemState.RECEIVING_FROM_INTAKE;
-
-            /*case WANTS_TO_SECURE_CUBE:
-                return SystemState.SECURING_CUBE;*/
 
             case WANTS_TO_SCORE_FORWARD:
                 return SystemState.SCORING_FORWARD;
@@ -188,7 +168,6 @@ public class Carriage extends SubsystemBase implements Loop{
 
             default:
                 return SystemState.OPEN_IDLE;
-
         }
     }
 
@@ -218,7 +197,6 @@ public class Carriage extends SubsystemBase implements Loop{
     public void end(double timestamp) {
 
     }
-
 
     @Override
     public void outputToDashboard() {

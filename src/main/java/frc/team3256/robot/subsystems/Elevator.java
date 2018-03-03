@@ -76,7 +76,6 @@ public class Elevator extends SubsystemBase implements Loop{
         TalonUtil.setPIDGains(master, Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownP,
                 Constants.kElevatorFastDownI, Constants.kElevatorFastDownD, 0);
 
-
         //voltage limiting
         TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage/12.0,
                 Constants.kElevatorMaxDownVoltage/12.0, master, slaveOne, slaveTwo, slaveThree);

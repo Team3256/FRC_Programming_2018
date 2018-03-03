@@ -128,9 +128,14 @@ public class Line extends Segment{
     @Override
     public double checkVelocity(Translation closestPoint, double prevVelocity, double dt) {
         double remainingDistance = getRemainingDistance(closestPoint);
+        // Uses kinematic equations
+        // Velocity needed to reach the end velocity if we continue going at max acceleration
         double outputVelFromEnd = Math.sqrt(Math.pow(goalVel, 2.0)-2*maxAccel*remainingDistance);
+        // If it is not possible then change to infinity
+        outputVelFromEnd = Double.isNaN(outputVelFromEnd) ? Double.POSITIVE_INFINITY : outputVelFromEnd;
+        // Maximum velocity we can accelerate to in one loop period
         double outputVel = prevVelocity + maxAccel * dt;
-        outputVelFromEnd = Double.isNaN(outputVelFromEnd) ? outputVel : outputVelFromEnd;
+        // Returns the minimum velocity
         outputVel = Math.min(outputVel, outputVelFromEnd);
         outputVel = Math.min(outputVel, maxVel);
         return outputVel;

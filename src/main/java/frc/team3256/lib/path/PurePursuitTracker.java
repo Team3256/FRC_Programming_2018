@@ -4,8 +4,6 @@ import frc.team3256.lib.math.RigidTransform;
 import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Translation;
 import frc.team3256.lib.math.Twist;
-import frc.team3256.lib.trajectory.Trajectory;
-
 import java.util.Optional;
 
 public class PurePursuitTracker {
@@ -17,9 +15,7 @@ public class PurePursuitTracker {
     private Twist prevOutput = new Twist(0,0,0);
     private double dt;
 
-    public PurePursuitTracker() {
-    }
-
+    public PurePursuitTracker() { }
 
     public void reset() {
         this.path.resetPath();
@@ -41,34 +37,47 @@ public class PurePursuitTracker {
         this.dt = dt;
     }
 
-    public static int getDirection(Translation lookaheadPoint, Translation robotCoordinates) {
-        return lookaheadPoint.cross(robotCoordinates) > 0.0 ? 1 : -1;
+    // uses cross product to get 1 for positive angle and -1 for negative
+    public int getDirection(Translation lookaheadPoint, Translation robotCoordinates) {
+        return lookaheadPoint.cross(robotCoordinates) > 0 ? 1 : -1;
     }
 
     public Optional<Arc> getArcToSegment(Translation robotCoordinates, Path.PathUpdate p) {
-        int direction = getDirection(p.lookaheadPoint, robotCoordinates);
 
         Segment s = p.currSegment;
         Translation lookaheadPoint = p.lookaheadPoint;
 
+        // whether the angle from the robot to the lookahead point is positive or negative
+        int direction = getDirection(p.lookaheadPoint, robotCoordinates);
+        // whether the angle of the slope (tor tangent slope) at the lookahead point is positive or negative
         int lookaheadSlopeDirection = (int) Math.signum(s.getDirection(lookaheadPoint).direction().radians());
 
-        Translation lookaheadPointToCenter = s.getDirection(lookaheadPoint).rotate(Rotation.fromDegrees(90.0 * direction * lookaheadSlopeDirection));
+        // perpendicular to the lookahead slope
+        Translation lookaheadPointToCenter = s.getDirection(lookaheadPoint);
+        lookaheadPointToCenter = lookaheadPointToCenter.rotate(Rotation.fromDegrees(90.0 * direction * lookaheadSlopeDirection));
 
         Translation lookaheadPointToRobot = new Translation(lookaheadPoint, robotCoordinates);
         Rotation angleDifference = Rotation.fromRadians(lookaheadPointToCenter.getAngle(lookaheadPointToRobot).radians()*direction*-1);
+
+        // angle formed by a tangent and a chord is half the angle of the intercepted minor arc
         Translation robotToCenter = lookaheadPointToRobot.inverse().rotate(angleDifference.inverse()).scale(.5);
 
         RigidTransform lookaheadPointToCenterTransform = new RigidTransform(lookaheadPoint, lookaheadPointToCenter.direction());
         RigidTransform robotToCenterTransform = new RigidTransform(robotCoordinates, robotToCenter.direction());
 
+        // the center is the intersection of the robotToCenter line and the lookaheadPointToCenter line
         Translation center = lookaheadPointToCenterTransform.intersection(robotToCenterTransform);
 
+        /*
+        // if there is no intersection then...
+        // probably not needed
         if (center.norm() == Double.POSITIVE_INFINITY) {
             center = robotCoordinates.translate(robotToCenter);
         }
-        if (Math.abs(lookaheadPointToRobot.norm() - lookaheadPoint.norm()) < kEpsilon) {
-            //Cross track error is 0, so no arc (just continue driving straight)
+        */
+
+        if (Math.abs(lookaheadPointToRobot.norm() - p.lookaheadDistance) < kEpsilon) {
+            //If the lookahead distance is the same as the distance from the robot to the lookahead point, then the robot will make a line and not an arc to the lookahead point
             return Optional.empty();
         }
 

@@ -13,7 +13,7 @@ public class Path {
     public Path(){
         segments = new ArrayList<>();
     }
-    PathUpdate prevPathUpdate;
+    private PathUpdate prevPathUpdate;
 
     public void addSegment(Segment segment){
         segments.add(segment);
@@ -53,14 +53,16 @@ public class Path {
 
         Translation closestPoint = currSegment.getClosestPointOnSegment(robotCoordinates);
 
-        //remove current segment if we are done with this segment
+        //if we are done with this segment
         double distanceRemainingOnSegment = currSegment.getRemainingDistance(closestPoint);
         if (distanceRemainingOnSegment <= segmentCompletionTolerance) {
-            System.out.println("REMOVING SEGMENT");
+            System.out.println("GOING TO NEXT SEGMENT");
             System.out.println("remaining distance: " + distanceRemainingOnSegment);
+            // move on to the next segment
             currSegmentNumber++;
             //segments.remove(0);
             if (currSegmentNumber == segments.size()) {
+                // when the last segment is completed just return the previous command
                 return prevPathUpdate;
             }
             //else currSegment = segments.get(0);

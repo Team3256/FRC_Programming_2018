@@ -58,7 +58,7 @@ public class Arc extends Segment{
 
     @Override
     public double getLength() {
-        //arc length = radius*theta
+        // arc length = radius*angle
         return radius*getAngle().radians();
     }
 
@@ -105,14 +105,10 @@ public class Arc extends Segment{
 
     @Override
     public Translation getDirection(Translation lookaheadPoint) {
+        //returns unit vector of tangent slope at point
         Translation lookaheadToTarget = new Translation(center, lookaheadPoint).rotate(Rotation.fromDegrees(-90));
         return (lookaheadToTarget.scale(1/lookaheadToTarget.norm()));
     }
-
-    /*public static void main(String args[]) {
-        Arc arc = new Arc(0, 0, 5, 5, 5, 0);
-        System.out.println(arc.getDirection(new Translation(5-2.5*Math.sqrt(2), 2.5*Math.sqrt(2))));
-    }*/
 
     @Override
     public Translation getLookAheadPoint(double lookaheadDistance, Translation position) {
@@ -125,8 +121,10 @@ public class Arc extends Segment{
         */
         Translation centerToPosition = new Translation(center, position);
         double angleToRotate = lookaheadDistance/radius;
+
+        // if start to end angle is negative then change angleToRotate accordingly
         if (end.rotate(start.direction().inverse()).y() < 0) {
-            angleToRotate = -1.0 * angleToRotate;
+            angleToRotate *= -1.0;
         }
         return center.translate(centerToPosition.rotate(Rotation.fromRadians(angleToRotate)));
     }
@@ -135,7 +133,7 @@ public class Arc extends Segment{
     public double getCurrDistanceTraveled(Translation closestPoint) {
         Translation centerToClosestPoint = new Translation(center, closestPoint);
         double angle = centerToClosestPoint.getAngle(centerToStart).radians();
-        return angle*radius;
+        return angle * radius;
     }
 
     @Override
@@ -146,9 +144,14 @@ public class Arc extends Segment{
     @Override
     public double checkVelocity(Translation closestPoint, double prevVelocity, double dt) {
         double remainingDistance = getRemainingDistance(closestPoint);
+        // Uses kinematic equations
+        // Velocity needed to reach the end velocity if we continue going at max acceleration
         double outputVelFromEnd = Math.sqrt(Math.pow(goalVel, 2.0)-2*maxAccel*remainingDistance);
+        // If it is not possible then change to infinity
+        outputVelFromEnd = Double.isNaN(outputVelFromEnd) ? Double.POSITIVE_INFINITY : outputVelFromEnd;
+        // Maximum velocity we can accelerate to in one loop period
         double outputVel = prevVelocity + maxAccel * dt;
-        outputVelFromEnd = Double.isNaN(outputVelFromEnd) ? outputVel : outputVelFromEnd;
+        // Returns the minimum velocity
         outputVel = Math.min(outputVel, outputVelFromEnd);
         outputVel = Math.min(outputVel, maxVel);
         return outputVel;

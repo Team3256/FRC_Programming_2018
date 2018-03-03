@@ -113,6 +113,7 @@ public class Superstructure extends SubsystemBase implements Loop{
 
     private SystemState handleHoldingPosition() {
         if (stateChanged) {
+            //default squeeze carriage always
             carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
         elevator.setWantedState(Elevator.WantedState.HOLD);
@@ -124,7 +125,7 @@ public class Superstructure extends SubsystemBase implements Loop{
             intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
             elevator.setWantedState(Elevator.WantedState.INTAKE_POS);
         }
-        if (elevator.getHeight() < Constants.kIntakePreset){ //---------- if at a safe height to intakeeee
+        if (elevator.getHeight() < Constants.kIntakePreset + 1.0){ //---------- if at a safe height to intakeeee
             intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
             carriage.setWantedState(Carriage.WantedState.WANTS_TO_RECEIVE);
         }

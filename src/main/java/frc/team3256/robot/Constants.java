@@ -123,9 +123,10 @@ public class Constants {
     public static final double kCarriageReceivePower = 0.8;
     public static final double kCarriageScoreForwardPower = -0.8;
     public static final double kCarriageScoreBackwardPower = 0.8;
+    public static final double kCarriageScoreBackwardAutoPower = 1.0;
     public static final double kCarriageExhaustPower = -0.75;
 
-    public static final double kElevatorUpManualPower = 0.15;
+    public static final double kElevatorUpManualPower = 0.4;
     public static final double kElevatorDownManualPower = -0.15;
     public static final double kElevatorUpSlowPower = 0.2;
     public static final double kHighScalePreset = 48; //in inches //48.5 measured
@@ -139,8 +140,8 @@ public class Constants {
     public static final double kTopHomeHeight = 8.85;    //placeholder
     public static final double kElevatorHomingUpTime = 2.0;
     public static final double kElevatorTolerance = 1.0; //measured in inches
-    public static final double kElevatorMaxUpVoltage = 6.0; //8.0
-    public static final double kElevatorMaxDownVoltage = -4.0;//-4.0
+    public static final double kElevatorMaxUpVoltage = 3.0; //8.0
+    public static final double kElevatorMaxDownVoltage = -5.0;//-4.0
     public static final double kElevatorMinHoldVoltage = 0.75;//0.5
 
 

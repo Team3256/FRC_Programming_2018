@@ -342,6 +342,7 @@ function update() {
     for (var point in waypoints) {
         var angle = 0;
         waypoints[point].coordinates.draw(getGradient(0, 100, waypoints[point].vel));
+        var pureRadius = 0;
         if (point > 1) {
             var line1 = new Line(waypoints[point], waypoints[point - 1]);
             var line2 = new Line(waypoints[point - 1], waypoints[point - 2]);
@@ -375,11 +376,18 @@ function update() {
             } else {
                 $($('tbody').children('tr')[point - 1]).removeClass('redBox');
             }
+            point = parseInt(point);
+            if (point+1 < waypoints.length) {
+                var line1 = new Line(waypoints[point - 1], waypoints[point]);
+                var line2 = new Line(waypoints[point], waypoints[point + 1]);
+                var arc = new Arc(line1, line2);
+                pureRadius = arc.radius;
+            }
         }
         var countToString = String.fromCharCode(97+parseInt(point));
         var coordinates = waypoints[point].coordinates;
         modalPurePursuitText += "PathGenerator.Waypoint " + countToString + " = new PathGenerator.Waypoint(";
-        modalPurePursuitText += coordinates.x + ", " + coordinates.y + ", " + (Math.round(waypoints[point].radius)) + ", " + waypoints[point].vel + ");";
+        modalPurePursuitText += coordinates.x + ", " + coordinates.y + ", " + (Math.round(pureRadius)) + ", " + waypoints[point].vel + ");";
         if(waypoints[point].desc != ""){
             modalPurePursuitText += ("   //" + waypoints[point].desc);
         }
@@ -389,6 +397,7 @@ function update() {
             waypointsString += ", ";
         }
     }
+    modalText += "DriveTrain.getInstance().setBrake();"
     modalPurePursuitText += "Path path = PathGenerator.generate(Arrays.asList(" + waypointsString;
     modalPurePursuitText += ")); \n";
     modalPurePursuitText += "runAction(new PurePursuitAction(path));";

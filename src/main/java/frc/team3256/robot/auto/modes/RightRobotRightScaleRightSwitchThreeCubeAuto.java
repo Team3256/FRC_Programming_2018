@@ -6,6 +6,7 @@ import frc.team3256.robot.auto.AutoModeEndedException;
 import frc.team3256.robot.auto.actions.*;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.subsystems.Elevator;
+import frc.team3256.robot.subsystems.Intake;
 
 public class RightRobotRightScaleRightSwitchThreeCubeAuto extends AutoModeBase {
     @Override
@@ -13,16 +14,27 @@ public class RightRobotRightScaleRightSwitchThreeCubeAuto extends AutoModeBase {
         DriveTrain.getInstance().setBrake();
         DriveTrain.getInstance().resetGyro();
         double initTime = Timer.getFPGATimestamp();
-        //runAction(new DeployIntakeAction());
+
         if (!Elevator.getInstance().isHomed()){
-            //runAction(new AutoHomingAction());
-        }
-        double currVel = 24.0;
+            runAction(new AutoHomingAction());
+    }
+        double currVel = 0.0;
+        runAction(new CloseCarriageAction());
         DriveTrain.getInstance().setBrake();
-        runAction(new FollowTrajectoryAction(currVel,0.0,-200,0));//-292.65
-        runAction(new WaitAction(3));
+        runAction(new FollowTrajectoryAction(currVel,0.0,-215,0));//-292.65
+        runAction(new DeployIntakeAction());
+        runAction(new WaitAction(0.5));
         DriveTrain.getInstance().setBrake();
-        runAction(new FollowArcTrajectoryAction(0,0,10,-10, true));        DriveTrain.getInstance().setBrake();
+        //currVel = DriveTrain.getInstance().getAverageVelocity();
+        //runAction(new FollowArcTrajectoryAction(currVel,0,10,-8, true));
+        Intake.getInstance().setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
+        runAction(new RaiseElevatorHighScaleAction());
+        currVel = DriveTrain.getInstance().getAverageVelocity();
+        runAction(new FollowTrajectoryAction(currVel, 0.0, -71, -23));
+        DriveTrain.getInstance().setBrake();
+        runAction(new ScoreBackwardAction());
+        runAction(new WaitAction(1.0));
+        runAction(new StopScoreAction());
         System.out.println("Total Time: " + Double.toString(Timer.getFPGATimestamp() - initTime));
     }
 }

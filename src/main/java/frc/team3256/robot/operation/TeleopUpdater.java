@@ -1,20 +1,27 @@
 package frc.team3256.robot.operation;
 
+import frc.team3256.robot.Constants;
+import frc.team3256.robot.subsystems.Carriage;
+import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.robot.subsystems.Intake;
 import frc.team3256.robot.subsystems.Superstructure;
+import org.omg.CORBA.INTERNAL;
 
 public class TeleopUpdater {
 
     ControlsInterface controls = new LogitechButtonBoardConfig();
-    Superstructure superstructure = Superstructure.getInstance();;
-    Intake intake = Intake.getInstance();;
-    boolean prevPivotToggle, prevFlopToggle;
+    
+    Intake m_intake = Intake.getInstance();
+    Elevator m_elevator = Elevator.getInstance();
+    Carriage m_carriage = Carriage.getInstance();
+
+    private boolean prevPivotToggle = false, prevFlopToggle = false;
 
     public void update(){
         boolean pivotToggle = controls.togglePivot();
         boolean flopToggle = controls.toggleFlop();
 
-        boolean intakeCom = controls.getIntake();
+        boolean intake = controls.getIntake();
         boolean exhaust = controls.getExhaust();
         boolean unjam = controls.getUnjam();
 
@@ -31,59 +38,62 @@ public class TeleopUpdater {
 
         //Intake based systems
         if (unjam){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_UNJAM);
+            m_intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
         }
-        else if (intakeCom){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_INTAKE);
+        else if (intake){
+            if (m_elevator.getHeight() < Constants.kIntakePreset + 2.0){
+                m_intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
+            }
+            else m_intake.setWantedState(Intake.WantedState.IDLE);
         }
         else if (exhaust){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_EXHAUST);
+            m_intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
         }
         else if (pivotToggle && !prevPivotToggle){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
+            m_intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
         }
         else if (flopToggle && !prevFlopToggle){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
+            m_intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
         }
 
 
         //Carriage based systems
         if (scoreFront){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_FORWARD);
+            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_FORWARD);
         }
 
         else if (scoreRear){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_BACKWARD);
+            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_BACKWARD);
         }
         else{
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SQUEEZE_HOLD);
+            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
 
 
         //Elevator based systems
         if (manualRaise){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_RAISE_MANUAL);
+            m_elevator.setWantedState(Elevator.WantedState.MANUAL_UP);
         }
         else if (manualLower){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_LOWER_MANUAL);
+            m_elevator.setWantedState(Elevator.WantedState.MANUAL_DOWN);
         }
         else if (switchPos){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_SWITCH);
+            m_elevator.setWantedState(Elevator.WantedState.SWITCH_POS);
         }
 
         else if (lowScalePos){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_LOW_SCALE);
+            m_elevator.setWantedState(Elevator.WantedState.LOW_SCALE_POS);
         }
 
         else if (midScalePos){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_MID_SCALE);
+            m_elevator.setWantedState(Elevator.WantedState.MID_SCALE_POS);
         }
 
         else if (highScalePos){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_HIGH_SCALE);
+            m_elevator.setWantedState(Elevator.WantedState.HIGH_SCALE_POS);
         }
         else{
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SQUEEZE_HOLD);
+            m_elevator.setWantedState(Elevator.WantedState.HOLD);
         }
 
          prevFlopToggle = flopToggle;

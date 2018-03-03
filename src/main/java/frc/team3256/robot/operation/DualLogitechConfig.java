@@ -60,45 +60,48 @@ public class DualLogitechConfig implements ControlsInterface{
         return manipulator.getRawButton(5);
     }
 
-    //Driver:
+    //Driver: Right Bumper
     @Override
     public boolean scoreFront(){
-        return manipulator.getRawButton(6);
+        return driver.getRawButton(6);
     }
 
-    //Driver:
+    //Driver: Left Bumper
     @Override
     public boolean scoreRear() {
-        return manipulator.getRawButton(4);
+        return driver.getRawButton(5);
     }
 
-    //Manipulator:
+    //Manipulator: Button B
     @Override
     public boolean switchPreset() {
-        return manipulator.getRawButton(5);
-    }
-
-    @Override
-    public boolean scalePresetLow() {
-        return false;
-}
-
-    @Override
-    public boolean scalePresetMid() {return false;}
-
-    @Override
-    public boolean scalePresetHigh() {
         return manipulator.getRawButton(2);
     }
 
+    //Manipulator: Button A
     @Override
-    public boolean manualElevatorUp() {
-        return false;
+    public boolean scalePresetLow() {
+        return manipulator.getRawButton(1);
+}
+
+    //Manipulator: Button X
+    @Override
+    public boolean scalePresetMid() {return manipulator.getRawButton(3);}
+
+    //Manipulator: Button Y
+    @Override
+    public boolean scalePresetHigh() {
+        return manipulator.getRawButton(4);
     }
 
+    //Manipulator: Left Joystick Y-Axis Up
     @Override
-    public boolean manualElevatorDown() {
-        return false;
+    public boolean manualElevatorUp() {
+        return manipulator.getRawAxis(1) < -0.25;
     }
+
+    //Manipulator: Left Joystick Y-Axis Down
+    @Override
+    public boolean manualElevatorDown() { return manipulator.getRawAxis(1) > 0.25; }
 
 }

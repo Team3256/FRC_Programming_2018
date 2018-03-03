@@ -140,7 +140,7 @@ public class Constants {
     public static final double kTopHomeHeight = 8.85;    //placeholder
     public static final double kElevatorHomingUpTime = 2.0;
     public static final double kElevatorTolerance = 1.0; //measured in inches
-    public static final double kElevatorMaxUpVoltage = 3.0; //8.0
+    public static final double kElevatorMaxUpVoltage = 8.0; //8.0
     public static final double kElevatorMaxDownVoltage = -5.0;//-4.0
     public static final double kElevatorMinHoldVoltage = 0.75;//0.5
 

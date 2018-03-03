@@ -3,6 +3,7 @@ package frc.team3256.robot;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.Looper;
 import frc.team3256.lib.hardware.ADXRS453_Calibrator;
 import frc.team3256.robot.auto.AutoModeBase;

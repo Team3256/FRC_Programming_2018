@@ -23,18 +23,23 @@ public class RightRobotRightScaleRightSwitchThreeCubeAuto extends AutoModeBase {
         DriveTrain.getInstance().setBrake();
         runAction(new FollowTrajectoryAction(currVel,0.0,-215,0));//-292.65
         runAction(new DeployIntakeAction());
-        runAction(new WaitAction(0.5));
         DriveTrain.getInstance().setBrake();
         //currVel = DriveTrain.getInstance().getAverageVelocity();
         //runAction(new FollowArcTrajectoryAction(currVel,0,10,-8, true));
         Intake.getInstance().setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
-        runAction(new RaiseElevatorHighScaleAction());
         currVel = DriveTrain.getInstance().getAverageVelocity();
         runAction(new FollowTrajectoryAction(currVel, 0.0, -71, -23));
+        runAction(new RaiseElevatorHighScaleAction());
         DriveTrain.getInstance().setBrake();
+        currVel = DriveTrain.getInstance().getAverageVelocity();
+        runAction(new FollowTrajectoryAction(currVel, 0.0, -5, -23));
         runAction(new ScoreBackwardAction());
         runAction(new WaitAction(1.0));
-        runAction(new StopScoreAction());
         System.out.println("Total Time: " + Double.toString(Timer.getFPGATimestamp() - initTime));
+        runAction(new StopScoreAction());
+        runAction(new WaitAction(1.0));
+        //currVel = DriveTrain.getInstance().getAverageVelocity();
+        //runAction(new FollowTrajectoryAction(currVel, 0.0, 5, -23));
+        runAction(new ElevatorIntakePositionAction());
     }
 }

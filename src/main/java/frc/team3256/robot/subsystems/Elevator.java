@@ -40,7 +40,6 @@ public class Elevator extends SubsystemBase implements Loop{
                 isHomed = true;
                 master.configForwardSoftLimitEnable(true, 0);
                 master.configReverseSoftLimitEnable(true, 0);
-                //hallEffect.disableInterrupts();
             }
             else if (master.getSelectedSensorVelocity(0) > 0){
                 System.out.println("HOMED ON LOWER SIDE OF CROSSBAR!!!!");

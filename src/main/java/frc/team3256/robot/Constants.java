@@ -137,10 +137,7 @@ public class Constants {
     public static final double kBottomHomeHeight = 7.875; //measured in inches
     public static final double kCompHomeHeight = 8.5; //measured in inches
     public static final double kTopHomeHeight = 8.85;    //placeholder
-    public static final double kElevatorRaiseDelayTime = 0.5;
     public static final double kElevatorHomingUpTime = 2.0;
-    public static final double kElevatorScoreRearMinHeight = 0;
-    public static final double kElevatorScoreFrontMinHeight = 0;
     public static final double kElevatorTolerance = 1.0; //measured in inches
     public static final double kElevatorMaxUpVoltage = 10.0; //8.0
     public static final double kElevatorMaxDownVoltage = -4;//-4.0

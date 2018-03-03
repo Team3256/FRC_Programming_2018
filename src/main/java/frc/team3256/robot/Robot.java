@@ -30,7 +30,6 @@ public class Robot extends IterativeRobot {
     Looper enabledLooper;
     SubsystemManager subsystemManager;
     ADXRS453_Calibrator gyroCalibrator;
-    ControlsInterface controlsInterface;
     AutoModeExecuter autoModeExecuter;
     AutoModeChooser autoModeChooser;
     TeleopUpdater teleopUpdater;
@@ -62,9 +61,6 @@ public class Robot extends IterativeRobot {
 
         subsystemManager = new SubsystemManager();
         subsystemManager.addSubsystems(driveTrain, intake);
-
-        //Dual Logitech Config
-        controlsInterface = new DualLogitechConfig();
 
         autoModeChooser = new AutoModeChooser();
         autoModeChooser.addAutoModes(new DoNothingAuto(), new TestTurnInPlaceAuto(), new TestTrajectoryAuto(), new TestWebappAuto(), new TestPurePursuitAuto());

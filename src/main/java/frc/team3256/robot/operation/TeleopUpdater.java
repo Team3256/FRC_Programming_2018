@@ -97,6 +97,7 @@ public class TeleopUpdater {
         if (!m_elevator.isHomed()){
             System.out.println("TeleopUpdater: NOT HOMED!...AUTO HOMING");
             m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOME);
+            return;
         }
 
         //Manual raising and lowering is highest priority for the elevator

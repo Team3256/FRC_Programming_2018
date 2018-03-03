@@ -37,13 +37,6 @@ public class Robot extends IterativeRobot {
 
     Compressor compressor;
 
-    boolean prevPivot = false;
-    boolean prevFlop = false;
-
-    boolean manualelev = false;
-
-    boolean autoSet = false;
-
     @Override
     public void robotInit() {
 
@@ -96,10 +89,7 @@ public class Robot extends IterativeRobot {
         autoModeExecuter = new AutoModeExecuter();
         AutoModeBase autoMode = new TestArcTrajectoryAuto();
 
-        if(GameDataAccessor.dataFound() && !autoSet){
-            autoMode = GameDataAccessor.getAutoMode();
-            autoSet = true;
-        }
+        autoMode = GameDataAccessor.getAutoMode();
 
         intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
 
@@ -126,183 +116,17 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledPeriodic() {
-        //System.out.println("Left: " + driveTrain.getLeftDistance());
-        //System.out.println("Right: " + driveTrain.getRightDistance());
-        //SmartDashboard.putNumber("CurrTime", Timer.getFPGATimestamp());
-        //System.out.println("Measure Period:       " + disabledLooper.getMeasuredPeriod());
-        //System.out.println("Pose: " + poseEstimator.getPose());
-        //System.out.println("Left Encoder: " + driveTrain.inchesToSensorUnits(driveTrain.getLeftDistance()));
-        //System.out.println("Right Encoder:            " + driveTrain.inchesToSensorUnits(driveTrain.getRightDistance()));
-        //System.out.println("Voltage: " + intake.getVoltage());
-        //System.out.println("Is Triggered: " + intake.hasCube());
-        //System.out.println("Hall Effect Triggered: " + elevator.isTriggered() + "\n" + "Current Velocity: " + elevator.getVelocity());
 
     }
 
     @Override
     public void autonomousPeriodic(){
-        /*
-        if(GameDataAccessor.dataFound() && !autoSet) {
-            autoModeExecuter.setAutoMode(GameDataAccessor.getAutoMode());
-            autoSet = true;
-        } else {
-            autoModeExecuter.setAutoMode(new DoNothingAuto());
-        }
-        autoModeExecuter.start();
-        */
-        //System.out.println("DRIVE MODE: " + driveTrain.getMode());
+
     }
 
     @Override
     public void teleopPeriodic() {
-
-        double throttle = controlsInterface.getThrottle();
-        double turn = controlsInterface.getTurn();
-        boolean quickTurn = controlsInterface.getQuickTurn();
-        boolean shiftDown = controlsInterface.getLowGear();
-        /*boolean flop = controlsInterface.toggleFlop();
-        boolean pivot = controlsInterface.togglePivot();*/
-        DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn, !shiftDown);
-        driveTrain.setOpenLoop(power);
-        driveTrain.setHighGear(power.getHighGear());
-
-        // teleopUpdater.update();
-
-        //System.out.println("HAS CUBE --------------------" + intake.hasCube());
-
-        /*if (controlsInterface.scoreFront()){
-            carriage.setWantedState(Carriage.WantedState.WANTS_TO_RECEIVE);
-        }
-
-        if (controlsInterface.manualSqueezeCarriage()){
-            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
-        }*/
-
-
-        //-----------------------------------------------------------------------
-
-
-
-        if (controlsInterface.getUnjam()){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
-            carriage.setWantedState(Carriage.WantedState.WANTS_TO_RECEIVE);
-        }
-
-        else if (controlsInterface.getIntake()){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
-            carriage.setWantedState(Carriage.WantedState.WANTS_TO_RECEIVE);
-        }
-
-        else if (controlsInterface.getExhaust()){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
-            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_FORWARD);
-        }
-
-        else if (controlsInterface.switchPreset()){
-            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_BACKWARD);
-        }
-
-        else if (controlsInterface.scoreFront()){
-            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_FORWARD);
-        }
-
-        /*else if(flop && !prevFlop){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
-        }*/
-
-
-        /*else if(pivot && !prevPivot){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
-        }*/
-
-        else{
-            intake.setWantedState(Intake.WantedState.IDLE);
-            carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
-        }
-
-        //prevFlop = flop;
-        //prevPivot = pivot;
-
-
-        //-------------------------------------------------------------------------
-
-
-
-
-        if (!elevator.isHomed()){
-            System.out.println("AUTO HOMING");
-            elevator.setWantedState(Elevator.WantedState.HOME);
-            return;
-        }
-
-
-        double elevatorThrottle = controlsInterface.manualElevatorUp();
-
-        if (Math.abs(elevatorThrottle) > 0.1){
-            manualelev = true;
-            if (elevatorThrottle > 0) elevator.setWantedState(Elevator.WantedState.MANUAL_UP);
-            else if (elevatorThrottle < 0) elevator.setWantedState(Elevator.WantedState.MANUAL_DOWN);
-        }
-        else if(manualelev)elevator.setWantedState(Elevator.WantedState.HOLD);
-
-        if (controlsInterface.scoreRear()){
-            manualelev = false;
-            elevator.setWantedState(Elevator.WantedState.HIGH_SCALE_POS);
-        }
-        else if (controlsInterface.toggleFlop()){
-            manualelev = false;
-            elevator.setWantedState(Elevator.WantedState.LOW_SCALE_POS);
-        }
-        else if (controlsInterface.togglePivot()){
-            manualelev = false;
-            elevator.setWantedState(Elevator.WantedState.MID_SCALE_POS);
-        }
-        /*else if (controlsInterface.scalePresetHigh()){
-            manualelev = false;
-            elevator.setWantedState(Elevator.WantedState.SWITCH_POS);
-        }*/
-
-        else if(controlsInterface.scalePresetHigh()) {
-            manualelev = false;
-            //carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_FORWARD);
-            elevator.setWantedState(Elevator.WantedState.INTAKE_POS);
-        }
-
-        else if (!manualelev)elevator.setWantedState(Elevator.WantedState.HOLD);
-
-
-        System.out.println("CURR STATE: " + elevator.getCurrentState() + "\n" + "WANTED STATE: " + elevator.getWantedState());
-        //System.out.println("OUTPUT VOLTAGE: " + elevator.getMaster().getMotorOutputVoltage());
-        //System.out.println("CURR HEIGHT: " + elevator.getHeight());
-        //System.out.println("TARGET HEIGHT: " + elevator.getTargetHeight());
-        System.out.println("VOLTAGE: " + intake.getVoltage());
-        //System.out.println("HOMED: " + elevator.isHomed());
-
-
-        // -----------------------------------------------------------------------------
-
-
-        /*else if (controlsInterface.toggleFlop()){
-            elevator.setTargetPosition(Constants.kLowScalePreset, Constants.kElevatorFastUpSlot);
-        }*/
-
-
-        //-------------------------------------------------------------------------------
-
-        //else elevator.setTargetPosition(elevator.getHeight(), Constants.kElevatorHoldSlot);
-
-        /*if (controlsInterface.scoreFront()){
-            carriage.runMotors(0.5);
-        }
-        else if (controlsInterface.scoreRear()){
-            carriage.runMotors(-0.5);
-        }
-        else
-            carriage.runMotors(0);
-        */
-
-        //System.out.println("CURRENT STATE: " + intake.getCurrentState());
-        //System.out.println("WANTED STATE: " + intake.getWantedState());
+        teleopUpdater.update();
     }
 
     @Override

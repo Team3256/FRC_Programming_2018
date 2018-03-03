@@ -15,7 +15,7 @@ sourceSets {
 }
 
 wpi{
-    ctreVersion = "5.2.2.0"
+    ctreVersion = "5.3.1.0"
     wpilibVersion = "2018.3.3"
 }
 

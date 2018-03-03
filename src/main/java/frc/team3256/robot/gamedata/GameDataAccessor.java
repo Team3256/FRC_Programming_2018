@@ -48,7 +48,7 @@ public class GameDataAccessor {
     public static AutoModeBase getAutoMode() {
 
         if (getScaleSide() == Side.ERR || getSwitchSide() == Side.ERR) {
-            // don't run anything
+            //just cross the baseline...
         }
 
         if(getScaleSide() == Side.LEFT) {

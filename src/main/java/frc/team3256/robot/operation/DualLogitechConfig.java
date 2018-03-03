@@ -50,54 +50,58 @@ public class DualLogitechConfig implements ControlsInterface{
         return getIntake() && getExhaust();
     }
 
-    //Manipulator: Button Y
+    //Manipulator: Right Bumper
     @Override
-    public boolean togglePivot() { return manipulator.getRawButton(3); }
+    public boolean togglePivot() { return manipulator.getRawButton(6); }
 
-    //Manipulator: Button A
+    //Manipulator: Left Bumper
     @Override
     public boolean toggleFlop(){
-        return manipulator.getRawButton(1);
-    }
-
-    //Driver:
-    @Override
-    public boolean scoreFront(){
-        return manipulator.getRawButton(6);
-    }
-
-    //Driver:
-    @Override
-    public boolean scoreRear() {
-        return manipulator.getRawButton(4);
-    }
-
-    @Override
-    public boolean switchPreset() {
         return manipulator.getRawButton(5);
     }
 
+    //Driver: Right Bumper
     @Override
-    public boolean scalePresetLow() {
-        return false;
-}
+    public boolean scoreFront(){
+        return driver.getRawButton(6);
+    }
 
+    //Driver: Left Bumper
     @Override
-    public boolean scalePresetMid() {return false;}
+    public boolean scoreRear() {
+        return driver.getRawButton(5);
+    }
 
+    //Manipulator: Button B
     @Override
-    public boolean scalePresetHigh() {
+    public boolean switchPreset() {
         return manipulator.getRawButton(2);
     }
 
+    //Manipulator: Button A
     @Override
-    public double manualElevatorUp() {
-        return -manipulator.getRawAxis(1);
+    public boolean scalePresetLow() {
+        return manipulator.getRawButton(1);
+}
+
+    //Manipulator: Button X
+    @Override
+    public boolean scalePresetMid() {return manipulator.getRawButton(3);}
+
+    //Manipulator: Button Y
+    @Override
+    public boolean scalePresetHigh() {
+        return manipulator.getRawButton(4);
     }
 
+    //Manipulator: Left Joystick Y-Axis Up
     @Override
-    public double manualElevatorDown() {
-        return manipulator.getRawAxis(1);
+    public boolean manualElevatorUp() {
+        return manipulator.getRawAxis(1) < -0.25;
     }
+
+    //Manipulator: Left Joystick Y-Axis Down
+    @Override
+    public boolean manualElevatorDown() { return manipulator.getRawAxis(1) > 0.25; }
 
 }

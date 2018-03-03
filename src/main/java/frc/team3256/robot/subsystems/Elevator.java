@@ -14,7 +14,7 @@ public class Elevator extends SubsystemBase implements Loop{
     private DigitalInput hallEffect;
 
     private SystemState currentState = SystemState.HOLD;
-    private WantedState wantedState = WantedState.HOLD;
+    private WantedState wantedState = WantedState.WANTS_TO_HOLD;
 
     private boolean isHomed = false;
     private boolean stateChanged;
@@ -129,23 +129,23 @@ public class Elevator extends SubsystemBase implements Loop{
 
     public enum WantedState{
         //Preset when scale is in the other alliance's favor
-        HIGH_SCALE_POS,
+        WANTS_TO_HIGH_SCALE_POS,
         //Preset when scale is balanced
-        MID_SCALE_POS,
+        WANTS_TO_MID_SCALE_POS,
         //Preset when scale is in our alliance's favor
-        LOW_SCALE_POS,
+        WANTS_TO_LOW_SCALE_POS,
         //Preset for the switch
-        SWITCH_POS,
+        WANTS_TO_SWITCH_POS,
         //Preset to lower the elevator to intake
-        INTAKE_POS,
+        WANTS_TO_INTAKE_POS,
         //Manual control going up
-        MANUAL_UP,
+        WANTS_TO_MANUAL_UP,
         //Manual control going down
-        MANUAL_DOWN,
+        WANTS_TO_MANUAL_DOWN,
         //Hold position when using manual control
-        HOLD,
+        WANTS_TO_HOLD,
         //Go up a bit to home, and then drop down...this should be only called when the robot has not been homed yet
-        HOME,
+        WANTS_TO_HOME,
     }
 
     @Override
@@ -280,46 +280,46 @@ public class Elevator extends SubsystemBase implements Loop{
     private SystemState defaultStateTransfer(){
         SystemState rv;
         switch (wantedState){
-            case HIGH_SCALE_POS:
+            case WANTS_TO_HIGH_SCALE_POS:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kHighScalePreset;
                 }
                 m_usingClosedLoop = true;
                 break;
-            case MID_SCALE_POS:
+            case WANTS_TO_MID_SCALE_POS:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kMidScalePreset;
                 }
                 m_usingClosedLoop = true;
                 break;
-            case LOW_SCALE_POS:
+            case WANTS_TO_LOW_SCALE_POS:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kLowScalePreset;
                 }
                 m_usingClosedLoop = true;
                 break;
-            case HOLD:
+            case WANTS_TO_HOLD:
                 m_usingClosedLoop = false;
                 return SystemState.HOLD;
-            case SWITCH_POS:
+            case WANTS_TO_SWITCH_POS:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kSwitchPreset;
                 }
                 m_usingClosedLoop = true;
                 break;
-            case MANUAL_UP:
+            case WANTS_TO_MANUAL_UP:
                 m_usingClosedLoop = false;
                 return SystemState.MANUAL_UP;
-            case MANUAL_DOWN:
+            case WANTS_TO_MANUAL_DOWN:
                 m_usingClosedLoop = false;
                 return SystemState.MANUAL_DOWN;
-            case INTAKE_POS:
+            case WANTS_TO_INTAKE_POS:
                 if(stateChanged) {
                     m_closedLoopTarget = Constants.kIntakePreset;
                 }
                 m_usingClosedLoop = true;
                 break;
-            case HOME:
+            case WANTS_TO_HOME:
                 return SystemState.HOMING;
         }
         if(m_closedLoopTarget > getHeight() && m_usingClosedLoop) {

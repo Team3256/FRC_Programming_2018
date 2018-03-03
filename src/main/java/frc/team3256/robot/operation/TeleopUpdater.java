@@ -1,20 +1,37 @@
 package frc.team3256.robot.operation;
 
+import frc.team3256.lib.DrivePower;
+import frc.team3256.lib.control.TeleopDriveController;
+import frc.team3256.robot.Constants;
+import frc.team3256.robot.subsystems.Carriage;
+import frc.team3256.robot.subsystems.DriveTrain;
+import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.robot.subsystems.Intake;
-import frc.team3256.robot.subsystems.Superstructure;
 
 public class TeleopUpdater {
 
-    ControlsInterface controls = new LogitechButtonBoardConfig();
-    Superstructure superstructure = Superstructure.getInstance();;
-    Intake intake = Intake.getInstance();;
-    boolean prevPivotToggle, prevFlopToggle;
+    private ControlsInterface controls = new LogitechButtonBoardConfig();
+
+    private DriveTrain m_drive = DriveTrain.getInstance();
+    private Intake m_intake = Intake.getInstance();
+    private Elevator m_elevator = Elevator.getInstance();
+    private Carriage m_carriage = Carriage.getInstance();
+
+    private boolean prevPivotToggle = false;
+    private boolean prevFlopToggle = false;
+    private boolean isManualControl = false;
 
     public void update(){
+
+        double throttle = controls.getThrottle();
+        double turn = controls.getTurn();
+        boolean quickTurn = controls.getQuickTurn();
+        boolean shiftDown = controls.getLowGear();
+
         boolean pivotToggle = controls.togglePivot();
         boolean flopToggle = controls.toggleFlop();
 
-        boolean intakeCom = controls.getIntake();
+        boolean intake = controls.getIntake();
         boolean exhaust = controls.getExhaust();
         boolean unjam = controls.getUnjam();
 
@@ -26,67 +43,89 @@ public class TeleopUpdater {
         boolean midScalePos = controls.scalePresetMid();
         boolean highScalePos = controls.scalePresetHigh();
 
-        boolean manualRaise = controls.manualElevatorUp() > 0.25;
-        boolean manualLower = controls.manualElevatorDown() > 0.25;
+        boolean manualRaise = controls.manualElevatorUp();
+        boolean manualLower = controls.manualElevatorDown();
 
-        //Intake based systems
+        //Drivetrain subsystem
+        DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn, !shiftDown);
+        m_drive.setOpenLoop(power);
+        m_drive.setHighGear(power.getHighGear());
+
+        //Intake subsystem
+        //Unjamming is highest priority because it is both intake and exhaust buttons
         if (unjam){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_UNJAM);
+            m_intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
         }
-        else if (intakeCom){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_INTAKE);
+        else if (intake){
+            //only run intake when the elevator is low enough so the carriage can pick up the block
+            if (m_elevator.getHeight() < Constants.kIntakePreset + 2.0){
+                m_intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
+            }
+            else m_intake.setWantedState(Intake.WantedState.IDLE);
         }
         else if (exhaust){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_EXHAUST);
+            m_intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
         }
         else if (pivotToggle && !prevPivotToggle){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
+            m_intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
         }
         else if (flopToggle && !prevFlopToggle){
-            intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
+            m_intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
         }
 
-        
-        //Carriage based systems
+        prevFlopToggle = flopToggle;
+        prevPivotToggle = pivotToggle;
+
+        //Carriage subsystem
         if (scoreFront){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_FORWARD);
+            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_FORWARD);
         }
-
         else if (scoreRear){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_BACKWARD);
+            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_BACKWARD);
         }
         else{
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SQUEEZE_HOLD);
+            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
 
+        //Elevator subsystem
+        //If the elevator is not homed yet, home the elevator
+        if (!m_elevator.isHomed()){
+            System.out.println("TeleopUpdater: NOT HOMED!...AUTO HOMING");
+            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOME);
+        }
 
-        //Elevator based systems
+        //Manual raising and lowering is highest priority for the elevator
         if (manualRaise){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_RAISE_MANUAL);
+            isManualControl = true;
+            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_MANUAL_UP);
         }
         else if (manualLower){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_LOWER_MANUAL);
+            isManualControl = true;
+            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_MANUAL_DOWN);
         }
-        else if (switchPos){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_SWITCH);
+        //For all the presets, make sure we are homed before running them
+        else if (switchPos && m_elevator.isHomed()){
+            isManualControl = false;
+            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_SWITCH_POS);
         }
-
-        else if (lowScalePos){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_LOW_SCALE);
+        else if (lowScalePos && m_elevator.isHomed()){
+            isManualControl = false;
+            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_LOW_SCALE_POS);
         }
-
-        else if (midScalePos){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_MID_SCALE);
+        else if (midScalePos && m_elevator.isHomed()){
+            isManualControl = false;
+            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_MID_SCALE_POS);
         }
-
-        else if (highScalePos){
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SCORE_HIGH_SCALE);
+        else if (highScalePos && m_elevator.isHomed()){
+            isManualControl = false;
+            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_HIGH_SCALE_POS);
         }
         else{
-            superstructure.setWantedState(Superstructure.WantedState.WANTS_TO_SQUEEZE_HOLD);
+            //Only hold if we are in manual control
+            //If we are not in manual control, don't hold, the elevator internally will stop at the correct preset height
+            if (isManualControl){
+                m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOLD);
+            }
         }
-
-         prevFlopToggle = flopToggle;
-         prevPivotToggle = pivotToggle;
     }
 }

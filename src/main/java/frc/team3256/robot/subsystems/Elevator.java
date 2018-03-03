@@ -15,9 +15,12 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private SystemState currentState = SystemState.HOLD;
     private WantedState wantedState = WantedState.WANTS_TO_HOLD;
+    private WantedState prevWantedState = WantedState.WANTS_TO_HOLD;
 
     private boolean isHomed = false;
     private boolean stateChanged;
+    private boolean targetReached = false;
+    private boolean wantedStateChanged = false;
 
     private double m_closedLoopTarget;
     private boolean m_usingClosedLoop;
@@ -153,6 +156,14 @@ public class Elevator extends SubsystemBase implements Loop{
 
     @Override
     public void update(double timestamp){
+        if (prevWantedState != wantedState){
+            wantedStateChanged = true;
+            prevWantedState = wantedState;
+        }
+        else wantedStateChanged = false;
+        if (wantedStateChanged){
+            targetReached = false;
+        }
         SystemState newState = SystemState.HOLD;
         switch(currentState){
             case HOLD:
@@ -190,8 +201,8 @@ public class Elevator extends SubsystemBase implements Loop{
 
     }
 
-    private boolean atClosedLoopTarget(){
-        if (!m_usingClosedLoop) return false;
+    public boolean atClosedLoopTarget(){
+        if (!m_usingClosedLoop || wantedStateChanged || stateChanged) return false;
         return (Math.abs(getHeight() - m_closedLoopTarget) < Constants.kElevatorTolerance);
     }
 
@@ -231,10 +242,10 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private SystemState handleFastUp(){
         if(isHomed){
-            if (stateChanged){master.selectProfileSlot(Constants.kElevatorFastUpSlot, 0);}
             if (atClosedLoopTarget()){
                 return SystemState.HOLD;
             }
+            if (stateChanged){master.selectProfileSlot(Constants.kElevatorFastUpSlot, 0);}
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastUpSlot);
             return defaultStateTransfer();
         }
@@ -243,10 +254,10 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private SystemState handleFastDown(){
         if(isHomed){
-            if (stateChanged){master.selectProfileSlot(Constants.kElevatorFastDownSlot, 0);}
             if (atClosedLoopTarget()){
                 return SystemState.HOLD;
             }
+            if (stateChanged){master.selectProfileSlot(Constants.kElevatorFastDownSlot, 0);}
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastDownSlot);
             return defaultStateTransfer();
         }

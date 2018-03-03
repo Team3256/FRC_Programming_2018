@@ -79,7 +79,7 @@ public class Robot extends IterativeRobot {
         autoModeExecuter = new AutoModeExecuter();
         AutoModeBase autoMode = new TestArcTrajectoryAuto();
 
-        autoMode = GameDataAccessor.getAutoMode();
+        //autoMode = GameDataAccessor.getAutoMode();
 
         intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
 
@@ -117,6 +117,10 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopPeriodic() {
         teleopUpdater.update();
+        System.out.println("ELEVATOR STATE:" + elevator.getCurrentState());
+        System.out.println("TARGET HEIGHT: " + elevator.getTargetHeight());
+        System.out.println("CURRENT HEIGHT: " + elevator.getHeight());
+        System.out.println("WANTED STATE: " + elevator.getWantedState());
     }
 
     @Override

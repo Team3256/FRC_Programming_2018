@@ -3,6 +3,9 @@ package frc.team3256.robot.gamedata;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.team3256.robot.Constants;
 import frc.team3256.robot.auto.AutoModeBase;
+import frc.team3256.robot.auto.modes.CenterLeftSwitchAuto;
+import frc.team3256.robot.auto.modes.CenterRightSwitchAuto;
+import frc.team3256.robot.auto.modes.CrossBaselineAuto;
 import frc.team3256.robot.auto.modes.DoNothingAuto;
 
 public class GameDataAccessor {
@@ -44,8 +47,31 @@ public class GameDataAccessor {
     public static boolean dataFound(){
         return getGameData().length() > 0;
     }
-    
-    public static AutoModeBase getAutoMode() {
+
+    public static AutoModeBase getAutoMode(String wantedAuto) {
+
+        if(wantedAuto == "CENTER SWITCH"){
+            if(getSwitchSide() == Side.ERR){
+                return new CrossBaselineAuto();
+            }
+            else if (getSwitchSide() == Side.LEFT){
+                return new CenterLeftSwitchAuto();
+            }
+            else if (getSwitchSide() == Side.RIGHT){
+                return new CenterRightSwitchAuto();
+            }
+        }
+        /*else if (wantedAuto == "LEFT SCALE"){
+            if(getSwitchSide() == Side.ERR){
+                return new CrossBaselineAuto();
+            }
+            else if (getSwitchSide() == Side.LEFT){
+                return new CenterLeftSwitchAuto();
+            }
+            else if (getSwitchSide() == Side.RIGHT){
+                return new CenterRightSwitchAuto();
+            }
+        }*/
 
         if (getScaleSide() == Side.ERR || getSwitchSide() == Side.ERR) {
             //just cross the baseline...

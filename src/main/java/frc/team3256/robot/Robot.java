@@ -57,7 +57,7 @@ public class Robot extends IterativeRobot {
         subsystemManager.addSubsystems(driveTrain, intake);
 
         autoModeChooser = new AutoModeChooser();
-        autoModeChooser.addAutoModes(new DoNothingAuto(), new TestTurnInPlaceAuto(), new TestTrajectoryAuto(), new TestWebappAuto(), new TestPurePursuitAuto());
+        autoModeChooser.addAutoModes(new DoNothingAuto(), new TestTurnInPlaceAuto(), new TestTrajectoryAuto(), new TestWebappAuto(), new TestPurePursuitAuto(), new CenterSwitchAuto());
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");

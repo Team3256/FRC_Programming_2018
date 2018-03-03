@@ -125,7 +125,11 @@ public class Superstructure extends SubsystemBase implements Loop{
             intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
             elevator.setWantedState(Elevator.WantedState.INTAKE_POS);
         }
+<<<<<<< HEAD
         if (elevator.getHeight() < Constants.kIntakePreset + 1.0){ //---------- if at a safe height to intakeeee
+=======
+        if (elevator.getHeight() < Constants.kIntakePreset){ //---------- if at a safe height to intake
+>>>>>>> c89afd96a3da24ef1916659bdc8a62e310dacf7a
             intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
             carriage.setWantedState(Carriage.WantedState.WANTS_TO_RECEIVE);
         }

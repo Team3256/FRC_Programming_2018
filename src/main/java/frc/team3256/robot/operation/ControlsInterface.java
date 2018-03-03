@@ -51,9 +51,10 @@ public interface ControlsInterface {
     //Single press: Elevator moves to high scale preset
     boolean scalePresetHigh();
 
-    //
-    double manualElevatorUp();
+    //Hold: Elevator manually moves up
+    boolean manualElevatorUp();
 
-    double manualElevatorDown();
+    //Hold: Elevator manually moves down
+    boolean manualElevatorDown();
 
 }

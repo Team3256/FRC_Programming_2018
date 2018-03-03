@@ -123,7 +123,7 @@ public class Constants {
     public static final double kCarriageReceivePower = 0.8;
     public static final double kCarriageScoreForwardPower = -0.4;
     public static final double kCarriageScoreBackwardPower = 0.65;
-    public static final double kCarriageExhaustPower = -0.25;
+    public static final double kCarriageExhaustPower = -0.75;
 
     public static final double kElevatorUpManualPower = 0.15;
     public static final double kElevatorDownManualPower = -0.15;

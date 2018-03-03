@@ -3,10 +3,7 @@ package frc.team3256.robot.gamedata;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.team3256.robot.Constants;
 import frc.team3256.robot.auto.AutoModeBase;
-import frc.team3256.robot.auto.modes.CenterLeftSwitchAuto;
-import frc.team3256.robot.auto.modes.CenterRightSwitchAuto;
-import frc.team3256.robot.auto.modes.CrossBaselineAuto;
-import frc.team3256.robot.auto.modes.DoNothingAuto;
+import frc.team3256.robot.auto.modes.*;
 
 public class GameDataAccessor {
     public static String getGameData() {
@@ -61,37 +58,105 @@ public class GameDataAccessor {
                 return new CenterRightSwitchAuto();
             }
         }
-        /*else if (wantedAuto == "LEFT SCALE"){
+
+        else if (wantedAuto == "LEFT SWITCH"){
             if(getSwitchSide() == Side.ERR){
                 return new CrossBaselineAuto();
             }
             else if (getSwitchSide() == Side.LEFT){
-                return new CenterLeftSwitchAuto();
+                //Return specified automode
             }
             else if (getSwitchSide() == Side.RIGHT){
-                return new CenterRightSwitchAuto();
-            }
-        }*/
-
-        if (getScaleSide() == Side.ERR || getSwitchSide() == Side.ERR) {
-            //just cross the baseline...
-        }
-
-        if(getScaleSide() == Side.LEFT) {
-            if(getSwitchSide() == Side.LEFT) {
-
-            }
-            else if (getSwitchSide() == Side.RIGHT) {
-
+                //Return specified automode
             }
         }
 
-        else if (getScaleSide() == Side.RIGHT) {
-            if(getSwitchSide() == Side.LEFT) {
-
+        else if (wantedAuto == "LEFT SCALE"){
+            if(getScaleSide() == Side.ERR){
+                return new CrossBaselineAuto();
             }
-            else if (getSwitchSide() == Side.RIGHT) {
+            else if (getScaleSide() == Side.LEFT){
+                //Return specified automode
+            }
+            else if (getScaleSide() == Side.RIGHT){
+                //Return specified automode
+            }
+        }
 
+        else if (wantedAuto == "LEFT SCALE SWITCH"){
+            if(getScaleSide() == Side.ERR){
+                return new CrossBaselineAuto();
+            }
+            else if(getScaleSide() == Side.LEFT){
+                if(getSwitchSide() == Side.ERR){
+                    return new CrossBaselineAuto();
+                }
+                else if(getSwitchSide() == Side.LEFT){
+                    return new LeftRobotLeftScaleLeftSwitchThreeCubeAuto();
+                }
+                else if(getSwitchSide() == Side.RIGHT){
+                    return new LeftRobotLeftScaleRightSwitchThreeCubeAuto();
+                }
+            }
+            else if(getScaleSide() == Side.RIGHT){
+                if(getSwitchSide() == Side.ERR){
+                    return new CrossBaselineAuto();
+                }
+                else if(getSwitchSide() == Side.LEFT){
+                    return new LeftRobotRightScaleLeftSwitchThreeCubeAuto();
+                }
+                else if (getSwitchSide() == Side.RIGHT){
+                    return new LeftRobotRightScaleRightSwitchThreeCubeAuto();
+                }
+            }
+        }
+        else if (wantedAuto == "RIGHT SWITCH"){
+            if(getSwitchSide() == Side.ERR){
+                return new CrossBaselineAuto();
+            }
+            else if (getSwitchSide() == Side.LEFT){
+                //Return specified automode
+            }
+            else if (getSwitchSide() == Side.RIGHT){
+                //Return specified automode
+            }
+        }
+        else if (wantedAuto == "RIGHT SCALE"){
+            if(getSwitchSide() == Side.ERR){
+                return new CrossBaselineAuto();
+            }
+            else if (getSwitchSide() == Side.LEFT){
+                //Return specified automode
+            }
+            else if (getSwitchSide() == Side.RIGHT){
+                //Return specified automode
+            }
+        }
+        else if (wantedAuto == "RIGHT SCALE SWITCH"){
+            if(getScaleSide() == Side.ERR){
+                return new CrossBaselineAuto();
+            }
+            else if (getScaleSide() == Side.LEFT){
+                if(getSwitchSide() == Side.ERR){
+                    return new CrossBaselineAuto();
+                }
+                else if(getSwitchSide() == Side.LEFT){
+                    return new RightRobotLeftScaleLeftSwitchThreeCubeAuto();
+                }
+                else if(getSwitchSide() == Side.RIGHT){
+                    return new RightRobotLeftScaleRightSwitchThreeCubeAuto();
+                }
+            }
+            else if (getScaleSide() == Side.RIGHT){
+                if(getSwitchSide() == Side.ERR){
+                    return new CrossBaselineAuto();
+                }
+                else if(getSwitchSide() == Side.LEFT){
+                    return new RightRobotRightScaleLeftSwitchThreeCubeAuto();
+                }
+                else if(getSwitchSide() == Side.RIGHT){
+                    return new RightRobotRightScaleRightSwitchThreeCubeAuto();
+                }
             }
         }
         return new DoNothingAuto();

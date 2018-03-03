@@ -220,14 +220,6 @@ public class Robot extends IterativeRobot {
             carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
 
-        //prevFlop = flop;
-        //prevPivot = pivot;
-
-
-        //-------------------------------------------------------------------------
-
-
-
 
         if (!elevator.isHomed()){
             System.out.println("AUTO HOMING");
@@ -278,31 +270,6 @@ public class Robot extends IterativeRobot {
         System.out.println("VOLTAGE: " + intake.getVoltage());
         //System.out.println("HOMED: " + elevator.isHomed());
 
-
-        // -----------------------------------------------------------------------------
-
-
-        /*else if (controlsInterface.toggleFlop()){
-            elevator.setTargetPosition(Constants.kLowScalePreset, Constants.kElevatorFastUpSlot);
-        }*/
-
-
-        //-------------------------------------------------------------------------------
-
-        //else elevator.setTargetPosition(elevator.getHeight(), Constants.kElevatorHoldSlot);
-
-        /*if (controlsInterface.scoreFront()){
-            carriage.runMotors(0.5);
-        }
-        else if (controlsInterface.scoreRear()){
-            carriage.runMotors(-0.5);
-        }
-        else
-            carriage.runMotors(0);
-        */
-
-        //System.out.println("CURRENT STATE: " + intake.getCurrentState());
-        //System.out.println("WANTED STATE: " + intake.getWantedState());
     }
 
     @Override

@@ -4,8 +4,6 @@ import frc.team3256.robot.Constants;
 import frc.team3256.robot.subsystems.Carriage;
 import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.robot.subsystems.Intake;
-import frc.team3256.robot.subsystems.Superstructure;
-import org.omg.CORBA.INTERNAL;
 
 public class TeleopUpdater {
 
@@ -56,6 +54,8 @@ public class TeleopUpdater {
             m_intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
         }
 
+        prevFlopToggle = flopToggle;
+        prevPivotToggle = pivotToggle;
 
         //Carriage based systems
         if (scoreFront){
@@ -69,8 +69,12 @@ public class TeleopUpdater {
             m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
 
-
         //Elevator based systems
+        if (!m_elevator.isHomed()){
+            System.out.println("TeleopUpdater: NOT HOMED!");
+            m_elevator.setWantedState(Elevator.WantedState.HOME);
+        }
+
         if (manualRaise){
             m_elevator.setWantedState(Elevator.WantedState.MANUAL_UP);
         }
@@ -96,7 +100,5 @@ public class TeleopUpdater {
             m_elevator.setWantedState(Elevator.WantedState.HOLD);
         }
 
-         prevFlopToggle = flopToggle;
-         prevPivotToggle = pivotToggle;
     }
 }

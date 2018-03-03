@@ -5,6 +5,6 @@ import frc.team3256.robot.subsystems.Elevator;
 public class ElevatorIntakePositionAction extends RunOnceAction{
     @Override
     public void runOnce() {
-        Elevator.getInstance().setWantedState(Elevator.WantedState.INTAKE_POS);
+        Elevator.getInstance().setWantedState(Elevator.WantedState.WANTS_TO_INTAKE_POS);
     }
 }

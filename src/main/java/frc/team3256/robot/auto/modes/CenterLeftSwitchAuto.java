@@ -6,7 +6,6 @@ import frc.team3256.robot.auto.AutoModeEndedException;
 import frc.team3256.robot.auto.actions.*;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.subsystems.Elevator;
-import frc.team3256.robot.subsystems.Superstructure;
 
 public class CenterLeftSwitchAuto extends AutoModeBase {
     @Override

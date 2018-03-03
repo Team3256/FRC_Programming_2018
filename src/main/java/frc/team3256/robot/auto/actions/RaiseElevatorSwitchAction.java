@@ -6,6 +6,6 @@ public class RaiseElevatorSwitchAction extends RunOnceAction{
 
     @Override
     public void runOnce() {
-        Elevator.getInstance().setWantedState(Elevator.WantedState.SWITCH_POS);
+        Elevator.getInstance().setWantedState(Elevator.WantedState.WANTS_TO_SWITCH_POS);
     }
 }

@@ -5,6 +5,6 @@ import frc.team3256.robot.subsystems.Elevator;
 public class RaiseElevatorHighScaleAction extends RunOnceAction {
     @Override
     public void runOnce() {
-        Elevator.getInstance().setWantedState(Elevator.WantedState.HIGH_SCALE_POS);
+        Elevator.getInstance().setWantedState(Elevator.WantedState.WANTS_TO_HIGH_SCALE_POS);
     }
 }

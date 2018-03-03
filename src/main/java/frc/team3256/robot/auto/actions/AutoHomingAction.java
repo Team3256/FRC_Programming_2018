@@ -21,7 +21,7 @@ public class AutoHomingAction implements Action{
 
     @Override
     public void start() {
-        Elevator.getInstance().setWantedState(Elevator.WantedState.HOME);
+        Elevator.getInstance().setWantedState(Elevator.WantedState.WANTS_TO_HOME);
     }
 
 }

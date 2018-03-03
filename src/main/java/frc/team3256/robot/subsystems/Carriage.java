@@ -34,6 +34,7 @@ public class Carriage extends SubsystemBase implements Loop{
         RECEIVING_FROM_INTAKE, //Self-explanatory
         SCORING_FORWARD, //Run rollers forward
         SCORING_BACKWARD, //Run rollers backward
+        SCORING_BACKWARD_AUTO,
         SQUEEZING_IDLE, //Actuators squeeze cube in place
         OPEN_IDLE, //Actuators stay open
         EXHAUSTING
@@ -47,6 +48,7 @@ public class Carriage extends SubsystemBase implements Loop{
         //Operator -> Score backward button
         WANTS_TO_SCORE_BACKWARD,
         //Operator -> Whenever robot has cube
+        WANTS_TO_SCORE_BACKWARD_AUTO,
         WANTS_TO_SQUEEZE_IDLE,
         //When we are unjamming, open and idle
         WANTS_TO_OPEN_IDLE,
@@ -71,6 +73,9 @@ public class Carriage extends SubsystemBase implements Loop{
                 break;
             case SCORING_BACKWARD:
                 newState = handleScoreBackward();
+                break;
+            case SCORING_BACKWARD_AUTO:
+                newState = handleScoreBackwardAuto();
                 break;
             case SQUEEZING_IDLE:
                 newState = handleSqueezeIdle();
@@ -122,6 +127,14 @@ public class Carriage extends SubsystemBase implements Loop{
         return defaultStateTransfer();
     }
 
+    private SystemState handleScoreBackwardAuto(){
+        if (stateChanged){
+            squeeze();
+        }
+        runMotors(Constants.kCarriageScoreBackwardAutoPower);
+        return defaultStateTransfer();
+    }
+
     private SystemState handleExhaust() {
         if (stateChanged) {
             squeeze();
@@ -157,7 +170,8 @@ public class Carriage extends SubsystemBase implements Loop{
 
             case WANTS_TO_SCORE_BACKWARD:
                 return SystemState.SCORING_BACKWARD;
-
+            case WANTS_TO_SCORE_BACKWARD_AUTO:
+                return SystemState.SCORING_BACKWARD_AUTO;
             case WANTS_TO_SQUEEZE_IDLE:
                 return SystemState.SQUEEZING_IDLE;
 

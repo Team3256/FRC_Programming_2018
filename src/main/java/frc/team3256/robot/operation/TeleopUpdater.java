@@ -10,7 +10,7 @@ import frc.team3256.robot.subsystems.Intake;
 
 public class TeleopUpdater {
 
-    private ControlsInterface controls = new LogitechButtonBoardConfig();
+    private ControlsInterface controls = new DualLogitechConfig();
 
     private DriveTrain m_drive = DriveTrain.getInstance();
     private Intake m_intake = Intake.getInstance();
@@ -57,40 +57,44 @@ public class TeleopUpdater {
             m_intake.setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
         }
         else if (intake){
-            if (m_elevator.getHeight() > Constants.kIntakePreset + 2.0) {
+            if (m_elevator.getHeight() > Constants.kIntakePreset + 1.5) {
+                System.out.println("HELLO");
                 m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_INTAKE_POS);
+                isManualControl = false;
                 m_intake.setWantedState(Intake.WantedState.IDLE);
             }
             else{
                 m_intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
+                m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_RECEIVE);
             }
         }
         else if (exhaust){
             m_intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
+            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_EXHAUST);
         }
         else if (pivotToggle && !prevPivotToggle){
             m_intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_PIVOT);
+            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
         else if (flopToggle && !prevFlopToggle){
             m_intake.setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
+            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+        }
+        else if (scoreFront){
+            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_FORWARD);
+            m_intake.setWantedState(Intake.WantedState.IDLE);
+        }
+        else if (scoreRear){
+            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_BACKWARD);
+            m_intake.setWantedState(Intake.WantedState.IDLE);
         }
         else {
             m_intake.setWantedState(Intake.WantedState.IDLE);
+            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
         }
 
         prevFlopToggle = flopToggle;
         prevPivotToggle = pivotToggle;
-
-        //Carriage subsystem
-        if (scoreFront){
-            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_FORWARD);
-        }
-        else if (scoreRear){
-            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_BACKWARD);
-        }
-        else{
-            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
-        }
 
         //Elevator subsystem
         //If the elevator is not homed yet, home the elevator
@@ -134,6 +138,9 @@ public class TeleopUpdater {
             //Only hold if we are in manual control
             //If we are not in manual control, don't hold, the elevator internally will stop at the correct preset height
             if (isManualControl){
+                m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOLD);
+            }
+            else if (m_elevator.atClosedLoopTarget()){
                 m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOLD);
             }
         }

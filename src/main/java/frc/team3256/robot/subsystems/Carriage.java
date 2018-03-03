@@ -77,6 +77,7 @@ public class Carriage extends SubsystemBase implements Loop{
                 break;
             case EXHAUSTING:
                 newState = handleExhaust();
+                break;
             case OPEN_IDLE: default:
                 newState = handleOpenIdle();
                 break;

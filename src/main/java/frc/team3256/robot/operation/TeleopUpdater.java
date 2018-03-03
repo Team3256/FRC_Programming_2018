@@ -46,7 +46,7 @@ public class TeleopUpdater {
         boolean manualRaise = controls.manualElevatorUp();
         boolean manualLower = controls.manualElevatorDown();
 
-        //Driving
+        //Drivetrain subsystem
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn, !shiftDown);
         m_drive.setOpenLoop(power);
         m_drive.setHighGear(power.getHighGear());

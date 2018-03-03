@@ -37,13 +37,6 @@ public class Robot extends IterativeRobot {
 
     Compressor compressor;
 
-    boolean prevPivot = false;
-    boolean prevFlop = false;
-
-    boolean manualelev = false;
-
-    boolean autoSet = false;
-
     @Override
     public void robotInit() {
 
@@ -96,10 +89,7 @@ public class Robot extends IterativeRobot {
         autoModeExecuter = new AutoModeExecuter();
         AutoModeBase autoMode = new TestArcTrajectoryAuto();
 
-        if(GameDataAccessor.dataFound() && !autoSet){
-            autoMode = GameDataAccessor.getAutoMode();
-            autoSet = true;
-        }
+        autoMode = GameDataAccessor.getAutoMode();
 
         intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
 
@@ -126,31 +116,12 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledPeriodic() {
-        //System.out.println("Left: " + driveTrain.getLeftDistance());
-        //System.out.println("Right: " + driveTrain.getRightDistance());
-        //SmartDashboard.putNumber("CurrTime", Timer.getFPGATimestamp());
-        //System.out.println("Measure Period:       " + disabledLooper.getMeasuredPeriod());
-        //System.out.println("Pose: " + poseEstimator.getPose());
-        //System.out.println("Left Encoder: " + driveTrain.inchesToSensorUnits(driveTrain.getLeftDistance()));
-        //System.out.println("Right Encoder:            " + driveTrain.inchesToSensorUnits(driveTrain.getRightDistance()));
-        //System.out.println("Voltage: " + intake.getVoltage());
-        //System.out.println("Is Triggered: " + intake.hasCube());
-        //System.out.println("Hall Effect Triggered: " + elevator.isTriggered() + "\n" + "Current Velocity: " + elevator.getVelocity());
 
     }
 
     @Override
     public void autonomousPeriodic(){
-        /*
-        if(GameDataAccessor.dataFound() && !autoSet) {
-            autoModeExecuter.setAutoMode(GameDataAccessor.getAutoMode());
-            autoSet = true;
-        } else {
-            autoModeExecuter.setAutoMode(new DoNothingAuto());
-        }
-        autoModeExecuter.start();
-        */
-        //System.out.println("DRIVE MODE: " + driveTrain.getMode());
+
     }
 
     @Override

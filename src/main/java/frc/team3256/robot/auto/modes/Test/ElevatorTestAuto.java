@@ -1,4 +1,4 @@
-package frc.team3256.robot.auto.modes;
+package frc.team3256.robot.auto.modes.Test;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.team3256.robot.auto.AutoModeBase;

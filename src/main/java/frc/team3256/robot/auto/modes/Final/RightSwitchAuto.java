@@ -1,20 +1,20 @@
-package frc.team3256.robot.auto.modes;
+package frc.team3256.robot.auto.modes.Final;
 
 import frc.team3256.robot.auto.AutoModeBase;
 import frc.team3256.robot.auto.AutoModeEndedException;
 import frc.team3256.robot.gamedata.GameDataAccessor;
 
-public class LeftScaleAuto extends AutoModeBase {
+public class RightSwitchAuto extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
-        GameDataAccessor.Side scaleSide = GameDataAccessor.Side.ERR;
+        GameDataAccessor.Side switchSide = GameDataAccessor.Side.ERR;
         if(!GameDataAccessor.dataFound()){
-            scaleSide = GameDataAccessor.getScaleSide();
+            switchSide = GameDataAccessor.getSwitchSide();
         }
-        if(scaleSide == GameDataAccessor.Side.LEFT){
+        if(switchSide == GameDataAccessor.Side.LEFT){
 
         }
-        else if(scaleSide == GameDataAccessor.Side.RIGHT){
+        else if(switchSide == GameDataAccessor.Side.RIGHT){
 
         }
         else{

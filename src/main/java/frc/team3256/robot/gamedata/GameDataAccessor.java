@@ -3,10 +3,15 @@ package frc.team3256.robot.gamedata;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.team3256.robot.Constants;
 import frc.team3256.robot.auto.AutoModeBase;
-import frc.team3256.robot.auto.modes.*;
+import frc.team3256.robot.auto.modes.Final.CenterSwitchAuto;
+import frc.team3256.robot.auto.modes.Final.CrossBaselineForwardAuto;
+import frc.team3256.robot.auto.modes.Final.DoNothingAuto;
 
 public class GameDataAccessor {
-    public static String getGameData() { return DriverStation.getInstance().getGameSpecificMessage(); }
+
+    private static String data = "";
+
+    public static String getGameData() { return data = DriverStation.getInstance().getGameSpecificMessage(); }
 
     public static Side getSide(int index) {
         if (index < 0 || index > 2)
@@ -38,7 +43,11 @@ public class GameDataAccessor {
     }
 
     public static boolean dataFound(){
-        return getGameData().length() > 0;
+        return data.length() > 0;
+    }
+
+    public static String getRawData(){
+        return data;
     }
 
     public static AutoModeBase getAutoMode(String wantedAuto) {
@@ -51,18 +60,18 @@ public class GameDataAccessor {
         }
         else if(wantedAuto == "ROBOT LEFT - SWITCH"){
             if(getSwitchSide() == Side.ERR){
-                return new CrossBaselineAuto();
+                return new CrossBaselineForwardAuto();
             }
             else if(getSwitchSide() == Side.LEFT){
                 //return new LeftRobotLeftSwitchAuto(); Not an automode yet
             }
             else if (getSwitchSide() == Side.RIGHT){
-                return new CrossBaselineAuto();
+                return new CrossBaselineForwardAuto();
             }
         }
         else if(wantedAuto == "ROBOT LEFT - SCALE"){
             if(getSwitchSide() == Side.ERR){
-                return new CrossBaselineAuto();
+                return new CrossBaselineForwardAuto();
             }
             else if (getScaleSide() == Side.LEFT){
                 //return new LeftRobotLeftScaleAuto(); Not an automode yet
@@ -76,7 +85,7 @@ public class GameDataAccessor {
          */
         /*else if(wantedAuto == "ROBOT LEFT - SCALE SWITCH"){
             if(getScaleSide() == Side.ERR){
-                return new CrossBaselineAuto();
+                return new CrossBaselineForwardAuto();
             }
             else if(getScaleSide() == Side.LEFT){
                 if(getSwitchSide() == Side.LEFT){
@@ -102,7 +111,7 @@ public class GameDataAccessor {
          */
         /*if(wantedAuto == "ROBOT CENTER - SWITCH"){
             if(getSwitchSide() == Side.ERR){
-                return new CrossBaselineAuto();
+                return new CrossBaselineForwardAuto();
             }
             else if (getSwitchSide() == Side.LEFT){
                 return new CenterLeftSwitchAuto();
@@ -114,7 +123,7 @@ public class GameDataAccessor {
 
         else if (wantedAuto == "ROBOT LEFT - SWITCH"){
             if(getSwitchSide() == Side.ERR){
-                return new CrossBaselineAuto();
+                return new CrossBaselineForwardAuto();
             }
             else if (getSwitchSide() == Side.LEFT){
                 //Return specified automode
@@ -126,7 +135,7 @@ public class GameDataAccessor {
 
         else if (wantedAuto == "ROBOT LEFT - SCALE"){
             if(getScaleSide() == Side.ERR){
-                return new CrossBaselineAuto();
+                return new CrossBaselineForwardAuto();
             }
             else if (getScaleSide() == Side.LEFT){
                 //Return specified automode
@@ -138,11 +147,11 @@ public class GameDataAccessor {
 
         else if (wantedAuto == "ROBOT LEFT - SCALE SWITCH"){
             if(getScaleSide() == Side.ERR){
-                return new CrossBaselineAuto();
+                return new CrossBaselineForwardAuto();
             }
             else if(getScaleSide() == Side.LEFT){
                 if(getSwitchSide() == Side.ERR){
-                    return new CrossBaselineAuto();
+                    return new CrossBaselineForwardAuto();
                 }
                 else if(getSwitchSide() == Side.LEFT){
                     return new LeftRobotLeftScaleLeftSwitchThreeCubeAuto();
@@ -153,7 +162,7 @@ public class GameDataAccessor {
             }
             else if(getScaleSide() == Side.RIGHT){
                 if(getSwitchSide() == Side.ERR){
-                    return new CrossBaselineAuto();
+                    return new CrossBaselineForwardAuto();
                 }
                 else if(getSwitchSide() == Side.LEFT){
                     return new LeftRobotRightScaleLeftSwitchThreeCubeAuto();
@@ -165,7 +174,7 @@ public class GameDataAccessor {
         }
         else if (wantedAuto == "ROBOT RIGHT - SWITCH"){
             if(getSwitchSide() == Side.ERR){
-                return new CrossBaselineAuto();
+                return new CrossBaselineForwardAuto();
             }
             else if (getSwitchSide() == Side.LEFT){
                 //Return specified automode
@@ -176,7 +185,7 @@ public class GameDataAccessor {
         }
         else if (wantedAuto == "ROBOT RIGHT - SCALE"){
             if(getSwitchSide() == Side.ERR){
-                return new CrossBaselineAuto();
+                return new CrossBaselineForwardAuto();
             }
             else if (getSwitchSide() == Side.LEFT){
                 //Return specified automode
@@ -187,11 +196,11 @@ public class GameDataAccessor {
         }
         else if (wantedAuto == "ROBOT RIGHT - SCALE SWITCH"){
             if(getScaleSide() == Side.ERR){
-                return new CrossBaselineAuto();
+                return new CrossBaselineForwardAuto();
             }
             else if (getScaleSide() == Side.LEFT){
                 if(getSwitchSide() == Side.ERR){
-                    return new CrossBaselineAuto();
+                    return new CrossBaselineForwardAuto();
                 }
                 else if(getSwitchSide() == Side.LEFT){
                     return new RightRobotLeftScaleLeftSwitchThreeCubeAuto();
@@ -202,7 +211,7 @@ public class GameDataAccessor {
             }
             else if (getScaleSide() == Side.RIGHT){
                 if(getSwitchSide() == Side.ERR){
-                    return new CrossBaselineAuto();
+                    return new CrossBaselineForwardAuto();
                 }
                 else if(getSwitchSide() == Side.LEFT){
                     return new RightRobotRightScaleLeftSwitchThreeCubeAuto();

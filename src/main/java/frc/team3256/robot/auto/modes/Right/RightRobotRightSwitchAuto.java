@@ -1,4 +1,4 @@
-package frc.team3256.robot.auto.modes;
+package frc.team3256.robot.auto.modes.Right;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.team3256.robot.auto.AutoModeBase;
@@ -28,7 +28,7 @@ public class RightRobotRightSwitchAuto extends AutoModeBase {
         ArrayList<Action> actions = new ArrayList<>();
         currVel = DriveTrain.getInstance().getAverageVelocity();
         actions.add(new RaiseElevatorSwitchAction());
-        actions.add(new FollowArcTrajectoryAction(currVel, 0.0, 15,-90,false));
+        actions.add(new FollowArcTrajectoryAction(currVel, 0.0, 10,-90,false));
         runAction(new ParallelAction(actions));
         runAction(new ScoreForwardAction());
         runAction(new WaitAction(1.0));

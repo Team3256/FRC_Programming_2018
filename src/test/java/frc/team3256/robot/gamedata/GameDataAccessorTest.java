@@ -1,8 +1,6 @@
 package frc.team3256.robot.gamedata;
 
-import frc.team3256.robot.auto.AutoModeBase;
-import frc.team3256.robot.auto.AutoModeEndedException;
-import frc.team3256.robot.auto.modes.CenterLeftSwitchAuto;
+import frc.team3256.robot.auto.modes.Center.CenterLeftSwitchAuto;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

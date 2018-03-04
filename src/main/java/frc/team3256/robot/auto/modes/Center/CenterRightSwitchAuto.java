@@ -12,15 +12,15 @@ public class CenterRightSwitchAuto extends AutoModeBase {
     protected void routine() throws AutoModeEndedException {
         DriveTrain.getInstance().setBrake();
         double initTime = Timer.getFPGATimestamp();
-        double currVel = 36.0;
+        double currVel = 24.0;
         double targetAngle = -40.0;
-        runAction(new FollowArcTrajectoryAction(currVel, 36, 40, targetAngle, false));
+        runAction(new FollowArcTrajectoryAction(currVel, 24, 40, targetAngle, false));
         System.out.println("Initial 45 degree Arc --------------");
         currVel = DriveTrain.getInstance().getAverageVelocity();
-        runAction(new FollowTrajectoryAction(currVel, 36, 50, targetAngle)); //radius 65
+        runAction(new FollowTrajectoryAction(currVel, 24, 50, targetAngle)); //radius 65
         System.out.println("30\" forward -----------------");
         currVel = DriveTrain.getInstance().getAverageVelocity();
-        runAction(new FollowArcTrajectoryAction(currVel, 36, 25, 0, false));
+        runAction(new FollowArcTrajectoryAction(currVel, 24, 25, 0, false));
         /*
         System.out.println("Gyro Angle:   " + DriveTrain.getInstance().getAngle().degrees());
         DriveTrain.getInstance().setBrake();

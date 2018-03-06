@@ -22,6 +22,9 @@ public interface ControlsInterface {
     //Hold: Runs carriage to shoot block reverse
     boolean scoreRear();
 
+    //Single press: Forces the carriage to open
+    boolean getOpenCarriage();
+
 //--------------Operator-----------------
 
     //Hold: Runs intake

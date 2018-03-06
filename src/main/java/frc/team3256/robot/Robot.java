@@ -8,7 +8,11 @@ import frc.team3256.lib.hardware.ADXRS453_Calibrator;
 import frc.team3256.robot.auto.AutoModeBase;
 import frc.team3256.robot.auto.AutoModeChooser;
 import frc.team3256.robot.auto.AutoModeExecuter;
-import frc.team3256.robot.auto.modes.*;
+import frc.team3256.robot.auto.modes.Center.CenterLeftSwitchAuto;
+import frc.team3256.robot.auto.modes.Center.CenterRightSwitchAuto;
+import frc.team3256.robot.auto.modes.Final.*;
+import frc.team3256.robot.auto.modes.Right.RightRobotRightScaleRightSwitchThreeCubeAuto;
+import frc.team3256.robot.auto.modes.Right.RightRobotRightSwitchAuto;
 import frc.team3256.robot.gamedata.GameDataAccessor;
 import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.subsystems.*;
@@ -57,7 +61,8 @@ public class Robot extends IterativeRobot {
         subsystemManager.addSubsystems(driveTrain, intake);
 
         autoModeChooser = new AutoModeChooser();
-        autoModeChooser.addAutoModes(new DoNothingAuto(), new TestTurnInPlaceAuto(), new TestTrajectoryAuto(), new TestWebappAuto(), new TestPurePursuitAuto());
+        autoModeChooser.addAutoModes(new DoNothingAuto(), new CrossBaselineForwardAuto(), new CrossBaselineBackwardAuto(),
+                new CenterSwitchAuto(), new CenterRightSwitchAuto(), new CenterLeftSwitchAuto(), new RightRobotRightScaleRightSwitchThreeCubeAuto(), new RightRobotRightSwitchAuto(), new RightAuto());
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
@@ -76,16 +81,16 @@ public class Robot extends IterativeRobot {
         disabledLooper.stop();
         enabledLooper.start();
 
-        autoModeExecuter = new AutoModeExecuter();
-        AutoModeBase autoMode = new TestArcTrajectoryAuto();
+        GameDataAccessor.getGameData();
 
-        //autoMode = GameDataAccessor.getAutoMode();
+        autoModeExecuter = new AutoModeExecuter();
 
         // AutoModeBase autoMode = new TestPurePursuitAuto();
-        //AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        AutoModeBase autoModeTest = new RightRobotRightScaleRightSwitchThreeCubeAuto();
+        AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
+        //AutoModeBase autoModeTest = new RightRobotRightSwitchAuto();
         autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
-        autoModeExecuter.setAutoMode(autoModeTest);
+        System.out.println(autoMode);
+        autoModeExecuter.setAutoMode(autoMode);
         autoModeExecuter.start();
     }
 
@@ -104,12 +109,13 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledPeriodic() {
+        if (!Elevator.getInstance().isHomed()) System.out.println("Homed: " + Elevator.getInstance().isHomed());
 
     }
 
     @Override
     public void autonomousPeriodic(){
-
+        GameDataAccessor.getGameData();
     }
 
     @Override

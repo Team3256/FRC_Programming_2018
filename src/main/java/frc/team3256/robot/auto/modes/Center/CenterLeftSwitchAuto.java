@@ -1,4 +1,4 @@
-package frc.team3256.robot.auto.modes;
+package frc.team3256.robot.auto.modes.Center;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.team3256.robot.auto.AutoModeBase;
@@ -14,28 +14,29 @@ public class CenterLeftSwitchAuto extends AutoModeBase {
         DriveTrain.getInstance().resetGyro();
         runAction(new DeployIntakeAction());
         if (!Elevator.getInstance().isHomed()){
-            //runAction(new AutoHomingAction());
+            runAction(new AutoHomingAction());
         }
+        runAction(new DeployIntakeAction());
         DriveTrain.getInstance().setBrake();
         double initTime = Timer.getFPGATimestamp();
         double currVel = 0.0;
         double targetAngle = 45.0;
         System.out.println("Angle: " + DriveTrain.getInstance().getAngle());
         runAction(new FollowArcTrajectoryAction(currVel, 24, 42, targetAngle, false));
-        //runAction(new RaiseElevatorSwitchAction());
-        runAction(new WaitAction(0.6));
         currVel = DriveTrain.getInstance().getAverageVelocity();
         DriveTrain.getInstance().setBrake();
-        runAction(new FollowTrajectoryAction(currVel, 24, 40, targetAngle)); //radius 65
+        runAction(new FollowTrajectoryAction(currVel, 24, 35, targetAngle)); //radius 65
         currVel = DriveTrain.getInstance().getAverageVelocity();
-        runAction(new FollowArcTrajectoryAction(currVel, 0.0, 25, 0, false));
+        //runAction(new FollowArcTrajectoryAction(currVel, 24.0, 20, 0, false));
         currVel = DriveTrain.getInstance().getAverageVelocity();
-        runAction(new FollowTrajectoryAction(currVel, 0.0, 32, 0));
-        //runAction(new ScoreForwardAction());
+        runAction(new FollowTrajectoryAction(currVel, 0.0, 50, 0));
+        runAction(new WaitAction(0.75));
+        runAction(new RaiseElevatorSwitchAction());
+        runAction(new ScoreForwardAction());
         runAction(new WaitAction(0.75));
         runAction(new StopScoreAction());
-        //runAction(new FollowTrajectoryAction(currVel, 0, -12.0, 0));
-        //runAction(new ElevatorIntakePositionAction());
+        runAction(new FollowTrajectoryAction(currVel, 0, -12.0, 0));
+        runAction(new ElevatorIntakePositionAction());
         DriveTrain.getInstance().setBrake();
         System.out.println("Total Time: " + Double.toString(Timer.getFPGATimestamp() - initTime));
     }

@@ -151,7 +151,7 @@ public class Elevator extends SubsystemBase implements Loop{
 
     @Override
     public void init(double timestamp) {
-
+        currentState = SystemState.ZERO_POWER;
     }
 
     @Override

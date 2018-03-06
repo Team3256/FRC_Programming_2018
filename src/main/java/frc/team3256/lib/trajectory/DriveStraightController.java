@@ -97,6 +97,7 @@ public class DriveStraightController {
         if (distance < 0){
             reversed = true;
         }
+        else reversed = false;
         this.trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, Math.abs(distance));
         initialAngle = angle;
     }

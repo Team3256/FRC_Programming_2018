@@ -1,4 +1,4 @@
-package frc.team3256.robot.auto.modes;
+package frc.team3256.robot.auto.modes.Test;
 
 import frc.team3256.lib.path.Path;
 import frc.team3256.lib.path.PathGenerator;

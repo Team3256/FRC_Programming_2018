@@ -70,7 +70,7 @@ public class Constants {
     public static final double kDistanceTrajectoryA = 0;
     public static final double kDistanceTrajectoryAccel = 10.0*10.0;
     public static final double kDistanceTrajectoryCruiseVelocity = 10.0*10.0;
-    public static final double kStraightP = 0.03;//0.05
+    public static final double kStraightP = 0.04;//0.05
     public static final double kStraightI = 0.0;
     public static final double kStraightD = 0.0;
 
@@ -121,8 +121,9 @@ public class Constants {
     public static final double kIntakeUnjamPower = -0.6;
     public static final double kUnjamMaxDuration = 12.0/1000.0;
     public static final double kCarriageReceivePower = 0.8;
-    public static final double kCarriageScoreForwardPower = -0.4;
-    public static final double kCarriageScoreBackwardPower = 0.75;
+    public static final double kCarriageScoreForwardPower = -0.8;
+    public static final double kCarriageScoreForwardAutoPower = -0.3;
+    public static final double kCarriageScoreBackwardPower = 0.8;
     public static final double kCarriageScoreBackwardAutoPower = 1.0;
     public static final double kCarriageExhaustPower = -0.75;
 
@@ -140,7 +141,7 @@ public class Constants {
     public static final double kTopHomeHeight = 8.85;    //placeholder
     public static final double kElevatorHomingUpTime = 2.0;
     public static final double kElevatorTolerance = 1.0; //measured in inches
-    public static final double kElevatorMaxUpVoltage = 3.0; //8.0
+    public static final double kElevatorMaxUpVoltage = 8.0; //8.0
     public static final double kElevatorMaxDownVoltage = -5.0;//-4.0
     public static final double kElevatorMinHoldVoltage = 0.75;//0.5
 

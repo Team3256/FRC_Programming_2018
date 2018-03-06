@@ -32,6 +32,12 @@ public class DualLogitechConfig implements ControlsInterface{
         return driver.getRawAxis(2) > 0.25;
     }
 
+    @Override
+    //Driver: Button X
+    public boolean getOpenCarriage(){
+        return driver.getRawButton(3);
+    }
+
     //Manipulator: Right Trigger
     @Override
     public boolean getIntake() {

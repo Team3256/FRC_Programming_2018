@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.InterruptHandlerFunction;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.robot.Constants;
@@ -355,18 +356,7 @@ public class Elevator extends SubsystemBase implements Loop{
 
     @Override
     public void outputToDashboard() {
-        /*
-        SmartDashboard.putString("Current State: ", currentState.toString());
-        SmartDashboard.putString("Wanted State: ", wantedState.toString());
-        SmartDashboard.putBoolean("State Changed? ", stateChanged);
-        SmartDashboard.putNumber("Motor Power: ", master.getMotorOutputVoltage());
-        SmartDashboard.putString("Control Modes: ", master.getControlMode().toString() + ", " + slaveOne.getControlMode().toString() +
-        slaveTwo.getControlMode().toString() + ", " + slaveThree.getControlMode().toString());
-        SmartDashboard.putBoolean("Is Calibrated? ", isHomed);
-        SmartDashboard.putNumber("Closed Loop Target: ", m_closedLoopTarget);
-        SmartDashboard.putBoolean("Using Closed Loop? ", m_usingClosedLoop);
-        SmartDashboard.putBoolean("Hall effect? ", hallEffect.get());
-        */
+        SmartDashboard.putBoolean("/SmartDashboard/isHomed", isHomed());
     }
 
     @Override

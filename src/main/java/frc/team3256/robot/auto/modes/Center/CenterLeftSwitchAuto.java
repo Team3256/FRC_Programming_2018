@@ -17,6 +17,7 @@ public class CenterLeftSwitchAuto extends AutoModeBase {
             runAction(new AutoHomingAction());
         }
         runAction(new DeployIntakeAction());
+        runAction(new CloseCarriageAction());
         DriveTrain.getInstance().setBrake();
         double initTime = Timer.getFPGATimestamp();
         double currVel = 0.0;
@@ -29,7 +30,7 @@ public class CenterLeftSwitchAuto extends AutoModeBase {
         currVel = DriveTrain.getInstance().getAverageVelocity();
         //runAction(new FollowArcTrajectoryAction(currVel, 24.0, 20, 0, false));
         currVel = DriveTrain.getInstance().getAverageVelocity();
-        runAction(new FollowTrajectoryAction(currVel, 0.0, 50, 0));
+        runAction(new FollowTrajectoryAction(currVel, 0.0, 52, 0));
         runAction(new WaitAction(0.75));
         runAction(new RaiseElevatorSwitchAction());
         runAction(new ScoreForwardAction());

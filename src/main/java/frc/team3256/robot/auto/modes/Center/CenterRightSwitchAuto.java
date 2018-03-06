@@ -20,6 +20,7 @@ public class CenterRightSwitchAuto extends AutoModeBase {
         double currVel = 24.0;
         double targetAngle = -40.0;
         runAction(new DeployIntakeAction());
+        runAction(new CloseCarriageAction());
         runAction(new FollowArcTrajectoryAction(currVel, 24, 40, targetAngle, false));
         System.out.println("Initial 45 degree Arc --------------");
         currVel = DriveTrain.getInstance().getAverageVelocity();
@@ -29,7 +30,7 @@ public class CenterRightSwitchAuto extends AutoModeBase {
         runAction(new FollowArcTrajectoryAction(currVel, 10, 28, 0, false));
         currVel = DriveTrain.getInstance().getAverageVelocity();
         runAction(new WaitAction(0.75));
-        runAction(new FollowTrajectoryAction(currVel, 0, 17, 0));
+        runAction(new FollowTrajectoryAction(currVel, 0, 22, 0));
         runAction(new WaitAction(0.75));
         runAction(new RaiseElevatorSwitchAction());
         runAction(new ScoreForwardAction());

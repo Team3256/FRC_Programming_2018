@@ -58,7 +58,7 @@ public class Robot extends IterativeRobot {
         enabledLooper.addLoops(driveTrain, poseEstimator, intake, carriage, elevator);
 
         subsystemManager = new SubsystemManager();
-        subsystemManager.addSubsystems(driveTrain, intake);
+        subsystemManager.addSubsystems(driveTrain, intake, elevator, carriage);
 
         autoModeChooser = new AutoModeChooser();
         autoModeChooser.addAutoModes(new DoNothingAuto(), new CrossBaselineForwardAuto(), new CrossBaselineBackwardAuto(),
@@ -133,5 +133,6 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void robotPeriodic(){
+        subsystemManager.outputToDashboard();
     }
 }

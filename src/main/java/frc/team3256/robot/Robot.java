@@ -110,7 +110,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void disabledPeriodic() {
         if (!Elevator.getInstance().isHomed()) System.out.println("Homed: " + Elevator.getInstance().isHomed());
-
+        subsystemManager.outputToDashboard();
     }
 
     @Override

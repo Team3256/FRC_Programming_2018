@@ -46,7 +46,7 @@ public class RightAuto extends AutoModeBase {
             ArrayList<Action> actions = new ArrayList<>();
             currVel = DriveTrain.getInstance().getAverageVelocity();
             actions.add(new RaiseElevatorSwitchAction());
-            actions.add(new FollowArcTrajectoryAction(currVel, 0.0, 13,-90,false));
+            actions.add(new FollowArcTrajectoryAction(currVel, 0.0, 14,-90,false));
             runAction(new ParallelAction(actions));
             runAction(new ScoreForwardAction());
             runAction(new WaitAction(1.0));

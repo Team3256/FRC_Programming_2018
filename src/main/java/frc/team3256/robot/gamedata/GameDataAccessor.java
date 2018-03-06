@@ -49,6 +49,6 @@ public class GameDataAccessor {
     public static String getRawData(){
         return data;
     }
-    
+
 }
 

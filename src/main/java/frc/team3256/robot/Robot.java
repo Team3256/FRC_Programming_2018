@@ -88,10 +88,10 @@ public class Robot extends IterativeRobot {
 
         // AutoModeBase autoMode = new TestPurePursuitAuto();
         AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        //AutoModeBase autoModeTest = new RightRobotRightSwitchAuto();
+        //AutoModeBase autoModeTest = new RightRobotLeftScaleRightSwitchThreeCubeAuto(); //to be commented out
         autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
         System.out.println(autoMode);
-        autoModeExecuter.setAutoMode(autoMode);
+        autoModeExecuter.setAutoMode(autoMode); //to be changed to automode
         autoModeExecuter.start();
     }
 

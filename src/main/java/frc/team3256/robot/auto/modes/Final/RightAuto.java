@@ -31,7 +31,7 @@ public class RightAuto extends AutoModeBase {
             runAction(new FollowTrajectoryAction(0, 0, -90, 0));
             return;
         }
-        else if (scaleSide == GameDataAccessor.Side.LEFT && switchSide == GameDataAccessor.Side.RIGHT){
+        else if (scaleSide == GameDataAccessor.Side.LEFT){
             DriveTrain.getInstance().setBrake();
             DriveTrain.getInstance().resetGyro();
             double initTime = Timer.getFPGATimestamp();
@@ -40,19 +40,27 @@ public class RightAuto extends AutoModeBase {
                 runAction(new AutoHomingAction());
             }
             double currVel = 0.0;
+            runAction(new CloseCarriageAction());
             DriveTrain.getInstance().setBrake();
-            runAction(new ParallelAction(Arrays.asList(new FollowTrajectoryAction(0,0.0,-160,0),
-                    new SeriesAction(Arrays.asList(new WaitAction(1.0), new DeployIntakeAction())))));        runAction(new DeployIntakeAction());
-            ArrayList<Action> actions = new ArrayList<>();
+            runAction(new ParallelAction(Arrays.asList(new FollowTrajectoryAction(currVel,0.0,-207,0),
+                    new SeriesAction(Arrays.asList(new WaitAction(1.0), new DeployIntakeAction())))));
+            DriveTrain.getInstance().setBrake();
+            //runAction(new WaitAction(2.0));
             currVel = DriveTrain.getInstance().getAverageVelocity();
-            actions.add(new RaiseElevatorSwitchAction());
-            actions.add(new FollowArcTrajectoryAction(currVel, 0.0, 14,-90,false));
-            runAction(new ParallelAction(actions));
-            runAction(new ScoreForwardAction());
-            runAction(new WaitAction(1.0));
-            runAction(new StopScoreAction());
-            runAction(new ElevatorIntakePositionAction());
+            runAction(new FollowTrajectoryAction(currVel, 0.0, -200, -90));//-165
+            currVel = DriveTrain.getInstance().getAverageVelocity();
+            DriveTrain.getInstance().resetGyro();
+            runAction(new FollowTrajectoryAction(currVel, 0.0, -50, 90));//-165
+            runAction(new RaiseElevatorHighScaleAction());
+            runAction(new FollowTrajectoryAction(currVel, 0.0, -9, 95));//-165
             DriveTrain.getInstance().setBrake();
+            runAction(new ScoreBackwardAction());
+            runAction(new WaitAction(0.75));
+            runAction(new StopScoreAction());
+            runAction(new WaitAction(0.75));
+            DriveTrain.getInstance().resetGyro();
+            runAction(new FollowTrajectoryAction(currVel, 0.0, 20, 0));
+            runAction(new ElevatorIntakePositionAction());
         }
         else if(scaleSide == GameDataAccessor.Side.RIGHT){
             DriveTrain.getInstance().setBrake();

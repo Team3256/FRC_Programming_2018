@@ -8,8 +8,6 @@ import frc.team3256.robot.gamedata.GameDataAccessor;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.robot.subsystems.Intake;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class RightAuto extends AutoModeBase {
@@ -23,15 +21,8 @@ public class RightAuto extends AutoModeBase {
             scaleSide = GameDataAccessor.getScaleSide();
             System.out.println("SCALE SIDE:   " + scaleSide);
         }
-        if(scaleSide == GameDataAccessor.Side.LEFT && switchSide == GameDataAccessor.Side.LEFT){
-            System.out.println("SCALE IS LEFT!");
-            if (!Elevator.getInstance().isHomed()){
-                runAction(new AutoHomingAction());
-            }
-            runAction(new FollowTrajectoryAction(0, 0, -90, 0));
-            return;
-        }
-        else if (scaleSide == GameDataAccessor.Side.LEFT){
+
+        if (scaleSide == GameDataAccessor.Side.LEFT){
             DriveTrain.getInstance().setBrake();
             DriveTrain.getInstance().resetGyro();
             double initTime = Timer.getFPGATimestamp();

@@ -40,14 +40,14 @@ public class Elevator extends SubsystemBase implements Loop{
         public void interruptFired(int interruptAssertedMask, Elevator param) {
             if (master.getSelectedSensorVelocity(0) < 0){
                 System.out.println("HOMED ON UPPER SIDE OF CROSSBAR!!!!");
-                master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kTopHomeHeight), 0, 0);
+                master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kCompHomeHeight), 0, 0);
                 isHomed = true;
                 master.configForwardSoftLimitEnable(true, 0);
                 master.configReverseSoftLimitEnable(true, 0);
             }
             else if (master.getSelectedSensorVelocity(0) > 0){
                 System.out.println("HOMED ON LOWER SIDE OF CROSSBAR!!!!");
-                master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kBottomHomeHeight), 0, 0);
+                master.setSelectedSensorPosition((int)heightToSensorUnits(Constants.kCompBottomHomeHeight), 0, 0);
                 isHomed = true;
                 master.configForwardSoftLimitEnable(true, 0);
                 master.configReverseSoftLimitEnable(true, 0);
@@ -152,7 +152,7 @@ public class Elevator extends SubsystemBase implements Loop{
 
     @Override
     public void init(double timestamp) {
-        currentState = SystemState.ZERO_POWER;
+        currentState = SystemState.HOLD;
     }
 
     @Override
@@ -352,6 +352,10 @@ public class Elevator extends SubsystemBase implements Loop{
 
     public double getHeight() {
         return sensorUnitsToHeight(master.getSelectedSensorPosition(0));
+    }
+
+    public double getRawEncoder(){
+        return master.getSelectedSensorPosition(0);
     }
 
     @Override

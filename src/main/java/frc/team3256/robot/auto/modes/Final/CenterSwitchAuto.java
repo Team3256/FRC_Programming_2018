@@ -41,6 +41,7 @@ public class CenterSwitchAuto extends AutoModeBase{
             runAction(new FollowTrajectoryAction(currVel, 0.0, 26, 0));
             runAction(new WaitAction(0.75));
             runAction(new RaiseElevatorSwitchAction());
+            runAction(new FollowTrajectoryAction(currVel, 0.0, 3, 0));
             runAction(new ScoreForwardAction());
             runAction(new WaitAction(0.75));
             runAction(new StopScoreAction());
@@ -73,6 +74,7 @@ public class CenterSwitchAuto extends AutoModeBase{
             runAction(new FollowTrajectoryAction(currVel, 0, 30, 0));
             runAction(new WaitAction(0.75));
             runAction(new RaiseElevatorSwitchAction());
+            runAction(new FollowTrajectoryAction(currVel, 0.0, 3, 0));
             runAction(new ScoreForwardAction());
             runAction(new WaitAction(0.75));
             runAction(new StopScoreAction());

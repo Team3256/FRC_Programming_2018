@@ -1,6 +1,8 @@
 package frc.team3256.robot;
 
+import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import frc.team3256.lib.Looper;
@@ -17,6 +19,8 @@ import frc.team3256.robot.auto.modes.Right.RightRobotRightSwitchAuto;
 import frc.team3256.robot.gamedata.GameDataAccessor;
 import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.subsystems.*;
+
+import java.io.FileWriter;
 
 public class Robot extends IterativeRobot {
 
@@ -67,7 +71,8 @@ public class Robot extends IterativeRobot {
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
-
+        UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+        camera.setResolution(480, 240);
     }
 
     @Override
@@ -112,6 +117,7 @@ public class Robot extends IterativeRobot {
     public void disabledPeriodic() {
         if (!Elevator.getInstance().isHomed()) System.out.println("Homed: " + Elevator.getInstance().isHomed());
         subsystemManager.outputToDashboard();
+        //System.out.println(elevator.getRawEncoder());
     }
 
     @Override

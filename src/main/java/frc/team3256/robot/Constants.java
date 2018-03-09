@@ -43,7 +43,7 @@ public class Constants {
     public static final double kDriveEncoderScalingFactor = 3.0*60.0/24.0; //3:1 GR on Encoder Stage, plus 60:24 GR on third stage
     public static final double kElevatorPulleyDiameter = 1.353*Math.PI;
     public static final double kElevatorGearRatio = 36.0/24.0;
-    public static final double kElevatorMaxHeight = 48.5;
+    public static final double kElevatorMaxHeight = 49.5; //48.5
     public static final double kElevatorMinHeight = 6.0;
     public static final double kRampRate = 0.25;
 
@@ -138,11 +138,12 @@ public class Constants {
     public static final double kDropPreset = 10.0;
     public static final double kBottomHomeHeight = 7.875; //measured in inches
     public static final double kCompHomeHeight = 8.5; //measured in inches
+    public static final double kCompBottomHomeHeight = 7.575;
     public static final double kTopHomeHeight = 8.85;    //placeholder
     public static final double kElevatorHomingUpTime = 2.0;
     public static final double kElevatorTolerance = 1.0; //measured in inches
-    public static final double kElevatorMaxUpVoltage = 8.0; //8.0
-    public static final double kElevatorMaxDownVoltage = -5.0;//-4.0
+    public static final double kElevatorMaxUpVoltage = 9.0; //8.0
+    public static final double kElevatorMaxDownVoltage = -5.0;//-5.0
     public static final double kElevatorMinHoldVoltage = 0.75;//0.5
 
 

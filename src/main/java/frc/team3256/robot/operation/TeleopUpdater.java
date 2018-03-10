@@ -150,4 +150,12 @@ public class TeleopUpdater {
             }
         }
     }
+
+    public double getThrottle() {
+        return controls.getThrottle();
+    }
+
+    public double getTurn() {
+        return controls.getTurn();
+    }
 }

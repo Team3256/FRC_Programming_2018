@@ -4,6 +4,7 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import frc.team3256.lib.Looper;
 import frc.team3256.lib.hardware.ADXRS453_Calibrator;
@@ -21,6 +22,7 @@ import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.subsystems.*;
 
 import java.io.FileWriter;
+import java.io.IOException;
 
 public class Robot extends IterativeRobot {
 
@@ -36,6 +38,7 @@ public class Robot extends IterativeRobot {
     AutoModeExecuter autoModeExecuter;
     AutoModeChooser autoModeChooser;
     TeleopUpdater teleopUpdater;
+    FileWriter logFileWriter;
 
     Compressor compressor;
 
@@ -80,6 +83,14 @@ public class Robot extends IterativeRobot {
         enabledLooper.stop();
         disabledLooper.start();
         driveTrain.setBrake();
+        if (logFileWriter != null) {
+            try {
+                logFileWriter.close();
+                logFileWriter = null;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -106,6 +117,11 @@ public class Robot extends IterativeRobot {
         enabledLooper.start();
         driveTrain.setBrake();
         driveTrain.enableRamp();
+        try {
+            logFileWriter = new FileWriter("/home/lvuser/log" + System.currentTimeMillis() + ".txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         //driveTrain.setVelocitySetpoint(0,0);
     }
 
@@ -132,6 +148,7 @@ public class Robot extends IterativeRobot {
         System.out.println("TARGET HEIGHT: " + elevator.getTargetHeight());
         System.out.println("CURRENT HEIGHT: " + elevator.getHeight());
         System.out.println("WANTED STATE: " + elevator.getWantedState());
+        logToFile("" + DriverStation.getInstance().getMatchTime() + ": mode " + driveTrain.getMode() + " - left output " + driveTrain.getLeftOutputVoltage() + " - right output " + driveTrain.getRightOutputVoltage() + " - throttle " + teleopUpdater.getThrottle() + " - turn " + teleopUpdater.getTurn());
     }
 
     @Override
@@ -141,5 +158,14 @@ public class Robot extends IterativeRobot {
     @Override
     public void robotPeriodic(){
         subsystemManager.outputToDashboard();
+    }
+
+    public void logToFile(String s) {
+        if (logFileWriter != null)
+            try {
+                logFileWriter.write(s + "\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
     }
 }

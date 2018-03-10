@@ -179,6 +179,14 @@ public class DriveTrain extends SubsystemBase implements Loop {
         purePursuitTracker.setLookaheadDistance(Constants.kLookaheadDistance);
     }
 
+    public double getLeftOutputVoltage() {
+        return leftMaster.getMotorOutputVoltage();
+    }
+
+    public double getRightOutputVoltage() {
+        return rightMaster.getMotorOutputVoltage();
+    }
+
     public double getLeftDistance() {
         return sensorUnitsToInches(leftMaster.getSelectedSensorPosition(0));
     }

@@ -11,12 +11,8 @@ import frc.team3256.lib.hardware.ADXRS453_Calibrator;
 import frc.team3256.robot.auto.AutoModeBase;
 import frc.team3256.robot.auto.AutoModeChooser;
 import frc.team3256.robot.auto.AutoModeExecuter;
-import frc.team3256.robot.auto.modes.Center.CenterLeftSwitchAuto;
-import frc.team3256.robot.auto.modes.Center.CenterRightSwitchAuto;
 import frc.team3256.robot.auto.modes.Final.*;
 import frc.team3256.robot.auto.modes.Right.RightRobotLeftScaleRightSwitchThreeCubeAuto;
-import frc.team3256.robot.auto.modes.Right.RightRobotRightScaleRightSwitchThreeCubeAuto;
-import frc.team3256.robot.auto.modes.Right.RightRobotRightSwitchAuto;
 import frc.team3256.robot.gamedata.GameDataAccessor;
 import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.subsystems.*;
@@ -122,6 +118,7 @@ public class Robot extends IterativeRobot {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        driveTrain.resetNominal();
         //driveTrain.setVelocitySetpoint(0,0);
     }
 

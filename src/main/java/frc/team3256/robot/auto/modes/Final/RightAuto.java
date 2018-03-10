@@ -49,9 +49,9 @@ public class RightAuto extends AutoModeBase {
             runAction(new WaitAction(0.75));
             runAction(new StopScoreAction());
             runAction(new WaitAction(0.75));
-            /*DriveTrain.getInstance().resetGyro();
-            runAction(new FollowTrajectoryAction(currVel, 0.0, 20, 0));
-            runAction(new ElevatorIntakePositionAction());*/
+            DriveTrain.getInstance().resetGyro();
+            runAction(new FollowTrajectoryAction(currVel, 0.0, 10, 0));
+            runAction(new ElevatorIntakePositionAction());
         }
         else if(scaleSide == GameDataAccessor.Side.RIGHT){
             DriveTrain.getInstance().setBrake();

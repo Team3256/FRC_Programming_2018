@@ -290,6 +290,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
             rightSlave.enableVoltageCompensation(false);
             TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
             controlMode = DriveControlMode.OPEN_LOOP;
+            resetNominal();
             enableRamp();
         }
         leftMaster.set(ControlMode.PercentOutput, leftPower);
@@ -524,5 +525,12 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
     public void resetGyro(){
         gyro.reset();
+    }
+
+    public void resetNominal(){
+        leftMaster.configNominalOutputForward(0, 0);
+        rightMaster.configNominalOutputForward(0, 0);
+        leftSlave.configNominalOutputForward(0, 0);
+        rightSlave.configNominalOutputForward(0, 0);
     }
 }

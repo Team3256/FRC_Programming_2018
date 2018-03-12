@@ -23,23 +23,21 @@ public class CenterLeftSwitchAuto extends AutoModeBase {
         double currVel = 0.0;
         double targetAngle = 45.0;
         System.out.println("Angle: " + DriveTrain.getInstance().getAngle());
-        runAction(new FollowArcTrajectoryAction(currVel, 24, 42, targetAngle, false));
+        runAction(new FollowArcTrajectoryAction(currVel, 40, 42, targetAngle, false));
         currVel = DriveTrain.getInstance().getAverageVelocity();
         DriveTrain.getInstance().setBrake();
-        runAction(new FollowTrajectoryAction(currVel, 24, 35, targetAngle)); //radius 65
+        runAction(new FollowTrajectoryAction(currVel, 30, 67, targetAngle)); //radius 65
         currVel = DriveTrain.getInstance().getAverageVelocity();
-        //runAction(new FollowArcTrajectoryAction(currVel, 24.0, 20, 0, false));
-        currVel = DriveTrain.getInstance().getAverageVelocity();
-        runAction(new FollowTrajectoryAction(currVel, 0.0, 52, 0));
-        runAction(new WaitAction(0.75));
+        //runAction(new WaitAction(0.25));
+        runAction(new FollowTrajectoryAction(currVel, 20, 26, 0));
         runAction(new RaiseElevatorSwitchAction());
+        runAction(new FollowTrajectoryAction(currVel, 0.0, 3, 0));
         runAction(new ScoreForwardAction());
         runAction(new WaitAction(0.75));
         runAction(new StopScoreAction());
         runAction(new FollowTrajectoryAction(currVel, 0, -12.0, 0));
         runAction(new ElevatorIntakePositionAction());
         DriveTrain.getInstance().setBrake();
-        System.out.println("Total Time: " + Double.toString(Timer.getFPGATimestamp() - initTime));
     }
 }
 

@@ -124,6 +124,8 @@ public class Constants {
     public static final double kCarriageScoreForwardPower = -0.8;
     public static final double kCarriageScoreForwardAutoPower = -0.35;
     public static final double kCarriageScoreBackwardPower = 0.8;
+    public static final double kCarriageScoreForwardSlowPower = -0.5;
+    public static final double kCarriageScoreBackwardSlowPower = 0.5;
     public static final double kCarriageScoreBackwardAutoPower = 0.55;
     public static final double kCarriageExhaustPower = -0.75;
 
@@ -133,7 +135,7 @@ public class Constants {
     public static final double kHighScalePreset = 48; //in inches //48.5 measured
     public static final double kMidScalePreset = 40.0; //36.5
     public static final double kLowScalePreset = 36.0; //30
-    public static final double kSwitchPreset = 30.0;
+    public static final double kSwitchPreset = 20.0;
     public static final double kIntakePreset = 7.5;
     public static final double kDropPreset = 10.0;
     public static final double kBottomHomeHeight = 7.875; //measured in inches
@@ -145,6 +147,8 @@ public class Constants {
     public static final double kElevatorMaxUpVoltage = 9.0; //8.0
     public static final double kElevatorMaxDownVoltage = -5.0;//-5.0
     public static final double kElevatorMinHoldVoltage = 0.75;//0.5
+    public static final double kElevatorHangVoltageCap = -8.0;
+    public static final double kHangPower = 1.0;
 
 
     //Game Data:

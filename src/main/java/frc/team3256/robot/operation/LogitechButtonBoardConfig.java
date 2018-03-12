@@ -97,4 +97,14 @@ public class LogitechButtonBoardConfig implements ControlsInterface{
         return false;
     }
 
+    @Override
+    public boolean scoreFrontSlow(){
+        return false;
+    }
+
+    @Override
+    public boolean scoreRearSlow(){
+        return false;
+    }
+
 }

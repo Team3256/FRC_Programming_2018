@@ -37,6 +37,8 @@ public class TeleopUpdater {
 
         boolean scoreFront = controls.scoreFront();
         boolean scoreRear = controls.scoreRear();
+        boolean scoreFrontSlow = controls.scoreFrontSlow();
+        boolean scoreRearSlow = controls.scoreRearSlow();
         boolean manualOpenCarriage = controls.getOpenCarriage();
 
         boolean switchPos = controls.switchPreset();
@@ -87,6 +89,14 @@ public class TeleopUpdater {
         }
         else if (scoreRear){
             m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_BACKWARD);
+            m_intake.setWantedState(Intake.WantedState.IDLE);
+        }
+        else if (scoreFrontSlow){
+            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_FORWARD_SLOW);
+            m_intake.setWantedState(Intake.WantedState.IDLE);
+        }
+        else if (scoreRearSlow){
+            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_BACKWARD_SLOW);
             m_intake.setWantedState(Intake.WantedState.IDLE);
         }
         else if (manualOpenCarriage){

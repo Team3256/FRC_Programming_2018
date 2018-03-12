@@ -22,6 +22,10 @@ public interface ControlsInterface {
     //Hold: Runs carriage to shoot block reverse
     boolean scoreRear();
 
+    boolean scoreFrontSlow();
+
+    boolean scoreRearSlow();
+
     //Single press: Forces the carriage to open
     boolean getOpenCarriage();
 

@@ -34,6 +34,8 @@ public class Carriage extends SubsystemBase implements Loop{
         RECEIVING_FROM_INTAKE, //Self-explanatory
         SCORING_FORWARD, //Run rollers forward
         SCORING_BACKWARD, //Run rollers backward
+        SCORING_FORWARD_SLOW,
+        SCORING_BACKWARD_SLOW,
         SCORING_BACKWARD_AUTO,
         SCORING_FORWARD_AUTO,
         SQUEEZING_IDLE, //Actuators squeeze cube in place
@@ -51,6 +53,8 @@ public class Carriage extends SubsystemBase implements Loop{
         WANTS_TO_SCORE_BACKWARD,
         //Operator -> Whenever robot has cube
         WANTS_TO_SCORE_BACKWARD_AUTO,
+        WANTS_TO_SCORE_FORWARD_SLOW,
+        WANTS_TO_SCORE_BACKWARD_SLOW,
         WANTS_TO_SQUEEZE_IDLE,
         //When we are unjamming, open and idle
         WANTS_TO_OPEN_IDLE,
@@ -78,6 +82,12 @@ public class Carriage extends SubsystemBase implements Loop{
                 break;
             case SCORING_BACKWARD:
                 newState = handleScoreBackward();
+                break;
+            case SCORING_FORWARD_SLOW:
+                newState = handleScoreForwardSlow();
+                break;
+            case SCORING_BACKWARD_SLOW:
+                newState = handleScoreBackwardSlow();
                 break;
             case SCORING_BACKWARD_AUTO:
                 newState = handleScoreBackwardAuto();
@@ -124,6 +134,14 @@ public class Carriage extends SubsystemBase implements Loop{
         return defaultStateTransfer();
     }
 
+    private SystemState handleScoreForwardSlow(){
+        if (stateChanged){
+            squeeze();
+        }
+        runMotors(Constants.kCarriageScoreForwardSlowPower);
+        return defaultStateTransfer();
+    }
+
     private SystemState handleScoreForwardAuto(){
         if (stateChanged){
             squeeze();
@@ -137,6 +155,14 @@ public class Carriage extends SubsystemBase implements Loop{
             squeeze();
         }
         runMotors(Constants.kCarriageScoreBackwardPower);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleScoreBackwardSlow(){
+        if (stateChanged){
+            squeeze();
+        }
+        runMotors(Constants.kCarriageScoreBackwardSlowPower);
         return defaultStateTransfer();
     }
 
@@ -183,16 +209,18 @@ public class Carriage extends SubsystemBase implements Loop{
 
             case WANTS_TO_SCORE_BACKWARD:
                 return SystemState.SCORING_BACKWARD;
+            case WANTS_TO_SCORE_FORWARD_SLOW:
+                return SystemState.SCORING_FORWARD_SLOW;
+            case WANTS_TO_SCORE_BACKWARD_SLOW:
+                return SystemState.SCORING_BACKWARD_SLOW;
             case WANTS_TO_SCORE_BACKWARD_AUTO:
                 return SystemState.SCORING_BACKWARD_AUTO;
             case WANTS_TO_SCORE_FORWARD_AUTO:
                 return SystemState.SCORING_FORWARD_AUTO;
             case WANTS_TO_SQUEEZE_IDLE:
                 return SystemState.SQUEEZING_IDLE;
-
             case WANTS_TO_OPEN_IDLE:
                 return SystemState.OPEN_IDLE;
-
             case WANTS_TO_EXHAUST:
                 return SystemState.EXHAUSTING;
 

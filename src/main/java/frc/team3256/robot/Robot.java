@@ -13,6 +13,7 @@ import frc.team3256.robot.auto.AutoModeChooser;
 import frc.team3256.robot.auto.AutoModeExecuter;
 import frc.team3256.robot.auto.modes.Final.*;
 import frc.team3256.robot.auto.modes.Right.RightRobotLeftScaleRightSwitchThreeCubeAuto;
+import frc.team3256.robot.auto.modes.Test.TestArcTrajectoryAuto;
 import frc.team3256.robot.gamedata.GameDataAccessor;
 import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.subsystems.*;
@@ -66,7 +67,7 @@ public class Robot extends IterativeRobot {
 
         autoModeChooser = new AutoModeChooser();
         autoModeChooser.addAutoModes(new DoNothingAuto(), new CrossBaselineForwardAuto(), new CrossBaselineBackwardAuto(),
-                new CenterSwitchAuto(), new RightAuto(), new RightRobotLeftScaleRightSwitchThreeCubeAuto());
+                new CenterSwitchAuto(), new RightAuto(), new RightRobotLeftScaleRightSwitchThreeCubeAuto(), new TestArcTrajectoryAuto());
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");

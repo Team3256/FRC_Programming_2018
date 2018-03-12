@@ -78,6 +78,16 @@ public class DualLogitechConfig implements ControlsInterface{
         return driver.getRawButton(5);
     }
 
+    @Override
+    public boolean scoreFrontSlow(){
+        return driver.getRawButton(4);
+    }
+
+    @Override
+    public boolean scoreRearSlow(){
+        return driver.getRawButton(1);
+    }
+
     //Manipulator: Button B
     @Override
     public boolean switchPreset() {

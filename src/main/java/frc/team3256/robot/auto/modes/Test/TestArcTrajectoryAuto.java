@@ -9,7 +9,7 @@ import frc.team3256.robot.subsystems.DriveTrain;
 public class TestArcTrajectoryAuto extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
-        //runAction(new FollowArcTrajectoryAction(36, 36, 25, -40, false));
+        runAction(new FollowArcTrajectoryAction(0, 0, 10, -5, false));
         System.out.println("Gyro Angle   " + DriveTrain.getInstance().getAngle());
         //double currVel = DriveTrain.getInstance().getAverageVelocity();
         //runAction(new FollowTrajectoryAction(currVel, 96, 10, 90));

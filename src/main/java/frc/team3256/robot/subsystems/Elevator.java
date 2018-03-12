@@ -127,6 +127,7 @@ public class Elevator extends SubsystemBase implements Loop{
         MANUAL_DOWN,
         ZERO_POWER,
         HOMING,
+        HANGING,
     }
 
     public enum WantedState{
@@ -148,6 +149,7 @@ public class Elevator extends SubsystemBase implements Loop{
         WANTS_TO_HOLD,
         //Go up a bit to home, and then drop down...this should be only called when the robot has not been homed yet
         WANTS_TO_HOME,
+        WANTS_TO_HANG
     }
 
     @Override
@@ -212,6 +214,10 @@ public class Elevator extends SubsystemBase implements Loop{
     }
 
     private SystemState handleZeroPower() {
+        if (stateChanged){
+            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
+                    Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
+        }
         setOpenLoop(0);
         return defaultStateTransfer();
     }
@@ -219,6 +225,8 @@ public class Elevator extends SubsystemBase implements Loop{
     private SystemState handleHome(double timestamp) {
         if (stateChanged) {
             homingTimeStart = timestamp;
+            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
+                    Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
         }
         if (timestamp - homingTimeStart < Constants.kElevatorHomingUpTime) {
             if (isHomed) {
@@ -232,6 +240,8 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private SystemState handleHold(){
         if (stateChanged){
+            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
+                    Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
             master.selectProfileSlot(Constants.kElevatorHoldSlot,0);
         }
         if (getHeight() < Constants.kDropPreset) {
@@ -246,7 +256,11 @@ public class Elevator extends SubsystemBase implements Loop{
             if (atClosedLoopTarget()){
                 return SystemState.HOLD;
             }
-            if (stateChanged){master.selectProfileSlot(Constants.kElevatorFastUpSlot, 0);}
+            if (stateChanged){
+                TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
+                        Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
+                master.selectProfileSlot(Constants.kElevatorFastUpSlot, 0);
+            }
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastUpSlot);
             return defaultStateTransfer();
         }
@@ -258,19 +272,40 @@ public class Elevator extends SubsystemBase implements Loop{
             if (atClosedLoopTarget()){
                 return SystemState.HOLD;
             }
-            if (stateChanged){master.selectProfileSlot(Constants.kElevatorFastDownSlot, 0);}
+            if (stateChanged){
+                TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
+                            Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
+                master.selectProfileSlot(Constants.kElevatorFastDownSlot, 0);
+            }
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastDownSlot);
             return defaultStateTransfer();
         }
         return defaultStateTransfer();
     }
 
+    private SystemState handleHang(){
+        if (stateChanged){
+            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage/12.0,
+                    Constants.kElevatorHangVoltageCap /12.0, master, slaveOne, slaveTwo, slaveThree);
+        }
+        master.set(ControlMode.PercentOutput, Constants.kHangPower);
+        return defaultStateTransfer();
+    }
+
     private SystemState handleManualControlUp(){
+        if (stateChanged){
+            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
+                    Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
+        }
         setOpenLoop(Constants.kElevatorUpManualPower);
         return defaultStateTransfer();
     }
 
     private SystemState handleManualControlDown() {
+        if (stateChanged){
+            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
+                    Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
+        }
         setOpenLoop(Constants.kElevatorDownManualPower);
         return defaultStateTransfer();
     }

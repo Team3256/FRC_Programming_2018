@@ -24,9 +24,7 @@ import java.io.IOException;
 public class Robot extends IterativeRobot {
 
     DriveTrain driveTrain;
-    Intake intake;
     Elevator elevator;
-    Carriage carriage;
     PoseEstimator poseEstimator;
     Looper disabledLooper;
     Looper enabledLooper;
@@ -46,9 +44,7 @@ public class Robot extends IterativeRobot {
         compressor.setClosedLoopControl(true);
 
         driveTrain = DriveTrain.getInstance();
-        intake = Intake.getInstance();
         elevator = Elevator.getInstance();
-        carriage = Carriage.getInstance();
 
         teleopUpdater = new TeleopUpdater();
 
@@ -60,10 +56,10 @@ public class Robot extends IterativeRobot {
         disabledLooper.addLoops(gyroCalibrator, poseEstimator);
         //enabled looper -> control loop for subsystems
         enabledLooper = new Looper(Constants.kControlLoopPeriod);
-        enabledLooper.addLoops(driveTrain, poseEstimator, intake, carriage, elevator);
+        enabledLooper.addLoops(driveTrain, poseEstimator, elevator);
 
         subsystemManager = new SubsystemManager();
-        subsystemManager.addSubsystems(driveTrain, intake, elevator, carriage);
+        subsystemManager.addSubsystems(driveTrain, elevator);
 
         autoModeChooser = new AutoModeChooser();
         autoModeChooser.addAutoModes(new DoNothingAuto(), new CrossBaselineForwardAuto(), new CrossBaselineBackwardAuto(),

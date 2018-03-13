@@ -6,7 +6,6 @@ import frc.team3256.robot.auto.AutoModeEndedException;
 import frc.team3256.robot.auto.actions.*;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.subsystems.Elevator;
-import frc.team3256.robot.subsystems.Intake;
 
 import java.util.Arrays;
 
@@ -28,7 +27,6 @@ public class RightRobotRightScaleRightSwitchThreeCubeAuto extends AutoModeBase {
         DriveTrain.getInstance().setBrake();
         //currVel = DriveTrain.getInstance().getAverageVelocity();
         //runAction(new FollowArcTrajectoryAction(currVel,0,10,-8, true));
-        Intake.getInstance().setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
         currVel = DriveTrain.getInstance().getAverageVelocity();
         runAction(new ParallelAction(Arrays.asList(new RaiseElevatorHighScaleAction(), new FollowTrajectoryAction(currVel, 0.0, -75, -23))));
         DriveTrain.getInstance().setBrake();

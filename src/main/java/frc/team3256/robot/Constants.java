@@ -3,6 +3,7 @@ package frc.team3256.robot;
 public class Constants {
 
     //Ports: There can be no duplicates in each set of ports
+
     //PWM
     public static final int kLeftIntakePort = 0;
     public static final int kRightIntakePort = 1;
@@ -28,6 +29,7 @@ public class Constants {
     public static final int kElevatorSlaveOne = 1;
     public static final int kElevatorSlaveTwo = 0;
     public static final int kElevatorSlaveThree = 7;
+    public static final int kPivotArm = 8; //TBD
 
     //DIO
     public static final int kHallEffectPort = 0;
@@ -46,6 +48,9 @@ public class Constants {
     public static final double kElevatorMaxHeight = 49.5; //48.5
     public static final double kElevatorMinHeight = 6.0;
     public static final double kRampRate = 0.25;
+    public static final double kArmMaxAngle = 170;
+    public static final double kArmMinAngle = 10;
+    public static final double kArmGearRatio = 1.0/1.0;
 
     //Control Loop Parameters:
     //Looping period
@@ -112,6 +117,16 @@ public class Constants {
     public static final double kElevatorFastDownI = 0;
     public static final double kElevatorFastDownD = 0;
 
+    //Pivot Arm Gains
+    public static final int kArmHoldSlot = 0;
+    public static final double kArmHoldP = 0.1;
+    public static final double kArmHoldI = 0;
+    public static final double kArmHoldD = 0;
+    public static final int kArmMovingSlot = 1;
+    public static final double kArmMovingP = 0.1;
+    public static final double kArmMovingI = 0;
+    public static final double kArmMovingD = 0;
+
     //Presets:
     public static final double kIntakeSharpIRMaxVoltage = 3.3;
     public static final double kIntakeSharpIRMinVoltage = 2.5;
@@ -146,7 +161,10 @@ public class Constants {
     public static final double kElevatorTolerance = 1.0; //measured in inches
     public static final double kElevatorMaxUpVoltage = 9.0; //8.0
     public static final double kElevatorMaxDownVoltage = -5.0;//-5.0
+    public static final double kArmMaxForwardVoltage = 2.0; //TBD
+    public static final double kArmMaxReverseVoltage = -2.0; //TBD
     public static final double kElevatorMinHoldVoltage = 0.75;//0.5
+    public static final double kArmMinHoldVoltage = 0.0; //TBD
     public static final double kElevatorHangVoltageCap = -8.0;
     public static final double kHangPower = 1.0;
 

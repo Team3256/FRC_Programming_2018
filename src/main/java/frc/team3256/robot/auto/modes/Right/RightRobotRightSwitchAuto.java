@@ -6,7 +6,6 @@ import frc.team3256.robot.auto.AutoModeEndedException;
 import frc.team3256.robot.auto.actions.*;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.subsystems.Elevator;
-import frc.team3256.robot.subsystems.Intake;
 
 import java.util.ArrayList;
 import java.util.Arrays;

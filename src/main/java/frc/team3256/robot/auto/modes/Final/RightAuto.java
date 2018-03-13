@@ -7,7 +7,6 @@ import frc.team3256.robot.auto.actions.*;
 import frc.team3256.robot.gamedata.GameDataAccessor;
 import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.subsystems.Elevator;
-import frc.team3256.robot.subsystems.Intake;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +37,6 @@ public class RightAuto extends AutoModeBase {
             runAction(new ParallelAction(Arrays.asList(new FollowTrajectoryAction(currVel,0.0,-215,0),
                     new SeriesAction(Arrays.asList(new WaitAction(1.0), new DeployIntakeAction())))));
             DriveTrain.getInstance().setBrake();
-            Intake.getInstance().setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
             currVel = DriveTrain.getInstance().getAverageVelocity();
             runAction(new WaitAction(0.5));
             //runAction(new ParallelAction(Arrays.asList(new RaiseElevatorHighScaleAction(), new FollowTrajectoryAction(currVel, 0.0, -68,-27))));

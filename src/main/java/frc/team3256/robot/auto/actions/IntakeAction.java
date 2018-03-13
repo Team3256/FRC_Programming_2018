@@ -1,13 +1,10 @@
 package frc.team3256.robot.auto.actions;
 
-import frc.team3256.robot.subsystems.Carriage;
-import frc.team3256.robot.subsystems.Intake;
-
 public class IntakeAction implements Action {
 
     @Override
     public boolean isFinished() {
-        return Intake.getInstance().hasCube();
+        return true;
     }
 
     @Override
@@ -17,12 +14,11 @@ public class IntakeAction implements Action {
 
     @Override
     public void done() {
-        Carriage.getInstance().setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+
     }
 
     @Override
     public void start() {
-        Carriage.getInstance().setWantedState(Carriage.WantedState.WANTS_TO_OPEN_IDLE);
-        Intake.getInstance().setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
+
     }
 }

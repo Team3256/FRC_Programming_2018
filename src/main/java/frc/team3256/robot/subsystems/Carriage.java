@@ -1,280 +1,148 @@
 package frc.team3256.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
-import frc.team3256.lib.Loop;
+import frc.team3256.lib.hardware.SharpIR;
+import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.robot.Constants;
 
-public class Carriage extends SubsystemBase implements Loop{
+public class Carriage {
 
-    private VictorSP rollerLeft, rollerRight;
-    private DoubleSolenoid squeezeSolenoid;
+    private TalonSRX pivotArm;
+    private VictorSP rightIntake, leftIntake;
+    private DoubleSolenoid flopper;
+    private SharpIR cubeDetector;
+    private DigitalInput hallEffect;
 
-    private SystemState currentState;
-    private WantedState wantedState = WantedState.WANTS_TO_SQUEEZE_IDLE;
-    private boolean stateChanged;
+    private SystemState currentState = SystemState.STOWED;
+    private SystemState previousState = currentState;
+    private WantedState wantedState;
+    private WantedState prevWantedState;
+
+    private boolean stateChanged = true;
+    private boolean isHomed = false;
+    private boolean wantedStateChanged = true;
+
+    private double unjamTimeStart;
+    private SystemState unjamPreviousState;
+    private boolean wantsToToggle = false;
+    private double m_closedLoopTarget;
+    private boolean m_usingClosedLoop;
+
+    private double homingTimeStart;
+
+    private double kLeftIntakePower = Constants.kLeftIntakePower;
+    private double kRightIntakePower = Constants.kRightIntakePower;
+    private double kIntakeExhaustPower = Constants.kIntakeExhaustPower;
+    private double kUnjamMaxDuration = Constants.kUnjamMaxDuration;
 
     private static Carriage instance;
 
-    private Carriage() {
-        rollerLeft = new VictorSP(Constants.kCarriageRollerLeft);
-        rollerRight = new VictorSP(Constants.kCarriageRollerRight);
-
-        squeezeSolenoid = new DoubleSolenoid(Constants.kCarriageSqueezeForward, Constants.kCarriageSqueezeReverse);
-
-        rollerLeft.setInverted(false);
-        rollerRight.setInverted(true);
+    public static Carriage getInstance() {
+        return instance == null ? instance = new Carriage() : instance;
     }
 
-    public static Carriage getInstance(){
-        return instance == null ? instance = new Carriage(): instance;
+    public enum SystemState{
+        INTAKING,
+        EXHASTING,
+        UNJAMMING,
+
+        STOWED,
+        DEPLOYED_FRONT,
+        DEPLOYED_BACK,
+        DEPLOYED_FRONT_SHOOT,
+        DEPLOYED_BACK_SHOOT,
+
+        SCORING_FORWARD,
+        SCORING_SLOW_FORWARD,
+        SCORING_REVERSE,
+        SCORINT_SLOW_REVERSE,
+
+        MANUAL_FORWARD,
+        MANUAL_REVERSE,
+
+        OPENED,
+        CLOSED,
+
+        HOMING,
     }
 
-    public enum SystemState {
-        RECEIVING_FROM_INTAKE, //Self-explanatory
-        SCORING_FORWARD, //Run rollers forward
-        SCORING_BACKWARD, //Run rollers backward
-        SCORING_FORWARD_SLOW,
-        SCORING_BACKWARD_SLOW,
-        SCORING_BACKWARD_AUTO,
-        SCORING_FORWARD_AUTO,
-        SQUEEZING_IDLE, //Actuators squeeze cube in place
-        OPEN_IDLE, //Actuators stay open
-        EXHAUSTING
-    }
+    public enum WantedState{
+        WANTS_TO_INTAKE,
+        WANTS_TO_EXHAUST,
+        WANTS_TO_UNJAM,
 
-    public enum WantedState {
-        //Operator -> When we are intaking
-        WANTS_TO_RECEIVE,
-        //Operator -> Score forward button
+        WANTS_TO_STOW,
+        FRONT_PRESET,
+        BACK_PRESET,
+        FRONT_SHOOT_PRESET,
+        BACK_SHOOT_PRESET,
+
         WANTS_TO_SCORE_FORWARD,
-        WANTS_TO_SCORE_FORWARD_AUTO,
-        //Operator -> Score backward button
-        WANTS_TO_SCORE_BACKWARD,
-        //Operator -> Whenever robot has cube
-        WANTS_TO_SCORE_BACKWARD_AUTO,
-        WANTS_TO_SCORE_FORWARD_SLOW,
-        WANTS_TO_SCORE_BACKWARD_SLOW,
-        WANTS_TO_SQUEEZE_IDLE,
-        //When we are unjamming, open and idle
-        WANTS_TO_OPEN_IDLE,
-        WANTS_TO_EXHAUST
+        WANTS_TO_SCORE_SLOW_FORWARD,
+        WANTS_TO_SCORE_REVERSE,
+        WANTS_TO_SCORE_SLOW_REVERSE,
+
+        WANTS_TO_MANUAL_FORWARD,
+        WANTS_TO_MANUAL_REVERSE,
+
+        WANTS_TO_OPEN,
+        WANTS_TO_CLOSE,
+
+        WANTS_TO_HOME,
     }
 
-    @Override
-    public void init(double timestamp){
-        currentState = SystemState.OPEN_IDLE;
-        stateChanged = true;
+    private Carriage() {
+
+        pivotArm = TalonUtil.generateGenericTalon(Constants.kPivotArm);
+        TalonUtil.configMagEncoder(pivotArm);
+        pivotArm.setSelectedSensorPosition(0, 0, 0);
+        
+        //configure hold PID values
+        TalonUtil.setPIDGains(pivotArm, Constants.kArmHoldSlot, Constants.kArmHoldP,
+                Constants.kArmHoldI, Constants.kArmHoldD, 0);
+        //configure moving PID values
+        TalonUtil.setPIDGains(pivotArm, Constants.kArmMovingSlot, Constants.kArmMovingP,
+                Constants.kArmMovingI, Constants.kArmMovingD, 0);
+
+        //voltage limiting
+        TalonUtil.setPeakOutput(Constants.kArmMaxForwardVoltage/12.0,
+                Constants.kArmMaxReverseVoltage/12.0, pivotArm);
+        TalonUtil.setMinOutput(Constants.kArmMinHoldVoltage/12.0,
+                0, pivotArm);
+
+        //soft limits
+        pivotArm.configForwardSoftLimitThreshold((int)(angleToSensorUnits(Constants.kArmMaxAngle)), 0);
+        pivotArm.configReverseSoftLimitThreshold((int)(angleToSensorUnits(Constants.kArmMinAngle)), 0);
+        pivotArm.configForwardSoftLimitEnable(false, 0);
+        pivotArm.configReverseSoftLimitEnable(false,0);
+
+        TalonUtil.setCoastMode(pivotArm);
+        
+
+        leftIntake = new VictorSP(Constants.kLeftIntakePort);
+        rightIntake = new VictorSP(Constants.kRightIntakePort);
+
+        flopper = new DoubleSolenoid(Constants.kIntakeFlopForward, Constants.kIntakeFlopReverse);
+
+        cubeDetector = new SharpIR(Constants.kIntakeSharpIR, Constants.kIntakeSharpIRMinVoltage, Constants.kIntakeSharpIRMaxVoltage);
+
+        leftIntake.setInverted(true);
+        rightIntake.setInverted(false);
     }
 
-    @Override
-    public void update(double timestamp) {
-        SystemState newState;
-        switch(currentState){
-            case RECEIVING_FROM_INTAKE:
-                newState = handleReceiveFromIntake();
-                break;
-            case SCORING_FORWARD:
-                newState = handleScoreForward();
-                break;
-            case SCORING_FORWARD_AUTO:
-                newState = handleScoreForwardAuto();
-                break;
-            case SCORING_BACKWARD:
-                newState = handleScoreBackward();
-                break;
-            case SCORING_FORWARD_SLOW:
-                newState = handleScoreForwardSlow();
-                break;
-            case SCORING_BACKWARD_SLOW:
-                newState = handleScoreBackwardSlow();
-                break;
-            case SCORING_BACKWARD_AUTO:
-                newState = handleScoreBackwardAuto();
-                break;
-            case SQUEEZING_IDLE:
-                newState = handleSqueezeIdle();
-                break;
-            case EXHAUSTING:
-                newState = handleExhaust();
-                break;
-            case OPEN_IDLE: default:
-                newState = handleOpenIdle();
-                break;
-
-        }
-        //State transfer
-        if (newState != currentState){
-            System.out.println("CURR_STATE:" + currentState + "\tNEW_STATE:" + newState);
-            currentState = newState;
-            stateChanged = true;
-        }
-        else stateChanged = false;
-
+    //TODO: fix formulas for angle to sensor units and sensor units to angle
+    private double angleToSensorUnits(double degrees) {
+        return degrees * 4096.0 * Constants.kArmGearRatio;
     }
-
-    private SystemState handleReceiveFromIntake(){
-        if (stateChanged){
-            open();
-        }
-        //If we have a cube, then we squeeze
-        if (hasCube()){
-            runMotors(0);
-            return SystemState.SQUEEZING_IDLE;
-        }
-        runMotors(Constants.kCarriageReceivePower);
-        return defaultStateTransfer();
-    }
-
-    private SystemState handleScoreForward(){
-        if (stateChanged){
-            squeeze();
-        }
-        runMotors(Constants.kCarriageScoreForwardPower);
-        return defaultStateTransfer();
-    }
-
-    private SystemState handleScoreForwardSlow(){
-        if (stateChanged){
-            squeeze();
-        }
-        runMotors(Constants.kCarriageScoreForwardSlowPower);
-        return defaultStateTransfer();
-    }
-
-    private SystemState handleScoreForwardAuto(){
-        if (stateChanged){
-            squeeze();
-        }
-        runMotors(Constants.kCarriageScoreForwardAutoPower);
-        return defaultStateTransfer();
-    }
-
-    private SystemState handleScoreBackward(){
-        if (stateChanged){
-            squeeze();
-        }
-        runMotors(Constants.kCarriageScoreBackwardPower);
-        return defaultStateTransfer();
-    }
-
-    private SystemState handleScoreBackwardSlow(){
-        if (stateChanged){
-            squeeze();
-        }
-        runMotors(Constants.kCarriageScoreBackwardSlowPower);
-        return defaultStateTransfer();
-    }
-
-    private SystemState handleScoreBackwardAuto(){
-        if (stateChanged){
-            squeeze();
-        }
-        runMotors(Constants.kCarriageScoreBackwardAutoPower);
-        return defaultStateTransfer();
-    }
-
-    private SystemState handleExhaust() {
-        if (stateChanged) {
-            squeeze();
-        }
-        runMotors(Constants.kCarriageExhaustPower);
-        return defaultStateTransfer();
-    }
-
-    private SystemState handleSqueezeIdle(){
-        if (stateChanged){
-            squeeze();
-        }
-        runMotors(0);
-        return defaultStateTransfer();
-    }
-
-    private SystemState handleOpenIdle(){
-        if (stateChanged){
-            open();
-        }
-        runMotors(0);
-        return defaultStateTransfer();
-    }
-
-    //default WantedState -> SystemState
-    private SystemState defaultStateTransfer(){
-        switch(wantedState){
-            case WANTS_TO_RECEIVE:
-                return SystemState.RECEIVING_FROM_INTAKE;
-
-            case WANTS_TO_SCORE_FORWARD:
-                return SystemState.SCORING_FORWARD;
-
-            case WANTS_TO_SCORE_BACKWARD:
-                return SystemState.SCORING_BACKWARD;
-            case WANTS_TO_SCORE_FORWARD_SLOW:
-                return SystemState.SCORING_FORWARD_SLOW;
-            case WANTS_TO_SCORE_BACKWARD_SLOW:
-                return SystemState.SCORING_BACKWARD_SLOW;
-            case WANTS_TO_SCORE_BACKWARD_AUTO:
-                return SystemState.SCORING_BACKWARD_AUTO;
-            case WANTS_TO_SCORE_FORWARD_AUTO:
-                return SystemState.SCORING_FORWARD_AUTO;
-            case WANTS_TO_SQUEEZE_IDLE:
-                return SystemState.SQUEEZING_IDLE;
-            case WANTS_TO_OPEN_IDLE:
-                return SystemState.OPEN_IDLE;
-            case WANTS_TO_EXHAUST:
-                return SystemState.EXHAUSTING;
-
-            default:
-                return SystemState.OPEN_IDLE;
-        }
+    private double sensorUnitsToAngle(double ticks) {
+        return ticks / 4096.0 / Constants.kArmGearRatio;
     }
 
     public void setWantedState(WantedState wantedState){
         this.wantedState = wantedState;
     }
 
-    private void squeeze(){
-        squeezeSolenoid.set(DoubleSolenoid.Value.kForward);
-    }
-
-    private void open(){
-        squeezeSolenoid.set(DoubleSolenoid.Value.kReverse);
-    }
-
-    private void runMotors(double power){
-        rollerLeft.set(power);
-        rollerRight.set(power);
-    }
-
-    private boolean hasCube(){
-        return false;
-        //return Intake.getInstance().hasCube();
-    }
-
-    @Override
-    public void end(double timestamp) {
-
-    }
-
-    @Override
-    public void outputToDashboard() {
-        /*
-        SmartDashboard.putString("Current State: ", currentState.toString());
-        SmartDashboard.putString("Wanted State: ", wantedState.toString());
-        SmartDashboard.putBoolean("State Changed? ", stateChanged);
-        SmartDashboard.putNumber("Left Motor Power: ", rollerLeft.getSpeed());
-        SmartDashboard.putNumber("Right Motor Power: ", rollerRight.getSpeed());
-        SmartDashboard.putString("Solenoid State: ", squeezeSolenoid.get().toString());
-        */
-    }
-
-    @Override
-    public void selfTest() {
-
-    }
-
-    @Override
-    public void zeroSensors() {
-
-    }
 }

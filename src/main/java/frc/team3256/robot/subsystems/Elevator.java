@@ -127,7 +127,6 @@ public class Elevator extends SubsystemBase implements Loop{
         MANUAL_DOWN,
         ZERO_POWER,
         HOMING,
-        HANGING,
     }
 
     public enum WantedState{
@@ -149,7 +148,6 @@ public class Elevator extends SubsystemBase implements Loop{
         WANTS_TO_HOLD,
         //Go up a bit to home, and then drop down...this should be only called when the robot has not been homed yet
         WANTS_TO_HOME,
-        WANTS_TO_HANG
     }
 
     @Override
@@ -280,15 +278,6 @@ public class Elevator extends SubsystemBase implements Loop{
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastDownSlot);
             return defaultStateTransfer();
         }
-        return defaultStateTransfer();
-    }
-
-    private SystemState handleHang(){
-        if (stateChanged){
-            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage/12.0,
-                    Constants.kElevatorHangVoltageCap /12.0, master, slaveOne, slaveTwo, slaveThree);
-        }
-        master.set(ControlMode.PercentOutput, Constants.kHangPower);
         return defaultStateTransfer();
     }
 

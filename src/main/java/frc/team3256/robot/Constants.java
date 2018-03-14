@@ -165,8 +165,6 @@ public class Constants {
     public static final double kArmMaxReverseVoltage = -2.0; //TBD
     public static final double kElevatorMinHoldVoltage = 0.75;//0.5
     public static final double kArmMinHoldVoltage = 0.0; //TBD
-    public static final double kElevatorHangVoltageCap = -8.0;
-    public static final double kHangPower = 1.0;
 
 
     //Game Data:

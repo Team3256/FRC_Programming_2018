@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.VictorSP;
 import frc.team3256.lib.hardware.SharpIR;
 import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.robot.Constants;
+import org.omg.PortableInterceptor.HOLDING;
 
 public class Carriage {
 
@@ -52,12 +53,11 @@ public class Carriage {
         STOWED,
         DEPLOYED_FRONT,
         DEPLOYED_BACK,
-        DEPLOYED_FRONT_SHOOT,
-        DEPLOYED_BACK_SHOOT,
+        DEPLOYED_BACK_ANGLED,
 
         SCORING_FORWARD,
-        SCORING_SLOW_FORWARD,
         SCORING_REVERSE,
+        SCORING_SLOW_FORWARD,
         SCORINT_SLOW_REVERSE,
 
         MANUAL_FORWARD,
@@ -132,6 +132,10 @@ public class Carriage {
         leftIntake.setInverted(true);
         rightIntake.setInverted(false);
     }
+
+    public WantedState getWantedState() { return wantedState; }
+
+    public SystemState getCurrentState() { return currentState; }
 
     //TODO: fix formulas for angle to sensor units and sensor units to angle
     private double angleToSensorUnits(double degrees) {

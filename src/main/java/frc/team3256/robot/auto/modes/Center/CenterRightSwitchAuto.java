@@ -34,7 +34,7 @@ public class CenterRightSwitchAuto extends AutoModeBase {
         runAction(new RaiseElevatorSwitchAction());
         runAction(new FollowTrajectoryAction(currVel, 0.0, 3, 0));
         runAction(new ScoreForwardAction());
-        runAction(new WaitAction(0.75));
+        //runAction(new WaitAction(0.75));
         runAction(new StopScoreAction());
         runAction(new FollowTrajectoryAction(currVel, 0, -12.0, 0));
         runAction(new ElevatorIntakePositionAction());

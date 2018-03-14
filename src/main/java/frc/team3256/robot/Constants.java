@@ -33,6 +33,7 @@ public class Constants {
 
     //DIO
     public static final int kHallEffectPort = 0;
+    public static final int kPivotHomePort = 1; //TBD
 
     //Analog Inputs
     public static final int kIntakeSharpIR = 0;

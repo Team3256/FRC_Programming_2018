@@ -111,6 +111,10 @@ public class PathGenerator {
 
     }
 
+    public static Path generate(List<Waypoint> waypoints) {
+        return generate(waypoints, 12.0, 2.0);
+    }
+
     public static Path generate(List<Waypoint> waypoints, double maxAccel, double maxVel){
         PathGenerator.maxAccel = maxAccel;
         PathGenerator.maxVel = maxVel;

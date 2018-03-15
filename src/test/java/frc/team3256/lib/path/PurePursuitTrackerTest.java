@@ -3,12 +3,8 @@ package frc.team3256.lib.path;
 import frc.team3256.lib.math.Translation;
 import frc.team3256.lib.math.Twist;
 import frc.team3256.robot.Constants;
+import frc.team3256.robot.subsystems.Intake;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import static org.junit.Assert.*;
 
 public class PurePursuitTrackerTest {
@@ -55,6 +51,9 @@ public class PurePursuitTrackerTest {
         robotCoordinates = new Translation(50, 5);
         command = pursuit.update(robotCoordinates);
         assertEquals(command.dy(), 0.0, kEpsilon);
+
+        pursuit.update(new Translation(72, 12));
+        assertEquals(pursuit.isFinished(), true);
 
 
     }

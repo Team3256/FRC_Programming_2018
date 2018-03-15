@@ -4,6 +4,8 @@ import frc.team3256.lib.math.RigidTransform;
 import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Translation;
 import frc.team3256.lib.math.Twist;
+import frc.team3256.robot.subsystems.Intake;
+
 import java.util.Optional;
 
 public class PurePursuitTracker {
@@ -89,6 +91,7 @@ public class PurePursuitTracker {
         //Update path
         Path.PathUpdate pathUpdate = path.update(robotCoordinates, lookaheadDistance);
         //Check if we are done
+        System.out.println(pathUpdate.remainingDistance);
         if(pathUpdate.remainingDistance < pathCompletionTolerance) {
             reachedEnd = true;
         }

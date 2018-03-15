@@ -61,7 +61,7 @@ public class Path {
             // move on to the next segment
             currSegmentNumber++;
             //segments.remove(0);
-            if (currSegmentNumber == segments.size()) {
+            if (currSegmentNumber >= segments.size()) {
                 // when the last segment is completed just return the previous command
                 return prevPathUpdate;
             }
@@ -92,6 +92,7 @@ public class Path {
         for (Segment s : segments.subList(currSegmentNumber, segments.size())) {
             rv.remainingDistance += s.getLength();
         }
+        System.out.println("closest point d traveled: "+currSegment.getCurrDistanceTraveled(closestPoint));
         rv.remainingDistance -= currSegment.getCurrDistanceTraveled(closestPoint);
         rv.currSegment = currSegment;
         rv.closestPoint = closestPoint;

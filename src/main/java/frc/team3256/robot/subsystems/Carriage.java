@@ -14,13 +14,10 @@ public class Carriage extends SubsystemBase implements Loop {
     private DigitalInput hallEffect;
 
     private SystemState currentState = SystemState.HOLD;
-    private SystemState previousState = currentState;
     private WantedState wantedState;
-    private WantedState prevWantedState;
 
     private boolean isHomed = false;
     private boolean stateChanged = true;
-    private boolean wantedStateChanged = true;
     private boolean targetReached;
 
     private double m_closedLoopTarget;
@@ -76,14 +73,6 @@ public class Carriage extends SubsystemBase implements Loop {
 
     @Override
     public void update(double timestamp) {
-        if (prevWantedState != wantedState){
-            wantedStateChanged = true;
-            prevWantedState = wantedState;
-        }
-        else wantedStateChanged = false;
-        if (wantedStateChanged){
-            targetReached = false;
-        }
         SystemState newState = SystemState.HOLD;
         switch(currentState){
             case HOLD:
@@ -171,7 +160,7 @@ public class Carriage extends SubsystemBase implements Loop {
     }
 
     public boolean atClosedLoopTarget(){
-        if (!m_usingClosedLoop || wantedStateChanged || stateChanged) return false;
+        if (!m_usingClosedLoop || stateChanged) return false;
         targetReached = true;
         return (Math.abs(getAngle() - m_closedLoopTarget) < Constants.kArmTolerance);
     }

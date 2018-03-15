@@ -1,6 +1,7 @@
 package frc.team3256.robot.subsystems;
 
 import frc.team3256.lib.Loop;
+import frc.team3256.robot.Constants;
 
 public class Superstructure extends SubsystemBase implements Loop{
     private static Superstructure instance;
@@ -12,19 +13,22 @@ public class Superstructure extends SubsystemBase implements Loop{
     private SystemState currentState;
     private SystemState newState;
     private WantedState wantedState;
+    private Elevator.WantedState elevatorPreset;
+    private Carriage.WantedState carriagePreset;
     private boolean stateChanged;
 
     public static Superstructure getInstance(){
         return instance == null ? instance = new Superstructure() : instance;
     }
 
+    private Superstructure(){
+        intake = Intake.getInstance();
+        carriage = Carriage.getInstance();
+        elevator = Elevator.getInstance();
+    }
+
     public enum SystemState{
-        //Intaking cube off the ground
-        INTAKING_LOW,
-        //Intaking cube stacked on first level
-        INTAKING_MID,
-        //Intaking cube stacked on second level
-        INTAKING_HIGH,
+        INTAKING,
         //Spitting out cube
         EXHAUSTING,
         //Shooting the block out hard
@@ -33,75 +37,44 @@ public class Superstructure extends SubsystemBase implements Loop{
         SCORING_SLOW,
         //Just drop the block
         SCORING_OPEN,
-        //Intake is idle, carriage is pivoting to target
-        CLOSED_LOOP_PIVOTING,
-        //Intake is idle, elevator is moving up to target
-        CLOSED_LOOP_UP,
-        //Intake is idle, elevator is moving down to target
-        CLOSED_LOOP_DOWN,
-        //Intake is idle, and elevator and pivot are holding position
-        IDLE_AND_HOLD
+        CLOSED_LOOP,
+        MANUAL_CONTROL,
+        HOMING,
+        IDLE
     }
 
     public enum WantedState{
+        WANTS_TO_HOME,
         INTAKE_LOW,
         INTAKE_MID,
         INTAKE_HIGH,
         EXHAUST,
         SCORE_FAST,
         SCORE_SLOW,
-        SWITCH_FRONT,
-        SWITCH_BACK,
-        SCALE_LOW_FRONT,
-        SCALE_MID_FRONT,
-        SCALE_HIGH_FRONT,
-        SCALE_LOW_BACK,
-        SCALE_MID_BACK,
-        SCALE_HIGH_BACK,
-        STOW
+        SCORE_DROP,
+        SWITCH_FRONT_PRESET,
+        SWITCH_BACK_PRESET,
+        SCALE_LOW_FRONT_PRESET,
+        SCALE_HIGH_FRONT_PRESET,
+        SCALE_LOW_BACK_PRESET,
+        SCALE_HIGH_BACK_PRESET,
+        STOW,
+        MANUAL_UP,
+        MANUAL_DOWN,
+        MANUAL_IN,
+        MANUAL_OUT,
     }
 
     @Override
     public void init(double timestamp) {
-        currentState = SystemState.IDLE_AND_HOLD;
+        currentState = SystemState.IDLE;
     }
 
     @Override
     public void update(double timestamp) {
         switch(currentState){
-            case INTAKING_LOW:
-                newState = handleIntakingLow();
-                break;
-            case INTAKING_MID:
-                newState = handleIntakingMid();
-                break;
-            case INTAKING_HIGH:
-                newState = handleIntakingHigh();
-                break;
-            case EXHAUSTING:
-                newState = handleExhausting();
-                break;
-            case SCORING_FAST:
-                newState = handleScoreFast();
-                break;
-            case SCORING_SLOW:
-                newState = handleScoreSlow();
-                break;
-            case SCORING_OPEN:
-                newState = handleScoreOpen();
-                break;
-            case CLOSED_LOOP_PIVOTING:
-                newState = handleClosedLoopPivoting();
-                break;
-            case CLOSED_LOOP_UP:
-                newState = handleClosedLoopUp();
-                break;
-            case CLOSED_LOOP_DOWN:
-                newState = handleClosedLoopDown();
-                break;
-            case IDLE_AND_HOLD:
-                newState = handleIdleAndHold();
-                break;
+            case INTAKING:
+                newState = handleIntaking();
         }
     }
 
@@ -125,105 +98,150 @@ public class Superstructure extends SubsystemBase implements Loop{
 
     }
 
-    public SystemState handleIntakingLow(){
-        if (!elevator.atClosedLoopTarget()){
-            elevator.setWantedState(Elevator.WantedState.WANTS_TO_INTAKE_POS);
+    private SystemState handleIntaking(){
+        if (!(elevator.atClosedLoopTarget() || carriage.atClosedLoopTarget())){
+            boolean useClosedLoop = false;
+            switch(wantedState){
+                case INTAKE_HIGH:
+                    //TODO: add and assign elevator intake high pos
+                    carriagePreset = Carriage.WantedState.INTAKE_PRESET;
+                    useClosedLoop = true;
+                    break;
+                case INTAKE_MID:
+                    //TODO: add and assign elevator intake mid pos
+                    carriagePreset = Carriage.WantedState.INTAKE_PRESET;
+                    useClosedLoop = true;
+                    break;
+                case INTAKE_LOW:
+                    elevatorPreset = Elevator.WantedState.WANTS_TO_INTAKE_POS;
+                    carriagePreset = Carriage.WantedState.INTAKE_PRESET;
+                    useClosedLoop = true;
+                    break;
+                case MANUAL_UP:
+                    elevatorPreset = Elevator.WantedState.WANTS_TO_MANUAL_UP;
+                    carriagePreset = Carriage.WantedState.WANTS_TO_HOLD;
+                    useClosedLoop = false;
+                    break;
+                case MANUAL_DOWN:
+                    elevatorPreset = Elevator.WantedState.WANTS_TO_MANUAL_DOWN;
+                    carriagePreset = Carriage.WantedState.WANTS_TO_HOLD;
+                    useClosedLoop = false;
+                    break;
+                case MANUAL_IN:
+                    carriagePreset = Carriage.WantedState.WANTS_TO_MANUAL_REVERSE;
+                    elevatorPreset = Elevator.WantedState.WANTS_TO_HOLD;
+                    useClosedLoop = false;
+                    break;
+                case MANUAL_OUT:
+                    carriagePreset = Carriage.WantedState.WANTS_TO_MANUAL_FORWARD;
+                    elevatorPreset = Elevator.WantedState.WANTS_TO_HOLD;
+                    useClosedLoop = false;
+                    break;
+                default:
+                    elevatorPreset = Elevator.WantedState.WANTS_TO_HOLD;
+                    carriagePreset = Carriage.WantedState.WANTS_TO_HOLD;
+                    useClosedLoop = false;
+                    break;
+            }
+            if (useClosedLoop){
+                return SystemState.CLOSED_LOOP;
+            }
+            else{
+                return SystemState.MANUAL_CONTROL;
+            }
         }
-        else if (!carriage.atClosedLoopTarget()){
-            carriage.setWantedState(Carriage.WantedState.INTAKE_PRESET);
+        intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
+        return defaultStateTransfer();
+    }
+
+    private SystemState defaultStateTransfer(){
+        boolean useClosedLoop = false;
+        switch(wantedState){
+            case INTAKE_HIGH:
+                //TODO: add and assign elevator intake high pos
+                carriagePreset = Carriage.WantedState.INTAKE_PRESET;
+                useClosedLoop = true;
+                break;
+            case INTAKE_MID:
+                //TODO: add and assign elevator intake mid pos
+                carriagePreset = Carriage.WantedState.INTAKE_PRESET;
+                useClosedLoop = true;
+                break;
+            case INTAKE_LOW: case EXHAUST:
+                elevatorPreset = Elevator.WantedState.WANTS_TO_INTAKE_POS;
+                carriagePreset = Carriage.WantedState.INTAKE_PRESET;
+                useClosedLoop = true;
+                break;
+            case SWITCH_FRONT_PRESET:
+                elevatorPreset = Elevator.WantedState.WANTS_TO_SWITCH_POS;
+                carriagePreset = Carriage.WantedState.STOW_PRESET;
+                useClosedLoop = true;
+                break;
+            case SWITCH_BACK_PRESET:
+                elevatorPreset = Elevator.WantedState.WANTS_TO_SWITCH_POS;
+                carriagePreset = Carriage.WantedState.FRONT_SCORE_PRESET;
+                useClosedLoop = true;
+                break;
+            case SCALE_LOW_FRONT_PRESET:
+                elevatorPreset = Elevator.WantedState.WANTS_TO_LOW_SCALE_POS;
+                carriagePreset = Carriage.WantedState.FRONT_SCORE_PRESET;
+                useClosedLoop = true;
+                break;
+            case SCALE_HIGH_FRONT_PRESET:
+                elevatorPreset = Elevator.WantedState.WANTS_TO_HIGH_SCALE_POS;
+                carriagePreset = Carriage.WantedState.FRONT_SCORE_PRESET;
+                useClosedLoop = true;
+                break;
+            case SCALE_LOW_BACK_PRESET:
+                elevatorPreset = Elevator.WantedState.WANTS_TO_LOW_SCALE_POS;
+                carriagePreset = Carriage.WantedState.BACK_SCORE_PRESET;
+                useClosedLoop = true;
+                break;
+            case SCALE_HIGH_BACK_PRESET:
+                elevatorPreset = Elevator.WantedState.WANTS_TO_HIGH_SCALE_POS;
+                carriagePreset = Carriage.WantedState.BACK_SCORE_PRESET;
+                useClosedLoop = true;
+                break;
+            case STOW:
+                elevatorPreset = Elevator.WantedState.WANTS_TO_INTAKE_POS;
+                carriagePreset = Carriage.WantedState.STOW_PRESET;
+                useClosedLoop = true;
+                break;
+            case MANUAL_UP:
+                elevatorPreset = Elevator.WantedState.WANTS_TO_MANUAL_UP;
+                carriagePreset = Carriage.WantedState.WANTS_TO_HOLD;
+                useClosedLoop = false;
+                break;
+            case MANUAL_DOWN:
+                elevatorPreset = Elevator.WantedState.WANTS_TO_MANUAL_DOWN;
+                carriagePreset = Carriage.WantedState.WANTS_TO_HOLD;
+                useClosedLoop = false;
+                break;
+            case MANUAL_IN:
+                carriagePreset = Carriage.WantedState.WANTS_TO_MANUAL_REVERSE;
+                elevatorPreset = Elevator.WantedState.WANTS_TO_HOLD;
+                useClosedLoop = false;
+                break;
+            case MANUAL_OUT:
+                carriagePreset = Carriage.WantedState.WANTS_TO_MANUAL_FORWARD;
+                elevatorPreset = Elevator.WantedState.WANTS_TO_HOLD;
+                useClosedLoop = false;
+                break;
+            default:
+                elevatorPreset = Elevator.WantedState.WANTS_TO_HOLD;
+                carriagePreset = Carriage.WantedState.WANTS_TO_HOLD;
+                useClosedLoop = false;
+                break;
+        }
+        if (useClosedLoop){
+            return SystemState.CLOSED_LOOP;
         }
         else{
-            intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
-        }
-        switch(wantedState){
-            case INTAKE_LOW:
-                return SystemState.INTAKING_LOW;
-            case INTAKE_MID:
-                return SystemState.INTAKING_MID;
-            case INTAKE_HIGH:
-                return SystemState.INTAKING_HIGH;
-            case SWITCH_FRONT:
-                if (elevator.getHeight() > )
+            return SystemState.MANUAL_CONTROL;
         }
     }
 
-    public SystemState handleIntakingMid(){
-
-    }
-
-    public SystemState handleIntakingHigh(){
-
-    }
-
-    public SystemState handleExhausting(){
-
-    }
-
-    public SystemState handleScoreFast(){
-
-    }
-
-    public SystemState handleScoreSlow(){
-
-    }
-
-    public SystemState handleScoreOpen(){
-
-    }
-
-    public SystemState handleClosedLoopPivoting(){
-
-    }
-
-    public SystemState handleClosedLoopUp(){
-
-    }
-
-    public SystemState handleClosedLoopDown(){
-
-    }
-
-    public SystemState handleIdleAndHold(){
-
-    }
-
-    public SystemState defaultStateTransfer(){
-        switch(wantedState){
-            case INTAKE_LOW:
-                return SystemState.INTAKING_LOW;
-            case INTAKE_MID:
-                return SystemState.INTAKING_MID;
-            case INTAKE_HIGH:
-                return SystemState.INTAKING_HIGH;
-            case EXHAUST:
-                return SystemState.EXHAUSTING;
-            case SCORE_FAST:
-                return SystemState.SCORING_FAST;
-            case SCORE_SLOW:
-                return SystemState.SCORING_SLOW;
-            case SWITCH_FRONT:
-                return Sy
-            case SWITCH_BACK:
-                return SystemState.;
-            case SCALE_LOW_FRONT:
-                return SystemState.;
-            case SCALE_LOW_BACK:
-                return SystemState.;
-            case SCALE_HIGH_FRONT:
-                return SystemState.;
-            case SCALE_MID_BACK:
-                return SystemState.;
-            case SCALE_MID_FRONT:
-                return SystemState.;
-            case SCALE_HIGH_BACK:
-                return SystemState.;
-            case STOW:
-                return SystemState.;
-            default:
-                return SystemState.IDLE_AND_HOLD;
-        }
-    }
-
+    
     public SystemState getCurrentState() { return currentState; }
 
     public WantedState getWantedState() { return wantedState; }

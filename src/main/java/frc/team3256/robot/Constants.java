@@ -149,9 +149,10 @@ public class Constants {
 
     public static final double kArmIntakePreset = 0.0; //TBD
     public static final double kArmFrontScorePreset = 30.0; //TBD
-    public static final double kArmCarriagePreset = 180.0; //TBD
+    public static final double kArmStowPreset = 180.0; //TBD
     public static final double kArmBackScorePreset = 120.0; //TBD
-    public static final double kArmDropAnglePreset = 2.0;
+    public static final double kArmDropAnglePreset = 2.0; //TBD
+    public static final double kArmExchangePreset = 0.0; //TBD
     public static final double kBottomHomeHeight = 7.875; //measured in inches
     public static final double kCompHomeHeight = 8.5; //measured in inches
     public static final double kCompBottomHomeHeight = 7.575;
@@ -168,7 +169,7 @@ public class Constants {
     public static final double kArmMaxForwardVoltage = 2.0; //TBD
     public static final double kArmMaxReverseVoltage = -2.0; //TBD
     public static final double kArmMinHoldVoltage = 0.0; //TBD
-    public static final double kArmTolerance = 1.0; //TBD
+    public static final double kCarriageTolerance = 1.0; //TBD
     public static final double kArmManualPowerConstant = 1.0;   //TBD
 
 

@@ -19,6 +19,7 @@ public class Carriage extends SubsystemBase implements Loop {
     private boolean isHomed = false;
     private boolean stateChanged = true;
     private boolean targetReached;
+    private boolean failedToHome = false;
 
     private double m_closedLoopTarget;
     private boolean m_usingClosedLoop;
@@ -119,8 +120,9 @@ public class Carriage extends SubsystemBase implements Loop {
     public enum WantedState{
         FRONT_SCORE_PRESET,
         BACK_SCORE_PRESET,
+        EXCHANGE_PRESET,
         INTAKE_PRESET,
-        CARRIAGE_PRESET,
+        STOW_PRESET,
         WANTS_TO_MANUAL_FORWARD,
         WANTS_TO_MANUAL_REVERSE,
         WANTS_TO_HOLD,
@@ -162,17 +164,16 @@ public class Carriage extends SubsystemBase implements Loop {
     public boolean atClosedLoopTarget(){
         if (!m_usingClosedLoop || stateChanged) return false;
         targetReached = true;
-        return (Math.abs(getAngle() - m_closedLoopTarget) < Constants.kArmTolerance);
+        return (Math.abs(getAngle() - m_closedLoopTarget) < Constants.kCarriageTolerance);
     }
 
     private SystemState handleZeroPower() {
-        if (stateChanged){
-        }
         setOpenLoop(0);
         return defaultStateTransfer();
     }
 
     private SystemState handleHome(double timestamp) {
+        if (failedToHome) return SystemState.ZERO_POWER;
         if (stateChanged) {
             homingTimeStart = timestamp;
         }
@@ -182,6 +183,9 @@ public class Carriage extends SubsystemBase implements Loop {
             }
             setOpenLoop(Constants.kArmForwardSlowPower);
             return SystemState.HOMING;
+        }
+        else{
+            failedToHome = true;
         }
         return SystemState.ZERO_POWER;
     }
@@ -246,12 +250,16 @@ public class Carriage extends SubsystemBase implements Loop {
                 }
                 m_usingClosedLoop = true;
                 break;
-            case CARRIAGE_PRESET:
+            case STOW_PRESET:
                 if(stateChanged) {
-                    m_closedLoopTarget = Constants.kArmCarriagePreset;
+                    m_closedLoopTarget = Constants.kArmStowPreset;
                 }
                 m_usingClosedLoop = true;
                 break;
+            case EXCHANGE_PRESET:
+                if (stateChanged){
+                    m_closedLoopTarget = Constants.kArmExchangePreset;
+                }
             case WANTS_TO_HOLD:
                 m_usingClosedLoop = false;
                 return SystemState.HOLD;

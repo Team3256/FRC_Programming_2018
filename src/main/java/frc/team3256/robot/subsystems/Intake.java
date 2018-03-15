@@ -55,7 +55,7 @@ public class Intake implements Loop{
 
     @Override
     public void init(double timestamp){
-        currentState = SystemState.CLOSED_IDLE
+        currentState = SystemState.CLOSED_IDLE;
         wantedState = WantedState.IDLE;
         stateChanged = false;
     }

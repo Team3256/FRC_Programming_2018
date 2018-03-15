@@ -68,6 +68,9 @@ public class Carriage extends SubsystemBase implements Loop {
             case HOLD:
                 newState = handleHold();
                 break;
+            case CLOSED_LOOP:
+                newState = handleClosedLoop();
+                break;
             case MANUAL_FORWARD:
                 newState = handleManualForward();
                 break;
@@ -95,8 +98,7 @@ public class Carriage extends SubsystemBase implements Loop {
     }
 
     public enum SystemState{
-        CLOSED_LOOP_FORWARD,
-        CLOSED_LOOP_REVERSE,
+        CLOSED_LOOP,
         MANUAL_FORWARD,
         MANUAL_REVERSE,
         HOLD,
@@ -145,6 +147,7 @@ public class Carriage extends SubsystemBase implements Loop {
 
     public boolean atClosedLoopTarget(){
         if (!m_usingClosedLoop || wantedStateChanged || stateChanged) return false;
+        targetReached = true;
         return (Math.abs(getAngle() - m_closedLoopTarget) < Constants.kArmTolerance);
     }
 
@@ -177,6 +180,20 @@ public class Carriage extends SubsystemBase implements Loop {
             return SystemState.ZERO_POWER;
         }
         setTargetPosition(getAngle(), Constants.kArmHoldSlot);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleClosedLoop(){
+        if(isHomed){
+            if (atClosedLoopTarget()){
+                return SystemState.HOLD;
+            }
+            if (stateChanged){
+                pivotArm.selectProfileSlot(Constants.kArmMovingSlot, 0);
+            }
+            setTargetPosition(m_closedLoopTarget, Constants.kArmMovingSlot);
+            return defaultStateTransfer();
+        }
         return defaultStateTransfer();
     }
 
@@ -233,11 +250,8 @@ public class Carriage extends SubsystemBase implements Loop {
             case WANTS_TO_HOME:
                 return SystemState.HOMING;
         }
-        if(m_closedLoopTarget > getAngle() && m_usingClosedLoop) {
-            rv = SystemState.CLOSED_LOOP_FORWARD;
-        }
-        else if (m_closedLoopTarget < getAngle() && m_usingClosedLoop){
-            rv = SystemState.CLOSED_LOOP_REVERSE;
+        if(targetReached && m_usingClosedLoop) {
+            rv = SystemState.CLOSED_LOOP;
         }
         else rv = SystemState.HOLD;
         return rv;

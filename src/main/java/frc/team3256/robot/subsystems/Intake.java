@@ -1,25 +1,21 @@
 package frc.team3256.robot.subsystems;
 
-import com.sun.corba.se.impl.orbutil.closure.Constant;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
+import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.SharpIR;
 import frc.team3256.robot.Constants;
 
-public class Intake {
+public class Intake implements Loop{
     private VictorSP leftIntake, rightIntake;
-    private DoubleSolenoid flopperActuator;
+    private DoubleSolenoid squeezeActuator;
     private SharpIR cubeDetector;
 
     private SystemState currentState = SystemState.CLOSED_IDLE;
     private SystemState previousState;
     private WantedState wantedState;
-    private WantedState prevWantedState;
 
     private boolean stateChanged;
-    private boolean wantsToToggle = false;
 
     private static Intake instance;
 
@@ -35,16 +31,17 @@ public class Intake {
     public enum WantedState{
         WANTS_TO_INTAKE,
         WANTS_TO_EXHAUST,
-        WANTS_TO_TOGGLE_FLOP,
+        WANTS_TO_OPEN,
         WANTS_TO_SCORE,
-        WANTS_TO_SCORE_SLOW
+        WANTS_TO_SCORE_SLOW,
+        IDLE
     }
 
     private Intake(){
         leftIntake = new VictorSP(Constants.kLeftIntakePort);
         rightIntake = new VictorSP(Constants.kRightIntakePort);
 
-        flopperActuator = new DoubleSolenoid(Constants.kIntakeFlopForward, Constants.kIntakeFlopReverse);
+        squeezeActuator = new DoubleSolenoid(Constants.kIntakeFlopForward, Constants.kIntakeFlopReverse);
 
         cubeDetector = new SharpIR(Constants.kIntakeSharpIR, Constants.kIntakeSharpIRMinVoltage, Constants.kIntakeSharpIRMaxVoltage);
 
@@ -56,33 +53,38 @@ public class Intake {
         return instance == null ? instance = new Intake(): instance;
     }
 
-    public void init(){
-
+    @Override
+    public void init(double timestamp){
+        wantedState = WantedState.IDLE;
+        stateChanged = false;
     }
 
-    public void update(){
-        SystemState newState;
+    @Override
+    public void update(double timestamp){
+        SystemState newState = SystemState.CLOSED_IDLE;
         switch (currentState){
             case INTAKING:
                 newState = handleIntake();
-            break;
+                break;
             case EXHAUSTING:
                 newState = handleExhaust();
-            break;
+                break;
             case CLOSED_IDLE:
                 newState = handleClosedIdle();
-            break;
+                break;
             case OPEN_IDLE:
                 newState = handleOpenIdle();
-            break;
+                break;
             case SCORING:
                 newState = handleScoring();
             break;
             case SCORING_SLOW:
                 newState = handleScoringSlow();
-            break;
+                break;
         }
         if(newState != currentState){
+            System.out.println("\tPREV_STATE:" + previousState + "\tCURR_STATE:" + currentState +
+                    "\tNEW_STATE:" + newState);
             previousState = currentState;
             currentState = newState;
             stateChanged = true;
@@ -90,9 +92,14 @@ public class Intake {
         else stateChanged = false;
     }
 
+    @Override
+    public void end(double timestamp){
+
+    }
+
     private SystemState handleIntake(){
         if(stateChanged){
-            closeFlopper();
+            closesqueeze();
         }
         if(hasCube()){
             setIntake(0,0);
@@ -101,27 +108,35 @@ public class Intake {
         else{
             setIntake(Constants.kLeftIntakePower, Constants.kRightIntakePower);
         }
-        return;
+        return defaultStateTransfer();
     }
 
     private SystemState handleExhaust(){
+        if(stateChanged){
+            closesqueeze();
+        }
         setIntake(Constants.kIntakeExhaustPower,Constants.kIntakeExhaustPower);
+        return defaultStateTransfer();
     }
 
     private SystemState handleClosedIdle(){
-
+        closesqueeze();
+        return defaultStateTransfer();
     }
 
     private SystemState handleOpenIdle(){
-
+        opensqueeze();
+        return defaultStateTransfer();
     }
 
     private SystemState handleScoring(){
-
+        setIntake(Constants.kIntakeScoreForwardPower, Constants.kIntakeScoreForwardPower);
+        return defaultStateTransfer();
     }
 
     private SystemState handleScoringSlow(){
-
+        setIntake(Constants.kIntakeScoreForwardSlowPower, Constants.kIntakeScoreForwardSlowPower);
+        return defaultStateTransfer();
     }
 
     public void setIntake(double left, double right){
@@ -133,12 +148,12 @@ public class Intake {
         return false; //cubeDetector.isTriggered();
     }
 
-    public void closeFlopper(){
-        flopperActuator.set(DoubleSolenoid.Value.kForward); //Direction TBD
+    public void closesqueeze(){
+        squeezeActuator.set(DoubleSolenoid.Value.kForward); //Direction TBD
     }
 
-    public void openFlopper(){
-        flopperActuator.set(DoubleSolenoid.Value.kReverse); //Direction TBD
+    public void opensqueeze(){
+        squeezeActuator.set(DoubleSolenoid.Value.kReverse); //Direction TBD
     }
 
 
@@ -146,18 +161,24 @@ public class Intake {
     private SystemState defaultStateTransfer(){
         switch (wantedState){
             case WANTS_TO_INTAKE:
-            return SystemState.INTAKING;
+                return SystemState.INTAKING;
             case WANTS_TO_EXHAUST:
-            return SystemState.EXHAUSTING;
-            case WANTS_TO_TOGGLE_FLOP:
-                if (wantsToToggle) {
-
-                }
-            return SystemState.;
+                return SystemState.EXHAUSTING;
+            case WANTS_TO_OPEN:
+                return SystemState.OPEN_IDLE;
             case WANTS_TO_SCORE:
-            return SystemState.SCORING;
+                return SystemState.SCORING;
             case WANTS_TO_SCORE_SLOW:
-            return SystemState.SCORING_SLOW;
+                return SystemState.SCORING_SLOW;
+            case IDLE:
+                if(currentState == SystemState.OPEN_IDLE){
+                    return SystemState.OPEN_IDLE;
+                }
+                else{
+                    return SystemState.CLOSED_IDLE;
+                }
+            default:
+                return SystemState.CLOSED_IDLE;
         }
     }
 

@@ -49,10 +49,9 @@ public class Carriage extends SubsystemBase implements Loop {
 
     }
 
-    private InterruptHandlerFunction<Elevator> ihr = new InterruptHandlerFunction<Elevator>() {
-
+    private InterruptHandlerFunction<Carriage> ihr = new InterruptHandlerFunction<Carriage>() {
         @Override
-        public void interruptFired(int interruptAssertedMask, Elevator param) {
+        public void interruptFired(int interruptAssertedMask, Carriage param) {
             if (pivotArm.getSelectedSensorVelocity(0) < 0){
                 System.out.println("PIVOT ARM HOMED ON UPPER SIDE!!!!!!!!!!!!");
                 pivotArm.setSelectedSensorPosition((int)angleToSensorUnits(Constants.kTopArmHomeAngle), 0, 0);
@@ -276,7 +275,7 @@ public class Carriage extends SubsystemBase implements Loop {
             case WANTS_TO_HOME:
                 return SystemState.HOMING;
         }
-        if(targetReached && m_usingClosedLoop) {
+        if(!targetReached && m_usingClosedLoop) {
             rv = SystemState.CLOSED_LOOP;
         }
         else rv = SystemState.HOLD;

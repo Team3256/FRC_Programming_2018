@@ -1,43 +1,31 @@
 package frc.team3256.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.VictorSP;
-import frc.team3256.lib.hardware.SharpIR;
+import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.robot.Constants;
-import org.omg.PortableInterceptor.HOLDING;
 
-public class Carriage {
+public class Carriage extends SubsystemBase implements Loop {
 
     private TalonSRX pivotArm;
-    private VictorSP rightIntake, leftIntake;
-    private DoubleSolenoid flopper;
-    private SharpIR cubeDetector;
     private DigitalInput hallEffect;
 
-    private SystemState currentState = SystemState.STOWED;
+    private SystemState currentState = SystemState.HOLD;
     private SystemState previousState = currentState;
     private WantedState wantedState;
     private WantedState prevWantedState;
 
-    private boolean stateChanged = true;
     private boolean isHomed = false;
+    private boolean stateChanged = true;
     private boolean wantedStateChanged = true;
+    private boolean targetReached;
 
-    private double unjamTimeStart;
-    private SystemState unjamPreviousState;
-    private boolean wantsToToggle = false;
     private double m_closedLoopTarget;
     private boolean m_usingClosedLoop;
 
     private double homingTimeStart;
-
-    private double kLeftIntakePower = Constants.kLeftIntakePower;
-    private double kRightIntakePower = Constants.kRightIntakePower;
-    private double kIntakeExhaustPower = Constants.kIntakeExhaustPower;
-    private double kUnjamMaxDuration = Constants.kUnjamMaxDuration;
 
     private static Carriage instance;
 
@@ -45,52 +33,85 @@ public class Carriage {
         return instance == null ? instance = new Carriage() : instance;
     }
 
+    @Override
+    public void outputToDashboard() {
+
+    }
+
+    @Override
+    public void selfTest() {
+
+    }
+
+    @Override
+    public void zeroSensors() {
+
+    }
+
+    @Override
+    public void init(double timestamp) {
+        setWantedState(WantedState.WANTS_TO_HOLD);
+    }
+
+    @Override
+    public void update(double timestamp) {
+        if (prevWantedState != wantedState){
+            wantedStateChanged = true;
+            prevWantedState = wantedState;
+        }
+        else wantedStateChanged = false;
+        if (wantedStateChanged){
+            targetReached = false;
+        }
+        SystemState newState = SystemState.HOLD;
+        switch(currentState){
+            case HOLD:
+                newState = handleHold();
+                break;
+            case MANUAL_FORWARD:
+                newState = handleManualForward();
+                break;
+            case MANUAL_REVERSE:
+                newState = handleManualReverse();
+                break;
+            case ZERO_POWER:
+                newState = handleZeroPower();
+                break;
+            case HOMING:
+                newState = handleHome(timestamp);
+                break;
+        }
+        //State Transfer
+        if(newState != currentState){
+            currentState = newState;
+            stateChanged = true;
+        }
+        else stateChanged = false;
+    }
+
+    @Override
+    public void end(double timestamp) {
+
+    }
+
     public enum SystemState{
-        INTAKING,
-        EXHASTING,
-        UNJAMMING,
-
-        STOWED,
-        DEPLOYED_FRONT,
-        DEPLOYED_BACK,
-        DEPLOYED_BACK_ANGLED,
-
-        SCORING_FORWARD,
-        SCORING_REVERSE,
-        SCORING_SLOW_FORWARD,
-        SCORINT_SLOW_REVERSE,
-
+        CLOSED_LOOP_FORWARD,
+        CLOSED_LOOP_REVERSE,
         MANUAL_FORWARD,
         MANUAL_REVERSE,
-
-        OPENED,
-        CLOSED,
-
+        HOLD,
+        ZERO_POWER,
         HOMING,
     }
 
     public enum WantedState{
-        WANTS_TO_INTAKE,
-        WANTS_TO_EXHAUST,
-        WANTS_TO_UNJAM,
-
-        WANTS_TO_STOW,
-        FRONT_PRESET,
-        BACK_PRESET,
-        FRONT_SHOOT_PRESET,
-        BACK_SHOOT_PRESET,
-
-        WANTS_TO_SCORE_FORWARD,
-        WANTS_TO_SCORE_SLOW_FORWARD,
-        WANTS_TO_SCORE_REVERSE,
-        WANTS_TO_SCORE_SLOW_REVERSE,
-
+        FRONT_SCORE_PRESET,
+        BACK_SCORE_PRESET,
+        INTAKE_PRESET,
+        CARRIAGE_PRESET,
         WANTS_TO_MANUAL_FORWARD,
         WANTS_TO_MANUAL_REVERSE,
-
-        WANTS_TO_OPEN,
-        WANTS_TO_CLOSE,
-
+        WANTS_TO_HOLD,
         WANTS_TO_HOME,
     }
 
@@ -120,33 +141,137 @@ public class Carriage {
         pivotArm.configReverseSoftLimitEnable(false,0);
 
         TalonUtil.setCoastMode(pivotArm);
-        
+    }
 
-        leftIntake = new VictorSP(Constants.kLeftIntakePort);
-        rightIntake = new VictorSP(Constants.kRightIntakePort);
+    public boolean atClosedLoopTarget(){
+        if (!m_usingClosedLoop || wantedStateChanged || stateChanged) return false;
+        return (Math.abs(getAngle() - m_closedLoopTarget) < Constants.kArmTolerance);
+    }
 
-        flopper = new DoubleSolenoid(Constants.kIntakeFlopForward, Constants.kIntakeFlopReverse);
+    private SystemState handleZeroPower() {
+        if (stateChanged){
+        }
+        setOpenLoop(0);
+        return defaultStateTransfer();
+    }
 
-        cubeDetector = new SharpIR(Constants.kIntakeSharpIR, Constants.kIntakeSharpIRMinVoltage, Constants.kIntakeSharpIRMaxVoltage);
+    private SystemState handleHome(double timestamp) {
+        if (stateChanged) {
+            homingTimeStart = timestamp;
+        }
+        if (timestamp - homingTimeStart < Constants.kArmHomingForwardTime) {
+            if (isHomed) {
+                return SystemState.ZERO_POWER;
+            }
+            setOpenLoop(Constants.kArmForwardSlowPower);
+            return SystemState.HOMING;
+        }
+        return SystemState.ZERO_POWER;
+    }
 
-        leftIntake.setInverted(true);
-        rightIntake.setInverted(false);
+    private SystemState handleHold(){
+        if (stateChanged){
+            pivotArm.selectProfileSlot(Constants.kArmHoldSlot,0);
+        }
+        if (getAngle() < Constants.kArmDropAnglePreset || 180.0-getAngle() < Constants.kArmDropAnglePreset) {
+            return SystemState.ZERO_POWER;
+        }
+        setTargetPosition(getAngle(), Constants.kArmHoldSlot);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleManualForward(){
+        if (stateChanged){
+        }
+        setOpenLoop(Constants.kArmManualPowerConstant);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleManualReverse() {
+        if (stateChanged){
+        }
+        setOpenLoop(-Constants.kArmManualPowerConstant);
+        return defaultStateTransfer();
+    }
+
+    private SystemState defaultStateTransfer(){
+        SystemState rv;
+        switch (wantedState){
+            case FRONT_SCORE_PRESET:
+                if(stateChanged) {
+                    m_closedLoopTarget = Constants.kArmFrontScorePreset;
+                }
+                m_usingClosedLoop = true;
+                break;
+            case BACK_SCORE_PRESET:
+                if(stateChanged) {
+                    m_closedLoopTarget = Constants.kArmBackScorePreset;
+                }
+                m_usingClosedLoop = true;
+                break;
+            case INTAKE_PRESET:
+                if(stateChanged) {
+                    m_closedLoopTarget = Constants.kArmIntakePreset;
+                }
+                m_usingClosedLoop = true;
+                break;
+            case CARRIAGE_PRESET:
+                if(stateChanged) {
+                    m_closedLoopTarget = Constants.kArmCarriagePreset;
+                }
+                m_usingClosedLoop = true;
+                break;
+            case WANTS_TO_HOLD:
+                m_usingClosedLoop = false;
+                return SystemState.HOLD;
+            case WANTS_TO_MANUAL_FORWARD:
+                m_usingClosedLoop = false;
+                return SystemState.MANUAL_FORWARD;
+            case WANTS_TO_MANUAL_REVERSE:
+                m_usingClosedLoop = false;
+                return SystemState.MANUAL_REVERSE;
+            case WANTS_TO_HOME:
+                return SystemState.HOMING;
+        }
+        if(m_closedLoopTarget > getAngle() && m_usingClosedLoop) {
+            rv = SystemState.CLOSED_LOOP_FORWARD;
+        }
+        else if (m_closedLoopTarget < getAngle() && m_usingClosedLoop){
+            rv = SystemState.CLOSED_LOOP_REVERSE;
+        }
+        else rv = SystemState.HOLD;
+        return rv;
     }
 
     public WantedState getWantedState() { return wantedState; }
 
     public SystemState getCurrentState() { return currentState; }
 
-    //TODO: fix formulas for angle to sensor units and sensor units to angle
     private double angleToSensorUnits(double degrees) {
-        return degrees * 4096.0 * Constants.kArmGearRatio;
+        return degrees / 360.0 * 4096.0 * Constants.kArmGearRatio;
     }
     private double sensorUnitsToAngle(double ticks) {
-        return ticks / 4096.0 / Constants.kArmGearRatio;
+        return ticks * 360.0 / 4096.0 / Constants.kArmGearRatio;
     }
 
     public void setWantedState(WantedState wantedState){
         this.wantedState = wantedState;
+    }
+
+    private void setOpenLoop(double power){
+        pivotArm.set(ControlMode.PercentOutput, power);
+    }
+
+    public double getAngle() {
+        return sensorUnitsToAngle(pivotArm.getSelectedSensorPosition(0));
+    }
+
+    private void setTargetPosition(double targetAngle, int slotID){
+        if (!isHomed)return;
+        if (stateChanged){
+            pivotArm.selectProfileSlot(slotID,0);
+        }
+        pivotArm.set(ControlMode.Position, (int)angleToSensorUnits(targetAngle), 0);
     }
 
 }

@@ -33,7 +33,7 @@ public class Constants {
 
     //DIO
     public static final int kHallEffectPort = 0;
-    public static final int kPivotHomePort = 1; //TBD
+    public static final int kHallEffectPivotHomePort = 1; //TBD
 
     //Analog Inputs
     public static final int kIntakeSharpIR = 0;
@@ -156,6 +156,8 @@ public class Constants {
     public static final double kCompHomeHeight = 8.5; //measured in inches
     public static final double kCompBottomHomeHeight = 7.575;
     public static final double kTopHomeHeight = 8.85;    //placeholder
+    public static final double kTopArmHomeAngle = 5.0; //degrees
+    public static final double kBottomArmHomeAngle = 4.0; //degrees
     public static final double kElevatorHomingUpTime = 2.0;
     public static final double kElevatorTolerance = 1.0; //measured in inches
     public static final double kElevatorMaxUpVoltage = 9.0; //8.0

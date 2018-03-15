@@ -3,6 +3,7 @@ package frc.team3256.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.InterruptHandlerFunction;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.robot.Constants;
@@ -47,6 +48,27 @@ public class Carriage extends SubsystemBase implements Loop {
     public void zeroSensors() {
 
     }
+
+    private InterruptHandlerFunction<Elevator> ihr = new InterruptHandlerFunction<Elevator>() {
+
+        @Override
+        public void interruptFired(int interruptAssertedMask, Elevator param) {
+            if (pivotArm.getSelectedSensorVelocity(0) < 0){
+                System.out.println("PIVOT ARM HOMED ON UPPER SIDE!!!!!!!!!!!!");
+                pivotArm.setSelectedSensorPosition((int)angleToSensorUnits(Constants.kTopArmHomeAngle), 0, 0);
+                isHomed = true;
+                pivotArm.configForwardSoftLimitEnable(true, 0);
+                pivotArm.configReverseSoftLimitEnable(true, 0);
+            }
+            else if (pivotArm.getSelectedSensorVelocity(0) > 0){
+                System.out.println("PIVOT ARM HOMED ON LOWER SIDE!!!!!!!!!!!!");
+                pivotArm.setSelectedSensorPosition((int)angleToSensorUnits(Constants.kBottomArmHomeAngle), 0, 0);
+                isHomed = true;
+                pivotArm.configForwardSoftLimitEnable(true, 0);
+                pivotArm.configReverseSoftLimitEnable(true, 0);
+            }
+        }
+    };
 
     @Override
     public void init(double timestamp) {
@@ -118,6 +140,10 @@ public class Carriage extends SubsystemBase implements Loop {
     }
 
     private Carriage() {
+        hallEffect = new DigitalInput(Constants.kHallEffectPivotHomePort);
+        hallEffect.requestInterrupts(ihr);
+        hallEffect.setUpSourceEdge(false, true);
+        hallEffect.enableInterrupts();
 
         pivotArm = TalonUtil.generateGenericTalon(Constants.kPivotArm);
         TalonUtil.configMagEncoder(pivotArm);

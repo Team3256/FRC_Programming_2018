@@ -5,10 +5,11 @@ import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
+import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.SharpIR;
 import frc.team3256.robot.Constants;
 
-public class Intake {
+public class Intake implements Loop{
     private VictorSP leftIntake, rightIntake;
     private DoubleSolenoid flopperActuator;
     private SharpIR cubeDetector;
@@ -56,13 +57,15 @@ public class Intake {
         return instance == null ? instance = new Intake(): instance;
     }
 
-    public void init(){
+    @Override
+    public void init(double timestamp){
         prevWantedState = WantedState.IDLE;
         wantedState = WantedState.IDLE;
         stateChanged = true;
     }
 
-    public void update(){
+    @Override
+    public void update(double timestamp){
         SystemState newState = SystemState.CLOSED_IDLE;
         switch (currentState){
             case INTAKING:
@@ -92,6 +95,11 @@ public class Intake {
             stateChanged = true;
         }
         else stateChanged = false;
+    }
+
+    @Override
+    public void end(double timestamp){
+
     }
 
     private SystemState handleIntake(){

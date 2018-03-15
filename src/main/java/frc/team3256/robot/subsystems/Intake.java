@@ -187,4 +187,6 @@ public class Intake implements Loop{
 
     public WantedState getWantedState() { return wantedState; }
 
+    public void setWantedState(WantedState wantedState){ this.wantedState = wantedState; }
+
 }

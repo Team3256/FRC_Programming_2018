@@ -19,7 +19,6 @@ public class Intake {
     private WantedState prevWantedState;
 
     private boolean stateChanged;
-    private boolean wantsToToggle = false;
 
     private static Intake instance;
 
@@ -35,9 +34,10 @@ public class Intake {
     public enum WantedState{
         WANTS_TO_INTAKE,
         WANTS_TO_EXHAUST,
-        WANTS_TO_TOGGLE_FLOP,
+        WANTS_TO_OPEN,
         WANTS_TO_SCORE,
-        WANTS_TO_SCORE_SLOW
+        WANTS_TO_SCORE_SLOW,
+        IDLE
     }
 
     private Intake(){
@@ -57,32 +57,36 @@ public class Intake {
     }
 
     public void init(){
-
+        prevWantedState = WantedState.IDLE;
+        wantedState = WantedState.IDLE;
+        stateChanged = true;
     }
 
     public void update(){
-        SystemState newState;
+        SystemState newState = SystemState.CLOSED_IDLE;
         switch (currentState){
             case INTAKING:
                 newState = handleIntake();
-            break;
+                break;
             case EXHAUSTING:
                 newState = handleExhaust();
-            break;
+                break;
             case CLOSED_IDLE:
                 newState = handleClosedIdle();
-            break;
+                break;
             case OPEN_IDLE:
                 newState = handleOpenIdle();
-            break;
+                break;
             case SCORING:
                 newState = handleScoring();
             break;
             case SCORING_SLOW:
                 newState = handleScoringSlow();
-            break;
+                break;
         }
         if(newState != currentState){
+            System.out.println("\tPREV_STATE:" + previousState + "\tCURR_STATE:" + currentState +
+                    "\tNEW_STATE:" + newState);
             previousState = currentState;
             currentState = newState;
             stateChanged = true;
@@ -101,27 +105,35 @@ public class Intake {
         else{
             setIntake(Constants.kLeftIntakePower, Constants.kRightIntakePower);
         }
-        return;
+        return defaultStateTransfer();
     }
 
     private SystemState handleExhaust(){
+        if(stateChanged){
+            closeFlopper();
+        }
         setIntake(Constants.kIntakeExhaustPower,Constants.kIntakeExhaustPower);
+        return defaultStateTransfer();
     }
 
     private SystemState handleClosedIdle(){
-
+        closeFlopper();
+        return defaultStateTransfer();
     }
 
     private SystemState handleOpenIdle(){
-
+        openFlopper();
+        return defaultStateTransfer();
     }
 
     private SystemState handleScoring(){
-
+        setIntake(Constants.kIntakeScoreForwardPower, Constants.kIntakeScoreForwardPower);
+        return defaultStateTransfer();
     }
 
     private SystemState handleScoringSlow(){
-
+        setIntake(Constants.kIntakeScoreForwardSlowPower, Constants.kIntakeScoreForwardSlowPower);
+        return defaultStateTransfer();
     }
 
     public void setIntake(double left, double right){
@@ -146,18 +158,25 @@ public class Intake {
     private SystemState defaultStateTransfer(){
         switch (wantedState){
             case WANTS_TO_INTAKE:
-            return SystemState.INTAKING;
+                return SystemState.INTAKING;
             case WANTS_TO_EXHAUST:
-            return SystemState.EXHAUSTING;
-            case WANTS_TO_TOGGLE_FLOP:
-                if (wantsToToggle) {
-
-                }
-            return SystemState.;
+                return SystemState.EXHAUSTING;
+            case WANTS_TO_OPEN:
+                return SystemState.OPEN_IDLE;
             case WANTS_TO_SCORE:
-            return SystemState.SCORING;
+                return SystemState.SCORING;
             case WANTS_TO_SCORE_SLOW:
-            return SystemState.SCORING_SLOW;
+                return SystemState.SCORING_SLOW;
+            case IDLE:
+                if(currentState == SystemState.INTAKING || currentState == SystemState.EXHAUSTING ||
+                        currentState == SystemState.SCORING || currentState == SystemState.SCORING_SLOW){
+                    return SystemState.CLOSED_IDLE;
+                }
+                else if(currentState == SystemState.OPEN_IDLE){
+                    return SystemState.OPEN_IDLE;
+                }
+            default:
+                return SystemState.CLOSED_IDLE;
         }
     }
 

@@ -134,16 +134,8 @@ public class Constants {
     public static final double kLeftIntakePower = 0.8;//0.75
     public static final double kRightIntakePower = 0.65;//0.6
     public static final double kIntakeExhaustPower = -0.6;
-    public static final double kIntakeUnjamPower = -0.6;
-    public static final double kUnjamMaxDuration = 12.0/1000.0;
-    public static final double kCarriageReceivePower = 0.8;
-    public static final double kCarriageScoreForwardPower = -0.8;
-    public static final double kCarriageScoreForwardAutoPower = -0.35;
-    public static final double kCarriageScoreBackwardPower = 0.8;
-    public static final double kCarriageScoreForwardSlowPower = -0.5;
-    public static final double kCarriageScoreBackwardSlowPower = 0.5;
-    public static final double kCarriageScoreBackwardAutoPower = 0.55;
-    public static final double kCarriageExhaustPower = -0.75;
+    public static final double kIntakeScoreForwardPower = -0.8;
+    public static final double kIntakeScoreForwardSlowPower = -0.5;
 
     public static final double kElevatorUpManualPower = 0.4;
     public static final double kElevatorDownManualPower = -0.15;

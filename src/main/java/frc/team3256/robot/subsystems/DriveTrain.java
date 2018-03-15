@@ -358,8 +358,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         if (purePursuitTracker.isFinished()) {
             setOpenLoop(0, 0);
             return;
-        }
-        Kinematics.DriveVelocity output = Kinematics.inverseKinematics(purePursuitTracker.update(PoseEstimator.getInstance().getPose().getTranslation()), Constants.kRobotTrack, Constants.kScrubFactor);
+        }Kinematics.DriveVelocity output = Kinematics.inverseKinematics(purePursuitTracker.update(PoseEstimator.getInstance().getPose()), Constants.kRobotTrack, Constants.kScrubFactor);
         System.out.println(output.left + "\t" + output.right);
         leftMaster.set(ControlMode.Velocity, inchesPerSecToSensorUnits(output.left));
         rightMaster.set(ControlMode.Velocity, inchesPerSecToSensorUnits(output.right));

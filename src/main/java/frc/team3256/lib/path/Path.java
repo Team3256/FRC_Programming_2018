@@ -49,28 +49,16 @@ public class Path {
     public PathUpdate update(Translation robotCoordinates, double lookaheadDistance){
         PathUpdate rv = new PathUpdate();
         rv.lookaheadDistance = lookaheadDistance;
-        Segment currSegment = segments.get(currSegmentNumber);
+        Segment currSegment;
 
-        Translation closestPoint = currSegment.getClosestPointOnSegment(robotCoordinates);
-
-        //if we are done with this segment
-        double distanceRemainingOnSegment = currSegment.getRemainingDistance(closestPoint);
-        if (distanceRemainingOnSegment <= segmentCompletionTolerance) {
-            System.out.println("GOING TO NEXT SEGMENT");
-            System.out.println("remaining distance: " + distanceRemainingOnSegment);
-            // move on to the next segment
-            currSegmentNumber++;
-            //segments.remove(0);
-            if (currSegmentNumber >= segments.size()) {
-                // when the last segment is completed just return the previous command
-                return prevPathUpdate;
-            }
-            //else currSegment = segments.get(0);
-            else currSegment = segments.get(currSegmentNumber);
+        if (currSegmentNumber >= segments.size()) {
+            // when the last segment is completed just return the previous command
+            return prevPathUpdate;
         }
+        else currSegment = segments.get(currSegmentNumber);
 
         //calculate closest point to robot on path
-        closestPoint = currSegment.getClosestPointOnSegment(robotCoordinates);
+        Translation closestPoint = currSegment.getClosestPointOnSegment(robotCoordinates);
         Translation robotToClosestPoint = new Translation(robotCoordinates, closestPoint);
         rv.distanceToPath = robotToClosestPoint.norm();
 
@@ -92,10 +80,17 @@ public class Path {
         for (Segment s : segments.subList(currSegmentNumber, segments.size())) {
             rv.remainingDistance += s.getLength();
         }
-        System.out.println("closest point d traveled: "+currSegment.getCurrDistanceTraveled(closestPoint));
         rv.remainingDistance -= currSegment.getCurrDistanceTraveled(closestPoint);
         rv.currSegment = currSegment;
         rv.closestPoint = closestPoint;
+
+        //if we are done with this segment
+        double distanceRemainingOnSegment = currSegment.getRemainingDistance(closestPoint);
+        if (distanceRemainingOnSegment <= this.segmentCompletionTolerance) {
+            System.out.println("GOING TO NEXT SEGMENT");
+            // move on to the next segment
+            currSegmentNumber++;
+        }
 
         prevPathUpdate = rv;
 

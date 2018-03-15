@@ -44,16 +44,20 @@ public class PurePursuitTracker {
         return lookaheadPoint.cross(robotCoordinates) > 0 ? 1 : -1;
     }
 
-    public Optional<Arc> getArcToSegment(Translation robotCoordinates, Path.PathUpdate p) {
+    public Optional<Arc> getArcToSegment(RigidTransform robotPos, Path.PathUpdate p) {
+
+        Translation robotCoordinates = new Translation(robotPos.getTranslation().x(), robotPos.getTranslation().y());
 
         Segment s = p.currSegment;
         Translation lookaheadPoint = p.lookaheadPoint;
 
         // whether the angle from the robot to the lookahead point is positive or negative
         int direction = getDirection(p.lookaheadPoint, robotCoordinates);
-        // whether the angle of the slope (tor tangent slope) at the lookahead point is positive or negative
+        // whether the angle of the slope (or tangent slope) at the lookahead point is positive or negative
         int lookaheadSlopeDirection = (int) Math.signum(s.getDirection(lookaheadPoint).direction().radians());
 
+        /*
+        Wrong?
         // perpendicular to the lookahead slope
         Translation lookaheadPointToCenter = s.getDirection(lookaheadPoint);
         lookaheadPointToCenter = lookaheadPointToCenter.rotate(Rotation.fromDegrees(90.0 * direction * lookaheadSlopeDirection));
@@ -69,7 +73,27 @@ public class PurePursuitTracker {
 
         // the center is the intersection of the robotToCenter line and the lookaheadPointToCenter line
         Translation center = lookaheadPointToCenterTransform.intersection(robotToCenterTransform);
+        */
 
+        Translation lookaheadPointToRobot = new Translation(lookaheadPoint, robotCoordinates);
+        int turnDirection = (int) Math.signum(lookaheadPointToRobot.direction().degrees() - robotPos.getRotation().degrees());
+
+        Rotation robotToCenterAngle = Rotation.fromDegrees(robotPos.getRotation().degrees() - 90.0 * turnDirection);
+        Rotation lookaheadPointToCenterAngle;
+        if(direction == -1) {
+            lookaheadPointToCenterAngle = Rotation.fromDegrees(90.0 + robotPos.getRotation().degrees() + 2.0 * lookaheadPointToRobot.direction().degrees()).inverse();
+        } else {
+            lookaheadPointToCenterAngle = Rotation.fromDegrees(robotPos.getRotation().degrees() - 2.0 * lookaheadPointToRobot.direction().degrees()).inverse();
+        }
+
+        RigidTransform lookaheadPointToCenterTransform = new RigidTransform(lookaheadPoint, lookaheadPointToCenterAngle.inverse());
+        RigidTransform robotToCenterTransform = new RigidTransform(robotCoordinates, robotToCenterAngle.inverse());
+        Translation center = lookaheadPointToCenterTransform.intersection(robotToCenterTransform);
+
+        System.out.println("--------x------"+robotToCenterAngle);
+        System.out.println("--------------"+lookaheadPointToCenterAngle);
+        System.out.println("TURN DIRECTION  "+turnDirection);
+        System.out.println("CENTER     "+center);
         /*
         // if there is no intersection then...
         // probably not needed
@@ -87,7 +111,8 @@ public class PurePursuitTracker {
         return Optional.of(robotToLookaheadPointArc);
     }
 
-    public Twist update(Translation robotCoordinates) {
+    public Twist update(RigidTransform robotPos) {
+        Translation robotCoordinates = new Translation(robotPos.getTranslation().x(), robotPos.getTranslation().y());
         //Update path
         Path.PathUpdate pathUpdate = path.update(robotCoordinates, lookaheadDistance);
         //Check if we are done
@@ -100,16 +125,15 @@ public class PurePursuitTracker {
         }
         Segment s = pathUpdate.currSegment;
         //Calculate arc to get us back on path
-        Optional<Arc> optionalArc = getArcToSegment(robotCoordinates, pathUpdate);
+        Optional<Arc> optionalArc = getArcToSegment(robotPos, pathUpdate);
         //calculate linear and angular velocities
         double vel, angularVel;
         vel = s.checkVelocity(pathUpdate.closestPoint, prevOutput.dx(), dt);
-        Twist rv;
 
+        Twist rv;
         //If we have an arc
-        Arc arc;
         if (optionalArc.isPresent()){
-            arc = optionalArc.get();
+            Arc arc = optionalArc.get();
             double direction = Math.signum(arc.getDirection(pathUpdate.lookaheadPoint).direction().radians());
             angularVel = vel/arc.getRadius();
             rv = new Twist(vel, 0, angularVel*direction);

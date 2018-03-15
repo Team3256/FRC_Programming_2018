@@ -146,6 +146,12 @@ public class Constants {
     public static final double kSwitchPreset = 20.0;
     public static final double kIntakePreset = 7.5;
     public static final double kDropPreset = 10.0;
+
+    public static final double kArmIntakePreset = 0.0; //TBD
+    public static final double kArmFrontScorePreset = 30.0; //TBD
+    public static final double kArmCarriagePreset = 180.0; //TBD
+    public static final double kArmBackScorePreset = 120.0; //TBD
+    public static final double kArmDropAnglePreset = 2.0;
     public static final double kBottomHomeHeight = 7.875; //measured in inches
     public static final double kCompHomeHeight = 8.5; //measured in inches
     public static final double kCompBottomHomeHeight = 7.575;
@@ -154,10 +160,14 @@ public class Constants {
     public static final double kElevatorTolerance = 1.0; //measured in inches
     public static final double kElevatorMaxUpVoltage = 9.0; //8.0
     public static final double kElevatorMaxDownVoltage = -5.0;//-5.0
+    public static final double kElevatorMinHoldVoltage = 0.75;//0.5
+    public static final double kArmHomingForwardTime = 0.5; //TBD
+    public static final double kArmForwardSlowPower = 1.0;  //TBD
     public static final double kArmMaxForwardVoltage = 2.0; //TBD
     public static final double kArmMaxReverseVoltage = -2.0; //TBD
-    public static final double kElevatorMinHoldVoltage = 0.75;//0.5
     public static final double kArmMinHoldVoltage = 0.0; //TBD
+    public static final double kArmTolerance = 1.0; //TBD
+    public static final double kArmManualPowerConstant = 1.0;   //TBD
 
 
     //Game Data:

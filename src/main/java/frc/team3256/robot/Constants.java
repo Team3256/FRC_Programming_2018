@@ -97,6 +97,8 @@ public class Constants {
     //Pure Pursuit
     public static final double kPathCompletionTolerance = 0.01;
     public static final double kLookaheadDistance = 5.0;
+    public static final double kPurePursuitMaxVel = 10.0*12.0;
+    public static final double kPurePursuitMaxAccel = 12.0*12.0;
 
     //Elevator Gains
     public static final int kElevatorHoldSlot = 0;

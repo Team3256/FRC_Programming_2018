@@ -3,11 +3,15 @@ package frc.team3256.lib.path;
 import frc.team3256.lib.math.RigidTransform;
 import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Translation;
+import frc.team3256.robot.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PathGenerator {
+
+    static double maxAccel;
+    static double maxVel;
 
     public static class Waypoint{
 
@@ -52,7 +56,7 @@ public class PathGenerator {
         private void addToPath(Path path){
             double len = new Translation(start, end).norm();
             if (len > 1E-9){
-                path.addSegment(new Line(start.x(), start.y(), end.x(), end.y(), endVel, 2.0, 250));
+                path.addSegment(new Line(start.x(), start.y(), end.x(), end.y(), endVel, maxAccel, maxVel));
             }
         }
 
@@ -96,7 +100,7 @@ public class PathGenerator {
             a.addToPath(path);
             if (radius > 1E-9 && radius < 1E9){
                 path.addSegment(new Arc(a.end.x(), a.end.y(), b.start.x(), b.start.y(),
-                        center.x(), center.y(), endVel, 2.0, 250));
+                        center.x(), center.y(), endVel, maxAccel, maxVel));
             }
         }
 
@@ -107,7 +111,9 @@ public class PathGenerator {
 
     }
 
-    public static Path generate(List<Waypoint> waypoints){
+    public static Path generate(List<Waypoint> waypoints, double maxAccel, double maxVel){
+        PathGenerator.maxAccel = maxAccel;
+        PathGenerator.maxVel = maxVel;
         Path path = new Path();
         ArrayList<ArcGenerator> generators = new ArrayList<>(waypoints.size() - 2);
         for(int i=0; i<waypoints.size()-2; i++){

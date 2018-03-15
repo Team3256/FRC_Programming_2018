@@ -76,7 +76,7 @@ public class PurePursuitTracker {
         }
         */
 
-        if (Math.abs(lookaheadPointToRobot.norm() - p.lookaheadDistance) < kEpsilon) {
+        if (Math.abs(lookaheadPointToRobot.norm() - p.lookaheadDistance) < 0.1) {
             //If the lookahead distance is the same as the distance from the robot to the lookahead point, then the robot will make a line and not an arc to the lookahead point
             return Optional.empty();
         }

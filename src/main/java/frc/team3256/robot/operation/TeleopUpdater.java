@@ -113,11 +113,11 @@ public class TeleopUpdater {
 
         //Elevator subsystem
         //If the elevator is not homed yet, home the elevator
-        if (!m_elevator.isHomed()){
+        /*if (!m_elevator.isHomed()){
             System.out.println("TeleopUpdater: NOT HOMED!...AUTO HOMING");
             m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOME);
             return;
-        }
+        }*/
 
         //Manual raising and lowering is highest priority for the elevator
         if (manualRaise){

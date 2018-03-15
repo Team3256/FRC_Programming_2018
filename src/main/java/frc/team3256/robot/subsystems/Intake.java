@@ -11,7 +11,7 @@ public class Intake implements Loop{
     private DoubleSolenoid squeezeActuator;
     private SharpIR cubeDetector;
 
-    private SystemState currentState = SystemState.CLOSED_IDLE;
+    private SystemState currentState;
     private SystemState previousState;
     private WantedState wantedState;
 
@@ -55,6 +55,7 @@ public class Intake implements Loop{
 
     @Override
     public void init(double timestamp){
+        currentState = SystemState.CLOSED_IDLE
         wantedState = WantedState.IDLE;
         stateChanged = false;
     }
@@ -99,7 +100,7 @@ public class Intake implements Loop{
 
     private SystemState handleIntake(){
         if(stateChanged){
-            closesqueeze();
+            closeSqueeze();
         }
         if(hasCube()){
             setIntake(0,0);
@@ -113,19 +114,19 @@ public class Intake implements Loop{
 
     private SystemState handleExhaust(){
         if(stateChanged){
-            closesqueeze();
+            closeSqueeze();
         }
         setIntake(Constants.kIntakeExhaustPower,Constants.kIntakeExhaustPower);
         return defaultStateTransfer();
     }
 
     private SystemState handleClosedIdle(){
-        closesqueeze();
+        closeSqueeze();
         return defaultStateTransfer();
     }
 
     private SystemState handleOpenIdle(){
-        opensqueeze();
+        openSqueeze();
         return defaultStateTransfer();
     }
 
@@ -148,11 +149,11 @@ public class Intake implements Loop{
         return false; //cubeDetector.isTriggered();
     }
 
-    public void closesqueeze(){
+    public void closeSqueeze(){
         squeezeActuator.set(DoubleSolenoid.Value.kForward); //Direction TBD
     }
 
-    public void opensqueeze(){
+    public void openSqueeze(){
         squeezeActuator.set(DoubleSolenoid.Value.kReverse); //Direction TBD
     }
 

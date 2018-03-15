@@ -1,8 +1,5 @@
 package frc.team3256.robot.subsystems;
 
-import com.sun.corba.se.impl.orbutil.closure.Constant;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.VictorSP;
 import frc.team3256.lib.Loop;
@@ -11,13 +8,12 @@ import frc.team3256.robot.Constants;
 
 public class Intake implements Loop{
     private VictorSP leftIntake, rightIntake;
-    private DoubleSolenoid flopperActuator;
+    private DoubleSolenoid squeezeActuator;
     private SharpIR cubeDetector;
 
     private SystemState currentState = SystemState.CLOSED_IDLE;
     private SystemState previousState;
     private WantedState wantedState;
-    private WantedState prevWantedState;
 
     private boolean stateChanged;
 
@@ -45,7 +41,7 @@ public class Intake implements Loop{
         leftIntake = new VictorSP(Constants.kLeftIntakePort);
         rightIntake = new VictorSP(Constants.kRightIntakePort);
 
-        flopperActuator = new DoubleSolenoid(Constants.kIntakeFlopForward, Constants.kIntakeFlopReverse);
+        squeezeActuator = new DoubleSolenoid(Constants.kIntakeFlopForward, Constants.kIntakeFlopReverse);
 
         cubeDetector = new SharpIR(Constants.kIntakeSharpIR, Constants.kIntakeSharpIRMinVoltage, Constants.kIntakeSharpIRMaxVoltage);
 
@@ -59,9 +55,8 @@ public class Intake implements Loop{
 
     @Override
     public void init(double timestamp){
-        prevWantedState = WantedState.IDLE;
         wantedState = WantedState.IDLE;
-        stateChanged = true;
+        stateChanged = false;
     }
 
     @Override
@@ -104,7 +99,7 @@ public class Intake implements Loop{
 
     private SystemState handleIntake(){
         if(stateChanged){
-            closeFlopper();
+            closesqueeze();
         }
         if(hasCube()){
             setIntake(0,0);
@@ -118,19 +113,19 @@ public class Intake implements Loop{
 
     private SystemState handleExhaust(){
         if(stateChanged){
-            closeFlopper();
+            closesqueeze();
         }
         setIntake(Constants.kIntakeExhaustPower,Constants.kIntakeExhaustPower);
         return defaultStateTransfer();
     }
 
     private SystemState handleClosedIdle(){
-        closeFlopper();
+        closesqueeze();
         return defaultStateTransfer();
     }
 
     private SystemState handleOpenIdle(){
-        openFlopper();
+        opensqueeze();
         return defaultStateTransfer();
     }
 
@@ -153,12 +148,12 @@ public class Intake implements Loop{
         return false; //cubeDetector.isTriggered();
     }
 
-    public void closeFlopper(){
-        flopperActuator.set(DoubleSolenoid.Value.kForward); //Direction TBD
+    public void closesqueeze(){
+        squeezeActuator.set(DoubleSolenoid.Value.kForward); //Direction TBD
     }
 
-    public void openFlopper(){
-        flopperActuator.set(DoubleSolenoid.Value.kReverse); //Direction TBD
+    public void opensqueeze(){
+        squeezeActuator.set(DoubleSolenoid.Value.kReverse); //Direction TBD
     }
 
 
@@ -176,12 +171,11 @@ public class Intake implements Loop{
             case WANTS_TO_SCORE_SLOW:
                 return SystemState.SCORING_SLOW;
             case IDLE:
-                if(currentState == SystemState.INTAKING || currentState == SystemState.EXHAUSTING ||
-                        currentState == SystemState.SCORING || currentState == SystemState.SCORING_SLOW){
-                    return SystemState.CLOSED_IDLE;
-                }
-                else if(currentState == SystemState.OPEN_IDLE){
+                if(currentState == SystemState.OPEN_IDLE){
                     return SystemState.OPEN_IDLE;
+                }
+                else{
+                    return SystemState.CLOSED_IDLE;
                 }
             default:
                 return SystemState.CLOSED_IDLE;

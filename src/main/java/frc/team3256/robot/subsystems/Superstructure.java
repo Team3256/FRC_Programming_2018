@@ -1,7 +1,12 @@
 package frc.team3256.robot.subsystems;
 
+import com.sun.xml.internal.bind.v2.model.core.EnumLeafInfo;
 import frc.team3256.lib.Loop;
 import frc.team3256.robot.Constants;
+import org.omg.PortableInterceptor.INACTIVE;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+
+import javax.rmi.ssl.SslRMIClientSocketFactory;
 
 public class Superstructure extends SubsystemBase implements Loop{
     private static Superstructure instance;
@@ -28,6 +33,7 @@ public class Superstructure extends SubsystemBase implements Loop{
     }
 
     public enum SystemState{
+        //Bringing in the cube
         INTAKING,
         //Spitting out cube
         EXHAUSTING,
@@ -75,7 +81,37 @@ public class Superstructure extends SubsystemBase implements Loop{
         switch(currentState){
             case INTAKING:
                 newState = handleIntaking();
+                break;
+            case EXHAUSTING:
+                newState = handleExhaust();
+                break;
+            case SCORING_FAST:
+                newState = handleScoreFast();
+                break;
+            case SCORING_SLOW:
+                newState = handleScoreSlow();
+                break;
+            case SCORING_OPEN:
+                newState = handleScoreDrop();
+                break;
+            case HOMING:
+                newState = handleHoming();
+                break;
+            case MANUAL_CONTROL:
+                newState = handleManualControl();
+                break;
+            case CLOSED_LOOP:
+                newState = handleClosedLoop();
+                break;
+            case IDLE:
+                newState = handleIdle();
+                break;
         }
+        if(newState != currentState){
+            currentState = newState;
+            stateChanged = true;
+        }
+        else stateChanged = false;
     }
 
     @Override
@@ -98,77 +134,104 @@ public class Superstructure extends SubsystemBase implements Loop{
 
     }
 
+    private SystemState handleClosedLoop(){
+        if (elevator.atClosedLoopTarget() && carriage.atClosedLoopTarget()){
+            switch(wantedState){
+                case INTAKE_HIGH: case INTAKE_LOW: case INTAKE_MID:
+                    return SystemState.INTAKING;
+                case EXHAUST:
+                    return SystemState.EXHAUSTING;
+                case SCORE_FAST:
+                    return SystemState.SCORING_FAST;
+                case SCORE_SLOW:
+                    return SystemState.SCORING_SLOW;
+                case SCORE_DROP:
+                    return SystemState.SCORING_OPEN;
+                case MANUAL_UP: case MANUAL_DOWN: case MANUAL_IN: case MANUAL_OUT:
+                    return SystemState.MANUAL_CONTROL;
+            }
+        }
+        elevator.setWantedState(elevatorPreset);
+        carriage.setWantedState(carriagePreset);
+        return defaultStateTransfer();
+    }
+
     private SystemState handleIntaking(){
         if (!(elevator.atClosedLoopTarget() || carriage.atClosedLoopTarget())){
-            boolean useClosedLoop = false;
-            switch(wantedState){
-                case INTAKE_HIGH:
-                    //TODO: add and assign elevator intake high pos
-                    carriagePreset = Carriage.WantedState.INTAKE_PRESET;
-                    useClosedLoop = true;
-                    break;
-                case INTAKE_MID:
-                    //TODO: add and assign elevator intake mid pos
-                    carriagePreset = Carriage.WantedState.INTAKE_PRESET;
-                    useClosedLoop = true;
-                    break;
-                case INTAKE_LOW:
-                    elevatorPreset = Elevator.WantedState.WANTS_TO_INTAKE_POS;
-                    carriagePreset = Carriage.WantedState.INTAKE_PRESET;
-                    useClosedLoop = true;
-                    break;
-                case MANUAL_UP:
-                    elevatorPreset = Elevator.WantedState.WANTS_TO_MANUAL_UP;
-                    carriagePreset = Carriage.WantedState.WANTS_TO_HOLD;
-                    useClosedLoop = false;
-                    break;
-                case MANUAL_DOWN:
-                    elevatorPreset = Elevator.WantedState.WANTS_TO_MANUAL_DOWN;
-                    carriagePreset = Carriage.WantedState.WANTS_TO_HOLD;
-                    useClosedLoop = false;
-                    break;
-                case MANUAL_IN:
-                    carriagePreset = Carriage.WantedState.WANTS_TO_MANUAL_REVERSE;
-                    elevatorPreset = Elevator.WantedState.WANTS_TO_HOLD;
-                    useClosedLoop = false;
-                    break;
-                case MANUAL_OUT:
-                    carriagePreset = Carriage.WantedState.WANTS_TO_MANUAL_FORWARD;
-                    elevatorPreset = Elevator.WantedState.WANTS_TO_HOLD;
-                    useClosedLoop = false;
-                    break;
-                default:
-                    elevatorPreset = Elevator.WantedState.WANTS_TO_HOLD;
-                    carriagePreset = Carriage.WantedState.WANTS_TO_HOLD;
-                    useClosedLoop = false;
-                    break;
-            }
-            if (useClosedLoop){
-                return SystemState.CLOSED_LOOP;
-            }
-            else{
-                return SystemState.MANUAL_CONTROL;
-            }
+            return defaultStateTransfer();
         }
         intake.setWantedState(Intake.WantedState.WANTS_TO_INTAKE);
         return defaultStateTransfer();
     }
 
+    private SystemState handleExhaust(){
+        if(!(elevator.atClosedLoopTarget() || carriage.atClosedLoopTarget())){
+            return defaultStateTransfer();
+        }
+        intake.setWantedState(Intake.WantedState.WANTS_TO_EXHAUST);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleScoreFast(){
+        if(!(elevator.atClosedLoopTarget() || carriage.atClosedLoopTarget())){
+            return defaultStateTransfer();
+        }
+        intake.setWantedState(Intake.WantedState.WANTS_TO_SCORE);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleScoreSlow(){
+        if(!(elevator.atClosedLoopTarget() || carriage.atClosedLoopTarget())){
+            return defaultStateTransfer();
+        }
+        intake.setWantedState(Intake.WantedState.WANTS_TO_SCORE_SLOW);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleScoreDrop(){
+        if(!(elevator.atClosedLoopTarget() || carriage.atClosedLoopTarget())){
+            return defaultStateTransfer();
+        }
+        intake.setWantedState(Intake.WantedState.WANTS_TO_OPEN);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleHoming(){
+        elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOME);
+        carriage.setWantedState(Carriage.WantedState.WANTS_TO_HOME);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleManualControl(){
+        elevator.setWantedState(elevatorPreset);
+        carriage.setWantedState(carriagePreset);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleIdle(){
+        intake.setWantedState(Intake.WantedState.IDLE);
+        elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOLD);
+        carriage.setWantedState(Carriage.WantedState.WANTS_TO_HOLD);
+        return defaultStateTransfer();
+    }
+
     private SystemState defaultStateTransfer(){
-        boolean useClosedLoop = false;
+        boolean useClosedLoop;
         switch(wantedState){
+            case WANTS_TO_HOME:
+                return SystemState.HOMING;
             case INTAKE_HIGH:
-                //TODO: add and assign elevator intake high pos
+                elevatorPreset = Elevator.WantedState.WANTS_TO_INTAKE_HIGH_POS;
                 carriagePreset = Carriage.WantedState.INTAKE_PRESET;
                 useClosedLoop = true;
                 break;
             case INTAKE_MID:
-                //TODO: add and assign elevator intake mid pos
+                elevatorPreset = Elevator.WantedState.WANTS_TO_INTAKE_MID_POS;
                 carriagePreset = Carriage.WantedState.INTAKE_PRESET;
                 useClosedLoop = true;
                 break;
             case INTAKE_LOW: case EXHAUST:
-                elevatorPreset = Elevator.WantedState.WANTS_TO_INTAKE_POS;
+                elevatorPreset = Elevator.WantedState.WANTS_TO_INTAKE_LOW_POS;
                 carriagePreset = Carriage.WantedState.INTAKE_PRESET;
                 useClosedLoop = true;
                 break;
@@ -203,7 +266,7 @@ public class Superstructure extends SubsystemBase implements Loop{
                 useClosedLoop = true;
                 break;
             case STOW:
-                elevatorPreset = Elevator.WantedState.WANTS_TO_INTAKE_POS;
+                elevatorPreset = Elevator.WantedState.WANTS_TO_INTAKE_LOW_POS;
                 carriagePreset = Carriage.WantedState.STOW_PRESET;
                 useClosedLoop = true;
                 break;

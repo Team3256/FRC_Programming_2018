@@ -2,6 +2,8 @@ package frc.team3256.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.sun.corba.se.impl.orbutil.closure.Constant;
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.InterruptHandlerFunction;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -138,8 +140,12 @@ public class Elevator extends SubsystemBase implements Loop{
         WANTS_TO_LOW_SCALE_POS,
         //Preset for the switch
         WANTS_TO_SWITCH_POS,
-        //Preset to lower the elevator to intake
-        WANTS_TO_INTAKE_POS,
+        //Preset to the low intake position
+        WANTS_TO_INTAKE_LOW_POS,
+        //Preset to the mid intake position
+        WANTS_TO_INTAKE_MID_POS,
+        //Preset to the high intake position
+        WANTS_TO_INTAKE_HIGH_POS,
         //Manual control going up
         WANTS_TO_MANUAL_UP,
         //Manual control going down
@@ -333,9 +339,21 @@ public class Elevator extends SubsystemBase implements Loop{
             case WANTS_TO_MANUAL_DOWN:
                 m_usingClosedLoop = false;
                 return SystemState.MANUAL_DOWN;
-            case WANTS_TO_INTAKE_POS:
+            case WANTS_TO_INTAKE_LOW_POS:
                 if(stateChanged) {
-                    m_closedLoopTarget = Constants.kIntakePreset;
+                    m_closedLoopTarget = Constants.kIntakeLowPreset;
+                }
+                m_usingClosedLoop = true;
+                break;
+            case WANTS_TO_INTAKE_MID_POS:
+                if(stateChanged){
+                    m_closedLoopTarget = Constants.kIntakeMidPreset;
+                }
+                m_usingClosedLoop = true;
+                break;
+            case WANTS_TO_INTAKE_HIGH_POS:
+                if(stateChanged){
+                    m_closedLoopTarget = Constants.kIntakeHighPreset;
                 }
                 m_usingClosedLoop = true;
                 break;

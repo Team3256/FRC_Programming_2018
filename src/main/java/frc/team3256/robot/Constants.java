@@ -128,6 +128,7 @@ public class Constants {
     public static final double kArmMovingI = 0;
     public static final double kArmMovingD = 0;
 
+
     //Presets:
     public static final double kIntakeSharpIRMaxVoltage = 3.3;
     public static final double kIntakeSharpIRMinVoltage = 2.5;
@@ -144,7 +145,9 @@ public class Constants {
     public static final double kMidScalePreset = 40.0; //36.5
     public static final double kLowScalePreset = 36.0; //30
     public static final double kSwitchPreset = 20.0;
-    public static final double kIntakePreset = 7.5;
+    public static final double kIntakeLowPreset = 7.5;
+    public static final double kIntakeMidPreset = 0; //TODO: set the correct height
+    public static final double kIntakeHighPreset = 0; //TODO: set the correct height
     public static final double kDropPreset = 10.0;
 
     public static final double kArmIntakePreset = 0.0; //TBD

@@ -160,6 +160,9 @@ public class Elevator extends SubsystemBase implements Loop{
 
     @Override
     public void update(double timestamp){
+        if (!stateChanged){
+            return;
+        }
         if (Robot.getInstance().getStopElevator())
             return;
         if (prevWantedState != wantedState){

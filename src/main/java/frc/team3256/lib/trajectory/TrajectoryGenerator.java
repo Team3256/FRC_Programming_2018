@@ -13,7 +13,16 @@ public class TrajectoryGenerator {
         this.dt = dt;
     }
 
-    public Trajectory generateTrajectory(double startVel, double endVel, double distance){
+    public Trajectory generateTrajectory(double startVel, double endVel, double distance, Trajectory.Point.Type type, boolean inverse, boolean backwardsTurn, double radius) {
+        Trajectory trajectory = generateTrajectory(startVel, endVel, distance, type, inverse);
+        for(Trajectory.Point point: trajectory.points) {
+            point.backTurn = backwardsTurn;
+            point.radius = radius;
+        }
+        return trajectory;
+    }
+
+    public Trajectory generateTrajectory(double startVel, double endVel, double distance, Trajectory.Point.Type type, boolean inverse){
         double cruiseVel = Math.min(Math.sqrt((distance * acc) + ((Math.pow(startVel, 2) + Math.pow(endVel, 2))/2)), maxVel);
         double accelTime = (cruiseVel - startVel)/acc;
         double decelTime = Math.abs(cruiseVel - endVel)/acc;
@@ -47,7 +56,7 @@ public class TrajectoryGenerator {
                 currVel = cruiseVel + (currAccel * tempCurrTime);
             }
             currTime += dt;
-            Trajectory.Point point = new Trajectory.Point(currPos, currVel, currAccel, currTime);
+            Trajectory.Point point = new Trajectory.Point(currPos, currVel, currAccel, currTime, type, inverse);
             trajectory.addPoint(i, point);
         }
         return trajectory;
@@ -59,7 +68,7 @@ public class TrajectoryGenerator {
             Trajectory.Point leadPoint = leadTrajectory.points.get(i);
             double followPosition = scale * leadPoint.getPos();
             double followVel = scale * leadPoint.getVel();
-            Trajectory.Point followPoint = new Trajectory.Point(followPosition, followVel, leadPoint.getAcc(), leadPoint.getTime());
+            Trajectory.Point followPoint = new Trajectory.Point(followPosition, followVel, leadPoint.getAcc(), leadPoint.getTime(), Trajectory.Point.Type.ARC, leadPoint.inverse);
             followTrajectory.addPoint(i, followPoint);
         }
         return followTrajectory;

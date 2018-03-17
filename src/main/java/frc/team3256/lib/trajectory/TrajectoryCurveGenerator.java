@@ -18,10 +18,10 @@ public class TrajectoryCurveGenerator {
         this.robotTrack = robotTrack;
     }
 
-    public void generateTrajectoryCurve(double startVel, double endVel, double degrees, double turnRadius){
+    public void generateTrajectoryCurve(double startVel, double endVel, double degrees, double turnRadius, boolean inverse, boolean backwardsTurn){
         double arcLeadLength = 2 * (turnRadius + (robotTrack * 0.5)) * Math.PI * (degrees/360);
         double followScale = (turnRadius - (robotTrack * 0.5))/((turnRadius + (robotTrack * 0.5)));
-        leadPath = trajectoryGenerator.generateTrajectory(startVel, endVel, arcLeadLength);
+        leadPath = trajectoryGenerator.generateTrajectory(startVel, endVel, arcLeadLength, Trajectory.Point.Type.ARC, inverse, backwardsTurn, turnRadius);
         followPath = trajectoryGenerator.generateScaledTrajectory(leadPath, followScale);
     }
 
@@ -35,8 +35,8 @@ public class TrajectoryCurveGenerator {
 
     public static void main (String [] args){
         TrajectoryCurveGenerator trajectoryCurveGenerator = new TrajectoryCurveGenerator(144, 144, 0.005, Constants.kRobotTrack);
-        trajectoryCurveGenerator.generateTrajectoryCurve(0, 0, 90, 48);
-        System.out.println(trajectoryCurveGenerator.getFollowPath());
+        trajectoryCurveGenerator.generateTrajectoryCurve(0, 0, 90, 48, false, false);
+
     }
 
 }

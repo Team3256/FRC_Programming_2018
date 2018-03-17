@@ -34,7 +34,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private DoubleSolenoid shifter;
 
     private DriveControlMode controlMode;
-    private double degrees, angle;
+    private double degrees;
+    private boolean inverseTurn;
     private DriveStraightController driveStraightController = new DriveStraightController();
     private DriveArcController driveArcController = new DriveArcController();
     private PurePursuitTracker purePursuitTracker = new PurePursuitTracker();
@@ -345,7 +346,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
             return;
         }
         //System.out.println("Updating....");
-        DrivePower output = driveStraightController.update(getAverageDistance(), getAngle().degrees());
+        DrivePower output = driveStraightController.update(getLeftDistance(), getRightDistance(), getAngle().degrees());
         leftMaster.set(ControlMode.PercentOutput, output.getLeft());
         rightMaster.set(ControlMode.PercentOutput, output.getRight());
     }
@@ -379,13 +380,13 @@ public class DriveTrain extends SubsystemBase implements Loop {
             return;
         }
 
-        if (angle >= 0) {
-            output = driveArcController.updateCalculations(getRightDistance(), getLeftDistance(), getAngle().degrees(), getAverageVelocity());
+        if (!inverseTurn) {
+            output = driveArcController.updateCalculations(getRightDistance(), getLeftDistance(), getAngle().degrees());
             leftMaster.set(ControlMode.PercentOutput, output.getRight());
             rightMaster.set(ControlMode.PercentOutput, output.getLeft());
         }
         else {
-            output = driveArcController.updateCalculations(getLeftDistance(), getRightDistance(), getAngle().degrees(), getAverageVelocity());
+            output = driveArcController.updateCalculations(getLeftDistance(), getRightDistance(), getAngle().degrees());
             SmartDashboard.putNumber("Left Output", output.getLeft());
             SmartDashboard.putNumber("Right Output", output.getRight());
             leftMaster.set(ControlMode.PercentOutput, output.getLeft());
@@ -394,7 +395,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public void configureDriveArc(double startVel, double endVel, double degrees, double turnRadius, boolean backwardsTurn, double currAngle) {
-        angle = degrees;
+        inverseTurn = driveArcController.getInverseTurn();
         driveArcController.configureArcTrajectory(startVel, endVel, degrees, turnRadius, backwardsTurn, currAngle);
         if (controlMode != DriveControlMode.DRIVE_ARC){
             setHighGear(true);

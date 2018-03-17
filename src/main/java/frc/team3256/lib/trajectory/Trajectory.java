@@ -9,12 +9,28 @@ public class Trajectory {
         private double vel;
         private double acc;
         private double time;
+        private Type type;
+        public boolean backTurn, inverse = false;
+        public double radius;
 
-        public Point(double pos, double vel, double acc, double time){
+        public enum Type{
+            STRAIGHT,
+            ARC
+        }
+
+        public Point(double pos, double vel, double acc, double time, Type type, boolean inverse){
             this.pos = pos;
             this.vel = vel;
             this.acc = acc;
             this.time = time;
+            this.type = type;
+            this.inverse = inverse;
+        }
+
+        public Point(double pos, double vel, double acc, double time, Type type, boolean inverse, boolean backTurn, double radius) {
+            this.backTurn = backTurn;
+            this.radius = radius;
+            new Point(pos, vel, acc, time, type, inverse);
         }
 
         public double getPos(){
@@ -32,6 +48,7 @@ public class Trajectory {
         public double getTime(){
             return time;
         }
+
     }
 
     public ArrayList<Point> points;
@@ -50,6 +67,14 @@ public class Trajectory {
 
     public void addPoint(int index, Point point){
         points.add(index, point);
+    }
+
+    public void addPoints(ArrayList<Point> points){
+        this.points.addAll(points);
+    }
+
+    public Enum getType(){
+        return points.get(0).type;
     }
 
     @Override

@@ -10,11 +10,8 @@ public class DriveStraightController {
     private double kP, kI, kD, kV, kA, dt;
     private double kStraightP, kStraightI, kStraightD;
     double PID, error, sumError, changeError = 0, prevError = 0;
-    private Trajectory trajectory;
-    private int curr_segment = 0;
-    private double leftOutput, rightOutput, feedForwardValue, feedBackValue, initialAngle, adjustment;
+    private double feedForwardValue, feedBackValue, adjustment;
     private PIDController pidController = new PIDController();
-    private boolean reversed = false;
 
     public void setGains(double kP, double kI, double kD, double kV, double kA, double kStraightP, double kStraightI, double kStraightD) {
         this.kP = kP;
@@ -38,7 +35,6 @@ public class DriveStraightController {
         sumError = 0;
         changeError = 0;
         prevError = 0;
-        curr_segment = 0;
     }
 
     private double calculateFeedForward(double currVel, double currAccel) {
@@ -54,51 +50,26 @@ public class DriveStraightController {
         return PID;
     }
 
-    public DrivePower update(double currPos, double currAngle) {
-        if (curr_segment == 0){
-            pidController.setTargetPosition(initialAngle);
-            pidController.setMinMaxOutput(-1, 1);
+    public DrivePower update(double currPos, double currAngle, Trajectory.Point point, boolean reversed) {
+        feedForwardValue = calculateFeedForward(point.getVel(), point.getAcc());
+        if (reversed){
+            currPos *= -1;
+            currAngle *= -1;
         }
-        if (!isFinished()){
-            Trajectory.Point point = trajectory.getCurrPoint(curr_segment);
-            feedForwardValue = calculateFeedForward(point.getVel(), point.getAcc());
-            if (reversed){
-                currPos *= -1;
-                currAngle *= -1;
-            }
-            feedBackValue = calculateFeedBack(point.getPos(), currPos, point.getVel());
-            //System.out.println(PID);
-          
-            leftOutput = feedBackValue + feedForwardValue;
-            rightOutput = feedBackValue + feedForwardValue;
-            adjustment = -pidController.update(currAngle);
-            //System.out.println("curr angle: " + currAngle);
-            //System.out.println("adjustment: " + adjustment);
-            leftOutput += adjustment;
-            rightOutput -= adjustment;
-            if (reversed){
-                leftOutput *= -1.0;
-                rightOutput *= -1.0;
-            }
-            curr_segment++;
-            leftOutput = Util.clip(leftOutput, -1, 1);
-            rightOutput = Util.clip(rightOutput, -1, 1);
-            return new DrivePower(leftOutput, rightOutput);
-        }
-        return new DrivePower(0,0);
-    }
+        feedBackValue = calculateFeedBack(point.getPos(), currPos, point.getVel());
+        //System.out.println(PID);
 
-    public boolean isFinished() {
-        return curr_segment >= trajectory.getLength();
-    }
-
-    public void setSetpoint(double startVel, double endVel, double distance, double angle){
-        TrajectoryGenerator trajectoryGenerator = new TrajectoryGenerator(Constants.kDistanceTrajectoryAccel, Constants.kDistanceTrajectoryCruiseVelocity, Constants.kControlLoopPeriod);
-        if (distance < 0){
-            reversed = true;
+        double leftOutput = feedBackValue + feedForwardValue;
+        double rightOutput = feedBackValue + feedForwardValue;
+        adjustment = -pidController.update(currAngle);
+        leftOutput += adjustment;
+        rightOutput -= adjustment;
+        if (reversed){
+            leftOutput *= -1.0;
+            rightOutput *= -1.0;
         }
-        else reversed = false;
-        this.trajectory = trajectoryGenerator.generateTrajectory(startVel, endVel, Math.abs(distance));
-        initialAngle = angle;
+        leftOutput = Util.clip(leftOutput, -1, 1);
+        rightOutput = Util.clip(rightOutput, -1, 1);
+        return new DrivePower(leftOutput, rightOutput);
     }
 }

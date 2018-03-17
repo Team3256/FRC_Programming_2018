@@ -11,6 +11,7 @@ import frc.team3256.lib.hardware.ADXRS453_Calibrator;
 import frc.team3256.robot.auto.AutoModeBase;
 import frc.team3256.robot.auto.AutoModeChooser;
 import frc.team3256.robot.auto.AutoModeExecuter;
+import frc.team3256.robot.auto.modes.Center.CenterRightSwitchAuto;
 import frc.team3256.robot.auto.modes.Final.*;
 import frc.team3256.robot.auto.modes.Right.RightRobotLeftScaleRightSwitchThreeCubeAuto;
 import frc.team3256.robot.auto.modes.Test.TestArcTrajectoryAuto;
@@ -67,7 +68,7 @@ public class Robot extends IterativeRobot {
 
         autoModeChooser = new AutoModeChooser();
         autoModeChooser.addAutoModes(new DoNothingAuto(), new CrossBaselineForwardAuto(), new CrossBaselineBackwardAuto(),
-                new CenterSwitchAuto(), new RightAuto(), new RightRobotLeftScaleRightSwitchThreeCubeAuto(), new TestArcTrajectoryAuto());
+                new CenterSwitchAuto(), new RightAuto(), new RightRobotLeftScaleRightSwitchThreeCubeAuto(), new TestArcTrajectoryAuto(), new CenterRightSwitchAuto());
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");

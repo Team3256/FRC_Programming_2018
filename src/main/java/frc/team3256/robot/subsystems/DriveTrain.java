@@ -398,10 +398,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
         driveArcController.configureArcTrajectory(startVel, endVel, degrees, turnRadius, backwardsTurn, currAngle);
         if (controlMode != DriveControlMode.DRIVE_ARC){
             setHighGear(true);
-            leftMaster.configNominalOutputForward(2.0/12.0, 0);
+            /*leftMaster.configNominalOutputForward(2.0/12.0, 0);
             rightMaster.configNominalOutputForward(2.0/12.0, 0);
             leftSlave.configNominalOutputForward(2.0/12.0, 0);
-            rightSlave.configNominalOutputForward(2.0/12.0, 0);
+            rightSlave.configNominalOutputForward(2.0/12.0, 0);*/
             TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
             controlMode = DriveControlMode.DRIVE_ARC;
         }
@@ -528,9 +528,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public void resetNominal(){
-        leftMaster.configNominalOutputForward(0, 0);
+        /*leftMaster.configNominalOutputForward(0, 0);
         rightMaster.configNominalOutputForward(0, 0);
         leftSlave.configNominalOutputForward(0, 0);
-        rightSlave.configNominalOutputForward(0, 0);
+        rightSlave.configNominalOutputForward(0, 0);*/
     }
 }

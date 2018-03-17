@@ -13,16 +13,15 @@ public class CenterRightSwitchAuto extends AutoModeBase {
     protected void routine() throws AutoModeEndedException {
         DriveTrain.getInstance().setBrake();
         DriveTrain.getInstance().resetGyro();
-        runAction(new DeployIntakeAction());
-        /*if (!Elevator.getInstance().isHomed()){
+        if (!Elevator.getInstance().isHomed()){
             runAction(new AutoHomingAction());
-        }*/
+        }
+        runAction(new DeployIntakeAction());
         double initTime = Timer.getFPGATimestamp();
         double currVel = 24.0;
         double targetAngle = -40.0;
         runAction(new DeployIntakeAction());
         runAction(new CloseCarriageAction());
-        Robot.getInstance().setStopElevator(true);
         runAction(new FollowArcTrajectoryAction(currVel, 50, 40, targetAngle, false));
         System.out.println("Initial 45 degree Arc --------------");
         currVel = DriveTrain.getInstance().getAverageVelocity();
@@ -32,14 +31,15 @@ public class CenterRightSwitchAuto extends AutoModeBase {
         runAction(new FollowArcTrajectoryAction(currVel, 50, 28, 0, false));
         currVel = DriveTrain.getInstance().getAverageVelocity();
         //runAction(new WaitAction(0.25));
-        runAction(new FollowTrajectoryAction(currVel, 50, 30, 0));
-        Robot.getInstance().setStopElevator(false);
+        runAction(new FollowTrajectoryAction(currVel, 20, 30, 0));
         //runAction(new RaiseElevatorSwitchAction());
         runAction(new FollowTrajectoryAction(currVel, 50, 3, 0));
         runAction(new ScoreForwardAction());
         runAction(new WaitAction(0.75));
         runAction(new StopScoreAction());
         runAction(new FollowTrajectoryAction(currVel, 50, -12.0, 0));
-        runAction(new ElevatorIntakePositionAction());
-        DriveTrain.getInstance().setBrake();}
+        //runAction(new ElevatorIntakePositionAction());
+        DriveTrain.getInstance().setBrake();
+        System.out.println("TOTAL TIME: " + Double.toString(Timer.getFPGATimestamp() - initTime));
+    }
 }

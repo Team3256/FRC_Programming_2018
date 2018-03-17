@@ -160,8 +160,6 @@ public class Elevator extends SubsystemBase implements Loop{
 
     @Override
     public void update(double timestamp){
-        if (Robot.getInstance().getStopElevator())
-            return;
         if (prevWantedState != wantedState){
             wantedStateChanged = true;
             prevWantedState = wantedState;
@@ -218,18 +216,17 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private SystemState handleZeroPower() {
         if (stateChanged){
-            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
-                    Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
         }
         setOpenLoop(0);
         return defaultStateTransfer();
     }
 
     private SystemState handleHome(double timestamp) {
+        if (isHomed()){
+            return SystemState.HOLD;
+        }
         if (stateChanged) {
             homingTimeStart = timestamp;
-            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
-                    Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
         }
         if (timestamp - homingTimeStart < Constants.kElevatorHomingUpTime && getHeight() < 9) {
             if (isHomed) {
@@ -247,8 +244,6 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private SystemState handleHold(){
         if (stateChanged){
-            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
-                    Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
             master.selectProfileSlot(Constants.kElevatorHoldSlot,0);
         }
         if (getHeight() < Constants.kDropPreset) {
@@ -264,8 +259,6 @@ public class Elevator extends SubsystemBase implements Loop{
                 return SystemState.HOLD;
             }
             if (stateChanged){
-                TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
-                        Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
                 master.selectProfileSlot(Constants.kElevatorFastUpSlot, 0);
             }
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastUpSlot);
@@ -280,8 +273,6 @@ public class Elevator extends SubsystemBase implements Loop{
                 return SystemState.HOLD;
             }
             if (stateChanged){
-                TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
-                            Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
                 master.selectProfileSlot(Constants.kElevatorFastDownSlot, 0);
             }
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastDownSlot);
@@ -301,8 +292,7 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private SystemState handleManualControlUp(){
         if (stateChanged){
-            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
-                    Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
+
         }
         setOpenLoop(Constants.kElevatorUpManualPower);
         return defaultStateTransfer();
@@ -310,8 +300,7 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private SystemState handleManualControlDown() {
         if (stateChanged){
-            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
-                    Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
+
         }
         setOpenLoop(Constants.kElevatorDownManualPower);
         return defaultStateTransfer();
@@ -402,7 +391,7 @@ public class Elevator extends SubsystemBase implements Loop{
 
     @Override
     public void outputToDashboard() {
-        SmartDashboard.putBoolean("/SmartDashboard/isHomed", isHomed());
+        SmartDashboard.putBoolean("isHomed", isHomed());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package frc.team3256.robot.auto.modes.Center;
 
 import edu.wpi.first.wpilibj.Timer;
+import frc.team3256.robot.Robot;
 import frc.team3256.robot.auto.AutoModeBase;
 import frc.team3256.robot.auto.AutoModeEndedException;
 import frc.team3256.robot.auto.actions.*;
@@ -21,6 +22,7 @@ public class CenterRightSwitchAuto extends AutoModeBase {
         double targetAngle = -40.0;
         runAction(new DeployIntakeAction());
         runAction(new CloseCarriageAction());
+        Robot.getInstance().setStopElevator(true);
         runAction(new FollowArcTrajectoryAction(currVel, 50, 40, targetAngle, false));
         System.out.println("Initial 45 degree Arc --------------");
         currVel = DriveTrain.getInstance().getAverageVelocity();
@@ -31,6 +33,7 @@ public class CenterRightSwitchAuto extends AutoModeBase {
         currVel = DriveTrain.getInstance().getAverageVelocity();
         //runAction(new WaitAction(0.25));
         runAction(new FollowTrajectoryAction(currVel, 50, 30, 0));
+        Robot.getInstance().setStopElevator(false);
         //runAction(new RaiseElevatorSwitchAction());
         runAction(new FollowTrajectoryAction(currVel, 50, 3, 0));
         runAction(new ScoreForwardAction());

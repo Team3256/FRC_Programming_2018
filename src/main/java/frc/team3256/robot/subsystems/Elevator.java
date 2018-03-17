@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.robot.Constants;
+import frc.team3256.robot.Robot;
 
 public class Elevator extends SubsystemBase implements Loop{
 
@@ -159,6 +160,8 @@ public class Elevator extends SubsystemBase implements Loop{
 
     @Override
     public void update(double timestamp){
+        if (Robot.getInstance().getStopElevator())
+            return;
         if (prevWantedState != wantedState){
             wantedStateChanged = true;
             prevWantedState = wantedState;

@@ -123,12 +123,14 @@ public class Constants {
     public static final double kArmHoldP = 0.1;
     public static final double kArmHoldI = 0;
     public static final double kArmHoldD = 0;
-    public static final int kArmMovingSlot = 1;
-    public static final double kArmMovingP = 0.1;
-    public static final double kArmMovingI = 0;
-    public static final double kArmMovingD = 0;
-    public static final double kCounterGravityConstant = 0;
-
+    public static final int kArmUpSlot = 1;
+    public static final double kArmUpP = 0.1;
+    public static final double kArmUpI = 0;
+    public static final double kArmUpD = 0;
+    public static final int kArmDownSlot = 1;
+    public static final double kArmDownP = 0.1;
+    public static final double kArmDownI = 0;
+    public static final double kArmDownD = 0;
 
     //Presets:
     public static final double kIntakeSharpIRMaxVoltage = 3.3;

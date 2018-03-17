@@ -1,9 +1,7 @@
 package frc.team3256.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.sun.corba.se.impl.orbutil.closure.Constant;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.InterruptHandlerFunction;
 import frc.team3256.lib.Loop;
@@ -81,8 +79,14 @@ public class Carriage extends SubsystemBase implements Loop {
             case HOLD:
                 newState = handleHold();
                 break;
-            case CLOSED_LOOP:
+            /*case CLOSED_LOOP:
                 newState = handleClosedLoop();
+                break;*/
+            case PIVOT_UP:
+                newState = handlePivotUp();
+                break;
+            case PIVOT_DOWN:
+                newState = handlePivotDown();
                 break;
             case MANUAL_FORWARD:
                 newState = handleManualForward();
@@ -111,7 +115,9 @@ public class Carriage extends SubsystemBase implements Loop {
     }
 
     public enum SystemState{
-        CLOSED_LOOP,
+        //CLOSED_LOOP,
+        PIVOT_UP,
+        PIVOT_DOWN,
         MANUAL_FORWARD,
         MANUAL_REVERSE,
         HOLD,
@@ -144,9 +150,12 @@ public class Carriage extends SubsystemBase implements Loop {
         //configure hold PID values
         TalonUtil.setPIDGains(pivotArm, Constants.kArmHoldSlot, Constants.kArmHoldP,
                 Constants.kArmHoldI, Constants.kArmHoldD, 0);
-        //configure moving PID values
-        TalonUtil.setPIDGains(pivotArm, Constants.kArmMovingSlot, Constants.kArmMovingP,
-                Constants.kArmMovingI, Constants.kArmMovingD, 0);
+        //configure up PID values
+        TalonUtil.setPIDGains(pivotArm, Constants.kArmUpSlot, Constants.kArmUpP,
+                Constants.kArmUpI, Constants.kArmUpD, 0);
+        //configure down PID values
+        TalonUtil.setPIDGains(pivotArm, Constants.kArmDownSlot, Constants.kArmDownP,
+                Constants.kArmDownI, Constants.kArmDownD, 0);
 
         //voltage limiting
         TalonUtil.setPeakOutput(Constants.kArmMaxForwardVoltage/12.0,
@@ -203,7 +212,35 @@ public class Carriage extends SubsystemBase implements Loop {
         return defaultStateTransfer();
     }
 
-    private SystemState handleClosedLoop(){
+    private SystemState handlePivotUp(){
+        if(isHomed){
+            if(atClosedLoopTarget()){
+                return SystemState.HOLD;
+            }
+            if(stateChanged){
+                pivotArm.selectProfileSlot(Constants.kArmUpSlot, 0);
+            }
+            setTargetPosition(m_closedLoopTarget,Constants.kArmUpSlot);
+            return defaultStateTransfer();
+        }
+        return defaultStateTransfer();
+    }
+
+    private SystemState handlePivotDown(){
+        if(isHomed){
+            if(atClosedLoopTarget()){
+                return SystemState.HOLD;
+            }
+            if(stateChanged){
+                pivotArm.selectProfileSlot(Constants.kArmDownSlot, 0);
+            }
+            setTargetPosition(m_closedLoopTarget,Constants.kArmDownSlot);
+            return defaultStateTransfer();
+        }
+        return defaultStateTransfer();
+    }
+
+    /*private SystemState handleClosedLoop(){
         if(isHomed){
             if (atClosedLoopTarget()){
                 return SystemState.HOLD;
@@ -211,11 +248,12 @@ public class Carriage extends SubsystemBase implements Loop {
             if (stateChanged){
                 pivotArm.selectProfileSlot(Constants.kArmMovingSlot, 0);
             }
+
             setTargetPosition(m_closedLoopTarget, Constants.kArmMovingSlot);
             return defaultStateTransfer();
         }
         return defaultStateTransfer();
-    }
+    }*/
 
     private SystemState handleManualForward(){
         if (stateChanged){
@@ -274,8 +312,14 @@ public class Carriage extends SubsystemBase implements Loop {
             case WANTS_TO_HOME:
                 return SystemState.HOMING;
         }
-        if(!targetReached && m_usingClosedLoop) {
+        /*if(!targetReached && m_usingClosedLoop) {
             rv = SystemState.CLOSED_LOOP;
+        }*/
+        if(m_closedLoopTarget > getAngle() && m_usingClosedLoop){
+            rv = SystemState.PIVOT_DOWN;
+        }
+        if(m_closedLoopTarget < getAngle() && m_usingClosedLoop){
+            rv = SystemState.PIVOT_UP;
         }
         else rv = SystemState.HOLD;
         return rv;
@@ -309,7 +353,7 @@ public class Carriage extends SubsystemBase implements Loop {
         if (stateChanged){
             pivotArm.selectProfileSlot(slotID,0);
         }
-        pivotArm.set(ControlMode.Position, (int)angleToSensorUnits(targetAngle), DemandType.ArbitraryFeedForward, Constants.kCounterGravityConstant*Math.cos(getAngle()));
+        pivotArm.set(ControlMode.Position, (int)angleToSensorUnits(targetAngle), 0);
     }
 
 }

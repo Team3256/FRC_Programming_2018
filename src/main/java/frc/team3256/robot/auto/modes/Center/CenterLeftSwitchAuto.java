@@ -26,7 +26,7 @@ public class CenterLeftSwitchAuto extends AutoModeBase {
         runAction(new FollowArcTrajectoryAction(currVel, 50, 42, targetAngle, false));
         currVel = DriveTrain.getInstance().getAverageVelocity();
         DriveTrain.getInstance().setBrake();
-        runAction(new FollowTrajectoryAction(currVel, 50, 67, targetAngle)); //radius 65
+        runAction(new FollowTrajectoryAction(currVel, 20, 56, targetAngle)); //radius 65
         currVel = DriveTrain.getInstance().getAverageVelocity();
         //runAction(new FollowArcTrajectoryAction(currVel, 24.0, 20, 0, false));
         currVel = DriveTrain.getInstance().getAverageVelocity();
@@ -41,6 +41,7 @@ public class CenterLeftSwitchAuto extends AutoModeBase {
         runAction(new FollowTrajectoryAction(currVel, 0, -12.0, 0));
         //runAction(new ElevatorIntakePositionAction());
         DriveTrain.getInstance().setBrake();
+        System.out.println("TOTAL TIME: " + Double.toString(Timer.getFPGATimestamp() - initTime));
     }
 }
 

@@ -141,7 +141,6 @@ public class Robot extends IterativeRobot {
     @Override
     public void autonomousPeriodic(){
         GameDataAccessor.getGameData();
-        System.out.println(enabledLooper.getMeasuredPeriod());
     }
 
     @Override

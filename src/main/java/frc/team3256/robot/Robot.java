@@ -53,7 +53,6 @@ public class Robot extends IterativeRobot {
     boolean prevA = false;
     @Override
     public void teleopPeriodic() {
-        /*
         boolean A = OI.getA();
         if (A && !prevA){
             squeeezing = !squeeezing;
@@ -61,7 +60,7 @@ public class Robot extends IterativeRobot {
         solenoidOne.set(squeeezing ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
         boolean intake = OI.rightTrigger();
         boolean outtake = OI.leftTrigger();
-        double power = 0.5;
+        double power = 0.75;
         if (intake){
             motorTwo.set(power);
             motorFive.set(-power);
@@ -75,7 +74,6 @@ public class Robot extends IterativeRobot {
             motorFive.set(0);
         }
         prevA = A;
-        */
         motorTwo.set(OI.getLeftY());
         motorFour.set(OI.getLeftY());
     }

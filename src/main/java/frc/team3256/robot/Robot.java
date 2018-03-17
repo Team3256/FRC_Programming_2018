@@ -38,11 +38,14 @@ public class Robot extends IterativeRobot {
     TeleopUpdater teleopUpdater;
     FileWriter logFileWriter;
 
+    static Robot instance;
+    boolean stopElevator = false;
+
     Compressor compressor;
 
     @Override
     public void robotInit() {
-
+        instance = this;
         compressor = new Compressor();
         compressor.setClosedLoopControl(true);
 
@@ -130,7 +133,6 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledPeriodic() {
-        if (!Elevator.getInstance().isHomed()) System.out.println("Homed: " + Elevator.getInstance().isHomed());
         subsystemManager.outputToDashboard();
         //System.out.println(elevator.getRawEncoder());
     }
@@ -166,5 +168,17 @@ public class Robot extends IterativeRobot {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+    }
+
+    public static Robot getInstance() {
+        return instance;
+    }
+
+    public void setStopElevator(boolean stopElevator) {
+        this.stopElevator = stopElevator;
+    }
+
+    public boolean getStopElevator() {
+        return this.stopElevator;
     }
 }

@@ -73,6 +73,10 @@ public class Looper {
         }
     }
 
+    public void removeLoop(Loop loop) {
+        this.loops.remove(loop);
+    }
+
     /**
      * @return the measured period of the control loop
      */

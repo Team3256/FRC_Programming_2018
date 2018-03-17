@@ -123,6 +123,9 @@ public class Robot extends IterativeRobot {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if (!Elevator.getInstance().isHomed()){
+            Elevator.getInstance().setWantedState(Elevator.WantedState.WANTS_TO_HOME);
+        }
         driveTrain.resetNominal();
         //driveTrain.setVelocitySetpoint(0,0);
     }
@@ -134,6 +137,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void disabledPeriodic() {
         subsystemManager.outputToDashboard();
+        System.out.println("IS HOMED: " + Elevator.getInstance().isHomed());
         //System.out.println(elevator.getRawEncoder());
     }
 

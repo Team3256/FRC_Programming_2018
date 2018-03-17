@@ -68,7 +68,7 @@ public class Elevator extends SubsystemBase implements Loop{
         slaveThree = TalonUtil.generateSlaveTalon(Constants.kElevatorSlaveThree, Constants.kElevatorMaster);
 
         TalonUtil.configMagEncoder(master);
-        master.setSelectedSensorPosition(0, 0, 0);
+        master.setSelectedSensorPosition((int)(heightToSensorUnits(7.5)), 0, 0);
 
         //configure Hold PID values
         TalonUtil.setPIDGains(master, Constants.kElevatorHoldSlot, Constants.kElevatorHoldP,
@@ -160,9 +160,6 @@ public class Elevator extends SubsystemBase implements Loop{
 
     @Override
     public void update(double timestamp){
-        if (!stateChanged){
-            return;
-        }
         if (Robot.getInstance().getStopElevator())
             return;
         if (prevWantedState != wantedState){
@@ -234,12 +231,16 @@ public class Elevator extends SubsystemBase implements Loop{
             TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
                     Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
         }
-        if (timestamp - homingTimeStart < Constants.kElevatorHomingUpTime) {
+        if (timestamp - homingTimeStart < Constants.kElevatorHomingUpTime && getHeight() < 9) {
             if (isHomed) {
                 return SystemState.ZERO_POWER;
             }
             setOpenLoop(Constants.kElevatorUpSlowPower);
             return SystemState.HOMING;
+        }
+        else if (getHeight() > 9){
+            isHomed = true;
+            wantedState = WantedState.WANTS_TO_INTAKE_POS;
         }
         return SystemState.ZERO_POWER;
     }

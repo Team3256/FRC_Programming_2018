@@ -127,6 +127,7 @@ public class Constants {
     public static final double kArmMovingP = 0.1;
     public static final double kArmMovingI = 0;
     public static final double kArmMovingD = 0;
+    public static final double kCounterGravityConstant = 0;
 
 
     //Presets:
@@ -137,6 +138,7 @@ public class Constants {
     public static final double kIntakeExhaustPower = -0.6;
     public static final double kIntakeScoreForwardPower = -0.8;
     public static final double kIntakeScoreForwardSlowPower = -0.5;
+    public static final double kIntakeDropClearAngle = 90.0;
 
     public static final double kElevatorUpManualPower = 0.4;
     public static final double kElevatorDownManualPower = -0.15;

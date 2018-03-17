@@ -100,7 +100,7 @@ public class Intake implements Loop{
 
     private SystemState handleIntake(){
         if(stateChanged){
-            closeSqueeze();
+            close();
         }
         if(hasCube()){
             setIntake(0,0);
@@ -114,19 +114,19 @@ public class Intake implements Loop{
 
     private SystemState handleExhaust(){
         if(stateChanged){
-            closeSqueeze();
+            close();
         }
         setIntake(Constants.kIntakeExhaustPower,Constants.kIntakeExhaustPower);
         return defaultStateTransfer();
     }
 
     private SystemState handleClosedIdle(){
-        closeSqueeze();
+        close();
         return defaultStateTransfer();
     }
 
     private SystemState handleOpenIdle(){
-        openSqueeze();
+        open();
         return defaultStateTransfer();
     }
 
@@ -140,7 +140,7 @@ public class Intake implements Loop{
         return defaultStateTransfer();
     }
 
-    public void setIntake(double left, double right){
+    private void setIntake(double left, double right){
         leftIntake.set(left);
         rightIntake.set(right);
     }
@@ -149,12 +149,16 @@ public class Intake implements Loop{
         return false; //cubeDetector.isTriggered();
     }
 
-    public void closeSqueeze(){
-        squeezeActuator.set(DoubleSolenoid.Value.kForward); //Direction TBD
+    private void close(){
+        squeezeActuator.set(DoubleSolenoid.Value.kForward); //TODO: Direction TBD
     }
 
-    public void openSqueeze(){
-        squeezeActuator.set(DoubleSolenoid.Value.kReverse); //Direction TBD
+    private void open(){
+        if (Carriage.getInstance().getAngle() < Constants.kIntakeDropClearAngle){
+            System.out.println("PIVOT NOT WITHIN CLEAR ANGLE!!!!!!!");
+            return;
+        }
+        squeezeActuator.set(DoubleSolenoid.Value.kReverse); //TODO: Direction TBD
     }
 
 

@@ -1,12 +1,6 @@
 package frc.team3256.robot.subsystems;
 
-import com.sun.xml.internal.bind.v2.model.core.EnumLeafInfo;
 import frc.team3256.lib.Loop;
-import frc.team3256.robot.Constants;
-import org.omg.PortableInterceptor.INACTIVE;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
-
-import javax.rmi.ssl.SslRMIClientSocketFactory;
 
 public class Superstructure extends SubsystemBase implements Loop{
     private static Superstructure instance;
@@ -147,8 +141,6 @@ public class Superstructure extends SubsystemBase implements Loop{
                     return SystemState.SCORING_SLOW;
                 case SCORE_DROP:
                     return SystemState.SCORING_OPEN;
-                case MANUAL_UP: case MANUAL_DOWN: case MANUAL_IN: case MANUAL_OUT:
-                    return SystemState.MANUAL_CONTROL;
             }
         }
         elevator.setWantedState(elevatorPreset);
@@ -237,12 +229,12 @@ public class Superstructure extends SubsystemBase implements Loop{
                 break;
             case SWITCH_FRONT_PRESET:
                 elevatorPreset = Elevator.WantedState.WANTS_TO_SWITCH_POS;
-                carriagePreset = Carriage.WantedState.STOW_PRESET;
+                carriagePreset = Carriage.WantedState.FRONT_SCORE_PRESET;
                 useClosedLoop = true;
                 break;
             case SWITCH_BACK_PRESET:
                 elevatorPreset = Elevator.WantedState.WANTS_TO_SWITCH_POS;
-                carriagePreset = Carriage.WantedState.FRONT_SCORE_PRESET;
+                carriagePreset = Carriage.WantedState.STOW_PRESET;
                 useClosedLoop = true;
                 break;
             case SCALE_LOW_FRONT_PRESET:

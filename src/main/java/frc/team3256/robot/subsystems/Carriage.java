@@ -1,7 +1,9 @@
 package frc.team3256.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.sun.corba.se.impl.orbutil.closure.Constant;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.InterruptHandlerFunction;
 import frc.team3256.lib.Loop;
@@ -307,7 +309,7 @@ public class Carriage extends SubsystemBase implements Loop {
         if (stateChanged){
             pivotArm.selectProfileSlot(slotID,0);
         }
-        pivotArm.set(ControlMode.Position, (int)angleToSensorUnits(targetAngle), 0);
+        pivotArm.set(ControlMode.Position, (int)angleToSensorUnits(targetAngle), DemandType.ArbitraryFeedForward, Constants.kCounterGravityConstant*Math.cos(getAngle()));
     }
 
 }

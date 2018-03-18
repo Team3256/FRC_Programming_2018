@@ -5,6 +5,7 @@ import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Translation;
 import frc.team3256.lib.math.Twist;
 import frc.team3256.robot.subsystems.Intake;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.util.Optional;
 
@@ -48,16 +49,20 @@ public class PurePursuitTracker {
 
         Translation robotCoordinates = new Translation(robotPos.getTranslation().x(), robotPos.getTranslation().y());
 
-        Segment s = p.currSegment;
+        Rotation robotAngle = robotPos.getRotation();
+
         Translation lookaheadPoint = p.lookaheadPoint;
 
+
+        /*
+        Wrong
+
+        Segment s = p.currSegment;
         // whether the angle from the robot to the lookahead point is positive or negative
         int direction = getDirection(p.lookaheadPoint, robotCoordinates);
         // whether the angle of the slope (or tangent slope) at the lookahead point is positive or negative
         int lookaheadSlopeDirection = (int) Math.signum(s.getDirection(lookaheadPoint).direction().radians());
 
-        /*
-        Wrong?
         // perpendicular to the lookahead slope
         Translation lookaheadPointToCenter = s.getDirection(lookaheadPoint);
         lookaheadPointToCenter = lookaheadPointToCenter.rotate(Rotation.fromDegrees(90.0 * direction * lookaheadSlopeDirection));
@@ -75,25 +80,30 @@ public class PurePursuitTracker {
         Translation center = lookaheadPointToCenterTransform.intersection(robotToCenterTransform);
         */
 
-        Translation lookaheadPointToRobot = new Translation(lookaheadPoint, robotCoordinates);
-        int turnDirection = (int) Math.signum(lookaheadPointToRobot.direction().degrees() - robotPos.getRotation().degrees());
+        Translation robotToLookaheadPoint = new Translation(robotCoordinates, lookaheadPoint);
+        // rotates another -90 degrees because angle is based off of the unit circle (0deg at y=0) instead of from the robot's heading (0deg at x=0)
+        Rotation turnAngle = robotToLookaheadPoint.direction().rotate(Rotation.fromDegrees(-90)).rotate(robotAngle.inverse());
+        int turnDirection = (int) Math.signum(turnAngle.degrees());
 
-        Rotation robotToCenterAngle = Rotation.fromDegrees(robotPos.getRotation().degrees() - 90.0 * turnDirection);
-        Rotation lookaheadPointToCenterAngle;
-        if(direction == -1) {
-            lookaheadPointToCenterAngle = Rotation.fromDegrees(90.0 + robotPos.getRotation().degrees() + 2.0 * lookaheadPointToRobot.direction().degrees()).inverse();
-        } else {
-            lookaheadPointToCenterAngle = Rotation.fromDegrees(robotPos.getRotation().degrees() - 2.0 * lookaheadPointToRobot.direction().degrees()).inverse();
-        }
+        Rotation robotToCenterAngle = robotAngle.rotate(Rotation.fromDegrees(90 * turnDirection));
+        Rotation lookaheadPointToCenterAngle = robotToLookaheadPoint.direction().rotate(Rotation.fromDegrees(180)).rotate(turnAngle);
 
-        RigidTransform lookaheadPointToCenterTransform = new RigidTransform(lookaheadPoint, lookaheadPointToCenterAngle.inverse());
-        RigidTransform robotToCenterTransform = new RigidTransform(robotCoordinates, robotToCenterAngle.inverse());
+        RigidTransform robotToCenterTransform = new RigidTransform(lookaheadPoint, robotToCenterAngle);
+        RigidTransform lookaheadPointToCenterTransform = new RigidTransform(robotCoordinates, lookaheadPointToCenterAngle);
         Translation center = lookaheadPointToCenterTransform.intersection(robotToCenterTransform);
 
-        System.out.println("--------x------"+robotToCenterAngle);
-        System.out.println("--------------"+lookaheadPointToCenterAngle);
-        System.out.println("TURN DIRECTION  "+turnDirection);
+        /*
+        System.out.println("ROBOT POS   "+robotCoordinates);
+        System.out.println("--------x------"+lookaheadPoint);
+        System.out.println("--------------"+robotToLookaheadPoint);
+        System.out.println("ROBOT ANGLE  "+robotAngle);
+        System.out.println("TURN ANGLE  "+turnAngle);
         System.out.println("CENTER     "+center);
+        System.out.println("ROBOT TO CENTER ANGLE    "+robotToCenterAngle);
+        System.out.println("LOOKAHEAD TO ROBOT DIRECTION    "+robotToLookaheadPoint.direction().rotate(Rotation.fromDegrees(180)));
+        System.out.println("LOOKAHEAD TO CENTER ANGLE    "+lookaheadPointToCenterAngle);
+        */
+
         /*
         // if there is no intersection then...
         // probably not needed
@@ -102,7 +112,7 @@ public class PurePursuitTracker {
         }
         */
 
-        if (Math.abs(lookaheadPointToRobot.norm() - p.lookaheadDistance) < 0.1) {
+        if (Math.abs(robotToLookaheadPoint.norm() - p.lookaheadDistance) < kEpsilon) {
             //If the lookahead distance is the same as the distance from the robot to the lookahead point, then the robot will make a line and not an arc to the lookahead point
             return Optional.empty();
         }
@@ -135,8 +145,8 @@ public class PurePursuitTracker {
         if (optionalArc.isPresent()){
             Arc arc = optionalArc.get();
             double direction = Math.signum(arc.getDirection(pathUpdate.lookaheadPoint).direction().radians());
-            angularVel = vel/arc.getRadius();
-            rv = new Twist(vel, 0, angularVel*direction);
+            angularVel = vel / arc.getRadius();
+            rv = new Twist(vel, 0, angularVel * direction);
         }
         //Otherwise, we are on track, so only return a linear velocity
         else {

@@ -19,8 +19,6 @@ public class PurePursuitTrackerTest {
 
         Path p = new Path();
         p.addSegment(new Line(0, 0, 24, 24, 120.0, 20.0, 250.0));
-        p.addSegment(new Arc(24, 24, 48,24, 36, 24, 120.0, 20.0, 250.0));
-        p.addSegment(new Line(48, 12, 72, 12, 10, 10, 15));
 
 
         PurePursuitTracker pursuit = new PurePursuitTracker();
@@ -69,20 +67,28 @@ public class PurePursuitTrackerTest {
         assertEquals(pursuit.isFinished(), true);
         */
 
-        pursuit.setLookaheadDistance(-4 * Math.sqrt(2));
+        pursuit.setLookaheadDistance(2*Math.sqrt(2));
 
-        RigidTransform robotPos = new RigidTransform(new Translation(8, 4), Rotation.fromDegrees(45));
+        RigidTransform robotPos = new RigidTransform(new Translation(8, 4), Rotation.fromDegrees(90));
         pursuit.update(robotPos);
 
-        robotPos = new RigidTransform(new Translation(0, 4), Rotation.fromDegrees(-45));
+
+        robotPos = new RigidTransform(new Translation(4, 8), Rotation.fromDegrees(-20));
         pursuit.update(robotPos);
 
-        pursuit.setLookaheadDistance(0);
+        pursuit.setLookaheadDistance(4);
 
-        robotPos = new RigidTransform(new Translation(24, 40), Rotation.fromDegrees(-30));
+        robotPos = new RigidTransform(new Translation(8, 4), Rotation.fromDegrees(120));
         pursuit.update(robotPos);
 
-        robotPos = new RigidTransform(new Translation(240, 40), Rotation.fromDegrees(50));
+
+        robotPos = new RigidTransform(new Translation(20, 20), Rotation.fromDegrees(-90));
+        pursuit.update(robotPos);
+
+        robotPos = new RigidTransform(new Translation(25, 25), Rotation.fromDegrees(-30));
+        pursuit.update(robotPos);
+
+        robotPos = new RigidTransform(new Translation(25, 25), Rotation.fromDegrees(-30));
         pursuit.update(robotPos);
 
     }

@@ -23,6 +23,7 @@ public class TeleopUpdater {
 
     public void update(){
 
+        DriveTrain drive = DriveTrain.getInstance();
         double throttle = controls.getThrottle();
         double turn = controls.getTurn();
         boolean quickTurn = controls.getQuickTurn();
@@ -39,10 +40,9 @@ public class TeleopUpdater {
         boolean scoreRear = controls.scoreRear();
         boolean scoreFrontSlow = controls.scoreFrontSlow();
         boolean scoreRearSlow = controls.scoreRearSlow();
-        boolean manualOpenCarriage = controls.getOpenCarriage();
 
         boolean switchPos = controls.switchPreset();
-        boolean lowScalePos = controls.scalePresetLow();
+        boolean turnToCube = controls.turnToCube();
         boolean midScalePos = controls.scalePresetMid();
         boolean highScalePos = controls.scalePresetHigh();
 
@@ -99,10 +99,6 @@ public class TeleopUpdater {
             m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SCORE_BACKWARD_SLOW);
             m_intake.setWantedState(Intake.WantedState.IDLE);
         }
-        else if (manualOpenCarriage){
-            m_intake.setWantedState(Intake.WantedState.IDLE);
-            m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_OPEN_IDLE);
-        }
         else {
             m_intake.setWantedState(Intake.WantedState.IDLE);
             m_carriage.setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
@@ -110,6 +106,12 @@ public class TeleopUpdater {
 
         prevFlopToggle = flopToggle;
         prevPivotToggle = pivotToggle;
+
+        /*
+        if (turnToCube){
+            drive.setTurnInPlaceSetpoint(drive.getCubeOffsetAngle() + drive.getAngle().degrees());
+        }
+        */
 
         //Elevator subsystem
         //If the elevator is not homed yet, home the elevator
@@ -134,11 +136,7 @@ public class TeleopUpdater {
             isManualControl = false;
             m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_SWITCH_POS);
         }
-        else if (lowScalePos && m_elevator.isHomed()){
-            m_intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
-            isManualControl = false;
-            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_LOW_SCALE_POS);
-        }
+
         else if (midScalePos && m_elevator.isHomed()){
             m_intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
             isManualControl = false;

@@ -34,7 +34,7 @@ public class DualLogitechConfig implements ControlsInterface{
 
     @Override
     //Driver: Button X
-    public boolean getOpenCarriage(){
+    public boolean togglePivot(){
         return driver.getRawButton(3);
     }
 
@@ -55,10 +55,6 @@ public class DualLogitechConfig implements ControlsInterface{
     public boolean getUnjam(){
         return getIntake() && getExhaust();
     }
-
-    //Manipulator: Right Bumper
-    @Override
-    public boolean togglePivot() { return manipulator.getRawButton(6); }
 
     //Manipulator: Left Bumper
     @Override
@@ -94,11 +90,9 @@ public class DualLogitechConfig implements ControlsInterface{
         return manipulator.getRawButton(2);
     }
 
-    //Manipulator: Button A
+    //Driver: Button B
     @Override
-    public boolean scalePresetLow() {
-        return manipulator.getRawButton(1);
-}
+    public boolean turnToCube() {return false;} //driver.getRawButton(2)
 
     //Manipulator: Button X
     @Override

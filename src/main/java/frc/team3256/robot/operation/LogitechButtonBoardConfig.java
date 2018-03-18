@@ -61,19 +61,14 @@ public class LogitechButtonBoardConfig implements ControlsInterface{
     public boolean scoreRear() {
         return false;
     }
-
-    @Override
-    public boolean getOpenCarriage() {
-        return false;
-    }
-
+    
     @Override
     public boolean switchPreset() {
         return false;
     }
 
     @Override
-    public boolean scalePresetLow() {
+    public boolean turnToCube() {
         return false;
     }
 

@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.Looper;
 import frc.team3256.lib.hardware.ADXRS453_Calibrator;
 import frc.team3256.robot.auto.AutoModeBase;
@@ -17,6 +18,7 @@ import frc.team3256.robot.auto.modes.Final.*;
 import frc.team3256.robot.auto.modes.Right.RightRobotLeftScaleRightSwitchThreeCubeAuto;
 import frc.team3256.robot.auto.modes.Test.TestArcTrajectoryAuto;
 import frc.team3256.robot.auto.modes.Test.TestAutoHoming;
+import frc.team3256.robot.auto.modes.Test.TestTurnInPlaceAuto;
 import frc.team3256.robot.gamedata.GameDataAccessor;
 import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.subsystems.*;
@@ -72,7 +74,7 @@ public class Robot extends IterativeRobot {
 
         autoModeChooser = new AutoModeChooser();
         autoModeChooser.addAutoModes(new DoNothingAuto(), new CrossBaselineForwardAuto(), new CrossBaselineBackwardAuto(),
-                new CenterSwitchAuto(), new RightAuto(), new RightRobotLeftScaleRightSwitchThreeCubeAuto(), new CenterRightSwitchAuto(), new CenterLeftSwitchAuto(), new TestAutoHoming());
+                new CenterSwitchAuto(), new RightAuto(), new RightRobotLeftScaleRightSwitchThreeCubeAuto(), new CenterRightSwitchAuto(), new CenterLeftSwitchAuto(), new TestAutoHoming(), new TestTurnInPlaceAuto());
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
@@ -135,6 +137,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void disabledPeriodic() {
         subsystemManager.outputToDashboard();
+        //System.out.println("CUBE ANGLE: " + driveTrain.getCubeOffsetAngle());
         //System.out.println(elevator.getRawEncoder());
     }
 
@@ -146,11 +149,9 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopPeriodic() {
         teleopUpdater.update();
-        System.out.println("ELEVATOR STATE:" + elevator.getCurrentState());
-        System.out.println("TARGET HEIGHT: " + elevator.getTargetHeight());
-        System.out.println("CURRENT HEIGHT: " + elevator.getHeight());
-        System.out.println("WANTED STATE: " + elevator.getWantedState());
-        logToFile("" + DriverStation.getInstance().getMatchTime() + ": mode " + driveTrain.getMode() + " - left output " + driveTrain.getLeftOutputVoltage() + " - right output " + driveTrain.getRightOutputVoltage() + " - throttle " + teleopUpdater.getThrottle() + " - turn " + teleopUpdater.getTurn());
+        System.out.println("DISTANCE TRAVELED: " + (Math.abs(DriveTrain.getInstance().getRightDistance()) + DriveTrain.getInstance().getLeftDistance())/2);
+        System.out.println("ROTATIONS: " + driveTrain.getAngle().degrees());
+        //System.out.println("VELOCITY: " + (driveTrain.getRightVelocity() + driveTrain.getLeftVelocity())/2);
     }
 
     @Override
@@ -160,6 +161,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void robotPeriodic(){
         subsystemManager.outputToDashboard();
+        SmartDashboard.putBoolean("CompressorOn", compressor.enabled());
     }
 
     public void logToFile(String s) {

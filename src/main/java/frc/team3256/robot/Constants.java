@@ -127,13 +127,14 @@ public class Constants {
     public static final double kCarriageScoreForwardSlowPower = -0.5;
     public static final double kCarriageScoreBackwardSlowPower = 0.5;
     public static final double kCarriageScoreBackwardAutoPower = 0.55;
+    public static final double kCarriageScoreBackwardsQuickPower = 1.0;
     public static final double kCarriageExhaustPower = -0.75;
 
     public static final double kElevatorUpManualPower = 0.4;
     public static final double kElevatorDownManualPower = -0.15;
     public static final double kElevatorUpSlowPower = 0.2;
     public static final double kHighScalePreset = 48; //in inches //48.5 measured
-    public static final double kMidScalePreset = 40.0; //36.5
+    public static final double kMidScalePreset = 42.0; //36.5
     public static final double kLowScalePreset = 36.0; //30
     public static final double kSwitchPreset = 20.0;
     public static final double kIntakePreset = 7.5;

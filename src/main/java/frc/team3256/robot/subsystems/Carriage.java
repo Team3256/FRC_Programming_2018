@@ -37,6 +37,7 @@ public class Carriage extends SubsystemBase implements Loop{
         SCORING_FORWARD_SLOW,
         SCORING_BACKWARD_SLOW,
         SCORING_BACKWARD_AUTO,
+        SCORING_BACKWARDS_FAST,
         SCORING_FORWARD_AUTO,
         SQUEEZING_IDLE, //Actuators squeeze cube in place
         OPEN_IDLE, //Actuators stay open
@@ -53,6 +54,7 @@ public class Carriage extends SubsystemBase implements Loop{
         WANTS_TO_SCORE_BACKWARD,
         //Operator -> Whenever robot has cube
         WANTS_TO_SCORE_BACKWARD_AUTO,
+        WANTS_TO_SCORE_BACKWARDS_FAST,
         WANTS_TO_SCORE_FORWARD_SLOW,
         WANTS_TO_SCORE_BACKWARD_SLOW,
         WANTS_TO_SQUEEZE_IDLE,
@@ -91,6 +93,9 @@ public class Carriage extends SubsystemBase implements Loop{
                 break;
             case SCORING_BACKWARD_AUTO:
                 newState = handleScoreBackwardAuto();
+                break;
+            case SCORING_BACKWARDS_FAST:
+                newState = handleScoreBackwardFast();
                 break;
             case SQUEEZING_IDLE:
                 newState = handleSqueezeIdle();
@@ -166,6 +171,14 @@ public class Carriage extends SubsystemBase implements Loop{
         return defaultStateTransfer();
     }
 
+    private SystemState handleScoreBackwardFast(){
+        if (stateChanged){
+            squeeze();
+        }
+        runMotors(Constants.kCarriageScoreBackwardsQuickPower);
+        return defaultStateTransfer();
+    }
+
     private SystemState handleScoreBackwardAuto(){
         if (stateChanged){
             squeeze();
@@ -215,8 +228,8 @@ public class Carriage extends SubsystemBase implements Loop{
                 return SystemState.SCORING_BACKWARD_SLOW;
             case WANTS_TO_SCORE_BACKWARD_AUTO:
                 return SystemState.SCORING_BACKWARD_AUTO;
-            case WANTS_TO_SCORE_FORWARD_AUTO:
-                return SystemState.SCORING_FORWARD_AUTO;
+            case WANTS_TO_SCORE_BACKWARDS_FAST:
+                return SystemState.SCORING_BACKWARDS_FAST;
             case WANTS_TO_SQUEEZE_IDLE:
                 return SystemState.SQUEEZING_IDLE;
             case WANTS_TO_OPEN_IDLE:

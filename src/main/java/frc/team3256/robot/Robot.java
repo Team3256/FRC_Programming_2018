@@ -74,7 +74,7 @@ public class Robot extends IterativeRobot {
 
         autoModeChooser = new AutoModeChooser();
         autoModeChooser.addAutoModes(new DoNothingAuto(), new CrossBaselineForwardAuto(), new CrossBaselineBackwardAuto(),
-                new CenterSwitchAuto(), new RightAuto(), new RightRobotLeftScaleRightSwitchThreeCubeAuto(), new CenterRightSwitchAuto(), new CenterLeftSwitchAuto(), new TestAutoHoming(), new TestTurnInPlaceAuto());
+                new CenterSwitchAuto(), new RightAuto(), new RightRobotLeftScaleRightSwitchThreeCubeAuto(), new CenterRightSwitchAuto(), new CenterLeftSwitchAuto(), new TestArcTrajectoryAuto(), new TestTurnInPlaceAuto());
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");

@@ -59,47 +59,57 @@ public class DriveArcController {
 
     public DrivePower updateCalculations(double currPosLead, double currPosFollow, double currAngle, double currVel) {
         if (!isFinished()){
-            Trajectory.Point leadPoint = trajectoryCurveLead.getCurrPoint(curr_segment);
-            Trajectory.Point followPoint = trajectoryCurveFollow.getCurrPoint(curr_segment);
-            feedForwardValueLead = calculateFeedForward(leadPoint.getVel(), leadPoint.getAcc());
-            feedBackValueLead = calculateFeedBack(leadPoint.getPos(), currPosLead, leadPoint.getVel());
-            feedForwardValueFollow = calculateFeedForward(followPoint.getVel(), leadPoint.getAcc());
-            feedBackValueFollow = calculateFeedBack(followPoint.getPos(), currPosFollow, followPoint.getVel());
-            followOutput = feedBackValueFollow + feedForwardValueFollow;
-            leadOutput = feedBackValueLead + feedForwardValueLead;
-            targetAngle = (((leadPoint.getPos()+followPoint.getPos())/2)/radius)*180/Math.PI;
-            pidController.setTargetPosition(targetAngle);
-            pidController.setMinMaxOutput(-1, 1);
-            if (!inverseTurn) {
-                adjustment = pidController.update(currAngle);
-            }
-            else {
-                adjustment = pidController.update(-currAngle);
-            }
-            //SmartDashboard.putNumber("Lead Path Error", (((radius+(Constants.kRobotTrack/2))*angle) - currPosLead));
-            //SmartDashboard.putNumber("Follow Path Error", (((radius-(Constants.kRobotTrack/2))*angle) - currPosFollow));
-           // System.out.println("Expected Lead Path   " + ((radius+(Constants.kRobotTrack/2))*(angle)));
-            //System.out.println("Expected Follow Path   " + ((radius-(Constants.kRobotTrack/2))*angle));
-            //SmartDashboard.putNumber("LEAD VEL ERROR", leadPoint.getVel() - currVel);
-            //SmartDashboard.putNumber("Adjustment", adjustment);
-            //System.out.println("Target: " + targetAngle);
-            /*
-            SmartDashboard.putNumber("Curr Angle", currAngle);
-            System.out.println("EXPECTED END LEAD: " + trajectoryCurveLead.getCurrPoint(curr_segment).getPos());
-            System.out.println("Lead Position  " + currPosLead);
-            System.out.println("EXPECTED END FOLLOW: " + trajectoryCurveFollow.getCurrPoint(curr_segment).getPos());
-            System.out.println("Follow Position    " +  currPosFollow);
-            */
-            leadOutput += adjustment;
-            followOutput -= adjustment;
-            curr_segment++;
-            followOutput = Util.clip(followOutput, -1, 1);
-            leadOutput = Util.clip(leadOutput, -1, 1);
             if (backTurn){
+                Trajectory.Point leadPoint = trajectoryCurveLead.getCurrPoint(curr_segment);
+                Trajectory.Point followPoint = trajectoryCurveFollow.getCurrPoint(curr_segment);
+                feedForwardValueLead = calculateFeedForward(leadPoint.getVel(), leadPoint.getAcc());
+                feedBackValueLead = calculateFeedBack(leadPoint.getPos(), -currPosLead, leadPoint.getVel());
+                feedForwardValueFollow = calculateFeedForward(followPoint.getVel(), leadPoint.getAcc());
+                feedBackValueFollow = calculateFeedBack(followPoint.getPos(), -currPosFollow, followPoint.getVel());
+                followOutput = feedBackValueFollow + feedForwardValueFollow;
+                leadOutput = feedBackValueLead + feedForwardValueLead;
+                targetAngle = (((leadPoint.getPos()+followPoint.getPos())/2)/radius)*180/Math.PI;
+                pidController.setTargetPosition(targetAngle);
+                pidController.setMinMaxOutput(-1, 1);
+                if (!inverseTurn) {
+                    adjustment = pidController.update(-currAngle);
+                }
+                else {
+                    adjustment = pidController.update(currAngle);
+                }
+                leadOutput += adjustment;
+                followOutput -= adjustment;
                 leadOutput*=-1;
                 followOutput*=-1;
+                curr_segment++;
+                followOutput = Util.clip(followOutput, -1, 1);
+                leadOutput = Util.clip(leadOutput, -1, 1);
+                return new DrivePower(leadOutput, followOutput);
             }
-            return new DrivePower(leadOutput, followOutput);
+            else {
+                Trajectory.Point leadPoint = trajectoryCurveLead.getCurrPoint(curr_segment);
+                Trajectory.Point followPoint = trajectoryCurveFollow.getCurrPoint(curr_segment);
+                feedForwardValueLead = calculateFeedForward(leadPoint.getVel(), leadPoint.getAcc());
+                feedBackValueLead = calculateFeedBack(leadPoint.getPos(), currPosLead, leadPoint.getVel());
+                feedForwardValueFollow = calculateFeedForward(followPoint.getVel(), leadPoint.getAcc());
+                feedBackValueFollow = calculateFeedBack(followPoint.getPos(), currPosFollow, followPoint.getVel());
+                followOutput = feedBackValueFollow + feedForwardValueFollow;
+                leadOutput = feedBackValueLead + feedForwardValueLead;
+                targetAngle = (((leadPoint.getPos() + followPoint.getPos()) / 2) / radius) * 180 / Math.PI;
+                pidController.setTargetPosition(targetAngle);
+                pidController.setMinMaxOutput(-1, 1);
+                if (!inverseTurn) {
+                    adjustment = pidController.update(currAngle);
+                } else {
+                    adjustment = pidController.update(-currAngle);
+                }
+                leadOutput += adjustment;
+                followOutput -= adjustment;
+                curr_segment++;
+                followOutput = Util.clip(followOutput, -1, 1);
+                leadOutput = Util.clip(leadOutput, -1, 1);
+                return new DrivePower(leadOutput, followOutput);
+            }
         }
         return new DrivePower(0,0);
     }

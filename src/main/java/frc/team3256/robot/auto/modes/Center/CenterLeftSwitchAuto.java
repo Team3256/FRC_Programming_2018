@@ -26,15 +26,13 @@ public class CenterLeftSwitchAuto extends AutoModeBase {
         runAction(new FollowArcTrajectoryAction(currVel, 50, 42, targetAngle, false));
         currVel = DriveTrain.getInstance().getAverageVelocity();
         DriveTrain.getInstance().setBrake();
-        runAction(new FollowTrajectoryAction(currVel, 20, 56, targetAngle)); //radius 65
-        currVel = DriveTrain.getInstance().getAverageVelocity();
+        runAction(new FollowTrajectoryAction(currVel, 30, 56, targetAngle)); //radius 65
         //runAction(new FollowArcTrajectoryAction(currVel, 24.0, 20, 0, false));
         currVel = DriveTrain.getInstance().getAverageVelocity();
-        runAction(new WaitAction(0.75));
-        runAction(new FollowTrajectoryAction(currVel, 20, 26, 0));
-        runAction(new WaitAction(0.75));
+        runAction(new FollowTrajectoryAction(currVel, 50, 26, 0));
         //runAction(new RaiseElevatorSwitchAction());
         runAction(new FollowTrajectoryAction(currVel, 0.0, 3, 0));
+        runAction(new WaitAction(0.75));
         runAction(new ScoreForwardAction());
         runAction(new WaitAction(0.75));
         runAction(new StopScoreAction());

@@ -61,7 +61,7 @@ public class LogitechButtonBoardConfig implements ControlsInterface{
     public boolean scoreRear() {
         return false;
     }
-    
+
     @Override
     public boolean switchPreset() {
         return false;

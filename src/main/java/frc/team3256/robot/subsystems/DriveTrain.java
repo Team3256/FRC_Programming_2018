@@ -414,6 +414,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         if (controlMode != DriveControlMode.DRIVE_STRAIGHT){
             controlMode = DriveControlMode.DRIVE_STRAIGHT;
             TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
+            resetNominal();
             setHighGear(true);
         }
         TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);

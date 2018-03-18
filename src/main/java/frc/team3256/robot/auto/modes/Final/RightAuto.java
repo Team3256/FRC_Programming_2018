@@ -70,7 +70,7 @@ public class RightAuto extends AutoModeBase {
             }
             double currVel = 0.0;
             DriveTrain.getInstance().setBrake();
-            runAction(new ParallelAction(Arrays.asList(new FollowTrajectoryAction(0,0.0,-160,0),
+            runAction(new ParallelAction(Arrays.asList(new FollowTrajectoryAction(currVel,0.0,-160,0),
                     new SeriesAction(Arrays.asList(new WaitAction(1.0), new DeployIntakeAction())))));        runAction(new DeployIntakeAction());
             ArrayList<Action> actions = new ArrayList<>();
             currVel = DriveTrain.getInstance().getAverageVelocity();

@@ -108,10 +108,6 @@ public class Elevator extends SubsystemBase implements Loop{
         return currentState;
     }
 
-    public TalonSRX getMaster() {
-        return master;
-    }
-
     private void setTargetPosition(double targetHeight, int slotID){
         if (!isHomed)return;
         if (stateChanged){
@@ -278,15 +274,6 @@ public class Elevator extends SubsystemBase implements Loop{
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastDownSlot);
             return defaultStateTransfer();
         }
-        return defaultStateTransfer();
-    }
-
-    private SystemState handleHang(){
-        if (stateChanged){
-            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage/12.0,
-                    Constants.kElevatorHangVoltageCap /12.0, master, slaveOne, slaveTwo, slaveThree);
-        }
-        master.set(ControlMode.PercentOutput, Constants.kHangPower);
         return defaultStateTransfer();
     }
 

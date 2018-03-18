@@ -40,15 +40,11 @@ public class Robot extends IterativeRobot {
     AutoModeExecuter autoModeExecuter;
     AutoModeChooser autoModeChooser;
     TeleopUpdater teleopUpdater;
-    FileWriter logFileWriter;
-
-    static Robot instance;
 
     Compressor compressor;
 
     @Override
     public void robotInit() {
-        instance = this;
         compressor = new Compressor();
         compressor.setClosedLoopControl(true);
 
@@ -87,14 +83,6 @@ public class Robot extends IterativeRobot {
         enabledLooper.stop();
         disabledLooper.start();
         driveTrain.setBrake();
-        if (logFileWriter != null) {
-            try {
-                logFileWriter.close();
-                logFileWriter = null;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     @Override
@@ -121,11 +109,6 @@ public class Robot extends IterativeRobot {
         enabledLooper.start();
         driveTrain.setBrake();
         driveTrain.enableRamp();
-        try {
-            logFileWriter = new FileWriter("/home/lvuser/log" + System.currentTimeMillis() + ".txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         driveTrain.resetNominal();
         //driveTrain.setVelocitySetpoint(0,0);
     }
@@ -162,18 +145,5 @@ public class Robot extends IterativeRobot {
     public void robotPeriodic(){
         subsystemManager.outputToDashboard();
         SmartDashboard.putBoolean("CompressorOn", compressor.enabled());
-    }
-
-    public void logToFile(String s) {
-        if (logFileWriter != null)
-            try {
-                logFileWriter.write(s + "\n");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-    }
-
-    public static Robot getInstance() {
-        return instance;
     }
 }

@@ -74,7 +74,7 @@ public class Constants {
     public static final double kStraightI = 0.0;
     public static final double kStraightD = 0.0;
 
-    //    //Trajectory Curve Gains
+    //Trajectory Curve Gains
     public static final double kCurveTrajectoryP = 0.02; //0.006
     public static final double kCurveTrajectoryI = 0.0;
     public static final double kCurveTrajectoryD = 0.0;
@@ -127,7 +127,7 @@ public class Constants {
     public static final double kCarriageScoreForwardSlowPower = -0.5;
     public static final double kCarriageScoreBackwardSlowPower = 0.5;
     public static final double kCarriageScoreBackwardAutoPower = 0.55;
-    public static final double kCarriageScoreBackwardsQuickPower = 1.0;
+    public static final double kCarriageSmashBackwardPower = 1.0;
     public static final double kCarriageExhaustPower = -0.75;
 
     public static final double kElevatorUpManualPower = 0.4;
@@ -148,8 +148,6 @@ public class Constants {
     public static final double kElevatorMaxUpVoltage = 9.0; //8.0
     public static final double kElevatorMaxDownVoltage = -5.0;//-5.0
     public static final double kElevatorMinHoldVoltage = 0.75;//0.5
-    public static final double kElevatorHangVoltageCap = -8.0;
-    public static final double kHangPower = 1.0;
 
 
     //Game Data:

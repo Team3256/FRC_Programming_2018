@@ -37,7 +37,7 @@ public class Carriage extends SubsystemBase implements Loop{
         SCORING_FORWARD_SLOW,
         SCORING_BACKWARD_SLOW,
         SCORING_BACKWARD_AUTO,
-        SCORING_BACKWARDS_FAST,
+        SMASHING_BACKWARD,
         SCORING_FORWARD_AUTO,
         SQUEEZING_IDLE, //Actuators squeeze cube in place
         OPEN_IDLE, //Actuators stay open
@@ -54,7 +54,7 @@ public class Carriage extends SubsystemBase implements Loop{
         WANTS_TO_SCORE_BACKWARD,
         //Operator -> Whenever robot has cube
         WANTS_TO_SCORE_BACKWARD_AUTO,
-        WANTS_TO_SCORE_BACKWARDS_FAST,
+        WANTS_TO_SMASH_BACKWARD,
         WANTS_TO_SCORE_FORWARD_SLOW,
         WANTS_TO_SCORE_BACKWARD_SLOW,
         WANTS_TO_SQUEEZE_IDLE,
@@ -94,8 +94,8 @@ public class Carriage extends SubsystemBase implements Loop{
             case SCORING_BACKWARD_AUTO:
                 newState = handleScoreBackwardAuto();
                 break;
-            case SCORING_BACKWARDS_FAST:
-                newState = handleScoreBackwardFast();
+            case SMASHING_BACKWARD:
+                newState = handleSmashBackward();
                 break;
             case SQUEEZING_IDLE:
                 newState = handleSqueezeIdle();
@@ -171,11 +171,11 @@ public class Carriage extends SubsystemBase implements Loop{
         return defaultStateTransfer();
     }
 
-    private SystemState handleScoreBackwardFast(){
+    private SystemState handleSmashBackward(){
         if (stateChanged){
             squeeze();
         }
-        runMotors(Constants.kCarriageScoreBackwardsQuickPower);
+        runMotors(Constants.kCarriageSmashBackwardPower);
         return defaultStateTransfer();
     }
 
@@ -228,8 +228,8 @@ public class Carriage extends SubsystemBase implements Loop{
                 return SystemState.SCORING_BACKWARD_SLOW;
             case WANTS_TO_SCORE_BACKWARD_AUTO:
                 return SystemState.SCORING_BACKWARD_AUTO;
-            case WANTS_TO_SCORE_BACKWARDS_FAST:
-                return SystemState.SCORING_BACKWARDS_FAST;
+            case WANTS_TO_SMASH_BACKWARD:
+                return SystemState.SMASHING_BACKWARD;
             case WANTS_TO_SQUEEZE_IDLE:
                 return SystemState.SQUEEZING_IDLE;
             case WANTS_TO_OPEN_IDLE:

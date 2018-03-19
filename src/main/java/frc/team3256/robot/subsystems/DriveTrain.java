@@ -488,12 +488,12 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public double inchesToSensorUnits(double inches) {
-        return (inches * 4096)/(Constants.kWheelDiameter * Math.PI);
+        return (inches * 4096)/(Constants.kWheelDiameter * Math.PI) * Constants.kDriveEncoderScalingFactor;
     }
 
     //Sensor units for velocity are encoder units per 100 ms
     public double inchesPerSecToSensorUnits(double inchesPerSec){
-        return inchesToSensorUnits(inchesPerSec)/10.0*Constants.kDriveEncoderScalingFactor;
+        return inchesToSensorUnits(inchesPerSec)/10.0;
     }
 
     public double inchesPerSec2ToSensorUnits(double inchesPerSec2){

@@ -25,18 +25,16 @@ public class RightRobotLeftScaleRightSwitchThreeCubeAuto extends AutoModeBase {
         runAction(new ParallelAction(Arrays.asList(new FollowTrajectoryAction(currVel,30,-207,0),
                 new SeriesAction(Arrays.asList(new WaitAction(1.0), new DeployIntakeAction())))));
         DriveTrain.getInstance().setBrake();
-        //runAction(new WaitAction(2.0));
         currVel = DriveTrain.getInstance().getAverageVelocity();
         runAction(new FollowArcTrajectoryAction(currVel, 20, 36, -90, true));
         runAction(new WaitAction(0.25));
         currVel = DriveTrain.getInstance().getAverageVelocity();
         runAction(new FollowTrajectoryAction(currVel, 0.0, -136, -90));//-165
-        runAction(new WaitAction(0.25));
         DriveTrain.getInstance().resetGyro();
-        runAction(new FollowArcTrajectoryAction(currVel, 20, 36, 97, true));
+        runAction(new FollowArcTrajectoryAction(currVel, 20, 30, 97, true));
         runAction(new RaiseElevatorHighScaleAction());
         DriveTrain.getInstance().setBrake();
-        runAction(new ScoreBackwardsFast());
+        runAction(new ScoreBackwardAction());
         runAction(new WaitAction(0.75));
         runAction(new StopScoreAction());
         runAction(new WaitAction(0.15));

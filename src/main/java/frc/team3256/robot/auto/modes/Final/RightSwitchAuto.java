@@ -12,7 +12,7 @@ import frc.team3256.robot.subsystems.Intake;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class RightAuto extends AutoModeBase {
+public class RightSwitchAuto extends AutoModeBase {
 
     @Override
     protected void routine() throws AutoModeEndedException {

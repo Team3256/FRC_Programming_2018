@@ -43,7 +43,7 @@ public class Constants {
     public static final double kDriveEncoderScalingFactor = 3.0*60.0/24.0; //3:1 GR on Encoder Stage, plus 60:24 GR on third stage
     public static final double kElevatorPulleyDiameter = 1.353*Math.PI;
     public static final double kElevatorGearRatio = 36.0/24.0;
-    public static final double kElevatorMaxHeight = 49.5; //48.5
+    public static final double kElevatorMaxHeight = 47.5; //48.5
     public static final double kElevatorMinHeight = 6.0;
     public static final double kRampRate = 0.25;
 
@@ -126,7 +126,7 @@ public class Constants {
     public static final double kCarriageScoreBackwardPower = 0.8;
     public static final double kCarriageScoreForwardSlowPower = -0.5;
     public static final double kCarriageScoreBackwardSlowPower = 0.5;
-    public static final double kCarriageScoreBackwardAutoPower = 0.55;
+    public static final double kCarriageScoreBackwardAutoPower = 0.65;
     public static final double kCarriageSmashBackwardPower = 1.0;
     public static final double kCarriageExhaustPower = -0.75;
 

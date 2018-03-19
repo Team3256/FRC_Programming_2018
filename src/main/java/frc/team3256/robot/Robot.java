@@ -4,7 +4,6 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.Looper;
@@ -17,14 +16,10 @@ import frc.team3256.robot.auto.modes.Center.CenterRightSwitchAuto;
 import frc.team3256.robot.auto.modes.Final.*;
 import frc.team3256.robot.auto.modes.Right.RightRobotLeftScaleRightSwitchThreeCubeAuto;
 import frc.team3256.robot.auto.modes.Test.TestArcTrajectoryAuto;
-import frc.team3256.robot.auto.modes.Test.TestAutoHoming;
 import frc.team3256.robot.auto.modes.Test.TestTurnInPlaceAuto;
 import frc.team3256.robot.gamedata.GameDataAccessor;
 import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.subsystems.*;
-
-import java.io.FileWriter;
-import java.io.IOException;
 
 public class Robot extends IterativeRobot {
 
@@ -70,7 +65,7 @@ public class Robot extends IterativeRobot {
 
         autoModeChooser = new AutoModeChooser();
         autoModeChooser.addAutoModes(new DoNothingAuto(), new CrossBaselineForwardAuto(), new CrossBaselineBackwardAuto(),
-                new CenterSwitchAuto(), new RightAuto(), new RightRobotLeftScaleRightSwitchThreeCubeAuto(), new CenterRightSwitchAuto(), new CenterLeftSwitchAuto(), new TestArcTrajectoryAuto(), new TestTurnInPlaceAuto());
+                new CenterSwitchAuto(), new RightSwitchAuto(), new RightScaleAuto());
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");

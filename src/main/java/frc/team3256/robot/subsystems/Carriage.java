@@ -226,6 +226,8 @@ public class Carriage extends SubsystemBase implements Loop{
                 return SystemState.SCORING_FORWARD_SLOW;
             case WANTS_TO_SCORE_BACKWARD_SLOW:
                 return SystemState.SCORING_BACKWARD_SLOW;
+            case WANTS_TO_SCORE_FORWARD_AUTO:
+                return SystemState.SCORING_FORWARD_AUTO;
             case WANTS_TO_SCORE_BACKWARD_AUTO:
                 return SystemState.SCORING_BACKWARD_AUTO;
             case WANTS_TO_SMASH_BACKWARD:

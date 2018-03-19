@@ -452,11 +452,11 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public boolean isTurnInPlaceFinished() {
-            double error = Math.abs(m_turnInPlaceDegrees - getAngle().degrees());
-            if (controlMode != DriveControlMode.TURN_TO_ANGLE){
-                return true;
-            }
-            if (error <= 1.0){
+        double error = Math.abs(m_turnInPlaceDegrees - getAngle().degrees());
+        if (controlMode != DriveControlMode.TURN_TO_ANGLE){
+            return true;
+        }
+        if (error <= 1.0){
             return true;
         }
         return false;
@@ -497,7 +497,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public double inchesPerSec2ToSensorUnits(double inchesPerSec2){
-      return inchesPerSecToSensorUnits(inchesPerSec2)/10.0*Constants.kDriveEncoderScalingFactor;
+      return inchesPerSecToSensorUnits(inchesPerSec2)/10.0;
     }
 
     public double sensorUnitsToInches(double sensorUnits){

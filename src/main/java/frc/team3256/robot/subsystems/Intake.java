@@ -335,18 +335,6 @@ public class Intake extends SubsystemBase implements Loop {
         return wantedState;
     }
 
-    public SharpIR getCubeDetector() {
-        return cubeDetector;
-    }
-
-    public double getDistance(){
-        return cubeDetector.getDistance();
-    }
-
-    public double getVoltage(){
-        return cubeDetector.getAvgVoltage();
-    }
-
     @Override
     public void outputToDashboard() {
         /*

@@ -25,6 +25,7 @@ public class IntakeAction implements Action {
 
     @Override
     public void done() {
+        Intake.getInstance().setWantedState(Intake.WantedState.IDLE);
         Carriage.getInstance().setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
     }
 

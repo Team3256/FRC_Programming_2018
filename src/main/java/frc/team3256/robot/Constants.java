@@ -122,7 +122,7 @@ public class Constants {
     public static final double kUnjamMaxDuration = 12.0/1000.0;
     public static final double kCarriageReceivePower = 0.8;
     public static final double kCarriageScoreForwardPower = -0.8;
-    public static final double kCarriageScoreForwardAutoPower = -0.35;
+    public static final double kCarriageScoreForwardAutoPower = -0.5;
     public static final double kCarriageScoreBackwardPower = 0.8;
     public static final double kCarriageScoreForwardSlowPower = -0.5;
     public static final double kCarriageScoreBackwardSlowPower = 0.5;

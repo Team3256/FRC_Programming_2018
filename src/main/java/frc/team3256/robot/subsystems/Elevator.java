@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.robot.Constants;
-import frc.team3256.robot.Robot;
 
 public class Elevator extends SubsystemBase implements Loop{
 
@@ -73,12 +72,14 @@ public class Elevator extends SubsystemBase implements Loop{
         //configure Hold PID values
         TalonUtil.setPIDGains(master, Constants.kElevatorHoldSlot, Constants.kElevatorHoldP,
                 Constants.kElevatorHoldI, Constants.kElevatorHoldD, 0);
+
         //configure FastUp PID values
-        TalonUtil.setPIDGains(master, Constants.kElevatorFastUpSlot, Constants.kElevatorFastUpP,
-                Constants.kElevatorFastUpI, Constants.kElevatorFastUpD, 0);
+        TalonUtil.setPIDGains(master, Constants.kElevatorMotionMagicUpSlot, Constants.kElevatorMotionMagicUpP,
+                Constants.kElevatorMotionMagicUpI, Constants.kElevatorMotionMagicUpD, Constants.kElevatorMotionMagicUpF);
+
         //configure FastDown PID values
-        TalonUtil.setPIDGains(master, Constants.kElevatorFastDownSlot, Constants.kElevatorFastDownP,
-                Constants.kElevatorFastDownI, Constants.kElevatorFastDownD, 0);
+        TalonUtil.setPIDGains(master, Constants.kElevatorMotionMagicDownSlot, Constants.kElevatorMotionMagicDownP,
+                Constants.kElevatorMotionMagicDownI, Constants.kElevatorMotionMagicDownD, Constants.kElevatorMotionMagicDownF);
 
         //voltage limiting
         TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage/12.0,
@@ -108,12 +109,12 @@ public class Elevator extends SubsystemBase implements Loop{
         return currentState;
     }
 
-    private void setTargetPosition(double targetHeight, int slotID){
+    private void setTargetPosition(ControlMode mode, double targetHeight, int slotID){
         if (!isHomed)return;
         if (stateChanged){
             master.selectProfileSlot(slotID,0);
         }
-        master.set(ControlMode.Position, (int)heightToSensorUnits(targetHeight), 0);
+        master.set(mode, (int)heightToSensorUnits(targetHeight), 0);
     }
 
     private enum SystemState{
@@ -124,7 +125,6 @@ public class Elevator extends SubsystemBase implements Loop{
         MANUAL_DOWN,
         ZERO_POWER,
         HOMING,
-        HANGING,
     }
 
     public enum WantedState{
@@ -146,7 +146,6 @@ public class Elevator extends SubsystemBase implements Loop{
         WANTS_TO_HOLD,
         //Go up a bit to home, and then drop down...this should be only called when the robot has not been homed yet
         WANTS_TO_HOME,
-        WANTS_TO_HANG
     }
 
     @Override
@@ -245,7 +244,7 @@ public class Elevator extends SubsystemBase implements Loop{
         if (getHeight() < Constants.kDropPreset) {
             return SystemState.ZERO_POWER;
         }
-        setTargetPosition(getHeight(), Constants.kElevatorHoldSlot);
+        setTargetPosition(ControlMode.Position, getHeight(), Constants.kElevatorHoldSlot);
         return defaultStateTransfer();
     }
 
@@ -255,9 +254,11 @@ public class Elevator extends SubsystemBase implements Loop{
                 return SystemState.HOLD;
             }
             if (stateChanged){
-                master.selectProfileSlot(Constants.kElevatorFastUpSlot, 0);
+                master.configMotionCruiseVelocity((int)velocityToSensorUnits(Constants.kElevatorMaxVelocityUp), 0);
+                master.configMotionAcceleration((int)accelerationToSensorUnits(Constants.kElevatorMaxAccelerationUp), 0);
+                master.selectProfileSlot(Constants.kElevatorMotionMagicUpSlot, 0);
             }
-            setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastUpSlot);
+            setTargetPosition(ControlMode.MotionMagic, m_closedLoopTarget, Constants.kElevatorMotionMagicUpSlot);
             return defaultStateTransfer();
         }
         return defaultStateTransfer();
@@ -269,9 +270,11 @@ public class Elevator extends SubsystemBase implements Loop{
                 return SystemState.HOLD;
             }
             if (stateChanged){
-                master.selectProfileSlot(Constants.kElevatorFastDownSlot, 0);
+                master.configMotionCruiseVelocity((int)velocityToSensorUnits(Constants.kElevatorMaxVelocityDown), 0);
+                master.configMotionAcceleration((int)accelerationToSensorUnits(Constants.kElevatorMaxAccelerationDown), 0);
+                master.selectProfileSlot(Constants.kElevatorMotionMagicDownSlot, 0);
             }
-            setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastDownSlot);
+            setTargetPosition(ControlMode.MotionMagic, m_closedLoopTarget, Constants.kElevatorMotionMagicDownSlot);
             return defaultStateTransfer();
         }
         return defaultStateTransfer();
@@ -295,6 +298,14 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private double heightToSensorUnits(double inches) {
         return (inches/Constants.kElevatorPulleyDiameter)*4096.0*Constants.kElevatorGearRatio;
+    }
+
+    private double velocityToSensorUnits(double inchesPerSec){
+        return heightToSensorUnits(inchesPerSec)/10.0;
+    }
+
+    private double accelerationToSensorUnits(double inchesPerSec2){
+        return velocityToSensorUnits(inchesPerSec2)/10.0;
     }
 
     private double sensorUnitsToHeight(double ticks) {
@@ -401,5 +412,9 @@ public class Elevator extends SubsystemBase implements Loop{
 
     public double getClosedLoopError(){
         return master.getClosedLoopError(0);
+    }
+
+    public double getOutputVoltage(){
+        return master.getMotorOutputVoltage();
     }
 }

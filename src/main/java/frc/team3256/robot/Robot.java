@@ -128,8 +128,11 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopPeriodic() {
         teleopUpdater.update();
-        System.out.println("DISTANCE TRAVELED: " + (Math.abs(DriveTrain.getInstance().getRightDistance()) + DriveTrain.getInstance().getLeftDistance())/2);
-        System.out.println("ROTATIONS: " + driveTrain.getAngle().degrees());
+        System.out.println("TARGET: " + elevator.getTargetHeight());
+        System.out.println("CURR: " + elevator.getHeight());
+        System.out.println("VOLTAGE : " + elevator.getOutputVoltage());
+        //System.out.println("DISTANCE TRAVELED: " + (Math.abs(DriveTrain.getInstance().getRightDistance()) + DriveTrain.getInstance().getLeftDistance())/2);
+        //System.out.println("ROTATIONS: " + driveTrain.getAngle().degrees());
         //System.out.println("VELOCITY: " + (driveTrain.getRightVelocity() + driveTrain.getLeftVelocity())/2);
     }
 

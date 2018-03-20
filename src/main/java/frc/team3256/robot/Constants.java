@@ -103,16 +103,20 @@ public class Constants {
     //Elevator Gains
     public static final int kElevatorHoldSlot = 0;
     public static final double kElevatorHoldP = 0.5;
-    public static final double kElevatorHoldI = 0.003;
+    public static final double kElevatorHoldI = 0.002;
     public static final double kElevatorHoldD = 0;
-    public static final int kElevatorFastUpSlot = 1;
-    public static final double kElevatorFastUpP = 0.085;
-    public static final double kElevatorFastUpI = 0.0005;
-    public static final double kElevatorFastUpD = 0.005;
-    public static final int kElevatorFastDownSlot = 2;
-    public static final double kElevatorFastDownP = 0.075;
-    public static final double kElevatorFastDownI = 0;
-    public static final double kElevatorFastDownD = 0;
+
+    public static final int kElevatorMotionMagicDownSlot = 2;
+    public static final double kElevatorMotionMagicDownF = 0.3;
+    public static final double kElevatorMotionMagicDownP = 0.1;
+    public static final double kElevatorMotionMagicDownI = 0;
+    public static final double kElevatorMotionMagicDownD = 0;
+
+    public static final double kElevatorMotionMagicUpF = 0.3;
+    public static final double kElevatorMotionMagicUpP = 0.275;
+    public static final double kElevatorMotionMagicUpI = 0.0;
+    public static final double kElevatorMotionMagicUpD = 0.0;
+    public static final int kElevatorMotionMagicUpSlot = 1;
 
     //Presets:
     public static final double kIntakeSharpIRMaxVoltage = 3.3;
@@ -120,7 +124,7 @@ public class Constants {
     public static final double kLeftIntakePower = 0.8;//0.75
     public static final double kRightIntakePower = 0.65;//0.6
     public static final double kIntakeExhaustPower = -0.6;
-    public static final double kIntakeUnjamPower = -0.6;
+    public static final double kIntakeUnjamPower = -0.;
     public static final double kUnjamMaxDuration = 12.0/1000.0;
     public static final double kCarriageReceivePower = 0.8;
     public static final double kCarriageScoreForwardPower = -0.8;
@@ -147,9 +151,15 @@ public class Constants {
     public static final double kTopHomeHeight = 8.85;    //placeholder
     public static final double kElevatorHomingUpTime = 2.0;
     public static final double kElevatorTolerance = 1.0; //measured in inches
-    public static final double kElevatorMaxUpVoltage = 9.0; //8.0
+    public static final double kElevatorMaxUpVoltage = 12.0; //8.0
     public static final double kElevatorMaxDownVoltage = -5.0;//-5.0
     public static final double kElevatorMinHoldVoltage = 0.75;//0.5
+
+    public static final double kElevatorMaxVelocityUp = 45.0;
+    public static final double kElevatorMaxAccelerationUp = 650.0;
+
+    public static final double kElevatorMaxVelocityDown = 45.0;
+    public static final double kElevatorMaxAccelerationDown = 200.0;
 
     //Game Data:
     public static final int kSwitchIndex = 0;

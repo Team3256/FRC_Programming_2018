@@ -62,20 +62,20 @@ public class Robot extends IterativeRobot {
         boolean outtake = OI.leftTrigger();
         double power = 0.75;
         if (intake){
-            motorTwo.set(power);
-            motorFive.set(-power);
-        }
-        else if (outtake){
-            motorTwo.set(-power);
+            motorFour.set(-power);
             motorFive.set(power);
         }
+        else if (outtake){
+            motorFour.set(power);
+            motorFive.set(-power);
+        }
         else {
-            motorTwo.set(0);
+            motorFour.set(0);
             motorFive.set(0);
         }
         prevA = A;
-        motorTwo.set(OI.getLeftY());
-        motorFour.set(OI.getLeftY());
+        //motorTwo.set(OI.getLeftY());
+        //motorFour.set(OI.getLeftY());
     }
 
     @Override

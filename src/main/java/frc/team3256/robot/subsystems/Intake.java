@@ -66,7 +66,7 @@ public class Intake extends SubsystemBase implements Loop {
         flopperActuator = new DoubleSolenoid(Constants.kIntakeFlopForward, Constants.kIntakeFlopReverse);
         pivotActuator = new DoubleSolenoid(Constants.kIntakePivotForward, Constants.kIntakePivotReverse);
 
-        cubeDetector = new SharpIR(Constants.kIntakeSharpIR, Constants.kIntakeSharpIRMinVoltage, Constants.kIntakeSharpIRMaxVoltage);
+        cubeDetector = new SharpIR(Constants.kIntakeSharpIR);
 
         leftIntake.setInverted(true);
         rightIntake.setInverted(false);
@@ -236,7 +236,7 @@ public class Intake extends SubsystemBase implements Loop {
     }
 
     public boolean hasCube(){
-        return false;//cubeDetector.isTriggered();
+        return cubeDetector.isTriggered();
     }
 
     //default WantedState -> SystemState

@@ -16,6 +16,7 @@ import frc.team3256.robot.auto.modes.Center.CenterRightSwitchAuto;
 import frc.team3256.robot.auto.modes.Final.*;
 import frc.team3256.robot.auto.modes.Right.RightRobotLeftScaleRightSwitchThreeCubeAuto;
 import frc.team3256.robot.auto.modes.Test.TestArcTrajectoryAuto;
+import frc.team3256.robot.auto.modes.Test.TestPurePursuitAuto;
 import frc.team3256.robot.auto.modes.Test.TestTurnInPlaceAuto;
 import frc.team3256.robot.gamedata.GameDataAccessor;
 import frc.team3256.robot.operation.TeleopUpdater;

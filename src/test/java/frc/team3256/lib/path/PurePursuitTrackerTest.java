@@ -1,14 +1,12 @@
 package frc.team3256.lib.path;
 
+import frc.team3256.lib.math.RigidTransform;
+import frc.team3256.lib.math.Rotation;
 import frc.team3256.lib.math.Translation;
 import frc.team3256.lib.math.Twist;
 import frc.team3256.robot.Constants;
+import frc.team3256.robot.subsystems.Intake;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import static org.junit.Assert.*;
 
 public class PurePursuitTrackerTest {
@@ -18,15 +16,18 @@ public class PurePursuitTrackerTest {
     @Test
     public void testArcToSegment() {
 
+
         Path p = new Path();
         p.addSegment(new Line(0, 0, 24, 24, 120.0, 20.0, 250.0));
-        p.addSegment(new Arc(24, 24, 48,24, 36, 24, 120.0, 20.0, 250.0));
-        p.addSegment(new Line(48, 12, 72, 12, 10, 10, 15));
 
 
         PurePursuitTracker pursuit = new PurePursuitTracker();
         pursuit.setPath(p);
         pursuit.setLoopTime(Constants.kControlLoopPeriod);
+        pursuit.setLookaheadDistance(0);
+        pursuit.setPathCompletionTolerance(Constants.kPathCompletionTolerance);
+
+        /*
         Translation robotCoordinates = new Translation(15, 3);
         Twist command = pursuit.update(robotCoordinates);
 
@@ -52,10 +53,43 @@ public class PurePursuitTrackerTest {
         robotCoordinates = new Translation(48.2, 24);
         pursuit.update(robotCoordinates);
 
+
         robotCoordinates = new Translation(50, 5);
         command = pursuit.update(robotCoordinates);
         assertEquals(command.dy(), 0.0, kEpsilon);
 
+        command = pursuit.update(new Translation(71, 12));
+        System.out.println(command.dx());
+        assertEquals(pursuit.isFinished(), false);
+
+        command = pursuit.update(new Translation(73, 12));
+        System.out.println(command.dx());
+        assertEquals(pursuit.isFinished(), true);
+        */
+
+        pursuit.setLookaheadDistance(2*Math.sqrt(2));
+
+        RigidTransform robotPos = new RigidTransform(new Translation(8, 4), Rotation.fromDegrees(90));
+        pursuit.update(robotPos);
+
+
+        robotPos = new RigidTransform(new Translation(4, 8), Rotation.fromDegrees(-20));
+        pursuit.update(robotPos);
+
+        pursuit.setLookaheadDistance(4);
+
+        robotPos = new RigidTransform(new Translation(8, 4), Rotation.fromDegrees(120));
+        pursuit.update(robotPos);
+
+
+        robotPos = new RigidTransform(new Translation(20, 20), Rotation.fromDegrees(-90));
+        pursuit.update(robotPos);
+
+        robotPos = new RigidTransform(new Translation(25, 25), Rotation.fromDegrees(-30));
+        pursuit.update(robotPos);
+
+        robotPos = new RigidTransform(new Translation(25, 25), Rotation.fromDegrees(-30));
+        pursuit.update(robotPos);
 
     }
 }

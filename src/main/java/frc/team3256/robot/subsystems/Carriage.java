@@ -37,6 +37,7 @@ public class Carriage extends SubsystemBase implements Loop{
         SCORING_FORWARD_SLOW,
         SCORING_BACKWARD_SLOW,
         SCORING_BACKWARD_AUTO,
+        SMASHING_BACKWARD,
         SCORING_FORWARD_AUTO,
         SQUEEZING_IDLE, //Actuators squeeze cube in place
         OPEN_IDLE, //Actuators stay open
@@ -53,6 +54,7 @@ public class Carriage extends SubsystemBase implements Loop{
         WANTS_TO_SCORE_BACKWARD,
         //Operator -> Whenever robot has cube
         WANTS_TO_SCORE_BACKWARD_AUTO,
+        WANTS_TO_SMASH_BACKWARD,
         WANTS_TO_SCORE_FORWARD_SLOW,
         WANTS_TO_SCORE_BACKWARD_SLOW,
         WANTS_TO_SQUEEZE_IDLE,
@@ -92,6 +94,9 @@ public class Carriage extends SubsystemBase implements Loop{
             case SCORING_BACKWARD_AUTO:
                 newState = handleScoreBackwardAuto();
                 break;
+            case SMASHING_BACKWARD:
+                newState = handleSmashBackward();
+                break;
             case SQUEEZING_IDLE:
                 newState = handleSqueezeIdle();
                 break;
@@ -116,11 +121,6 @@ public class Carriage extends SubsystemBase implements Loop{
     private SystemState handleReceiveFromIntake(){
         if (stateChanged){
             open();
-        }
-        //If we have a cube, then we squeeze
-        if (hasCube()){
-            runMotors(0);
-            return SystemState.SQUEEZING_IDLE;
         }
         runMotors(Constants.kCarriageReceivePower);
         return defaultStateTransfer();
@@ -163,6 +163,14 @@ public class Carriage extends SubsystemBase implements Loop{
             squeeze();
         }
         runMotors(Constants.kCarriageScoreBackwardSlowPower);
+        return defaultStateTransfer();
+    }
+
+    private SystemState handleSmashBackward(){
+        if (stateChanged){
+            squeeze();
+        }
+        runMotors(Constants.kCarriageSmashBackwardPower);
         return defaultStateTransfer();
     }
 
@@ -213,10 +221,12 @@ public class Carriage extends SubsystemBase implements Loop{
                 return SystemState.SCORING_FORWARD_SLOW;
             case WANTS_TO_SCORE_BACKWARD_SLOW:
                 return SystemState.SCORING_BACKWARD_SLOW;
-            case WANTS_TO_SCORE_BACKWARD_AUTO:
-                return SystemState.SCORING_BACKWARD_AUTO;
             case WANTS_TO_SCORE_FORWARD_AUTO:
                 return SystemState.SCORING_FORWARD_AUTO;
+            case WANTS_TO_SCORE_BACKWARD_AUTO:
+                return SystemState.SCORING_BACKWARD_AUTO;
+            case WANTS_TO_SMASH_BACKWARD:
+                return SystemState.SMASHING_BACKWARD;
             case WANTS_TO_SQUEEZE_IDLE:
                 return SystemState.SQUEEZING_IDLE;
             case WANTS_TO_OPEN_IDLE:
@@ -244,11 +254,6 @@ public class Carriage extends SubsystemBase implements Loop{
     private void runMotors(double power){
         rollerLeft.set(power);
         rollerRight.set(power);
-    }
-
-    private boolean hasCube(){
-        return false;
-        //return Intake.getInstance().hasCube();
     }
 
     @Override

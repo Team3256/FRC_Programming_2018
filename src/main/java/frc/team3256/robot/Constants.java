@@ -37,13 +37,13 @@ public class Constants {
 
     //Robot constants:
     //everything is in inches, seconds, or degrees
-    public static final double kRobotTrack = 25.146; //25.146
+    public static final double kRobotTrack = 43.5139561597; //25.146
     public static final double kScrubFactor = 1.0;
     public static final double kWheelDiameter = 6.045;
     public static final double kDriveEncoderScalingFactor = 3.0*60.0/24.0; //3:1 GR on Encoder Stage, plus 60:24 GR on third stage
     public static final double kElevatorPulleyDiameter = 1.353*Math.PI;
     public static final double kElevatorGearRatio = 36.0/24.0;
-    public static final double kElevatorMaxHeight = 49.5; //48.5
+    public static final double kElevatorMaxHeight = 47.5; //48.5
     public static final double kElevatorMinHeight = 6.0;
     public static final double kRampRate = 0.25;
 
@@ -53,13 +53,13 @@ public class Constants {
     public static final double kSlowLoopPeriod = 1.0/50.0;
 
     //Turn Motion Magic: Low Gear
-    public static final double kTurnLowGearMotionMagicP = 3.5;
-    public static final double kTurnLowGearMotionMagicI = 0.001;
-    public static final int kTurnLowGearIZone = 1000;
-    public static final double kTurnLowGearMotionMagicD = 100.0;
-    public static final double kTurnLowGearMotionMagicF = 0.45;
-    public static final double kTurnLowGearMotionMagicAcceleration = 15.0*12.0;
-    public static final double kTurnLowGearMotionMagicCruiseVelocity = 5.0*12.0;
+    public static final double kTurnLowGearMotionMagicP = 0.05;
+    public static final double kTurnLowGearMotionMagicI = 0.0;
+    public static final int kTurnLowGearIZone = 0;
+    public static final double kTurnLowGearMotionMagicD = 0.0;
+    public static final double kTurnLowGearMotionMagicF = 0.06; //0.0815
+    public static final double kTurnLowGearMotionMagicAcceleration = 80.0;
+    public static final double kTurnLowGearMotionMagicCruiseVelocity = 80.0;
     public static final int kTurnMotionMagicProfile = 0;
 
     //DriveStraightController Gains
@@ -74,7 +74,7 @@ public class Constants {
     public static final double kStraightI = 0.0;
     public static final double kStraightD = 0.0;
 
-    //    //Trajectory Curve Gains
+    //Trajectory Curve Gains
     public static final double kCurveTrajectoryP = 0.02; //0.006
     public static final double kCurveTrajectoryI = 0.0;
     public static final double kCurveTrajectoryD = 0.0;
@@ -128,14 +128,15 @@ public class Constants {
     public static final double kCarriageScoreBackwardPower = 0.8;
     public static final double kCarriageScoreForwardSlowPower = -0.5;
     public static final double kCarriageScoreBackwardSlowPower = 0.5;
-    public static final double kCarriageScoreBackwardAutoPower = 0.55;
+    public static final double kCarriageScoreBackwardAutoPower = 0.65;
+    public static final double kCarriageSmashBackwardPower = 1.0;
     public static final double kCarriageExhaustPower = -0.75;
 
     public static final double kElevatorUpManualPower = 0.4;
     public static final double kElevatorDownManualPower = -0.15;
     public static final double kElevatorUpSlowPower = 0.2;
     public static final double kHighScalePreset = 48; //in inches //48.5 measured
-    public static final double kMidScalePreset = 40.0; //36.5
+    public static final double kMidScalePreset = 42.0; //36.5
     public static final double kLowScalePreset = 36.0; //30
     public static final double kSwitchPreset = 20.0;
     public static final double kIntakePreset = 7.5;
@@ -149,9 +150,6 @@ public class Constants {
     public static final double kElevatorMaxUpVoltage = 9.0; //8.0
     public static final double kElevatorMaxDownVoltage = -5.0;//-5.0
     public static final double kElevatorMinHoldVoltage = 0.75;//0.5
-    public static final double kElevatorHangVoltageCap = -8.0;
-    public static final double kHangPower = 1.0;
-
 
     //Game Data:
     public static final int kSwitchIndex = 0;

@@ -26,22 +26,18 @@ public class CenterSwitchAuto extends AutoModeBase{
             runAction(new DeployIntakeAction());
             runAction(new CloseCarriageAction());
             DriveTrain.getInstance().setBrake();
-            double initTime = Timer.getFPGATimestamp();
             double currVel = 0.0;
             double targetAngle = 45.0;
             System.out.println("Angle: " + DriveTrain.getInstance().getAngle());
-            runAction(new FollowArcTrajectoryAction(currVel, 24, 42, targetAngle, false));
+            runAction(new FollowArcTrajectoryAction(currVel, 50, 42, targetAngle, false));
             currVel = DriveTrain.getInstance().getAverageVelocity();
             DriveTrain.getInstance().setBrake();
-            runAction(new FollowTrajectoryAction(currVel, 10, 67, targetAngle)); //radius 65
+            runAction(new FollowTrajectoryAction(currVel, 30, 56, targetAngle)); //radius 65
             currVel = DriveTrain.getInstance().getAverageVelocity();
-            //runAction(new FollowArcTrajectoryAction(currVel, 24.0, 20, 0, false));
-            currVel = DriveTrain.getInstance().getAverageVelocity();
-            runAction(new WaitAction(0.75));
-            runAction(new FollowTrajectoryAction(currVel, 0.0, 26, 0));
-            runAction(new WaitAction(0.75));
+            runAction(new FollowTrajectoryAction(currVel, 50, 26, 0));
             runAction(new RaiseElevatorSwitchAction());
             runAction(new FollowTrajectoryAction(currVel, 0.0, 3, 0));
+            runAction(new WaitAction(0.75));
             runAction(new ScoreForwardAction());
             runAction(new WaitAction(0.75));
             runAction(new StopScoreAction());
@@ -53,34 +49,32 @@ public class CenterSwitchAuto extends AutoModeBase{
         else if (switchSide == GameDataAccessor.Side.RIGHT){
             DriveTrain.getInstance().setBrake();
             DriveTrain.getInstance().resetGyro();
-            runAction(new DeployIntakeAction());
             if (!Elevator.getInstance().isHomed()){
                 runAction(new AutoHomingAction());
             }
-            double initTime = Timer.getFPGATimestamp();
+            runAction(new DeployIntakeAction());
             double currVel = 24.0;
             double targetAngle = -40.0;
             runAction(new DeployIntakeAction());
             runAction(new CloseCarriageAction());
-            runAction(new FollowArcTrajectoryAction(currVel, 24, 40, targetAngle, false));
+            runAction(new FollowArcTrajectoryAction(currVel, 50, 40, targetAngle, false));
             System.out.println("Initial 45 degree Arc --------------");
             currVel = DriveTrain.getInstance().getAverageVelocity();
-            runAction(new FollowTrajectoryAction(currVel, 24, 60, targetAngle)); //radius 65
+            runAction(new FollowTrajectoryAction(currVel, 50, 60, targetAngle)); //radius 65
             System.out.println("30\" forward -----------------");
             currVel = DriveTrain.getInstance().getAverageVelocity();
-            runAction(new FollowArcTrajectoryAction(currVel, 10, 28, 0, false));
+            runAction(new FollowArcTrajectoryAction(currVel, 50, 28, 0, false));
             currVel = DriveTrain.getInstance().getAverageVelocity();
-            runAction(new WaitAction(0.75));
-            runAction(new FollowTrajectoryAction(currVel, 0, 30, 0));
-            runAction(new WaitAction(0.75));
+            runAction(new FollowTrajectoryAction(currVel, 20, 30, 0));
             runAction(new RaiseElevatorSwitchAction());
-            runAction(new FollowTrajectoryAction(currVel, 0.0, 3, 0));
+            runAction(new FollowTrajectoryAction(currVel, 50, 3, 0));
             runAction(new ScoreForwardAction());
             runAction(new WaitAction(0.75));
             runAction(new StopScoreAction());
-            runAction(new FollowTrajectoryAction(currVel, 0, -12.0, 0));
+            runAction(new FollowTrajectoryAction(currVel, 50, -12.0, 0));
             runAction(new ElevatorIntakePositionAction());
             DriveTrain.getInstance().setBrake();
+
         }
         else{
             if (!Elevator.getInstance().isHomed()){

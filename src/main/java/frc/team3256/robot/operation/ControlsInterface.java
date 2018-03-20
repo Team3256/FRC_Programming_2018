@@ -26,9 +26,6 @@ public interface ControlsInterface {
 
     boolean scoreRearSlow();
 
-    //Single press: Forces the carriage to open
-    boolean getOpenCarriage();
-
 //--------------Operator-----------------
 
     //Hold: Runs intake
@@ -50,7 +47,7 @@ public interface ControlsInterface {
     boolean switchPreset();
 
     //Single press: Elevator moves to low scale preset
-    boolean scalePresetLow();
+    boolean turnToCube();
 
     //Single press: Elevator moves to mid scale preset
     boolean scalePresetMid();

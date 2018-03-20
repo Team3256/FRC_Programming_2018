@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.TalonUtil;
 import frc.team3256.robot.Constants;
+import frc.team3256.robot.Robot;
 
 public class Elevator extends SubsystemBase implements Loop{
 
@@ -67,7 +68,7 @@ public class Elevator extends SubsystemBase implements Loop{
         slaveThree = TalonUtil.generateSlaveTalon(Constants.kElevatorSlaveThree, Constants.kElevatorMaster);
 
         TalonUtil.configMagEncoder(master);
-        master.setSelectedSensorPosition(0, 0, 0);
+        master.setSelectedSensorPosition((int)(heightToSensorUnits(7.5)), 0, 0);
 
         //configure Hold PID values
         TalonUtil.setPIDGains(master, Constants.kElevatorHoldSlot, Constants.kElevatorHoldP,
@@ -105,10 +106,6 @@ public class Elevator extends SubsystemBase implements Loop{
 
     public SystemState getCurrentState() {
         return currentState;
-    }
-
-    public TalonSRX getMaster() {
-        return master;
     }
 
     private void setTargetPosition(double targetHeight, int slotID){
@@ -215,33 +212,34 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private SystemState handleZeroPower() {
         if (stateChanged){
-            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
-                    Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
         }
         setOpenLoop(0);
         return defaultStateTransfer();
     }
 
     private SystemState handleHome(double timestamp) {
+        if (isHomed()){
+            return SystemState.HOLD;
+        }
         if (stateChanged) {
             homingTimeStart = timestamp;
-            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
-                    Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
         }
-        if (timestamp - homingTimeStart < Constants.kElevatorHomingUpTime) {
+        if (timestamp - homingTimeStart < Constants.kElevatorHomingUpTime && getHeight() < 9) {
             if (isHomed) {
                 return SystemState.ZERO_POWER;
             }
             setOpenLoop(Constants.kElevatorUpSlowPower);
             return SystemState.HOMING;
         }
+        else if (getHeight() > 9){
+            isHomed = true;
+            wantedState = WantedState.WANTS_TO_INTAKE_POS;
+        }
         return SystemState.ZERO_POWER;
     }
 
     private SystemState handleHold(){
         if (stateChanged){
-            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
-                    Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
             master.selectProfileSlot(Constants.kElevatorHoldSlot,0);
         }
         if (getHeight() < Constants.kDropPreset) {
@@ -257,8 +255,6 @@ public class Elevator extends SubsystemBase implements Loop{
                 return SystemState.HOLD;
             }
             if (stateChanged){
-                TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
-                        Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
                 master.selectProfileSlot(Constants.kElevatorFastUpSlot, 0);
             }
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastUpSlot);
@@ -273,8 +269,6 @@ public class Elevator extends SubsystemBase implements Loop{
                 return SystemState.HOLD;
             }
             if (stateChanged){
-                TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
-                            Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
                 master.selectProfileSlot(Constants.kElevatorFastDownSlot, 0);
             }
             setTargetPosition(m_closedLoopTarget, Constants.kElevatorFastDownSlot);
@@ -283,19 +277,9 @@ public class Elevator extends SubsystemBase implements Loop{
         return defaultStateTransfer();
     }
 
-    private SystemState handleHang(){
-        if (stateChanged){
-            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage/12.0,
-                    Constants.kElevatorHangVoltageCap /12.0, master, slaveOne, slaveTwo, slaveThree);
-        }
-        master.set(ControlMode.PercentOutput, Constants.kHangPower);
-        return defaultStateTransfer();
-    }
-
     private SystemState handleManualControlUp(){
         if (stateChanged){
-            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
-                    Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
+
         }
         setOpenLoop(Constants.kElevatorUpManualPower);
         return defaultStateTransfer();
@@ -303,8 +287,7 @@ public class Elevator extends SubsystemBase implements Loop{
 
     private SystemState handleManualControlDown() {
         if (stateChanged){
-            TalonUtil.setPeakOutput(Constants.kElevatorMaxUpVoltage / 12.0,
-                    Constants.kElevatorMaxDownVoltage / 12.0, master, slaveOne, slaveTwo, slaveThree);
+
         }
         setOpenLoop(Constants.kElevatorDownManualPower);
         return defaultStateTransfer();
@@ -395,7 +378,7 @@ public class Elevator extends SubsystemBase implements Loop{
 
     @Override
     public void outputToDashboard() {
-        SmartDashboard.putBoolean("/SmartDashboard/isHomed", isHomed());
+        SmartDashboard.putBoolean("isHomed", isHomed());
     }
 
     @Override

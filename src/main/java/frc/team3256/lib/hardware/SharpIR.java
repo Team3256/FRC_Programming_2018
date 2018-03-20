@@ -10,7 +10,7 @@ public class SharpIR {
     double minVoltage = Constants.kIntakeSharpIRMinVoltage;
     double maxVoltage = Constants.kIntakeSharpIRMaxVoltage;
 
-    public SharpIR(int port, double lowerVoltageLimit, double upperVoltageLimit){
+    public SharpIR(int port){
         analogInput = new AnalogInput(port);
     }
 

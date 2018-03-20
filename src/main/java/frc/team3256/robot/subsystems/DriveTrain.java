@@ -1,6 +1,5 @@
 package frc.team3256.robot.subsystems;
 
-import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -34,7 +33,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private DoubleSolenoid shifter;
 
     private DriveControlMode controlMode;
-    private double degrees, angle;
+    private double m_turnInPlaceDegrees, m_arcTargetAngle;
     private DriveStraightController driveStraightController = new DriveStraightController();
     private DriveArcController driveArcController = new DriveArcController();
     private PurePursuitTracker purePursuitTracker = new PurePursuitTracker();
@@ -143,10 +142,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
                 Constants.kDriveVelocityI, Constants.kDriveVelocityD, Constants.kDriveVelocityF);
 
 
-        /*
-        talonUtil.setPIDGains(leftMaster, Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicP,
+
+        TalonUtil.setPIDGains(leftMaster, Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicP,
                 Constants.kTurnLowGearMotionMagicI, Constants.kTurnLowGearMotionMagicD, Constants.kTurnLowGearMotionMagicF);
-        talonUtil.setPIDGains(rightMaster, Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicP,
+        TalonUtil.setPIDGains(rightMaster, Constants.kTurnMotionMagicProfile, Constants.kTurnLowGearMotionMagicP,
                 Constants.kTurnLowGearMotionMagicI, Constants.kTurnLowGearMotionMagicD, Constants.kTurnLowGearMotionMagicF);
 
         leftMaster.configMotionCruiseVelocity((int)inchesPerSecToSensorUnits(Constants.kTurnLowGearMotionMagicCruiseVelocity),
@@ -158,7 +157,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.configMotionAcceleration((int)inchesPerSec2ToSensorUnits(Constants.kTurnLowGearMotionMagicAcceleration),
             0);
 
-*/
+
         leftMaster.setSensorPhase(false);
         rightMaster.setSensorPhase(false);
 
@@ -322,14 +321,15 @@ public class DriveTrain extends SubsystemBase implements Loop {
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
             return;
         }
-        Rotation robotToTarget = getAngle().inverse().rotate(Rotation.fromDegrees(degrees));
+        Rotation robotToTarget = getAngle().inverse().rotate(Rotation.fromDegrees(m_turnInPlaceDegrees));
         if (isTurnInPlaceFinished()){
             return;
         }
         //periodically re-converts the gyro angle into a new motion magic goal for the talons
         Kinematics.DriveVelocity delta = Kinematics.inverseKinematics(new Twist(0,0,robotToTarget.radians()), Constants.kRobotTrack, Constants.kScrubFactor);
-        //System.out.println("Left CLE: " + sensorUnitsToInches(leftMaster.getClosedLoopError(0)));
-        //System.out.println("Right CLE: " + sensorUnitsToInches(rightMaster.getClosedLoopError(0)));
+        System.out.println(delta.left + "\t" + delta.right);
+        System.out.println("Left CLE: " + sensorUnitsToInches(leftMaster.getClosedLoopError(0)));
+        System.out.println("Right CLE: " + sensorUnitsToInches(rightMaster.getClosedLoopError(0)));
 
         //System.out.println("DL: " + delta.left + "; " + "DR: " + delta.right);
         leftMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(getLeftDistance() + delta.left), Constants.kTurnMotionMagicProfile);
@@ -378,7 +378,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
             return;
         }
 
-        if (angle >= 0) {
+        if (m_arcTargetAngle >= 0) {
             output = driveArcController.updateCalculations(getRightDistance(), getLeftDistance(), getAngle().degrees(), getAverageVelocity());
             leftMaster.set(ControlMode.PercentOutput, output.getRight());
             rightMaster.set(ControlMode.PercentOutput, output.getLeft());
@@ -393,7 +393,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public void configureDriveArc(double startVel, double endVel, double degrees, double turnRadius, boolean backwardsTurn, double currAngle) {
-        angle = degrees;
+        m_arcTargetAngle = degrees;
         driveArcController.configureArcTrajectory(startVel, endVel, degrees, turnRadius, backwardsTurn, currAngle);
         if (controlMode != DriveControlMode.DRIVE_ARC){
             setHighGear(true);
@@ -413,6 +413,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
         if (controlMode != DriveControlMode.DRIVE_STRAIGHT){
             controlMode = DriveControlMode.DRIVE_STRAIGHT;
             TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
+            resetNominal();
             setHighGear(true);
         }
         TalonUtil.setBrakeMode(leftMaster, leftSlave, rightMaster, rightSlave);
@@ -426,6 +427,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
             rightMaster.selectProfileSlot(Constants.kDriveVelocityProfile, 0);
             controlMode = DriveControlMode.PURE_PURSUIT;
         }
+        setHighGear(true);
         purePursuitTracker.setPath(path);
         disableRamp();
         updatePurePursuit();
@@ -449,7 +451,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public boolean isTurnInPlaceFinished() {
-        double error = Math.abs(angle - getAngle().degrees());
+        double error = Math.abs(m_turnInPlaceDegrees - getAngle().degrees());
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
             return true;
         }
@@ -466,7 +468,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public boolean isArcControllerFinished() {
-        return driveArcController.isFinished() || Math.abs(getAngle().degrees() - angle) < 1.0;
+        return driveArcController.isFinished() || Math.abs(getAngle().degrees() - m_arcTargetAngle) < 1.0;
     }
 
     public boolean isPurePursuitFinished() {
@@ -474,7 +476,10 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public void setTurnInPlaceSetpoint(double setpoint) {
-        this.degrees = setpoint;
+        this.m_turnInPlaceDegrees = setpoint;
+        setHighGear(false);
+        rightMaster.selectProfileSlot(Constants.kTurnMotionMagicProfile, 0);
+        leftMaster.selectProfileSlot(Constants.kTurnMotionMagicProfile, 0);
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
             controlMode = DriveControlMode.TURN_TO_ANGLE;
         }
@@ -482,12 +487,12 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public double inchesToSensorUnits(double inches) {
-        return (inches * 4096)/(Constants.kWheelDiameter * Math.PI);
+        return (inches * 4096)/(Constants.kWheelDiameter * Math.PI) * Constants.kDriveEncoderScalingFactor;
     }
 
     //Sensor units for velocity are encoder units per 100 ms
     public double inchesPerSecToSensorUnits(double inchesPerSec){
-        return inchesToSensorUnits(inchesPerSec)/10.0*Constants.kDriveEncoderScalingFactor;
+        return inchesToSensorUnits(inchesPerSec)/10.0;
     }
 
     public double inchesPerSec2ToSensorUnits(double inchesPerSec2){
@@ -531,5 +536,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.configNominalOutputForward(0, 0);
         leftSlave.configNominalOutputForward(0, 0);
         rightSlave.configNominalOutputForward(0, 0);
+    }
+
+    public double getCubeOffsetAngle() {
+        return SmartDashboard.getNumber("cube_angle", 0.0);
     }
 }

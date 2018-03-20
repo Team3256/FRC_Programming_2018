@@ -149,7 +149,6 @@ public class Constants {
     public static final double kElevatorMaxDownVoltage = -5.0;//-5.0
     public static final double kElevatorMinHoldVoltage = 0.75;//0.5
 
-
     //Game Data:
     public static final int kSwitchIndex = 0;
     public static final int kScaleIndex = 1;

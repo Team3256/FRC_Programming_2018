@@ -141,11 +141,6 @@ public class Intake extends SubsystemBase implements Loop {
             deployIntake();
             closeFlopper();
         }
-        //If we have a cube, then we stop intaking, and set the state to DEPLOYED_CLOSED
-        if (hasCube()){
-            setIntake(0,0);
-            return SystemState.DEPLOYED_CLOSED;
-        }
         else{
             setIntake(kLeftIntakePower, kRightIntakePower);
         }
@@ -338,18 +333,6 @@ public class Intake extends SubsystemBase implements Loop {
 
     public WantedState getWantedState(){
         return wantedState;
-    }
-
-    public SharpIR getCubeDetector() {
-        return cubeDetector;
-    }
-
-    public double getDistance(){
-        return cubeDetector.getDistance();
-    }
-
-    public double getVoltage(){
-        return cubeDetector.getAvgVoltage();
     }
 
     @Override

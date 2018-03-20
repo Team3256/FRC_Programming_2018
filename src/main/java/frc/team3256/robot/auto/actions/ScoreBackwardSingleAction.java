@@ -6,7 +6,7 @@ import frc.team3256.robot.subsystems.Carriage;
 public class ScoreBackwardSingleAction implements Action {
 
     private double duration;
-    private double starttime;
+    private double startTime;
 
     public ScoreBackwardSingleAction(double duration) {
         this.duration = duration;
@@ -14,7 +14,7 @@ public class ScoreBackwardSingleAction implements Action {
 
     @Override
     public boolean isFinished() {
-        return Timer.getFPGATimestamp() > (starttime + duration);
+        return Timer.getFPGATimestamp() > (startTime + duration);
     }
 
     @Override
@@ -30,6 +30,6 @@ public class ScoreBackwardSingleAction implements Action {
     @Override
     public void start() {
         Carriage.getInstance().setWantedState(Carriage.WantedState.WANTS_TO_SCORE_BACKWARD_AUTO);
-        starttime = Timer.getFPGATimestamp();
+        startTime = Timer.getFPGATimestamp();
     }
 }

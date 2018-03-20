@@ -122,11 +122,6 @@ public class Carriage extends SubsystemBase implements Loop{
         if (stateChanged){
             open();
         }
-        //If we have a cube, then we squeeze
-        if (hasCube()){
-            runMotors(0);
-            return SystemState.SQUEEZING_IDLE;
-        }
         runMotors(Constants.kCarriageReceivePower);
         return defaultStateTransfer();
     }
@@ -259,11 +254,6 @@ public class Carriage extends SubsystemBase implements Loop{
     private void runMotors(double power){
         rollerLeft.set(power);
         rollerRight.set(power);
-    }
-
-    private boolean hasCube(){
-        return false;
-        //return Intake.getInstance().hasCube();
     }
 
     @Override

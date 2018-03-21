@@ -80,6 +80,7 @@ public class Robot extends IterativeRobot {
         enabledLooper.stop();
         disabledLooper.start();
         driveTrain.setBrake();
+        driveTrain.setCoastMode();
     }
 
     @Override
@@ -107,6 +108,7 @@ public class Robot extends IterativeRobot {
         driveTrain.setBrake();
         driveTrain.enableRamp();
         driveTrain.resetNominal();
+        elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOME);
         //driveTrain.setVelocitySetpoint(0,0);
     }
 
@@ -119,7 +121,7 @@ public class Robot extends IterativeRobot {
         subsystemManager.outputToDashboard();
         //System.out.println("CUBE ANGLE: " + driveTrain.getCubeOffsetAngle());
         //System.out.println(elevator.getRawEncoder());
-    }
+}
 
     @Override
     public void autonomousPeriodic(){

@@ -16,7 +16,7 @@ public class IntakeAction implements Action {
 
     @Override
     public void update() {
-        if (counter%30==0){
+        if (counter%50==0){ //30
             Intake.getInstance().setWantedState(Intake.WantedState.WANTS_TO_UNJAM);
         }
         else {

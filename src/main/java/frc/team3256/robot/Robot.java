@@ -15,6 +15,7 @@ import frc.team3256.robot.auto.modes.Center.CenterLeftSwitchAuto;
 import frc.team3256.robot.auto.modes.Center.CenterRightSwitchAuto;
 import frc.team3256.robot.auto.modes.Final.*;
 import frc.team3256.robot.auto.modes.Right.RightRobotLeftScaleRightSwitchThreeCubeAuto;
+import frc.team3256.robot.auto.modes.Test.IntakeTestAuto;
 import frc.team3256.robot.auto.modes.Test.TestArcTrajectoryAuto;
 import frc.team3256.robot.auto.modes.Test.TestPurePursuitAuto;
 import frc.team3256.robot.auto.modes.Test.TestTurnInPlaceAuto;
@@ -66,7 +67,7 @@ public class Robot extends IterativeRobot {
 
         autoModeChooser = new AutoModeChooser();
         autoModeChooser.addAutoModes(new DoNothingAuto(), new CrossBaselineForwardAuto(), new CrossBaselineBackwardAuto(),
-                new CenterSwitchAuto(), new RightSwitchAuto(), new RightScaleAuto());
+                new CenterSwitchAuto(), new RightSwitchAuto(), new RightScaleAuto(), new RightScaleTwoCubeAuto(), new IntakeTestAuto());
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
@@ -79,6 +80,7 @@ public class Robot extends IterativeRobot {
         enabledLooper.stop();
         disabledLooper.start();
         driveTrain.setBrake();
+        driveTrain.setCoastMode();
     }
 
     @Override
@@ -106,6 +108,7 @@ public class Robot extends IterativeRobot {
         driveTrain.setBrake();
         driveTrain.enableRamp();
         driveTrain.resetNominal();
+        elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOME);
         //driveTrain.setVelocitySetpoint(0,0);
     }
 
@@ -118,7 +121,7 @@ public class Robot extends IterativeRobot {
         subsystemManager.outputToDashboard();
         //System.out.println("CUBE ANGLE: " + driveTrain.getCubeOffsetAngle());
         //System.out.println(elevator.getRawEncoder());
-    }
+}
 
     @Override
     public void autonomousPeriodic(){

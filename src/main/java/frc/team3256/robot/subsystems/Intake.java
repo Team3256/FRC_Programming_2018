@@ -53,6 +53,7 @@ public class Intake extends SubsystemBase implements Loop {
         WANTS_TO_TOGGLE_PIVOT,
         //Operator -> Toggle flop button
         WANTS_TO_TOGGLE_FLOP,
+        WANTS_TO_OPEN_FLOP,
         //Force deploy for autonomous
         WANTS_TO_DEPLOY,
         //Force stow for autonomous
@@ -173,6 +174,14 @@ public class Intake extends SubsystemBase implements Loop {
         }
     }
 
+    private SystemState handleOpeningFlop(){
+        if (stateChanged){
+            openFlopper();
+        }
+        setIntake(0,0);
+        return defaultStateTransfer();
+    }
+
     private SystemState handleDeployedClosed(){
         if (stateChanged){
             deployIntake();
@@ -249,6 +258,13 @@ public class Intake extends SubsystemBase implements Loop {
                 wantsToToggle = false;
                 return SystemState.UNJAMMING;
 
+            case WANTS_TO_OPEN_FLOP:
+                if (currentState == SystemState.STOWED_OPEN || currentState == SystemState.STOWED_CLOSED){
+                    return SystemState.STOWED_OPEN;
+                }
+                else{
+                    return SystemState.DEPLOYED_OPEN;
+                }
             case IDLE:
                 wantsToToggle = false;
                 //if we are intaking, exhausting, unjamming, or already deployed and closed, the intake is closed,

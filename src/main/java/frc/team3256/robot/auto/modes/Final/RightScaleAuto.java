@@ -76,7 +76,7 @@ public class RightScaleAuto extends AutoModeBase {
             runAction(new FollowArcTrajectoryAction(currVel, 20, 36, -90, true));
             runAction(new WaitAction(0.25));
             currVel = DriveTrain.getInstance().getAverageVelocity();
-            runAction(new FollowTrajectoryAction(currVel, 0.0, -136, -90));//-165
+            runAction(new FollowTrajectoryAction(currVel, 0.0, -142, -90));//-165 //-136
             DriveTrain.getInstance().resetGyro();
             runAction(new FollowArcTrajectoryAction(currVel, 20, 30, 97, true));
             runAction(new RaiseElevatorHighScaleAction());

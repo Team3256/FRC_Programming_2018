@@ -390,6 +390,8 @@ public class Elevator extends SubsystemBase implements Loop{
     @Override
     public void outputToDashboard() {
         SmartDashboard.putBoolean("isHomed", isHomed());
+        SmartDashboard.putNumber("height", getHeight());
+        SmartDashboard.putBoolean("hallEffect", isTriggered());
     }
 
     @Override

@@ -146,7 +146,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void robotPeriodic(){
-        subsystemManager.outputToDashboard();
+        //subsystemManager.outputToDashboard();
         SmartDashboard.putBoolean("CompressorOn", compressor.enabled());
     }
 }

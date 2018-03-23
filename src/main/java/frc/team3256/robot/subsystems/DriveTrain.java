@@ -1,22 +1,17 @@
 package frc.team3256.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.DrivePower;
 import frc.team3256.lib.Kinematics;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.ADXRS453_Gyro;
 import frc.team3256.lib.hardware.TalonUtil;
-import frc.team3256.lib.math.RigidTransform;
 import frc.team3256.lib.math.Rotation;
-import frc.team3256.lib.math.Translation;
 import frc.team3256.lib.math.Twist;
 import frc.team3256.lib.path.Path;
 import frc.team3256.lib.path.PurePursuitTracker;
@@ -44,7 +39,8 @@ public class DriveTrain extends SubsystemBase implements Loop {
 
     @Override
     public void outputToDashboard() {
-
+        SmartDashboard.putNumber("leftDistance", getLeftDistance());
+        SmartDashboard.putNumber("rightDistance", getRightVelocity());
     }
 
     @Override

@@ -73,6 +73,9 @@ public class LogitechButtonBoardConfig implements ControlsInterface{
     }
 
     @Override
+    public boolean scalePresetLow() { return false;}
+
+    @Override
     public boolean scalePresetMid() {
         return false;
     }
@@ -99,6 +102,11 @@ public class LogitechButtonBoardConfig implements ControlsInterface{
 
     @Override
     public boolean scoreRearSlow(){
+        return false;
+    }
+
+    @Override
+    public boolean hang(){
         return false;
     }
 

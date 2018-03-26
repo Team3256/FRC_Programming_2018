@@ -67,7 +67,7 @@ public class Robot extends IterativeRobot {
 
         autoModeChooser = new AutoModeChooser();
         autoModeChooser.addAutoModes(new DoNothingAuto(), new CrossBaselineForwardAuto(), new CrossBaselineBackwardAuto(),
-                new CenterSwitchAuto(), new RightSwitchAuto(), new RightScaleAuto(), new RightScaleTwoCubeAuto(), new IntakeTestAuto());
+                new CenterSwitchAuto(), new RightSwitchAuto(), new RightScaleAuto(), new RightScaleTwoCubeAuto());
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
@@ -131,10 +131,14 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopPeriodic() {
         teleopUpdater.update();
+        subsystemManager.outputToDashboard();
+        //System.out.println("VOLTAGE: " + elevator.getOutputVoltage());
+        /*
         System.out.println("TARGET: " + elevator.getTargetHeight());
         System.out.println("CURR: " + elevator.getHeight());
         System.out.println("VOLTAGE : " + elevator.getOutputVoltage());
         System.out.println("MODE: " + elevator.getCurrentState());
+        */
         //System.out.println("DISTANCE TRAVELED: " + (Math.abs(DriveTrain.getInstance().getRightDistance()) + DriveTrain.getInstance().getLeftDistance())/2);
         //System.out.println("ROTATIONS: " + driveTrain.getAngle().degrees());
         //System.out.println("VELOCITY: " + (driveTrain.getRightVelocity() + driveTrain.getLeftVelocity())/2);

@@ -40,7 +40,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     @Override
     public void outputToDashboard() {
         SmartDashboard.putNumber("leftDistance", getLeftDistance());
-        SmartDashboard.putNumber("rightDistance", getRightVelocity());
+        SmartDashboard.putNumber("rightDistance", getRightDistance());
     }
 
     @Override

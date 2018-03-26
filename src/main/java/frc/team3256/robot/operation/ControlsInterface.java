@@ -49,6 +49,8 @@ public interface ControlsInterface {
     //Single press: Elevator moves to low scale preset
     boolean turnToCube();
 
+    boolean scalePresetLow();
+
     //Single press: Elevator moves to mid scale preset
     boolean scalePresetMid();
 
@@ -60,5 +62,7 @@ public interface ControlsInterface {
 
     //Hold: Elevator manually moves down
     boolean manualElevatorDown();
+
+    boolean hang();
 
 }

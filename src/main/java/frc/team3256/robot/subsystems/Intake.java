@@ -267,21 +267,17 @@ public class Intake extends SubsystemBase implements Loop {
                 }
             case IDLE:
                 wantsToToggle = false;
+
                 //if we are intaking, exhausting, unjamming, or already deployed and closed, the intake is closed,
                 //so we want the next state to be DEPLOYED_CLOSED
                 if (currentState == SystemState.EXHAUSTING || currentState == SystemState.INTAKING ||
-                        currentState == SystemState.UNJAMMING || currentState == SystemState.DEPLOYED_CLOSED){
-                    return SystemState.DEPLOYED_CLOSED;
-                }
-                //Otherwise, return the respective state that we are in
-                else if (currentState == SystemState.DEPLOYED_OPEN){
+                        currentState == SystemState.UNJAMMING || currentState == SystemState.DEPLOYED_CLOSED
+                        || currentState == SystemState.DEPLOYED_OPEN) {
+                    if (hasCube()) return SystemState.DEPLOYED_CLOSED;
                     return SystemState.DEPLOYED_OPEN;
                 }
-                else if (currentState == SystemState.STOWED_CLOSED){
+                else if (currentState == SystemState.STOWED_CLOSED || currentState == SystemState.STOWED_OPEN){
                     return SystemState.STOWED_CLOSED;
-                }
-                else if (currentState == SystemState.STOWED_OPEN){
-                    return SystemState.STOWED_OPEN;
                 }
 
                 //Toggles stowed & deployed

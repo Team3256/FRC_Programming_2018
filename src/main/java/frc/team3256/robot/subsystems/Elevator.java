@@ -124,6 +124,7 @@ public class Elevator extends SubsystemBase implements Loop{
         MANUAL_UP,
         MANUAL_DOWN,
         ZERO_POWER,
+        HANGING,
         HOMING,
     }
 
@@ -144,6 +145,7 @@ public class Elevator extends SubsystemBase implements Loop{
         WANTS_TO_MANUAL_DOWN,
         //Hold position when using manual control
         WANTS_TO_HOLD,
+        WANTS_TO_HANG,
         //Go up a bit to home, and then drop down...this should be only called when the robot has not been homed yet
         WANTS_TO_HOME,
     }
@@ -183,6 +185,8 @@ public class Elevator extends SubsystemBase implements Loop{
             case ZERO_POWER:
                 newState = handleZeroPower();
                 break;
+            case HANGING:
+                newState = handleHang();
             case HOMING:
                 newState = handleHome(timestamp);
                 break;
@@ -296,6 +300,11 @@ public class Elevator extends SubsystemBase implements Loop{
         return defaultStateTransfer();
     }
 
+    private SystemState handleHang(){
+        setOpenLoop(Constants.kElevatorHangPower);
+        return defaultStateTransfer();
+    }
+
     private double heightToSensorUnits(double inches) {
         return (inches/Constants.kElevatorPulleyDiameter)*4096.0*Constants.kElevatorGearRatio;
     }
@@ -358,6 +367,9 @@ public class Elevator extends SubsystemBase implements Loop{
                 }
                 m_usingClosedLoop = true;
                 break;
+            case WANTS_TO_HANG:
+                m_usingClosedLoop = false;
+                return SystemState.HANGING;
             case WANTS_TO_HOME:
                 return SystemState.HOMING;
         }

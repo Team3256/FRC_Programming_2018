@@ -16,7 +16,6 @@ public class RightScaleAuto extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
         GameDataAccessor.Side scaleSide = GameDataAccessor.getScaleSide();
-        GameDataAccessor.Side switchSide = GameDataAccessor.getSwitchSide();
         while(!GameDataAccessor.dataFound()){
             System.out.println("GAME DATA FOUND!!!!");
             scaleSide = GameDataAccessor.getScaleSide();
@@ -40,7 +39,6 @@ public class RightScaleAuto extends AutoModeBase {
             Intake.getInstance().setWantedState(Intake.WantedState.WANTS_TO_TOGGLE_FLOP);
             currVel = DriveTrain.getInstance().getAverageVelocity();
             runAction(new WaitAction(0.5));
-            //runAction(new ParallelAction(Arrays.asList(new RaiseElevatorHighScaleAction(), new FollowTrajectoryAction(currVel, 0.0, -68,-27))));
             runAction(new FollowTrajectoryAction(currVel, 0.0, -68,-29));
             runAction(new RaiseElevatorHighScaleAction());
             currVel = DriveTrain.getInstance().getAverageVelocity();
@@ -69,7 +67,7 @@ public class RightScaleAuto extends AutoModeBase {
             double currVel = 0.0;
             runAction(new CloseCarriageAction());
             DriveTrain.getInstance().setBrake();
-            runAction(new ParallelAction(Arrays.asList(new FollowTrajectoryAction(currVel,30,-207,0),
+            runAction(new ParallelAction(Arrays.asList(new FollowTrajectoryAction(currVel,30,-201,0), //-207
                     new SeriesAction(Arrays.asList(new WaitAction(1.0), new DeployIntakeAction())))));
             DriveTrain.getInstance().setBrake();
             currVel = DriveTrain.getInstance().getAverageVelocity();
@@ -78,7 +76,7 @@ public class RightScaleAuto extends AutoModeBase {
             currVel = DriveTrain.getInstance().getAverageVelocity();
             runAction(new FollowTrajectoryAction(currVel, 0.0, -142, -90));//-165 //-136
             DriveTrain.getInstance().resetGyro();
-            runAction(new FollowArcTrajectoryAction(currVel, 20, 30, 97, true));
+            runAction(new FollowArcTrajectoryAction(currVel, 20, 30, 102, true));
             runAction(new RaiseElevatorHighScaleAction());
             DriveTrain.getInstance().setBrake();
             runAction(new ScoreBackwardAction());

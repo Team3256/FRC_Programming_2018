@@ -43,11 +43,13 @@ public class TeleopUpdater {
 
         boolean switchPos = controls.switchPreset();
         boolean turnToCube = controls.turnToCube();
+        boolean lowScalePos = controls.scalePresetLow();
         boolean midScalePos = controls.scalePresetMid();
         boolean highScalePos = controls.scalePresetHigh();
 
         boolean manualRaise = controls.manualElevatorUp();
         boolean manualLower = controls.manualElevatorDown();
+        boolean hang = controls.hang();
 
         //Drivetrain subsystem
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn, !shiftDown);
@@ -130,11 +132,20 @@ public class TeleopUpdater {
             isManualControl = true;
             m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_MANUAL_DOWN);
         }
+        else if (hang){
+            //isManualControl = true;
+            //m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_HANG);
+        }
         //For all the presets, make sure we are homed before running them
         else if (switchPos && m_elevator.isHomed()){
             m_intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
             isManualControl = false;
             m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_SWITCH_POS);
+        }
+        else if (lowScalePos && m_elevator.isHomed()){
+            m_intake.setWantedState(Intake.WantedState.WANTS_TO_DEPLOY);
+            isManualControl = false;
+            m_elevator.setWantedState(Elevator.WantedState.WANTS_TO_LOW_SCALE_POS);
         }
 
         else if (midScalePos && m_elevator.isHomed()){

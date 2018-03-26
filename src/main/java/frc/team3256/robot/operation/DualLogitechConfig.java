@@ -94,6 +94,9 @@ public class DualLogitechConfig implements ControlsInterface{
     @Override
     public boolean turnToCube() {return false;} //driver.getRawButton(2)
 
+    @Override
+    public boolean scalePresetLow(){ return manipulator.getRawButton(1);}
+
     //Manipulator: Button X
     @Override
     public boolean scalePresetMid() {return manipulator.getRawButton(3);}
@@ -114,4 +117,8 @@ public class DualLogitechConfig implements ControlsInterface{
     @Override
     public boolean manualElevatorDown() { return manipulator.getRawAxis(1) > 0.25; }
 
+    @Override
+    public boolean hang(){
+        return manipulator.getRawAxis(5) > 0.25;
+    }
 }

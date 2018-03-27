@@ -99,7 +99,6 @@ public class Intake extends SubsystemBase implements Loop {
         }
         else {
             led.blue();
-            led.red();
     }
         if (firstRun) {
             wantedStateChanged = true;

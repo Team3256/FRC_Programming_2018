@@ -147,7 +147,7 @@ public class Constants {
     public static final double kHighScalePreset = 48; //in inches //48.5 measured
     public static final double kMidScalePreset = 42.0; //36.5
     public static final double kLowScalePreset = 36.0; //30
-    public static final double kSwitchPreset = 20.0;
+    public static final double kSwitchPreset = 22.0; //20.0
     public static final double kIntakePreset = 7.5;
     public static final double kDropPreset = 10.0;
     public static final double kBottomHomeHeight = 7.875; //measured in inches

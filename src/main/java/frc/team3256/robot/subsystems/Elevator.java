@@ -123,7 +123,6 @@ public class Elevator extends SubsystemBase implements Loop{
         HOLD,
         MANUAL_UP,
         MANUAL_DOWN,
-        ZERO_POWER,
         HANGING,
         HOMING,
     }
@@ -182,9 +181,6 @@ public class Elevator extends SubsystemBase implements Loop{
             case MANUAL_DOWN:
                 newState = handleManualControlDown();
                 break;
-            case ZERO_POWER:
-                newState = handleZeroPower();
-                break;
             case HANGING:
                 newState = handleHang();
             case HOMING:
@@ -229,7 +225,7 @@ public class Elevator extends SubsystemBase implements Loop{
         }
         if (timestamp - homingTimeStart < Constants.kElevatorHomingUpTime && getHeight() < 9) {
             if (isHomed) {
-                return SystemState.ZERO_POWER;
+                return SystemState.HOLD;
             }
             setOpenLoop(Constants.kElevatorUpSlowPower);
             return SystemState.HOMING;
@@ -238,15 +234,16 @@ public class Elevator extends SubsystemBase implements Loop{
             isHomed = true;
             wantedState = WantedState.WANTS_TO_INTAKE_POS;
         }
-        return SystemState.ZERO_POWER;
+        return SystemState.HOLD;
     }
 
     private SystemState handleHold(){
         if (stateChanged){
             master.selectProfileSlot(Constants.kElevatorHoldSlot,0);
         }
-        if (getHeight() < Constants.kDropPreset) {
-            return SystemState.ZERO_POWER;
+        if (getHeight() < Constants.kDropPreset){
+            setOpenLoop(0);
+            return defaultStateTransfer();
         }
         setTargetPosition(ControlMode.Position, getHeight(), Constants.kElevatorHoldSlot);
         return defaultStateTransfer();

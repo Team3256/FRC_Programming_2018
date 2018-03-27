@@ -62,16 +62,16 @@ public class DualLogitechConfig implements ControlsInterface{
         return manipulator.getRawButton(5);
     }
 
-    //Driver: Right Bumper
-    @Override
-    public boolean scoreFront(){
-        return driver.getRawButton(6);
-    }
-
     //Driver: Left Bumper
     @Override
-    public boolean scoreRear() {
+    public boolean scoreFront(){
         return driver.getRawButton(5);
+    }
+
+    //Driver: Right Bumper
+    @Override
+    public boolean scoreRear() {
+        return driver.getRawButton(6);
     }
 
     @Override

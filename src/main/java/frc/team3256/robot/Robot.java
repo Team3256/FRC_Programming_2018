@@ -1,10 +1,12 @@
 package frc.team3256.robot;
 
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.Looper;
 import frc.team3256.lib.hardware.ADXRS453_Calibrator;
@@ -71,8 +73,13 @@ public class Robot extends IterativeRobot {
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
+        LiveWindow.disableAllTelemetry();
+        LiveWindow.setEnabled(false);
         UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-        camera.setResolution(480, 240);
+        camera.setResolution(240, 120);
+        camera.setFPS(30);
+        camera.setPixelFormat(VideoMode.PixelFormat.kMJPEG);
+        System.out.println(camera.getVideoMode().pixelFormat);
     }
 
     @Override

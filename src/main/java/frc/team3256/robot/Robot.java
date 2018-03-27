@@ -73,12 +73,6 @@ public class Robot extends IterativeRobot {
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
-<<<<<<< HEAD
-        UsbCamera cam = CameraServer.getInstance().startAutomaticCapture(0);
-        cam.setVideoMode(VideoMode.PixelFormat.kYUYV, 377, 236, 30);
-        CameraServer.getInstance().startAutomaticCapture(cam);
-        //System.out.println(camera.getVideoMode().pixelFormat);
-=======
         LiveWindow.disableAllTelemetry();
         LiveWindow.setEnabled(false);
         UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
@@ -86,7 +80,6 @@ public class Robot extends IterativeRobot {
         camera.setFPS(30);
         camera.setPixelFormat(VideoMode.PixelFormat.kMJPEG);
         System.out.println(camera.getVideoMode().pixelFormat);
->>>>>>> c5b16a0c094cf217ab973a4d65d9a1125661b154
     }
 
     @Override
@@ -145,6 +138,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopPeriodic() {
         teleopUpdater.update();
+        System.out.println(intake.hasCube());
         //subsystemManager.outputToDashboard();
         //System.out.println("VOLTAGE: " + elevator.getOutputVoltage());
         /*

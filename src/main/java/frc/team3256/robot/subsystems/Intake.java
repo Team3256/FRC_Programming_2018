@@ -94,6 +94,13 @@ public class Intake extends SubsystemBase implements Loop {
         if (hasCube()){
             led.green();
         }
+        else if (wantedState == WantedState.WANTS_TO_INTAKE){
+            led.red();
+        }
+        else {
+            led.blue();
+            led.red();
+    }
         if (firstRun) {
             wantedStateChanged = true;
             firstRun = false;
@@ -146,10 +153,6 @@ public class Intake extends SubsystemBase implements Loop {
     }
 
     private SystemState handleIntake(){
-        if (hasCube()){
-            led.green();
-        }
-        else led.red();
         if (stateChanged){
             deployIntake();
             closeFlopper();

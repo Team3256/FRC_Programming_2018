@@ -9,9 +9,9 @@ public class LED {
     private Solenoid blue;
 
     private int pcmID = 1;
-    private int rPort = 7;
+    private int rPort = 5;
     private int gPort = 6;
-    private int bPort = 5;
+    private int bPort = 4;
 
     private static LED instance;
 

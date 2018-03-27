@@ -38,7 +38,7 @@ public class Constants {
     public static final int kHallEffectPort = 0;
 
     //Analog Inputs
-    public static final int kIntakeSharpIR = 4;
+    public static final int kIntakeSharpIR = 0;
 
     //Robot constants:
     //everything is in inches, seconds, or degrees

@@ -1,12 +1,17 @@
 package frc.team3256.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.VictorSP;
+import frc.team3256.lib.LED;
 import frc.team3256.lib.Loop;
 import frc.team3256.lib.hardware.SharpIR;
 import frc.team3256.robot.Constants;
 
 public class Intake extends SubsystemBase implements Loop {
+
+    private LED led = LED.getInstance();
+
     private VictorSP leftIntake, rightIntake;
     private DoubleSolenoid flopperActuator, pivotActuator;
     private SharpIR cubeDetector;
@@ -86,6 +91,9 @@ public class Intake extends SubsystemBase implements Loop {
 
     @Override
     public void update(double timestamp) {
+        if (hasCube()){
+            led.green();
+        }
         if (firstRun) {
             wantedStateChanged = true;
             firstRun = false;
@@ -138,10 +146,15 @@ public class Intake extends SubsystemBase implements Loop {
     }
 
     private SystemState handleIntake(){
+        if (hasCube()){
+            led.green();
+        }
+        else led.red();
         if (stateChanged){
             deployIntake();
             closeFlopper();
         }
+
         else{
             setIntake(kLeftIntakePower, kRightIntakePower);
         }
@@ -172,14 +185,6 @@ public class Intake extends SubsystemBase implements Loop {
             setIntake(Constants.kIntakeUnjamPower,Constants.kIntakeUnjamPower);
             return SystemState.UNJAMMING;
         }
-    }
-
-    private SystemState handleOpeningFlop(){
-        if (stateChanged){
-            openFlopper();
-        }
-        setIntake(0,0);
-        return defaultStateTransfer();
     }
 
     private SystemState handleDeployedClosed(){

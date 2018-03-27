@@ -19,6 +19,11 @@ public class Constants {
     public static final int kShifterForward = 0;
     public static final int kShifterReverse = 7;
 
+    public static final int kLEDPCMPort = 1;
+    public static final int kLightR = 0;
+    public static final int kLightG = 1;
+    public static final int kLightB = 2;
+
     //CAN
     public static final int kLeftDriveMaster = 4;
     public static final int kLeftDriveSlave = 5;

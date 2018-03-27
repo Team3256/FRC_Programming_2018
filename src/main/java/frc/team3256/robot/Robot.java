@@ -1,6 +1,7 @@
 package frc.team3256.robot;
 
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
@@ -71,8 +72,10 @@ public class Robot extends IterativeRobot {
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
-        UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-        camera.setResolution(480, 240);
+        UsbCamera cam = CameraServer.getInstance().startAutomaticCapture(0);
+        cam.setVideoMode(VideoMode.PixelFormat.kYUYV, 377, 236, 30);
+        CameraServer.getInstance().startAutomaticCapture(cam);
+        //System.out.println(camera.getVideoMode().pixelFormat);
     }
 
     @Override
@@ -118,7 +121,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledPeriodic() {
-        subsystemManager.outputToDashboard();
+        //subsystemManager.outputToDashboard();
         //System.out.println("CUBE ANGLE: " + driveTrain.getCubeOffsetAngle());
         //System.out.println(elevator.getRawEncoder());
 }
@@ -131,7 +134,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopPeriodic() {
         teleopUpdater.update();
-        subsystemManager.outputToDashboard();
+        //subsystemManager.outputToDashboard();
         //System.out.println("VOLTAGE: " + elevator.getOutputVoltage());
         /*
         System.out.println("TARGET: " + elevator.getTargetHeight());

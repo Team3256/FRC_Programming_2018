@@ -12,6 +12,6 @@ public class CrossBaselineForwardAuto extends AutoModeBase {
         if (!Elevator.getInstance().isHomed()){
             runAction(new AutoHomingAction());
         }
-        runAction(new FollowTrajectoryAction(0, 0, 90, 0));
+        runAction(new FollowTrajectoryAction(0, 0, 150, 0));
     }
 }

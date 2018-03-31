@@ -98,7 +98,7 @@ public class Intake extends SubsystemBase implements Loop {
             led.red();
         }
         else {
-            led.blue();
+            led.turnOff();
     }
         if (firstRun) {
             wantedStateChanged = true;
@@ -229,11 +229,11 @@ public class Intake extends SubsystemBase implements Loop {
         flopperActuator.set(DoubleSolenoid.Value.kReverse);
     }
 
-    private void openFlopper(){
+    public void openFlopper(){
         flopperActuator.set(DoubleSolenoid.Value.kForward);
     }
 
-    private void deployIntake(){
+    public void deployIntake(){
        pivotActuator.set(DoubleSolenoid.Value.kReverse);
     }
 
@@ -248,6 +248,10 @@ public class Intake extends SubsystemBase implements Loop {
 
     public boolean hasCube(){
         return cubeDetector.isTriggered();
+    }
+
+    public double getVoltage(){
+        return cubeDetector.getAvgVoltage();
     }
 
     //default WantedState -> SystemState
@@ -267,7 +271,7 @@ public class Intake extends SubsystemBase implements Loop {
 
             case WANTS_TO_OPEN_FLOP:
                 if (currentState == SystemState.STOWED_OPEN || currentState == SystemState.STOWED_CLOSED){
-                    return SystemState.STOWED_OPEN;
+                    return SystemState.DEPLOYED_OPEN;
                 }
                 else{
                     return SystemState.DEPLOYED_OPEN;

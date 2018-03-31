@@ -4,18 +4,18 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.team3256.robot.subsystems.Carriage;
 import frc.team3256.robot.subsystems.Intake;
 
-public class AutoIntakeAction implements Action {
+public class AutoIntakeTimeAction implements Action{
 
     private double time;
     private double startTime;
 
-    public AutoIntakeAction(double time){
+    public AutoIntakeTimeAction(double time){
         this.time = time;
     }
 
     @Override
     public boolean isFinished() {
-        return Intake.getInstance().hasCube() || Timer.getFPGATimestamp() - startTime > time;
+        return Timer.getFPGATimestamp() - startTime > time;
     }
 
     @Override
@@ -27,8 +27,6 @@ public class AutoIntakeAction implements Action {
     public void done() {
         Intake.getInstance().setWantedState(Intake.WantedState.IDLE);
         Carriage.getInstance().setWantedState(Carriage.WantedState.WANTS_TO_OPEN_IDLE);
-        System.out.println("DONE!!!!!!!!!!!!!!");
-
     }
 
     @Override

@@ -1,9 +1,6 @@
 package frc.team3256.robot;
 
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -13,14 +10,8 @@ import frc.team3256.lib.hardware.ADXRS453_Calibrator;
 import frc.team3256.robot.auto.AutoModeBase;
 import frc.team3256.robot.auto.AutoModeChooser;
 import frc.team3256.robot.auto.AutoModeExecuter;
-import frc.team3256.robot.auto.modes.Center.CenterLeftSwitchAuto;
-import frc.team3256.robot.auto.modes.Center.CenterRightSwitchAuto;
 import frc.team3256.robot.auto.modes.Final.*;
-import frc.team3256.robot.auto.modes.Right.RightRobotLeftScaleRightSwitchThreeCubeAuto;
 import frc.team3256.robot.auto.modes.Test.IntakeTestAuto;
-import frc.team3256.robot.auto.modes.Test.TestArcTrajectoryAuto;
-import frc.team3256.robot.auto.modes.Test.TestPurePursuitAuto;
-import frc.team3256.robot.auto.modes.Test.TestTurnInPlaceAuto;
 import frc.team3256.robot.gamedata.GameDataAccessor;
 import frc.team3256.robot.operation.TeleopUpdater;
 import frc.team3256.robot.subsystems.*;
@@ -69,21 +60,27 @@ public class Robot extends IterativeRobot {
 
         autoModeChooser = new AutoModeChooser();
         autoModeChooser.addAutoModes(new DoNothingAuto(), new CrossBaselineForwardAuto(), new CrossBaselineBackwardAuto(),
-                new CenterSwitchAuto(), new RightSwitchAuto(), new RightScaleAuto(), new RightScaleTwoCubeAuto());
+                new CenterSwitchAuto(), new RightSwitchAuto(), new RightScaleAuto(), new RightScaleFast(), new RightScaleTwoCube());
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
         LiveWindow.disableAllTelemetry();
         LiveWindow.setEnabled(false);
-        UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-        camera.setResolution(240, 120);
+
+        /*UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+        camera.setResolution(480, 240);*/
+        /*
         camera.setFPS(30);
         camera.setPixelFormat(VideoMode.PixelFormat.kMJPEG);
-        System.out.println(camera.getVideoMode().pixelFormat);
+        System.out.println(camera.getVideoMode().pixelFormat);*/
+
+        //////////////////////////////////////////////////////////////
+
     }
 
     @Override
     public void disabledInit() {
+        SmartDashboard.putBoolean("neural_network", false);
         enabledLooper.stop();
         disabledLooper.start();
         driveTrain.setBrake();
@@ -92,6 +89,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void autonomousInit() {
+        SmartDashboard.putBoolean("neural_network", false);
         disabledLooper.stop();
         enabledLooper.start();
 
@@ -101,7 +99,7 @@ public class Robot extends IterativeRobot {
 
         // AutoModeBase autoMode = new TestPurePursuitAuto();
         AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        //AutoModeBase autoModeTest = new RightRobotLeftScaleRightSwitchThreeCubeAuto(); //to be commented out
+        //AutoModeBase autoModeTest = new IntakeTestAuto(); //to be commented out
         autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
         System.out.println(autoMode);
         autoModeExecuter.setAutoMode(autoMode); //to be changed to automode
@@ -110,6 +108,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopInit() {
+        SmartDashboard.putBoolean("neural_network", false);
         disabledLooper.stop();
         enabledLooper.start();
         driveTrain.setBrake();
@@ -125,7 +124,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledPeriodic() {
-        //subsystemManager.outputToDashboard();
+        subsystemManager.outputToDashboard();
         //System.out.println("CUBE ANGLE: " + driveTrain.getCubeOffsetAngle());
         //System.out.println(elevator.getRawEncoder());
 }

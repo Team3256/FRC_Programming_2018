@@ -11,22 +11,20 @@ import frc.team3256.robot.subsystems.DriveTrain;
 import frc.team3256.robot.subsystems.Elevator;
 import frc.team3256.robot.subsystems.Intake;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
-public class RightSwitchAuto extends AutoModeBase {
-
+public class RightScaleTwoCube extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
         GameDataAccessor.Side scaleSide = GameDataAccessor.getScaleSide();
-        GameDataAccessor.Side switchSide = GameDataAccessor.getSwitchSide();
         while(!GameDataAccessor.dataFound()){
-            System.out.println("GAME DATA FOUND!!!!");
-            scaleSide = GameDataAccessor.getScaleSide();
-            System.out.println("SCALE SIDE:   " + scaleSide);
+        System.out.println("GAME DATA FOUND!!!!");
+        scaleSide = GameDataAccessor.getScaleSide();
+        System.out.println("SCALE SIDE:   " + scaleSide);
         }
 
         if(scaleSide == GameDataAccessor.Side.RIGHT){
+            SmartDashboard.putBoolean("neural_network", false);
             DriveTrain.getInstance().setBrake();
             DriveTrain.getInstance().resetGyro();
             double initTime = Timer.getFPGATimestamp();
@@ -43,11 +41,11 @@ public class RightSwitchAuto extends AutoModeBase {
             runAction(new ScoreBackwardAction());
             runAction(new WaitAction(0.75));
             runAction(new StopScoreAction());
-            runAction(new ParallelAction(Arrays.asList(new FollowArcTrajectoryAction(0,48,65,-35,false), new ElevatorIntakePositionAction())));
+            runAction(new ParallelAction(Arrays.asList(new FollowArcTrajectoryAction(0,48,65,-32,false), new ElevatorIntakePositionAction())));
             runAction(new FollowArcTrajectoryAction(48,0,20,1,false));
-            SmartDashboard.putBoolean("neural_network", true);
             runAction(new WaitAction(0.5));
-            System.out.println("Angle: " + DriveTrain.getInstance().getCubeOffsetAngle());
+            //System.out.println("Angle: " + DriveTrain.getInstance().getCubeOffsetAngle());
+            SmartDashboard.putBoolean("neural_network", true);
             runAction(new FollowTrajectoryAction(0.0,0.0,25,DriveTrain.getInstance().getCubeOffsetAngle()+DriveTrain.getInstance().getAngle().degrees()));
             SmartDashboard.putBoolean("neural_network", false);
             //New Intake Stuff
@@ -76,34 +74,40 @@ public class RightSwitchAuto extends AutoModeBase {
             return;
         }
 
-        else if (scaleSide == GameDataAccessor.Side.LEFT && switchSide == GameDataAccessor.Side.RIGHT){
+        else if (scaleSide == GameDataAccessor.Side.LEFT){
             DriveTrain.getInstance().setBrake();
             DriveTrain.getInstance().resetGyro();
-            double initTime = Timer.getFPGATimestamp();
 
             if (!Elevator.getInstance().isHomed()){
                 runAction(new AutoHomingAction());
             }
             double currVel = 0.0;
+            runAction(new CloseCarriageAction());
             DriveTrain.getInstance().setBrake();
-            runAction(new ParallelAction(Arrays.asList(new FollowTrajectoryAction(currVel,0.0,-160,0),
-                    new SeriesAction(Arrays.asList(new WaitAction(1.0), new DeployIntakeAction())))));        runAction(new DeployIntakeAction());
-            ArrayList<Action> actions = new ArrayList<>();
+            runAction(new ParallelAction(Arrays.asList(new FollowTrajectoryAction(currVel,30,-201,0), //-207
+                    new SeriesAction(Arrays.asList(new WaitAction(1.0), new DeployIntakeAction())))));
+            DriveTrain.getInstance().setBrake();
             currVel = DriveTrain.getInstance().getAverageVelocity();
-            actions.add(new RaiseElevatorSwitchAction());
-            actions.add(new FollowArcTrajectoryAction(currVel, 0.0, 15,-90,false));
-            runAction(new ParallelAction(actions));
-            runAction(new ScoreForwardAction());
-            runAction(new WaitAction(1.0));
+            runAction(new FollowArcTrajectoryAction(currVel, 20, 36, -90, true));
+            runAction(new WaitAction(0.25));
+            currVel = DriveTrain.getInstance().getAverageVelocity();
+            runAction(new FollowTrajectoryAction(currVel, 0.0, -142, -90));//-165 //-136
+            DriveTrain.getInstance().resetGyro();
+            runAction(new FollowArcTrajectoryAction(currVel, 20, 30, 102, true));
+            runAction(new RaiseElevatorHighScaleAction());
+            DriveTrain.getInstance().setBrake();
+            runAction(new ScoreBackwardAction());
+            runAction(new WaitAction(0.75));
             runAction(new StopScoreAction());
+            runAction(new WaitAction(0.15));
             runAction(new ElevatorIntakePositionAction());
             DriveTrain.getInstance().setBrake();
-        }
+    }
         else{
             if (!Elevator.getInstance().isHomed()){
                 runAction(new AutoHomingAction());
             }
-            runAction(new FollowTrajectoryAction(0, 0, -150, 0));
+            runAction(new FollowTrajectoryAction(0, 0, -90, 0));
         }
     }
 }

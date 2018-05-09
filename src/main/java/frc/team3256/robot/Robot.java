@@ -137,7 +137,6 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopPeriodic() {
         teleopUpdater.update();
-        System.out.println(intake.hasCube());
         //subsystemManager.outputToDashboard();
         //System.out.println("VOLTAGE: " + elevator.getOutputVoltage());
         /*

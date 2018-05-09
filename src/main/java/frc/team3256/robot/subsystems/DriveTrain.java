@@ -318,25 +318,36 @@ public class DriveTrain extends SubsystemBase implements Loop {
             return;
         }
         Rotation robotToTarget = getAngle().inverse().rotate(Rotation.fromDegrees(m_turnInPlaceDegrees));
+        System.out.println("ROBOT TO TARGET: " + robotToTarget);
+
         if (isTurnInPlaceFinished()){
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
             return;
         }
         //periodically re-converts the gyro angle into a new motion magic goal for the talons
         Kinematics.DriveVelocity delta = Kinematics.inverseKinematics(new Twist(0,0,robotToTarget.radians()), Constants.kRobotTrack, Constants.kScrubFactor);
+
+
+        //System.out.println("DL: " + delta.left + "; " + "DR: " + delta.right);
+        leftMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(getLeftDistance() + delta.left), 0);
+        rightMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(getRightDistance() + delta.right), 0);
+
         System.out.println(delta.left + "\t" + delta.right);
         System.out.println("Left CLE: " + sensorUnitsToInches(leftMaster.getClosedLoopError(0)));
         System.out.println("Right CLE: " + sensorUnitsToInches(rightMaster.getClosedLoopError(0)));
-
-        //System.out.println("DL: " + delta.left + "; " + "DR: " + delta.right);
-        leftMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(getLeftDistance() + delta.left), Constants.kTurnMotionMagicProfile);
-        rightMaster.set(ControlMode.MotionMagic, inchesToSensorUnits(getRightDistance() + delta.right), Constants.kTurnMotionMagicProfile);
+        System.out.println("LEFT TARGET: " + leftMaster.getClosedLoopTarget(0));
+        System.out.println("RIGHT TARGET: " + rightMaster.getClosedLoopTarget(0));
+        System.out.println("LEFT VOLTAGE: " + leftMaster.getMotorOutputVoltage());
+        System.out.println("RIGHT VOLTAGE: " + rightMaster.getMotorOutputVoltage());
     }
 
     public void updateDriveStraight() {
         if (controlMode != DriveControlMode.DRIVE_STRAIGHT) {
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!");
             return;
         }
         if (driveStraightController.isFinished()) {
+            System.out.println("----------------------");
             setOpenLoop(0, 0);
             return;
         }
@@ -472,18 +483,24 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public void setTurnInPlaceSetpoint(double setpoint) {
+        resetGyro();
         this.m_turnInPlaceDegrees = setpoint;
         setHighGear(false);
         rightMaster.selectProfileSlot(Constants.kTurnMotionMagicProfile, 0);
         leftMaster.selectProfileSlot(Constants.kTurnMotionMagicProfile, 0);
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
+            leftMaster.configNominalOutputForward(3.0/12.0, 0);
+            rightMaster.configNominalOutputForward(3.0/12.0, 0);
+            leftSlave.configNominalOutputForward(3.0/12.0, 0);
+            rightSlave.configNominalOutputForward(3.0/12.0, 0);
             controlMode = DriveControlMode.TURN_TO_ANGLE;
         }
+
         updateTurnInPlace();
     }
 
     public double inchesToSensorUnits(double inches) {
-        return (inches * 4096)/(Constants.kWheelDiameter * Math.PI) * Constants.kDriveEncoderScalingFactor;
+        return (inches * 4096.0)/(Constants.kWheelDiameter * Math.PI) * Constants.kDriveEncoderScalingFactor;
     }
 
     //Sensor units for velocity are encoder units per 100 ms

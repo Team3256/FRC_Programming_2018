@@ -319,9 +319,9 @@ public class DriveTrain extends SubsystemBase implements Loop {
         }
         Rotation robotToTarget = getAngle().inverse().rotate(Rotation.fromDegrees(m_turnInPlaceDegrees));
         System.out.println("ROBOT TO TARGET: " + robotToTarget);
+        System.out.println("ANGLE: " + getCubeOffsetAngle());
 
         if (isTurnInPlaceFinished()){
-            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
             return;
         }
         //periodically re-converts the gyro angle into a new motion magic goal for the talons
@@ -489,10 +489,11 @@ public class DriveTrain extends SubsystemBase implements Loop {
         rightMaster.selectProfileSlot(Constants.kTurnMotionMagicProfile, 0);
         leftMaster.selectProfileSlot(Constants.kTurnMotionMagicProfile, 0);
         if (controlMode != DriveControlMode.TURN_TO_ANGLE){
-            leftMaster.configNominalOutputForward(3.0/12.0, 0);
-            rightMaster.configNominalOutputForward(3.0/12.0, 0);
-            leftSlave.configNominalOutputForward(3.0/12.0, 0);
-            rightSlave.configNominalOutputForward(3.0/12.0, 0);
+
+            leftMaster.configNominalOutputForward(2.0/12.0, 0);
+            rightMaster.configNominalOutputForward(2.0/12.0, 0);
+            leftSlave.configNominalOutputForward(2.0/12.0, 0);
+            rightSlave.configNominalOutputForward(2.0/12.0, 0);
             controlMode = DriveControlMode.TURN_TO_ANGLE;
         }
 

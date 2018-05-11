@@ -42,7 +42,7 @@ public class Constants {
 
     //Robot constants:
     //everything is in inches, seconds, or degrees
-    public static final double kRobotTrack = 43.5139561597/2.0; //25.146
+    public static final double kRobotTrack = 43.5139561597; //25.146
     public static final double kScrubFactor = 1.0;
     public static final double kWheelDiameter = 6.045;
     public static final double kDriveEncoderScalingFactor = 3.0*60.0/24.0; //3:1 GR on Encoder Stage, plus 60:24 GR on third stage
@@ -58,11 +58,11 @@ public class Constants {
     public static final double kSlowLoopPeriod = 1.0/50.0;
 
     //Turn Motion Magic: Low Gear
-    public static final double kTurnLowGearMotionMagicP = 0.5;
+    public static final double kTurnLowGearMotionMagicP = 1.0;
     public static final double kTurnLowGearMotionMagicI = 0.0;
-    public static final double kTurnLowGearMotionMagicD = 0.0;
+    public static final double kTurnLowGearMotionMagicD = 5.0;
     public static final double kTurnLowGearMotionMagicF = 0.08; //0.0815
-    public static final double kTurnLowGearMotionMagicAcceleration = 80.0;
+    public static final double kTurnLowGearMotionMagicAcceleration = 160.0;
     public static final double kTurnLowGearMotionMagicCruiseVelocity = 80.0;
     public static final int kTurnMotionMagicProfile = 0;
 

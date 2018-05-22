@@ -41,9 +41,9 @@ public class RightScaleTwoCube extends AutoModeBase {
             runAction(new ScoreBackwardAction());
             runAction(new WaitAction(0.75));
             runAction(new StopScoreAction());
-            runAction(new ParallelAction(Arrays.asList(new FollowArcTrajectoryAction(0,48,65,-32,false), new ElevatorIntakePositionAction())));
-            runAction(new FollowArcTrajectoryAction(48,0,20,1,false));
-            runAction(new WaitAction(0.5));
+            runAction(new ParallelAction(Arrays.asList(new FollowArcTrajectoryAction(0,48,65,-36,false), new ElevatorIntakePositionAction())));
+            runAction(new FollowArcTrajectoryAction(48,0,20,0.75,false));
+            runAction(new WaitAction(1));
             //System.out.println("Angle: " + DriveTrain.getInstance().getCubeOffsetAngle());
             SmartDashboard.putBoolean("neural_network", true);
             runAction(new FollowTrajectoryAction(0.0,0.0,25,DriveTrain.getInstance().getCubeOffsetAngle()+DriveTrain.getInstance().getAngle().degrees()));

@@ -1,6 +1,8 @@
 package frc.team3256.robot;
 
+import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -67,8 +69,8 @@ public class Robot extends IterativeRobot {
         LiveWindow.disableAllTelemetry();
         LiveWindow.setEnabled(false);
 
-        /*UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-        camera.setResolution(480, 240);*/
+        UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+        camera.setResolution(240, 160);
         /*
         camera.setFPS(30);
         camera.setPixelFormat(VideoMode.PixelFormat.kMJPEG);
@@ -99,7 +101,7 @@ public class Robot extends IterativeRobot {
 
         // AutoModeBase autoMode = new TestPurePursuitAuto();
         AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        //AutoModeBase autoModeTest = new IntakeTestAuto(); //to be commented out
+        //AutoModeBase autoModeTest = new RightScaleTwoCube(); //to be commented out
         autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
         System.out.println(autoMode);
         autoModeExecuter.setAutoMode(autoMode); //to be changed to automode

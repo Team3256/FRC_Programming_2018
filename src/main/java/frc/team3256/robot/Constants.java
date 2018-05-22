@@ -58,12 +58,11 @@ public class Constants {
     public static final double kSlowLoopPeriod = 1.0/50.0;
 
     //Turn Motion Magic: Low Gear
-    public static final double kTurnLowGearMotionMagicP = 0.05;
+    public static final double kTurnLowGearMotionMagicP = 1.0;
     public static final double kTurnLowGearMotionMagicI = 0.0;
-    public static final int kTurnLowGearIZone = 0;
-    public static final double kTurnLowGearMotionMagicD = 0.0;
-    public static final double kTurnLowGearMotionMagicF = 0.06; //0.0815
-    public static final double kTurnLowGearMotionMagicAcceleration = 80.0;
+    public static final double kTurnLowGearMotionMagicD = 5.0;
+    public static final double kTurnLowGearMotionMagicF = 0.08; //0.0815
+    public static final double kTurnLowGearMotionMagicAcceleration = 160.0;
     public static final double kTurnLowGearMotionMagicCruiseVelocity = 80.0;
     public static final int kTurnMotionMagicProfile = 0;
 

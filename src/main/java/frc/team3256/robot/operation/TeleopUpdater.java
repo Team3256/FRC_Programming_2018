@@ -20,10 +20,10 @@ public class TeleopUpdater {
     private boolean prevPivotToggle = false;
     private boolean prevFlopToggle = false;
     private boolean isManualControl = false;
+    private boolean prevAutoAlign = false;
 
     public void update(){
 
-        DriveTrain drive = DriveTrain.getInstance();
         double throttle = controls.getThrottle();
         double turn = controls.getTurn();
         boolean quickTurn = controls.getQuickTurn();
@@ -52,9 +52,12 @@ public class TeleopUpdater {
         boolean hang = controls.hang();
 
         //Drivetrain subsystem
+
         DrivePower power = TeleopDriveController.curvatureDrive(throttle, turn, quickTurn, !shiftDown);
+        /*
         m_drive.setOpenLoop(power);
         m_drive.setHighGear(power.getHighGear());
+        */
 
         //Intake subsystem
         //Unjamming is highest priority because it is both intake and exhaust buttons
@@ -109,11 +112,20 @@ public class TeleopUpdater {
         prevFlopToggle = flopToggle;
         prevPivotToggle = pivotToggle;
 
-        /*
         if (turnToCube){
-            drive.setTurnInPlaceSetpoint(drive.getCubeOffsetAngle() + drive.getAngle().degrees());
+            if (!prevAutoAlign){
+                m_drive.setTurnInPlaceSetpoint(-1.0 * m_drive.getCubeOffsetAngle());
+                prevAutoAlign = true;
+            }
+            //drive.setTurnInPlaceSetpoint(drive.getCubeOffsetAngle() + drive.getAngle().degrees());
+            //DriveTrain.getInstance().resetGyro();
+            //drive.configureDriveStraight(0,0,3,(drive.getCubeOffsetAngle()));
         }
-        */
+        else {
+            prevAutoAlign = false;
+            m_drive.setOpenLoop(power);
+            m_drive.setHighGear(power.getHighGear());
+        }
 
         //Elevator subsystem
         //If the elevator is not homed yet, home the elevator

@@ -92,7 +92,7 @@ public class DualLogitechConfig implements ControlsInterface{
 
     //Driver: Button B
     @Override
-    public boolean turnToCube() {return false;} //driver.getRawButton(2)
+    public boolean turnToCube() {return driver.getRawButton(2);} //driver.getRawButton(2)
 
     @Override
     public boolean scalePresetLow(){ return manipulator.getRawButton(1);}

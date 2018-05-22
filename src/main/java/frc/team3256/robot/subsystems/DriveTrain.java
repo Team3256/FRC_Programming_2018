@@ -500,6 +500,23 @@ public class DriveTrain extends SubsystemBase implements Loop {
         updateTurnInPlace();
     }
 
+    public void setAbsoluteTurnInPlaceSetpoint(double setpoint) {
+        this.m_turnInPlaceDegrees = getAngle().degrees() + setpoint;
+        setHighGear(false);
+        rightMaster.selectProfileSlot(Constants.kTurnMotionMagicProfile, 0);
+        leftMaster.selectProfileSlot(Constants.kTurnMotionMagicProfile, 0);
+        if (controlMode != DriveControlMode.TURN_TO_ANGLE){
+
+            leftMaster.configNominalOutputForward(2.0/12.0, 0);
+            rightMaster.configNominalOutputForward(2.0/12.0, 0);
+            leftSlave.configNominalOutputForward(2.0/12.0, 0);
+            rightSlave.configNominalOutputForward(2.0/12.0, 0);
+            controlMode = DriveControlMode.TURN_TO_ANGLE;
+        }
+
+        updateTurnInPlace();
+    }
+
     public double inchesToSensorUnits(double inches) {
         return (inches * 4096.0)/(Constants.kWheelDiameter * Math.PI) * Constants.kDriveEncoderScalingFactor;
     }

@@ -114,7 +114,7 @@ public class TeleopUpdater {
 
         if (turnToCube){
             if (!prevAutoAlign){
-                m_drive.setTurnInPlaceSetpoint(-1.0 * m_drive.getCubeOffsetAngle());
+                m_drive.setAbsoluteTurnInPlaceSetpoint(-1.0 * m_drive.getCubeOffsetAngle());
                 prevAutoAlign = true;
             }
             //drive.setTurnInPlaceSetpoint(drive.getCubeOffsetAngle() + drive.getAngle().degrees());

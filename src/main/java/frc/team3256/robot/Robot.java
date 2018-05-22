@@ -69,8 +69,8 @@ public class Robot extends IterativeRobot {
         LiveWindow.disableAllTelemetry();
         LiveWindow.setEnabled(false);
 
-        UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-        camera.setResolution(240, 160);
+        //UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+        //camera.setResolution(240, 160);
         /*
         camera.setFPS(30);
         camera.setPixelFormat(VideoMode.PixelFormat.kMJPEG);

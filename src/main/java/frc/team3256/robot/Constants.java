@@ -123,7 +123,7 @@ public class Constants {
     public static final int kElevatorMotionMagicUpSlot = 1;
 
     //Presets:
-    public static final double kIntakeSharpIRMaxVoltage = 3.3;
+    public static final double kIntakeSharpIRMaxVoltage = 4.0;
     public static final double kIntakeSharpIRMinVoltage = 1.8;//2.5 --- 2.3
     public static final double kLeftIntakePower = 0.8;//0.75
     public static final double kRightIntakePower = 0.65;//0.6
@@ -136,7 +136,7 @@ public class Constants {
     public static final double kCarriageScoreBackwardPower = 0.7;
     public static final double kCarriageScoreForwardSlowPower = -0.4;
     public static final double kCarriageScoreBackwardSlowPower = 0.4;
-    public static final double kCarriageScoreBackwardAutoPower = 0.7;
+    public static final double kCarriageScoreBackwardAutoPower = 1.0;
     public static final double kCarriageSmashBackwardPower = 0.8;
     public static final double kCarriageExhaustPower = -0.75;
 

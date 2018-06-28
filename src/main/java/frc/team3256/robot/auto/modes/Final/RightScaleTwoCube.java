@@ -41,8 +41,27 @@ public class RightScaleTwoCube extends AutoModeBase {
             runAction(new ScoreBackwardAction());
             runAction(new WaitAction(0.75));
             runAction(new StopScoreAction());
-            runAction(new ParallelAction(Arrays.asList(new FollowArcTrajectoryAction(0,48,65,-36,false), new ElevatorIntakePositionAction())));
-            runAction(new FollowArcTrajectoryAction(48,0,20,0.75,false));
+            runAction(new ParallelAction(Arrays.asList(new FollowArcTrajectoryAction(0,48,45,-20,false), new ElevatorIntakePositionAction())));
+            runAction(new WaitAction(1.0));
+            runAction(new AutoAlignAction());
+            runAction(new FollowTrajectoryAction(0.0,0.0,28,DriveTrain.getInstance().getAngle().degrees()));
+            runAction(new AutoIntakeAction(1.0));
+            runAction(new AutoIntakeTimeAction(0.2));
+            runAction(new WaitAction(0.5));
+            if (!Intake.getInstance().hasCube()){
+                runAction(new AutoExhaustAction());
+                runAction(new WaitAction(0.1));
+                runAction(new StopIntakeAction());
+                runAction(new AutoIntakeAction(1.0));
+                runAction(new AutoIntakeTimeAction(0.2));
+            }
+            Carriage.getInstance().setWantedState(Carriage.WantedState.WANTS_TO_SQUEEZE_IDLE);
+            runAction(new FollowTrajectoryAction(0,0,-30,-10));
+            runAction(new RaiseElevatorHighScaleAction());
+            runAction(new ScoreBackwardsFast());
+            runAction(new WaitAction(1.0));
+            runAction(new StopScoreAction());
+            /*runAction(new FollowArcTrajectoryAction(48,0,20,0.75,false));
             runAction(new WaitAction(1));
             //System.out.println("Angle: " + DriveTrain.getInstance().getCubeOffsetAngle());
             SmartDashboard.putBoolean("neural_network", true);
@@ -51,7 +70,6 @@ public class RightScaleTwoCube extends AutoModeBase {
             //runAction(new FollowTrajectoryAction(0.0,0.0,25,DriveTrain.getInstance().getCubeOffsetAngle()+DriveTrain.getInstance().getAngle().degrees()));
             SmartDashboard.putBoolean("neural_network", false);
             //New Intake Stuff
-            runAction(new WaitAction(999999999));
             runAction(new AutoIntakeAction(1.0));
             runAction(new AutoIntakeTimeAction(0.2));
             runAction(new WaitAction(0.5));
@@ -73,7 +91,7 @@ public class RightScaleTwoCube extends AutoModeBase {
                 runAction(new ElevatorIntakePositionAction());
                 System.out.println("Total Time: " + Double.toString(Timer.getFPGATimestamp() - initTime));
                 return;
-            }
+            }*/
             return;
         }
 

@@ -63,7 +63,7 @@ public class RightScaleFast extends AutoModeBase {
             runAction(new FollowTrajectoryAction(currVel, 0.0, -142, -90));//-165 //-136
             DriveTrain.getInstance().resetGyro();
             runAction(new FollowArcTrajectoryAction(currVel, 20, 30, 102, true));
-            runAction(new RaiseElevatorHighScaleAction());
+            runAction(new RaiseElevatorLowScaleAction());
             DriveTrain.getInstance().setBrake();
             runAction(new ScoreBackwardAction());
             runAction(new WaitAction(0.75));
@@ -76,7 +76,6 @@ public class RightScaleFast extends AutoModeBase {
             if (!Elevator.getInstance().isHomed()){
                 runAction(new AutoHomingAction());
             }
-            runAction(new FollowTrajectoryAction(0, 0, -90, 0));
         }
-    }
-}
+                }
+                }

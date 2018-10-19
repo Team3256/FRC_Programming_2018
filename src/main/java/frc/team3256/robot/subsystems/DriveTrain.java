@@ -309,7 +309,7 @@ public class DriveTrain extends SubsystemBase implements Loop {
     }
 
     public void setOpenLoop(DrivePower power){
-        setOpenLoop(power.getLeft(), power.getRight());
+        setOpenLoop(Math.pow(power.getLeft(),3), Math.pow(power.getRight(),3)); //divide by 2 for lower speeds
     }
 
     //updates turning in place

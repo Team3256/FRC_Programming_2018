@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3256.lib.Looper;
 import frc.team3256.lib.hardware.ADXRS453_Calibrator;
+import frc.team3256.lib.hardware.SharpIR;
 import frc.team3256.robot.auto.AutoModeBase;
 import frc.team3256.robot.auto.AutoModeChooser;
 import frc.team3256.robot.auto.AutoModeExecuter;
@@ -62,7 +63,7 @@ public class Robot extends IterativeRobot {
 
         autoModeChooser = new AutoModeChooser();
         autoModeChooser.addAutoModes(new DoNothingAuto(), new CrossBaselineForwardAuto(), new CrossBaselineBackwardAuto(),
-                new CenterSwitchAuto(), new RightSwitchAuto(), new RightScaleAuto(), new RightScaleFast(), new RightScaleTwoCube());
+                new CenterSwitchAuto(), new IntakeTestAuto(), new RightScaleAuto(), new RightScaleFast(), new RightScaleTwoCube());
 
         NetworkTableInstance.getDefault().getEntry("AutoOptions").setStringArray(autoModeChooser.getAutoNames());
         NetworkTableInstance.getDefault().getEntry("ChosenAuto").setString("DoNothingAuto");
@@ -127,6 +128,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void disabledPeriodic() {
         subsystemManager.outputToDashboard();
+        //System.out.println("Cube: " + Intake.getInstance().getVoltage());
         //System.out.println("CUBE ANGLE: " + driveTrain.getCubeOffsetAngle());
         //System.out.println(elevator.getRawEncoder());
 }

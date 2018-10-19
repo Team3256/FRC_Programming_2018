@@ -110,7 +110,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopInit() {
-        SmartDashboard.putBoolean("neural_network", false);
+        SmartDashboard.putBoolean("neural_network", true);
         disabledLooper.stop();
         enabledLooper.start();
         driveTrain.setBrake();

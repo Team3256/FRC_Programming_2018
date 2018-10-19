@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.VictorSP;
 import frc.team3256.lib.Loop;
 import frc.team3256.robot.Constants;
 
-public class Carriage extends SubsystemBase implements Loop{
+public class Carriage extends SubsystemBase implements Loop {
 
     private VictorSP rollerLeft, rollerRight;
     private DoubleSolenoid squeezeSolenoid;

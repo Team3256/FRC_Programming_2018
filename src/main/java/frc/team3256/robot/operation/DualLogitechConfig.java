@@ -11,7 +11,7 @@ public class DualLogitechConfig implements ControlsInterface{
     //Driver: Vertical Axis Left Joystick
     @Override
     public double getThrottle(){
-        return -driver.getRawAxis(1);
+        return -manipulator.getRawAxis(5);
     }
 
     //Driver: Horizontal Axis Right Joystick
@@ -65,13 +65,13 @@ public class DualLogitechConfig implements ControlsInterface{
     //Driver: Left Bumper
     @Override
     public boolean scoreFront(){
-        return driver.getRawButton(6);
+        return manipulator.getRawButton(6);
     }
 
     //Driver: Right Bumper
     @Override
     public boolean scoreRear() {
-        return driver.getRawButton(5);
+        return manipulator.getRawButton(5);
     }
 
     @Override
@@ -87,12 +87,12 @@ public class DualLogitechConfig implements ControlsInterface{
     //Manipulator: Button B
     @Override
     public boolean switchPreset() {
-        return manipulator.getRawButton(2);
+        return false; //manipulator.getRawButton(2)
     }
 
     //Driver: Button B
     @Override
-    public boolean turnToCube() {return driver.getRawButton(2);} //driver.getRawButton(2)
+    public boolean turnToCube() {return manipulator.getRawButton(2);} //driver.getRawButton(2)
 
     @Override
     public boolean scalePresetLow(){ return manipulator.getRawButton(1);}

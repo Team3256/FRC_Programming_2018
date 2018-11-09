@@ -22,10 +22,6 @@ import frc.team3256.robot.subsystems.*;
 public class Robot extends IterativeRobot {
 
     DriveTrain driveTrain;
-    Intake intake;
-    Elevator elevator;
-    Carriage carriage;
-    PoseEstimator poseEstimator;
     Looper disabledLooper;
     Looper enabledLooper;
     SubsystemManager subsystemManager;
@@ -34,32 +30,25 @@ public class Robot extends IterativeRobot {
     AutoModeChooser autoModeChooser;
     TeleopUpdater teleopUpdater;
 
-    Compressor compressor;
 
     @Override
     public void robotInit() {
-        compressor = new Compressor();
-        compressor.setClosedLoopControl(true);
 
         driveTrain = DriveTrain.getInstance();
-        intake = Intake.getInstance();
-        elevator = Elevator.getInstance();
-        carriage = Carriage.getInstance();
 
         teleopUpdater = new TeleopUpdater();
 
-        poseEstimator = PoseEstimator.getInstance();
         gyroCalibrator = new ADXRS453_Calibrator(driveTrain.getGyro());
 
         //disabled looper -> recalibrate gyro
         disabledLooper = new Looper(Constants.kSlowLoopPeriod);
-        disabledLooper.addLoops(gyroCalibrator, poseEstimator);
+        disabledLooper.addLoops(gyroCalibrator);
         //enabled looper -> control loop for subsystems
         enabledLooper = new Looper(Constants.kControlLoopPeriod);
-        enabledLooper.addLoops(driveTrain, poseEstimator, intake, carriage, elevator);
+        enabledLooper.addLoops(driveTrain);
 
         subsystemManager = new SubsystemManager();
-        subsystemManager.addSubsystems(driveTrain, intake, elevator, carriage);
+        subsystemManager.addSubsystems(driveTrain);
 
         autoModeChooser = new AutoModeChooser();
         autoModeChooser.addAutoModes(new DoNothingAuto(), new CrossBaselineForwardAuto(), new CrossBaselineBackwardAuto(),
@@ -83,7 +72,6 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledInit() {
-        SmartDashboard.putBoolean("neural_network", false);
         enabledLooper.stop();
         disabledLooper.start();
         driveTrain.setBrake();
@@ -92,33 +80,17 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void autonomousInit() {
-        SmartDashboard.putBoolean("neural_network", false);
         disabledLooper.stop();
         enabledLooper.start();
-
-        GameDataAccessor.getGameData();
-
-        autoModeExecuter = new AutoModeExecuter();
-
-        // AutoModeBase autoMode = new TestPurePursuitAuto();
-        AutoModeBase autoMode = autoModeChooser.getChosenAuto(NetworkTableInstance.getDefault().getEntry("ChosenAuto").getString("DoNothingAuto"));
-        //AutoModeBase autoModeTest = new RightScaleTwoCube(); //to be commented out
-        autoMode = autoMode == null ? new DoNothingAuto() : autoMode;
-        System.out.println(autoMode);
-        autoModeExecuter.setAutoMode(autoMode); //to be changed to automode
-        autoModeExecuter.start();
     }
 
     @Override
     public void teleopInit() {
-        SmartDashboard.putBoolean("neural_network", true);
         disabledLooper.stop();
         enabledLooper.start();
         driveTrain.setBrake();
         driveTrain.enableRamp();
         driveTrain.resetNominal();
-        elevator.setWantedState(Elevator.WantedState.WANTS_TO_HOME);
-        //driveTrain.setVelocitySetpoint(0,0);
     }
 
     @Override
@@ -135,7 +107,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void autonomousPeriodic(){
-        GameDataAccessor.getGameData();
+        ;
     }
 
     @Override
@@ -161,6 +133,5 @@ public class Robot extends IterativeRobot {
     @Override
     public void robotPeriodic(){
         //subsystemManager.outputToDashboard();
-        SmartDashboard.putBoolean("CompressorOn", compressor.enabled());
     }
 }

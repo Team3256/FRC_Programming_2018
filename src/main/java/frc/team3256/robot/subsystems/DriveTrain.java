@@ -28,10 +28,6 @@ public class DriveTrain extends SubsystemBase implements Loop {
     private DoubleSolenoid shifter;
 
     private DriveControlMode controlMode;
-    private double m_turnInPlaceDegrees, m_arcTargetAngle;
-    private DriveStraightController driveStraightController = new DriveStraightController();
-    private DriveArcController driveArcController = new DriveArcController();
-    private PurePursuitTracker purePursuitTracker = new PurePursuitTracker();
 
     public static DriveTrain getInstance() {
         return instance == null ? instance = new DriveTrain() : instance;
